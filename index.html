@@ -7,989 +7,803 @@
   <link rel="icon" href="assets/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
   <style>
     :root {
-      --cream: #FAF7F2;
-      --warm-white: #FFF9F2;
-      --espresso: #1C0F08;
-      --coffee: #3D1F0D;
-      --sepia: #7B4F2E;
-      --caramel: #C47B3A;
-      --latte: #D4A96A;
-      --matcha: #6B7C4A;
-      --matcha-light: #A8B87A;
-      --gray-light: #F0EBE3;
-      --gray-mid: #C8BFB3;
-      --gray-dark: #6B6057;
+      --black: #0A0705;
+      --white: #FAF8F5;
+      --caramel: #C4863A;
+      --stone: #F0ECE5;
+      --stone-dark: #D6CEC3;
+      --text-muted: #7A7268;
+      --font-display: 'Syne', sans-serif;
       --font-body: 'Inter', sans-serif;
-      --font-display: 'Playfair Display', serif;
-      --radius: 4px;
-      --radius-lg: 12px;
-      --shadow: 0 2px 20px rgba(28, 15, 8, 0.08);
-      --shadow-lg: 0 8px 40px rgba(28, 15, 8, 0.15);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-body);
-      background: var(--cream);
-      color: var(--espresso);
-      line-height: 1.6;
+      background: var(--white);
+      color: var(--black);
       -webkit-font-smoothing: antialiased;
     }
 
-    img { max-width: 100%; display: block; }
-
     a { text-decoration: none; color: inherit; }
+    img { display: block; width: 100%; object-fit: cover; }
 
     /* ─── NAV ─── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: var(--cream);
-      border-bottom: 1px solid var(--gray-light);
-      padding: 0 2rem;
-      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: background 0.3s;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: rgba(10, 7, 5, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    nav.scrolled { background: rgba(250, 247, 242, 0.95); backdrop-filter: blur(12px); }
-
-    .nav-logo {
+    .logo {
       font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--espresso);
-      letter-spacing: -0.02em;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.01em;
     }
 
-    .nav-logo span { color: var(--caramel); }
+    .logo span { color: var(--caramel); }
 
     .nav-links {
       display: flex;
-      gap: 2rem;
+      gap: 2.5rem;
       list-style: none;
-      align-items: center;
     }
 
     .nav-links a {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-dark);
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.55);
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: var(--espresso); }
+    .nav-links a:hover { color: var(--white); }
 
-    .nav-cta {
-      background: var(--espresso);
-      color: var(--cream) !important;
-      padding: 0.5rem 1.2rem;
-      border-radius: var(--radius);
-      transition: background 0.2s !important;
-    }
-
-    .nav-cta:hover { background: var(--sepia) !important; color: var(--cream) !important; }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--espresso);
+    .nav-order {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--black);
+      background: var(--caramel);
+      padding: 0.55rem 1.4rem;
       border-radius: 2px;
-      transition: 0.3s;
+      transition: opacity 0.2s;
     }
+
+    .nav-order:hover { opacity: 0.85; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1.5px; background: var(--white); display: block; }
 
     .mobile-menu {
       display: none;
       position: fixed;
-      top: 64px; left: 0; right: 0;
-      background: var(--cream);
-      border-bottom: 1px solid var(--gray-light);
-      padding: 1.5rem 2rem;
+      top: 60px; left: 0; right: 0; bottom: 0;
+      background: var(--black);
       z-index: 99;
       flex-direction: column;
-      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      gap: 2.5rem;
     }
 
     .mobile-menu.open { display: flex; }
 
     .mobile-menu a {
-      font-size: 1rem;
-      font-weight: 600;
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--white);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--gray-dark);
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--gray-light);
+      transition: color 0.2s;
     }
+
+    .mobile-menu a:hover { color: var(--caramel); }
 
     /* ─── HERO ─── */
     .hero {
-      min-height: 100vh;
-      padding-top: 64px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--espresso);
       position: relative;
+      height: 100vh;
+      min-height: 640px;
       overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1800&q=85') center/cover no-repeat;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,7,5,0.88) 0%, rgba(10,7,5,0.2) 60%, transparent 100%);
     }
 
     .hero-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 4rem 3rem 4rem 5rem;
       position: relative;
       z-index: 2;
+      padding: 0 2.5rem 4rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(196, 123, 58, 0.2);
-      border: 1px solid rgba(196, 123, 58, 0.4);
-      color: var(--latte);
-      font-size: 0.75rem;
-      font-weight: 700;
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      margin-bottom: 2rem;
-      width: fit-content;
-    }
-
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: var(--caramel);
-      border-radius: 50%;
+      letter-spacing: 0.14em;
+      color: var(--caramel);
+      border: 1px solid rgba(196,134,58,0.4);
+      padding: 0.35rem 0.85rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
     }
 
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-size: clamp(3.5rem, 8vw, 8rem);
       font-weight: 800;
-      line-height: 1.05;
-      color: var(--cream);
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    .hero h1 em {
-      font-style: italic;
-      color: var(--caramel);
-    }
-
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--gray-mid);
-      margin-bottom: 2.5rem;
-      max-width: 440px;
-      line-height: 1.7;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: var(--caramel);
-      color: var(--espresso);
-      font-size: 0.85rem;
-      font-weight: 700;
+      line-height: 0.95;
+      color: var(--white);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
     }
 
-    .btn-primary:hover { background: var(--latte); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--cream);
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,0.3);
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-secondary:hover { border-color: var(--cream); background: rgba(255,255,255,0.08); }
-
-    .hero-visual {
-      position: relative;
+    .hero-bottom {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .hero-visual-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--sepia) 0%, var(--coffee) 50%, #0D0706 100%);
-    }
-
-    .hero-visual-pattern {
-      position: absolute;
-      inset: 0;
-      opacity: 0.05;
-      background-image: radial-gradient(circle, var(--latte) 1px, transparent 1px);
-      background-size: 32px 32px;
-    }
-
-    .hero-card {
-      position: relative;
-      z-index: 2;
-      background: rgba(250, 247, 242, 0.06);
-      border: 1px solid rgba(250, 247, 242, 0.12);
-      border-radius: var(--radius-lg);
-      padding: 3rem 2.5rem;
-      text-align: center;
-      color: var(--cream);
-      max-width: 320px;
-      backdrop-filter: blur(10px);
-    }
-
-    .hero-card-icon {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-card h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: var(--latte);
-    }
-
-    .hero-card p {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      line-height: 1.6;
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 3.5rem;
-    }
-
-    .hero-stat-num {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--caramel);
-      line-height: 1;
-    }
-
-    .hero-stat-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-mid);
-      margin-top: 0.25rem;
-    }
-
-    /* ─── SECTION COMMONS ─── */
-    section { padding: 6rem 0; }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--caramel);
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.2rem, 4vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--espresso);
-      margin-bottom: 1.25rem;
-    }
-
-    .section-sub {
-      font-size: 1.05rem;
-      color: var(--gray-dark);
-      max-width: 520px;
-      line-height: 1.7;
-    }
-
-    .section-header { margin-bottom: 3.5rem; }
-
-    /* ─── MENU / PICK UP ─── */
-    #menu { background: var(--warm-white); }
-
-    .menu-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2.5rem;
-      border-bottom: 1px solid var(--gray-light);
-      padding-bottom: 0;
-    }
-
-    .tab-btn {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-dark);
-      padding: 0.75rem 1.5rem;
-      border: none;
-      background: none;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .tab-btn.active {
-      color: var(--espresso);
-      border-bottom-color: var(--caramel);
-    }
-
-    .tab-btn:hover { color: var(--espresso); }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .menu-item {
-      background: var(--cream);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-
-    .menu-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-
-    .menu-item-emoji { font-size: 2.5rem; flex-shrink: 0; }
-
-    .menu-item-info { flex: 1; }
-
-    .menu-item-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--espresso);
-      margin-bottom: 0.2rem;
-    }
-
-    .menu-item-desc {
-      font-size: 0.8rem;
-      color: var(--gray-dark);
-      line-height: 1.4;
-    }
-
-    .menu-item-price {
-      font-weight: 800;
-      font-size: 1rem;
-      color: var(--sepia);
-      white-space: nowrap;
-    }
-
-    .pickup-banner {
-      background: var(--espresso);
-      color: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem 3rem;
-      display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 2rem;
-      margin-top: 3rem;
       flex-wrap: wrap;
     }
 
-    .pickup-banner h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
+    .hero-desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 380px;
+      line-height: 1.7;
     }
 
-    .pickup-banner p { color: var(--gray-mid); font-size: 0.95rem; }
+    .hero-ctas { display: flex; gap: 1rem; align-items: center; }
 
-    .btn-caramel {
-      background: var(--caramel);
-      color: var(--espresso);
-      font-size: 0.85rem;
-      font-weight: 700;
+    .btn-fill {
+      font-size: 0.75rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
+      letter-spacing: 0.1em;
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
       border: none;
       cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
+      transition: opacity 0.2s;
       display: inline-block;
     }
 
-    .btn-caramel:hover { background: var(--latte); }
+    .btn-fill:hover { opacity: 0.85; }
 
-    /* ─── TIENDA ─── */
-    #tienda { background: var(--cream); }
+    .btn-fill.dark { background: var(--white); color: var(--black); }
+    .btn-fill.accent { background: var(--caramel); color: var(--black); }
 
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-
-    .product-card {
-      background: var(--warm-white);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: box-shadow 0.25s, transform 0.25s;
-      cursor: pointer;
-    }
-
-    .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-
-    .product-img {
-      height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-      background: var(--gray-light);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .product-badge {
-      position: absolute;
-      top: 12px; left: 12px;
-      background: var(--espresso);
-      color: var(--cream);
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.25rem 0.6rem;
-      border-radius: 100px;
-    }
-
-    .product-badge.matcha { background: var(--matcha); }
-    .product-badge.merch { background: var(--sepia); }
-
-    .product-info { padding: 1.25rem 1.5rem 1.5rem; }
-
-    .product-category {
-      font-size: 0.7rem;
-      font-weight: 700;
+    .btn-ghost {
+      font-size: 0.75rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      cursor: pointer;
+      transition: border-color 0.2s;
+      display: inline-block;
+    }
+
+    .btn-ghost:hover { border-color: var(--white); }
+
+    .hero-scroll {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-scroll::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* ─── MARQUEE ─── */
+    .marquee-section {
+      background: var(--black);
+      padding: 1rem 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marquee 18s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-item {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.35);
+      flex-shrink: 0;
+    }
+
+    .marquee-item span { color: var(--caramel); margin-right: 3rem; }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ─── SECCIÓN COMÚN ─── */
+    .section { padding: 7rem 2.5rem; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
       color: var(--caramel);
-      margin-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
     }
 
-    .product-name {
-      font-weight: 700;
+    .heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .heading-white { color: var(--white); }
+
+    .body-text {
       font-size: 1rem;
-      color: var(--espresso);
-      margin-bottom: 0.3rem;
-      line-height: 1.3;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 480px;
     }
 
-    .product-desc {
-      font-size: 0.8rem;
-      color: var(--gray-dark);
-      margin-bottom: 1rem;
-      line-height: 1.5;
+    /* ─── MENU ─── */
+    .menu-section {
+      background: var(--stone);
+      padding: 7rem 2.5rem;
     }
 
-    .product-footer {
+    .menu-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .menu-photo {
+      height: 580px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: sticky;
+      top: 80px;
+    }
+
+    .menu-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .menu-header { margin-bottom: 3rem; }
+
+    .menu-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--stone-dark);
+    }
+
+    .tab {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding: 0.65rem 1.25rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab.active { color: var(--black); border-bottom-color: var(--black); }
+    .tab:hover { color: var(--black); }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .menu-list { display: flex; flex-direction: column; }
+
+    .menu-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--stone-dark);
       gap: 1rem;
     }
 
-    .product-price {
-      font-size: 1.2rem;
+    .menu-row-name {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--black);
+    }
+
+    .menu-row-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .menu-row-price {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--black);
+      white-space: nowrap;
+    }
+
+    .pickup-strip {
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 2rem 2.5rem;
+      border-radius: 4px;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pickup-strip h4 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
       font-weight: 800;
-      color: var(--espresso);
+      text-transform: uppercase;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .pickup-strip p { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-top: 0.25rem; }
+
+    /* ─── TIENDA ─── */
+    .shop-section { background: var(--white); padding: 7rem 2.5rem; }
+
+    .shop-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3.5rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .shop-link {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--black);
+      border-bottom: 1px solid var(--black);
+      padding-bottom: 0.15rem;
+      transition: opacity 0.2s;
+    }
+
+    .shop-link:hover { opacity: 0.5; }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .product-card { cursor: pointer; }
+
+    .product-img {
+      aspect-ratio: 3/4;
+      background: var(--stone);
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border-radius: 3px;
+    }
+
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .product-img img { transform: scale(1.04); }
+
+    .product-cat {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .product-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--black);
+      margin-bottom: 0.35rem;
+      line-height: 1.35;
+    }
+
+    .product-price {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--black);
     }
 
     .product-price small {
       font-size: 0.75rem;
-      color: var(--gray-dark);
-      font-weight: 500;
+      font-weight: 400;
+      color: var(--text-muted);
     }
-
-    .btn-add {
-      background: var(--espresso);
-      color: var(--cream);
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.55rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .btn-add:hover { background: var(--sepia); }
 
     /* ─── EVENTOS ─── */
-    #eventos { background: var(--espresso); color: var(--cream); }
+    .events-section { background: var(--black); padding: 7rem 2.5rem; }
 
-    #eventos .section-label { color: var(--latte); }
-    #eventos .section-title { color: var(--cream); }
-    #eventos .section-sub { color: var(--gray-mid); }
-
-    .eventos-grid {
+    .events-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      gap: 5rem;
       align-items: start;
     }
 
-    .servicio-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .servicio-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .servicio-card:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(196, 123, 58, 0.4);
-    }
-
-    .servicio-icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-      line-height: 1;
-      margin-top: 0.2rem;
-    }
-
-    .servicio-title {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--latte);
-      margin-bottom: 0.35rem;
-    }
-
-    .servicio-desc {
-      font-size: 0.85rem;
-      color: var(--gray-mid);
-      line-height: 1.6;
-    }
-
-    .eventos-highlights {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .highlight {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--gray-mid);
-    }
-
-    .highlight::before {
-      content: '✓';
-      color: var(--caramel);
-      font-weight: 700;
-    }
-
-    .cotizacion-form {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      color: var(--espresso);
-    }
-
-    .cotizacion-form h3 {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--espresso);
-    }
-
-    .cotizacion-form p {
-      font-size: 0.9rem;
-      color: var(--gray-dark);
-      margin-bottom: 1.75rem;
-    }
-
-    .form-group { margin-bottom: 1.25rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--gray-dark);
-      margin-bottom: 0.5rem;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      background: var(--cream);
-      border: 1px solid var(--gray-mid);
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      color: var(--espresso);
-      outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--caramel);
-      box-shadow: 0 0 0 3px rgba(196, 123, 58, 0.15);
-    }
-
-    .form-group textarea { resize: vertical; min-height: 100px; }
-
-    .form-row {
+    .events-photos {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
       gap: 1rem;
     }
 
-    .btn-submit {
+    .events-photos .photo-main {
+      grid-column: 1 / -1;
+      height: 320px;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .events-photos .photo-sm {
+      height: 200px;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .events-photos img {
       width: 100%;
-      background: var(--espresso);
-      color: var(--cream);
-      border: none;
-      border-radius: var(--radius);
-      padding: 1rem;
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      font-weight: 700;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .events-right { padding-top: 0.5rem; }
+
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 2.5rem 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .service-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .service-num {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--caramel);
+      min-width: 24px;
+      margin-top: 0.1rem;
+    }
+
+    .service-name {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .service-desc { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+    /* ─── FORMULARIO COTIZACIÓN ─── */
+    .quote-section { background: var(--stone); padding: 7rem 2.5rem; }
+
+    .quote-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .quote-left { position: sticky; top: 90px; }
+
+    .quote-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .quote-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--stone-dark);
+      padding: 0.35rem 0.8rem;
+      border-radius: 100px;
+    }
+
+    form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .field label {
+      font-size: 0.7rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--black);
+      background: var(--white);
+      border: 1px solid var(--stone-dark);
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      outline: none;
+      appearance: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--black); }
+
+    .field textarea { resize: vertical; min-height: 110px; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .btn-submit-form {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      padding: 1.1rem;
+      border-radius: 3px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: opacity 0.2s;
       margin-top: 0.5rem;
     }
 
-    .btn-submit:hover { background: var(--sepia); }
+    .btn-submit-form:hover { opacity: 0.75; }
 
-    /* ─── TESTIMONIOS ─── */
-    #testimonios { background: var(--gray-light); }
+    /* ─── SOCIAL PROOF ─── */
+    .proof-section { background: var(--black); padding: 5rem 2.5rem; }
 
-    .testimonios-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-
-    .testimonio-card {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      border: 1px solid rgba(0,0,0,0.06);
-    }
-
-    .stars {
-      color: var(--caramel);
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      letter-spacing: 2px;
-    }
-
-    .testimonio-text {
-      font-size: 0.95rem;
-      color: var(--gray-dark);
-      line-height: 1.7;
-      margin-bottom: 1.5rem;
-      font-style: italic;
-    }
-
-    .testimonio-author {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .author-avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--caramel);
+    .proof-inner {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-
-    .author-name {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--espresso);
-    }
-
-    .author-role {
-      font-size: 0.75rem;
-      color: var(--gray-dark);
-    }
-
-    /* ─── UBICACION ─── */
-    #ubicacion { background: var(--warm-white); }
-
-    .ubicacion-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 4rem;
-      align-items: center;
-    }
-
-    .info-items {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .info-item { display: flex; gap: 1rem; align-items: flex-start; }
-
-    .info-icon {
-      width: 44px; height: 44px;
-      background: var(--gray-light);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    .info-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--caramel);
-      margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-      font-size: 0.95rem;
-      color: var(--espresso);
-      line-height: 1.5;
-    }
-
-    .map-placeholder {
-      background: var(--gray-light);
-      border-radius: var(--radius-lg);
-      height: 360px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      font-size: 3rem;
-      color: var(--gray-mid);
-      border: 1px solid var(--gray-light);
-    }
-
-    .map-placeholder p {
-      font-size: 0.9rem;
-      color: var(--gray-dark);
-      font-size: 1rem;
-    }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background: var(--espresso);
-      color: var(--cream);
-      padding: 4rem 0 2rem;
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 3rem;
-      margin-bottom: 3rem;
-    }
-
-    .footer-brand .nav-logo { font-size: 1.6rem; margin-bottom: 1rem; display: block; }
-
-    .footer-brand p {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      line-height: 1.7;
-      max-width: 280px;
-    }
-
-    .footer-social {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-
-    .social-link {
-      width: 38px; height: 38px;
-      background: rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
-
-    .social-link:hover { background: var(--caramel); }
-
-    .footer-col h4 {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--latte);
-      margin-bottom: 1.25rem;
-    }
-
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-
-    .footer-col ul a {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      transition: color 0.2s;
-    }
-
-    .footer-col ul a:hover { color: var(--cream); }
-
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      gap: 6rem;
       flex-wrap: wrap;
     }
 
-    .footer-bottom p {
-      font-size: 0.8rem;
-      color: var(--gray-mid);
+    .proof-stat { text-align: center; }
+
+    .proof-num {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.04em;
+      line-height: 1;
     }
 
-    /* ─── CART TOAST ─── */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--espresso);
-      color: var(--cream);
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius-lg);
-      font-size: 0.9rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: transform 0.3s, opacity 0.3s;
-      z-index: 1000;
+    .proof-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.5rem;
+    }
+
+    .proof-divider {
+      width: 1px;
+      height: 60px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ─── INSTAGRAM GRID ─── */
+    .ig-section { background: var(--white); padding: 6rem 2.5rem; }
+
+    .ig-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .toast.show { transform: translateY(0); opacity: 1; }
+    .ig-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
 
-    /* ─── MODAL ORDER ─── */
-    .modal-overlay {
+    .ig-cell {
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .ig-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease, opacity 0.3s;
+      filter: grayscale(0.15);
+    }
+
+    .ig-cell:hover img { transform: scale(1.05); filter: grayscale(0); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 5rem 2.5rem 2.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      display: block;
+    }
+
+    .footer-logo span { color: var(--caramel); }
+
+    .footer-desc {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.75;
+      max-width: 260px;
+    }
+
+    .footer-col-title {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--white); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-bottom p { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+
+    /* ─── MODAL PICKUP ─── */
+    .overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(28, 15, 8, 0.7);
+      background: rgba(10,7,5,0.75);
       z-index: 200;
       align-items: center;
       justify-content: center;
       padding: 2rem;
     }
 
-    .modal-overlay.open { display: flex; }
+    .overlay.open { display: flex; }
 
     .modal {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
+      background: var(--white);
+      border-radius: 4px;
       padding: 2.5rem;
-      max-width: 480px;
+      max-width: 440px;
       width: 100%;
       position: relative;
     }
@@ -997,833 +811,676 @@
     .modal-close {
       position: absolute;
       top: 1.25rem; right: 1.25rem;
-      background: var(--gray-light);
       border: none;
-      border-radius: 50%;
+      background: var(--stone);
       width: 32px; height: 32px;
-      font-size: 1.1rem;
+      border-radius: 50%;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--gray-dark);
     }
 
     .modal h3 {
       font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
       margin-bottom: 0.5rem;
     }
 
-    .modal p { font-size: 0.9rem; color: var(--gray-dark); margin-bottom: 1.5rem; }
+    .modal p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: var(--black);
+      color: var(--white);
+      font-size: 0.85rem;
+      padding: 1rem 1.5rem;
+      border-radius: 3px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 999;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 1024px) {
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
-      .eventos-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .testimonios-grid { grid-template-columns: 1fr 1fr; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+      .menu-layout { grid-template-columns: 1fr; }
+      .menu-photo { display: none; }
+      .events-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .quote-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .quote-left { position: static; }
+      .ig-grid { grid-template-columns: repeat(3, 1fr); }
+      .ig-cell:nth-child(n+4) { display: none; }
     }
 
     @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; min-height: auto; }
-      .hero-content { padding: 3rem 1.5rem 2rem; }
-      .hero-visual { display: none; }
-      .hero-stats { gap: 1.5rem; }
+      .section { padding: 5rem 1.5rem; }
+      .menu-section, .shop-section, .events-section, .quote-section, .proof-section, .ig-section { padding: 5rem 1.5rem; }
       nav { padding: 0 1.5rem; }
       .nav-links { display: none; }
+      .nav-order { display: none; }
       .hamburger { display: flex; }
-      section { padding: 4rem 0; }
-      .container { padding: 0 1.5rem; }
-      .ubicacion-grid { grid-template-columns: 1fr; }
-      .testimonios-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .pickup-banner { flex-direction: column; text-align: center; }
-      .form-row { grid-template-columns: 1fr; }
-      .footer-bottom { flex-direction: column; text-align: center; }
+      .hero-content { padding: 0 1.5rem 3rem; }
+      .hero h1 { font-size: clamp(3rem, 12vw, 5rem); }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .proof-inner { gap: 3rem; }
+      .proof-divider { display: none; }
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .ig-grid { grid-template-columns: repeat(2, 1fr); }
+      .ig-cell:nth-child(n+3) { display: none; }
+      .events-photos { display: none; }
+      .pickup-strip { flex-direction: column; align-items: flex-start; }
+      .shop-header { flex-direction: column; align-items: flex-start; }
     }
 
     @media (max-width: 480px) {
-      .footer-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2.5rem; }
+      .products-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .field-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
 <!-- ─── NAV ─── -->
-<nav id="mainNav">
-  <a href="#" class="nav-logo">Sepia<span>.</span></a>
+<nav>
+  <a href="#" class="logo">Sepia<span>.</span></a>
   <ul class="nav-links">
     <li><a href="#menu">Menú</a></li>
-    <li><a href="#tienda">Tienda</a></li>
+    <li><a href="#shop">Tienda</a></li>
     <li><a href="#eventos">Eventos</a></li>
-    <li><a href="#ubicacion">Visítanos</a></li>
-    <li><a href="#menu" class="nav-cta">Pedir Pick Up</a></li>
+    <li><a href="#contacto">Visítanos</a></li>
   </ul>
-  <div class="hamburger" id="hamburger">
+  <a href="#" class="nav-order" onclick="openPickup(event)">Pick Up</a>
+  <div class="hamburger" id="ham" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
 
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#menu" onclick="closeMobileMenu()">Menú</a>
-  <a href="#tienda" onclick="closeMobileMenu()">Tienda</a>
-  <a href="#eventos" onclick="closeMobileMenu()">Eventos</a>
-  <a href="#ubicacion" onclick="closeMobileMenu()">Visítanos</a>
-  <a href="#menu" onclick="closeMobileMenu()" style="color: var(--caramel)">Pedir Pick Up →</a>
+<div class="mobile-menu" id="mobileNav">
+  <a href="#menu" onclick="closeMenu()">Menú</a>
+  <a href="#shop" onclick="closeMenu()">Tienda</a>
+  <a href="#eventos" onclick="closeMenu()">Eventos</a>
+  <a href="#contacto" onclick="closeMenu()">Visítanos</a>
+  <a href="#" onclick="closeMenu(); openPickup(event)">Pick Up →</a>
 </div>
 
 <!-- ─── HERO ─── -->
-<section class="hero" id="home">
+<section class="hero" id="inicio">
+  <div class="hero-img"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">Café de especialidad · Santiago</div>
-    <h1>El café que<br /><em>inspira</em> tu<br />momento.</h1>
-    <p class="hero-sub">Granos de origen, matcha premium y coctelería de autor para tu próximo evento. Todo nace desde Sepia.</p>
-    <div class="hero-actions">
-      <a href="#menu" class="btn-primary">Ver Menú &amp; Pick Up →</a>
-      <a href="#eventos" class="btn-secondary">Eventos &amp; Coctelería</a>
-    </div>
-    <div class="hero-stats">
-      <div>
-        <div class="hero-stat-num">100+</div>
-        <div class="hero-stat-label">Eventos realizados</div>
+    <div class="hero-tag">Cafetería de especialidad · Santiago</div>
+    <h1>Coffee<br />Done<br />Right.</h1>
+    <div class="hero-bottom">
+      <p class="hero-desc">Granos de origen, matcha premium y coctelería de autor. Un espacio creado para pausas que valen la pena.</p>
+      <div class="hero-ctas">
+        <a href="#menu" class="btn-fill dark">Ver Menú</a>
+        <a href="#eventos" class="btn-ghost">Eventos</a>
       </div>
-      <div>
-        <div class="hero-stat-num">6</div>
-        <div class="hero-stat-label">Orígenes de café</div>
-      </div>
-      <div>
-        <div class="hero-stat-num">★ 4.9</div>
-        <div class="hero-stat-label">Valoración Google</div>
-      </div>
-    </div>
-  </div>
-  <div class="hero-visual">
-    <div class="hero-visual-bg"></div>
-    <div class="hero-visual-pattern"></div>
-    <div class="hero-card">
-      <div class="hero-card-icon">☕</div>
-      <h3>Pick Up<br/>en 15 min</h3>
-      <p>Haz tu pedido online y retíralo listo en nuestra cafetería sin espera.</p>
     </div>
   </div>
 </section>
 
-<!-- ─── MENU / PICK UP ─── -->
-<section id="menu">
+<!-- ─── MARQUEE ─── -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item"><span>★</span> Café de Especialidad</span>
+    <span class="marquee-item"><span>★</span> Pick Up en 15 min</span>
+    <span class="marquee-item"><span>★</span> Matcha Premium</span>
+    <span class="marquee-item"><span>★</span> Coctelería de Eventos</span>
+    <span class="marquee-item"><span>★</span> Envíos a Todo Chile</span>
+    <span class="marquee-item"><span>★</span> Bar Móvil</span>
+    <span class="marquee-item"><span>★</span> Café de Especialidad</span>
+    <span class="marquee-item"><span>★</span> Pick Up en 15 min</span>
+    <span class="marquee-item"><span>★</span> Matcha Premium</span>
+    <span class="marquee-item"><span>★</span> Coctelería de Eventos</span>
+    <span class="marquee-item"><span>★</span> Envíos a Todo Chile</span>
+    <span class="marquee-item"><span>★</span> Bar Móvil</span>
+  </div>
+</div>
+
+<!-- ─── MENU ─── -->
+<section class="menu-section" id="menu">
   <div class="container">
-    <div class="section-header">
-      <div class="section-label">Menú &amp; Pedidos</div>
-      <h2 class="section-title">Todo lo que amamos,<br />ahora con pick up.</h2>
-      <p class="section-sub">Elige tu bebida favorita, personalízala y recógela lista. Sin filas, sin esperas.</p>
-    </div>
-
-    <div class="menu-tabs">
-      <button class="tab-btn active" onclick="switchTab('cafes', this)">Cafés</button>
-      <button class="tab-btn" onclick="switchTab('matcha', this)">Matcha</button>
-      <button class="tab-btn" onclick="switchTab('frios', this)">Bebidas Frías</button>
-      <button class="tab-btn" onclick="switchTab('pasteles', this)">Pasteles</button>
-    </div>
-
-    <div id="cafes" class="tab-content active">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">☕</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Espresso Sepia</div>
-            <div class="menu-item-desc">Doble shot, notas de chocolate y frutos secos</div>
-          </div>
-          <div class="menu-item-price">$2.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥛</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Flat White</div>
-            <div class="menu-item-desc">Microespuma sedosa sobre espresso doble</div>
-          </div>
-          <div class="menu-item-price">$3.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🫧</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cappuccino</div>
-            <div class="menu-item-desc">Espuma densa, equilibrio perfecto</div>
-          </div>
-          <div class="menu-item-price">$3.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🌟</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Latte Caramelo</div>
-            <div class="menu-item-desc">Espresso, leche vaporizada y caramelo artesanal</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍯</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Honey Oat Latte</div>
-            <div class="menu-item-desc">Leche de avena, miel de flores y espresso</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">☁️</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cold Brew Nitro</div>
-            <div class="menu-item-desc">Infusión 18h, servido en grifo de nitrógeno</div>
-          </div>
-          <div class="menu-item-price">$4.800</div>
-        </div>
+    <div class="menu-layout">
+      <div class="menu-photo">
+        <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=85" alt="Café Sepia" />
       </div>
-    </div>
-
-    <div id="matcha" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍵</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Latte</div>
-            <div class="menu-item-desc">Matcha ceremonial japonés con leche vaporizada</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🧊</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Iced Matcha</div>
-            <div class="menu-item-desc">Matcha frío con leche de avena y hielo</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🌸</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Espresso</div>
-            <div class="menu-item-desc">Espresso sobre matcha, explosión de sabores</div>
-          </div>
-          <div class="menu-item-price">$5.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍓</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Strawberry</div>
-            <div class="menu-item-desc">Matcha con coulis de frutilla fresca</div>
-          </div>
-          <div class="menu-item-price">$4.800</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="frios" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🧋</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cold Brew</div>
-            <div class="menu-item-desc">Infusión en frío, suave y sin acidez</div>
-          </div>
-          <div class="menu-item-price">$3.800</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍋</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Espresso Tonic</div>
-            <div class="menu-item-desc">Espresso sobre agua tónica con limón</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍦</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Affogato</div>
-            <div class="menu-item-desc">Espresso caliente sobre helado de vainilla</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥤</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Iced Latte</div>
-            <div class="menu-item-desc">Espresso doble sobre leche fría con hielo</div>
-          </div>
-          <div class="menu-item-price">$3.800</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="pasteles" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥐</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Croissant Mantequilla</div>
-            <div class="menu-item-desc">Hojaldre francés, horneado fresco</div>
-          </div>
-          <div class="menu-item-price">$2.800</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍰</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cheesecake Sepia</div>
-            <div class="menu-item-desc">Cremoso, con costra de galleta y caramelo</div>
-          </div>
-          <div class="menu-item-price">$3.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍫</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Brownie Espresso</div>
-            <div class="menu-item-desc">Chocolate 70%, con shot de espresso</div>
-          </div>
-          <div class="menu-item-price">$2.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍪</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cookie Tahini &amp; Choco</div>
-            <div class="menu-item-desc">Borde crocante, centro suave, receta exclusiva</div>
-          </div>
-          <div class="menu-item-price">$1.800</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pickup-banner">
       <div>
-        <h3>¿Prefieres llevar? 📦</h3>
-        <p>Haz tu pedido pick up en menos de 2 minutos. Listo en 15 min.</p>
+        <div class="menu-header">
+          <div class="label">Menú</div>
+          <h2 class="heading">Lo que más<br />nos piden.</h2>
+          <p class="body-text">Cada bebida, preparada con intención. Ingredientes de primer nivel, técnica depurada.</p>
+        </div>
+
+        <div class="menu-tabs">
+          <button class="tab active" onclick="switchTab('cafes', this)">Cafés</button>
+          <button class="tab" onclick="switchTab('matcha', this)">Matcha</button>
+          <button class="tab" onclick="switchTab('frios', this)">Fríos</button>
+          <button class="tab" onclick="switchTab('food', this)">Food</button>
+        </div>
+
+        <div id="cafes" class="tab-pane active">
+          <div class="menu-list">
+            <div class="menu-row">
+              <div><div class="menu-row-name">Espresso Doble</div><div class="menu-row-desc">Single origin, notas de cacao y caramelo</div></div>
+              <div class="menu-row-price">$2.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Flat White</div><div class="menu-row-desc">Ristretto doble, microespuma sedosa</div></div>
+              <div class="menu-row-price">$3.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Cappuccino</div><div class="menu-row-desc">Espuma densa, 180ml, equilibrio perfecto</div></div>
+              <div class="menu-row-price">$3.200</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Latte</div><div class="menu-row-desc">Espresso + leche vaporizada, opción oat</div></div>
+              <div class="menu-row-price">$3.800</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Honey Oat Latte</div><div class="menu-row-desc">Avena, miel de flores, espresso</div></div>
+              <div class="menu-row-price">$4.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Cortado</div><div class="menu-row-desc">Espresso con un toque de leche</div></div>
+              <div class="menu-row-price">$2.800</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="matcha" class="tab-pane">
+          <div class="menu-list">
+            <div class="menu-row">
+              <div><div class="menu-row-name">Matcha Latte</div><div class="menu-row-desc">Ceremonial Uji, leche vaporizada</div></div>
+              <div class="menu-row-price">$4.200</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Iced Matcha</div><div class="menu-row-desc">Frío, leche de avena, sin azúcar</div></div>
+              <div class="menu-row-price">$4.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Matcha x Espresso</div><div class="menu-row-desc">Layered, dos mundos en un vaso</div></div>
+              <div class="menu-row-price">$5.200</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Strawberry Matcha</div><div class="menu-row-desc">Coulis de frutilla fresca, oat milk</div></div>
+              <div class="menu-row-price">$4.800</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="frios" class="tab-pane">
+          <div class="menu-list">
+            <div class="menu-row">
+              <div><div class="menu-row-name">Cold Brew</div><div class="menu-row-desc">Infusión 18h, sin acidez, servido solo</div></div>
+              <div class="menu-row-price">$3.800</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Nitro Cold Brew</div><div class="menu-row-desc">Nitrógeno, cremoso, en grifo</div></div>
+              <div class="menu-row-price">$4.800</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Espresso Tonic</div><div class="menu-row-desc">Tónica artesanal, limón, espresso</div></div>
+              <div class="menu-row-price">$4.200</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Iced Latte</div><div class="menu-row-desc">Espresso doble sobre leche y hielo</div></div>
+              <div class="menu-row-price">$3.800</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="food" class="tab-pane">
+          <div class="menu-list">
+            <div class="menu-row">
+              <div><div class="menu-row-name">Croissant</div><div class="menu-row-desc">Hojaldre francés, horneado esta mañana</div></div>
+              <div class="menu-row-price">$2.800</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Cheesecake</div><div class="menu-row-desc">Cremoso, base galleta, caramelo artesanal</div></div>
+              <div class="menu-row-price">$3.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Brownie Espresso</div><div class="menu-row-desc">Chocolate 70%, shot de espresso</div></div>
+              <div class="menu-row-price">$2.500</div>
+            </div>
+            <div class="menu-row">
+              <div><div class="menu-row-name">Cookie Tahini</div><div class="menu-row-desc">Borde crocante, centro suave, receta exclusiva</div></div>
+              <div class="menu-row-price">$1.800</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pickup-strip">
+          <div>
+            <h4>Pide con anticipación</h4>
+            <p>Pick up listo en 15 minutos. Sin esperar.</p>
+          </div>
+          <a href="#" class="btn-fill accent" onclick="openPickup(event)">Ordenar Pick Up</a>
+        </div>
       </div>
-      <a href="#" class="btn-caramel" onclick="openOrderModal()">Pedir Pick Up Ahora</a>
     </div>
   </div>
 </section>
 
 <!-- ─── TIENDA ─── -->
-<section id="tienda">
+<section class="shop-section" id="shop">
   <div class="container">
-    <div class="section-header">
-      <div class="section-label">Tienda Online</div>
-      <h2 class="section-title">Lleva Sepia<br />a tu casa.</h2>
-      <p class="section-sub">Café de especialidad, matcha premium y merch exclusivo. Envíos a todo Chile.</p>
+    <div class="shop-header">
+      <div>
+        <div class="label">Tienda</div>
+        <h2 class="heading">Lleva Sepia<br />a casa.</h2>
+      </div>
+      <a href="#" class="shop-link">Ver todo →</a>
     </div>
 
     <div class="products-grid">
-      <!-- Café en grano -->
       <div class="product-card">
         <div class="product-img">
-          ☕
-          <div class="product-badge">Café</div>
+          <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&q=85" alt="Café Sepia 250g" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Café de Especialidad</div>
-          <div class="product-name">Blend Sepia — Tueste Medio</div>
-          <div class="product-desc">Notas de chocolate, caramelo y nuez. Perfecto para espresso y filtrado.</div>
-          <div class="product-footer">
-            <div class="product-price">$9.900 <small>/ 250g</small></div>
-            <button class="btn-add" onclick="addToCart('Blend Sepia 250g', 9900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Café · Tueste Medio</div>
+        <div class="product-name">Blend Sepia 250g</div>
+        <div class="product-price">$9.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          ☕
-          <div class="product-badge">Café</div>
+          <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&q=85" alt="Café Sepia 1kg" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Café de Especialidad</div>
-          <div class="product-name">Blend Sepia — Formato Familiar</div>
-          <div class="product-desc">El mismo blend que amas, en formato 1 kg para el mes completo.</div>
-          <div class="product-footer">
-            <div class="product-price">$34.900 <small>/ 1kg</small></div>
-            <button class="btn-add" onclick="addToCart('Blend Sepia 1kg', 34900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Café · Formato Familiar</div>
+        <div class="product-name">Blend Sepia 1kg</div>
+        <div class="product-price">$34.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          🌿
-          <div class="product-badge matcha">Matcha</div>
+          <img src="https://images.unsplash.com/photo-1582793988951-9aed5509eb97?w=600&q=85" alt="Matcha Ceremonial" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Matcha Premium</div>
-          <div class="product-name">Matcha Ceremonial Uji</div>
-          <div class="product-desc">Grado ceremonial, cosecha de primavera, Uji Japón. Sabor umami intenso.</div>
-          <div class="product-footer">
-            <div class="product-price">$12.900 <small>/ 30g</small></div>
-            <button class="btn-add" onclick="addToCart('Matcha Ceremonial 30g', 12900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Matcha · Ceremonial Uji</div>
+        <div class="product-name">Matcha 30g</div>
+        <div class="product-price">$12.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          🫖
-          <div class="product-badge matcha">Matcha</div>
+          <img src="https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&q=85" alt="Mug Sepia" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Set Matcha</div>
-          <div class="product-name">Kit Matcha Completo</div>
-          <div class="product-desc">Matcha 30g + chasen (batidor bambú) + chawan (cuenco) + recetario.</div>
-          <div class="product-footer">
-            <div class="product-price">$38.900 <small>/ set</small></div>
-            <button class="btn-add" onclick="addToCart('Kit Matcha Completo', 38900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Merch · Cerámica</div>
+        <div class="product-name">Mug Sepia</div>
+        <div class="product-price">$19.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          🍵
-          <div class="product-badge merch">Merch</div>
+          <img src="https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=600&q=85" alt="Polera Sepia" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Mug Sepia — Edición Limitada</div>
-          <div class="product-desc">Cerámica artesanal 300ml, color arena con logo grabado. Viene en caja regalo.</div>
-          <div class="product-footer">
-            <div class="product-price">$19.900</div>
-            <button class="btn-add" onclick="addToCart('Mug Sepia', 19900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Merch · Heavyweight</div>
+        <div class="product-name">Polera Sepia</div>
+        <div class="product-price">$29.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          👕
-          <div class="product-badge merch">Merch</div>
+          <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=85" alt="Gorro Sepia" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Polera Sepia — Heavyweight</div>
-          <div class="product-desc">Cotton 100%, 280g/m². Corte oversize unisex. Disponible en blanco y negro.</div>
-          <div class="product-footer">
-            <div class="product-price">$29.900</div>
-            <button class="btn-add" onclick="addToCart('Polera Sepia', 29900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Merch · 5 Panel</div>
+        <div class="product-name">Gorro Sepia</div>
+        <div class="product-price">$22.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          🧢
-          <div class="product-badge merch">Merch</div>
+          <img src="https://images.unsplash.com/photo-1545665225-b23b99e4d45e?w=600&q=85" alt="Kit Matcha" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Gorro Sepia — 5 Panel</div>
-          <div class="product-desc">Tela canvas beige, bordado frontal, ajuste posterior. Talla única.</div>
-          <div class="product-footer">
-            <div class="product-price">$22.900</div>
-            <button class="btn-add" onclick="addToCart('Gorro Sepia', 22900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Set · Matcha Completo</div>
+        <div class="product-name">Kit Matcha + Chasen</div>
+        <div class="product-price">$38.900</div>
       </div>
 
       <div class="product-card">
         <div class="product-img">
-          🎁
-          <div class="product-badge">Gift</div>
+          <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&q=85" alt="Gift Box Sepia" />
         </div>
-        <div class="product-info">
-          <div class="product-category">Caja Regalo</div>
-          <div class="product-name">Sepia Gift Box</div>
-          <div class="product-desc">Café 250g + Matcha 30g + Mug. La caja ideal para regalar momentos.</div>
-          <div class="product-footer">
-            <div class="product-price">$45.900 <small>/ caja</small></div>
-            <button class="btn-add" onclick="addToCart('Sepia Gift Box', 45900)">+ Agregar</button>
-          </div>
-        </div>
+        <div class="product-cat">Regalo · Edición Limitada</div>
+        <div class="product-name">Sepia Gift Box</div>
+        <div class="product-price">$45.900</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── EVENTOS & COCTELERÍA ─── -->
-<section id="eventos">
+<!-- ─── STATS ─── -->
+<div class="proof-section">
   <div class="container">
-    <div class="section-header">
-      <div class="section-label">Eventos &amp; Coctelería</div>
-      <h2 class="section-title">Tu evento merece<br />algo especial.</h2>
-      <p class="section-sub">Bar móvil de coctelería con base de café y alcohol premium. Matrimonios, corporativos, activaciones y celebraciones privadas.</p>
+    <div class="proof-inner">
+      <div class="proof-stat">
+        <div class="proof-num">100+</div>
+        <div class="proof-label">Eventos realizados</div>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat">
+        <div class="proof-num">★ 4.9</div>
+        <div class="proof-label">Google Reviews</div>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat">
+        <div class="proof-num">6</div>
+        <div class="proof-label">Orígenes de café</div>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat">
+        <div class="proof-num">3k+</div>
+        <div class="proof-label">Clientes satisfechos</div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <div class="eventos-grid">
+<!-- ─── EVENTOS ─── -->
+<section class="events-section" id="eventos">
+  <div class="container">
+    <div class="events-layout">
+      <div class="events-photos">
+        <div class="photo-main">
+          <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1000&q=85" alt="Evento Sepia" />
+        </div>
+        <div class="photo-sm">
+          <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&q=85" alt="Cócteles Sepia" />
+        </div>
+        <div class="photo-sm">
+          <img src="https://images.unsplash.com/photo-1575444758702-4a6b9222336e?w=600&q=85" alt="Bar Móvil" />
+        </div>
+      </div>
+
+      <div class="events-right">
+        <div class="label">Eventos &amp; Coctelería</div>
+        <h2 class="heading heading-white">Tu evento,<br />nuestro café.</h2>
+        <p class="body-text" style="color: rgba(255,255,255,0.45);">Bar móvil de coctelería con base de café y espirituosos premium. Llevamos la experiencia Sepia a donde tú estés.</p>
+
+        <div class="services-list">
+          <div class="service-row">
+            <div class="service-num">01</div>
+            <div>
+              <div class="service-name">Matrimonios</div>
+              <div class="service-desc">Cóctel de bienvenida, barra durante cena y after. Branding personalizado para la pareja.</div>
+            </div>
+          </div>
+          <div class="service-row">
+            <div class="service-num">02</div>
+            <div>
+              <div class="service-name">Eventos Corporativos</div>
+              <div class="service-desc">Estaciones de café specialty y cócteles para lanzamientos y conferencias.</div>
+            </div>
+          </div>
+          <div class="service-row">
+            <div class="service-num">03</div>
+            <div>
+              <div class="service-name">Activaciones de Marca</div>
+              <div class="service-desc">Setup instagrameable, baristas uniformados, branding completo.</div>
+            </div>
+          </div>
+          <div class="service-row">
+            <div class="service-num">04</div>
+            <div>
+              <div class="service-name">Celebraciones Privadas</div>
+              <div class="service-desc">Cumpleaños, baby showers y despedidas con barra de autor.</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="#cotizar" class="btn-fill accent">Cotizar Mi Evento</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COTIZACIÓN ─── -->
+<section class="quote-section" id="cotizar">
+  <div class="container">
+    <div class="quote-layout">
+      <div class="quote-left">
+        <div class="label">Cotización</div>
+        <h2 class="heading">Hablemos<br />de tu evento.</h2>
+        <p class="body-text">Cuéntanos los detalles y te respondemos con una propuesta personalizada en menos de 24 horas.</p>
+        <div class="quote-tags">
+          <span class="quote-tag">Baristas certificados</span>
+          <span class="quote-tag">Equipos propios</span>
+          <span class="quote-tag">Sin alcohol o con alcohol</span>
+          <span class="quote-tag">Todo Chile</span>
+          <span class="quote-tag">Mínimo 30 personas</span>
+        </div>
+      </div>
+
+      <form onsubmit="submitForm(event)">
+        <div class="field-row">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" required />
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="tel" placeholder="+56 9 XXXX XXXX" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="tu@email.com" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Tipo de evento</label>
+            <select required>
+              <option value="">Seleccionar...</option>
+              <option>Matrimonio</option>
+              <option>Evento Corporativo</option>
+              <option>Activación de Marca</option>
+              <option>Cumpleaños</option>
+              <option>Baby Shower</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>N° de personas</label>
+            <select required>
+              <option value="">Seleccionar...</option>
+              <option>30 – 60</option>
+              <option>60 – 100</option>
+              <option>100 – 200</option>
+              <option>200 – 300</option>
+              <option>+300</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Fecha del evento</label>
+            <input type="date" required />
+          </div>
+          <div class="field">
+            <label>Duración</label>
+            <select>
+              <option>2 horas</option>
+              <option>3 horas</option>
+              <option>4 horas</option>
+              <option>5+ horas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cuéntanos más</label>
+          <textarea placeholder="Temática, requerimientos especiales, cócteles con o sin alcohol, branding, etc."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit-form">Enviar solicitud →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ─── INSTAGRAM ─── -->
+<section class="ig-section">
+  <div class="container">
+    <div class="ig-header">
       <div>
-        <div class="servicio-cards">
-          <div class="servicio-card">
-            <div class="servicio-icon">💍</div>
-            <div>
-              <div class="servicio-title">Matrimonios</div>
-              <div class="servicio-desc">Bar de cócteles con café para el cóctel de bienvenida, cena y after. Estaciones personalizadas con branding de la pareja.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">🏢</div>
-            <div>
-              <div class="servicio-title">Eventos Corporativos</div>
-              <div class="servicio-desc">Estaciones de café de especialidad y cócteles sin alcohol para lanzamientos, team building y conferencias.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">✨</div>
-            <div>
-              <div class="servicio-title">Activaciones de Marca</div>
-              <div class="servicio-desc">Experiencias de café y coctelería con branding completo, baristas uniformados y setup instagrameable.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">🎉</div>
-            <div>
-              <div class="servicio-title">Celebraciones Privadas</div>
-              <div class="servicio-desc">Cumpleaños, baby showers, despedidas y cualquier ocasión especial que merezca un bar de autor.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="eventos-highlights">
-          <div class="highlight">Baristas certificados</div>
-          <div class="highlight">Equipos propios</div>
-          <div class="highlight">Cócteles con y sin alcohol</div>
-          <div class="highlight">Branding personalizado</div>
-          <div class="highlight">Mínimo 30 personas</div>
-          <div class="highlight">Todo Chile</div>
-        </div>
+        <div class="label">Instagram</div>
+        <h2 class="heading" style="font-size: clamp(1.6rem, 3vw, 2.5rem);">@sepiacoffeeco</h2>
       </div>
-
-      <div class="cotizacion-form">
-        <h3>Cotiza tu evento</h3>
-        <p>Cuéntanos los detalles y te respondemos en menos de 24 horas.</p>
-
-        <form onsubmit="submitCotizacion(event)">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" placeholder="Tu nombre" required />
-            </div>
-            <div class="form-group">
-              <label>Teléfono</label>
-              <input type="tel" placeholder="+56 9 XXXX XXXX" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" placeholder="tu@email.com" required />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Tipo de Evento</label>
-              <select required>
-                <option value="">Seleccionar...</option>
-                <option>Matrimonio</option>
-                <option>Evento Corporativo</option>
-                <option>Activación de Marca</option>
-                <option>Cumpleaños / Celebración</option>
-                <option>Baby Shower</option>
-                <option>Despedida</option>
-                <option>Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>N° de Personas</label>
-              <select required>
-                <option value="">Seleccionar...</option>
-                <option>30 – 60 personas</option>
-                <option>60 – 100 personas</option>
-                <option>100 – 200 personas</option>
-                <option>200 – 300 personas</option>
-                <option>+300 personas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha del Evento</label>
-              <input type="date" required />
-            </div>
-            <div class="form-group">
-              <label>Duración (horas)</label>
-              <select>
-                <option>2 horas</option>
-                <option>3 horas</option>
-                <option>4 horas</option>
-                <option>5+ horas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Cuéntanos más</label>
-            <textarea placeholder="Temática, requerimientos especiales, si requieres cócteles con o sin alcohol, etc."></textarea>
-          </div>
-
-          <button type="submit" class="btn-submit">Solicitar Cotización →</button>
-        </form>
-      </div>
+      <a href="#" class="shop-link">Seguir →</a>
     </div>
-  </div>
-</section>
-
-<!-- ─── TESTIMONIOS ─── -->
-<section id="testimonios">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Testimonios</div>
-      <h2 class="section-title">Lo que dicen<br />nuestros clientes.</h2>
-    </div>
-
-    <div class="testimonios-grid">
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"El bar de café en nuestro matrimonio fue lo más comentado de la noche. Los cócteles con espresso eran increíbles y los baristas súper profesionales."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">👰</div>
-          <div>
-            <div class="author-name">Valentina R.</div>
-            <div class="author-role">Matrimonio · 180 personas</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"Ordenamos el pick up antes de entrar a reunión y estuvo listo en exactamente 10 minutos. El café es lo mejor que he tomado en Santiago, sin exagerar."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">👨‍💼</div>
-          <div>
-            <div class="author-name">Rodrigo M.</div>
-            <div class="author-role">Cliente regular</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"Compramos el kit de matcha y quedamos enamorados. El ceremonial Uji es de otro nivel. Ya pedimos el segundo. El empaque es precioso para regalar."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">🌿</div>
-          <div>
-            <div class="author-name">Camila T.</div>
-            <div class="author-role">Cliente tienda online</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── UBICACION ─── -->
-<section id="ubicacion">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Encuéntranos</div>
-      <h2 class="section-title">Ven a visitarnos.</h2>
-      <p class="section-sub">Un espacio diseñado para que te quedes. Café de especialidad, ambiente acogedor y equipo apasionado.</p>
-    </div>
-
-    <div class="ubicacion-grid">
-      <div class="info-items">
-        <div class="info-item">
-          <div class="info-icon">📍</div>
-          <div>
-            <div class="info-label">Dirección</div>
-            <div class="info-value">Av. El Bosque Norte 0177<br />Las Condes, Santiago</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">🕐</div>
-          <div>
-            <div class="info-label">Horario</div>
-            <div class="info-value">Lunes a Viernes: 7:30 – 19:00<br />Sábados: 9:00 – 16:00<br />Domingos: Cerrado</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📞</div>
-          <div>
-            <div class="info-label">Contacto</div>
-            <div class="info-value">+56 9 XXXX XXXX<br />hola@sepiacoffee.cl</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📱</div>
-          <div>
-            <div class="info-label">Redes Sociales</div>
-            <div class="info-value">@sepiacoffeeco</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="map-placeholder">
-        <span>📍</span>
-        <p style="font-size:0.9rem; color: var(--gray-dark); text-align:center;">
-          Las Condes, Santiago<br />
-          <a href="https://maps.google.com" target="_blank" style="color: var(--caramel); font-weight:600; margin-top: 0.5rem; display:inline-block;">
-            Ver en Google Maps →
-          </a>
-        </p>
-      </div>
+    <div class="ig-grid">
+      <div class="ig-cell"><img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&q=80" alt="" /></div>
+      <div class="ig-cell"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80" alt="" /></div>
+      <div class="ig-cell"><img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&q=80" alt="" /></div>
+      <div class="ig-cell"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80" alt="" /></div>
+      <div class="ig-cell"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80" alt="" /></div>
     </div>
   </div>
 </section>
 
 <!-- ─── FOOTER ─── -->
-<footer>
+<footer id="contacto">
   <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a class="nav-logo">Sepia<span>.</span></a>
-        <p>Café de especialidad, matcha premium y coctelería de autor. Desde Santiago para el mundo.</p>
-        <div class="footer-social">
-          <a href="#" class="social-link">📸</a>
-          <a href="#" class="social-link">🎵</a>
-          <a href="#" class="social-link">🐦</a>
-        </div>
+    <div class="footer-top">
+      <div>
+        <span class="footer-logo">Sepia<span>.</span></span>
+        <p class="footer-desc">Café de especialidad, matcha premium y coctelería de autor. Desde Santiago para el mundo.</p>
       </div>
-
-      <div class="footer-col">
-        <h4>Cafetería</h4>
-        <ul>
-          <li><a href="#menu">Ver Menú</a></li>
-          <li><a href="#menu">Pick Up</a></li>
-          <li><a href="#ubicacion">Ubicación</a></li>
-          <li><a href="#ubicacion">Horario</a></li>
+      <div>
+        <div class="footer-col-title">Cafetería</div>
+        <ul class="footer-links">
+          <li><a href="#menu">Menú</a></li>
+          <li><a href="#" onclick="openPickup(event)">Pick Up</a></li>
+          <li><a href="#contacto">Ubicación</a></li>
+          <li><a href="#contacto">Horarios</a></li>
         </ul>
       </div>
-
-      <div class="footer-col">
-        <h4>Tienda</h4>
-        <ul>
-          <li><a href="#tienda">Café en Grano</a></li>
-          <li><a href="#tienda">Matcha</a></li>
-          <li><a href="#tienda">Merch</a></li>
-          <li><a href="#tienda">Gift Box</a></li>
+      <div>
+        <div class="footer-col-title">Tienda</div>
+        <ul class="footer-links">
+          <li><a href="#shop">Café en Grano</a></li>
+          <li><a href="#shop">Matcha</a></li>
+          <li><a href="#shop">Merch</a></li>
+          <li><a href="#shop">Gift Box</a></li>
         </ul>
       </div>
-
-      <div class="footer-col">
-        <h4>Eventos</h4>
-        <ul>
-          <li><a href="#eventos">Matrimonios</a></li>
-          <li><a href="#eventos">Corporativos</a></li>
-          <li><a href="#eventos">Activaciones</a></li>
-          <li><a href="#eventos">Cotizar</a></li>
+      <div>
+        <div class="footer-col-title">Contacto</div>
+        <ul class="footer-links">
+          <li><a href="#">hola@sepiacoffee.cl</a></li>
+          <li><a href="#">+56 9 XXXX XXXX</a></li>
+          <li><a href="#">Las Condes, Santiago</a></li>
+          <li><a href="#">@sepiacoffeeco</a></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>© 2024 Sepia Coffee Co. Todos los derechos reservados.</p>
-      <p>Hecho con ☕ en Santiago, Chile</p>
+      <p>Lun – Vie 7:30 – 19:00 · Sáb 9:00 – 16:00 · Dom Cerrado</p>
+      <p>© 2024 Sepia Coffee Co.</p>
     </div>
   </div>
 </footer>
 
-<!-- ─── TOAST ─── -->
-<div class="toast" id="toast">
-  <span>☕</span>
-  <span id="toastMsg">¡Agregado al carrito!</span>
-</div>
-
 <!-- ─── MODAL PICK UP ─── -->
-<div class="modal-overlay" id="orderModal">
+<div class="overlay" id="pickupOverlay" onclick="handleOverlayClick(event)">
   <div class="modal">
-    <button class="modal-close" onclick="closeOrderModal()">✕</button>
-    <h3>Pedir Pick Up 📦</h3>
-    <p>Completa tus datos y te avisamos cuando tu pedido esté listo (aprox. 15 min).</p>
+    <button class="modal-close" onclick="closePickup()">✕</button>
+    <h3>Pick Up</h3>
+    <p>Pedido listo en aprox. 15 minutos.</p>
     <form onsubmit="submitPickup(event)">
-      <div class="form-group">
+      <div class="field">
         <label>Nombre</label>
         <input type="text" placeholder="¿Cómo te llamamos?" required />
       </div>
-      <div class="form-group">
-        <label>Teléfono / WhatsApp</label>
+      <div class="field">
+        <label>WhatsApp</label>
         <input type="tel" placeholder="+56 9 XXXX XXXX" required />
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>¿Qué vas a pedir?</label>
-        <textarea placeholder="Ej: 1 Flat White con leche de avena, 1 Iced Matcha sin azúcar, 1 Cookie" required></textarea>
+        <textarea placeholder="Ej: 1 Flat White con oat milk, 1 Iced Matcha sin azúcar" required></textarea>
       </div>
-      <div class="form-group">
-        <label>¿A qué hora retirarás?</label>
+      <div class="field">
+        <label>Hora de retiro</label>
         <input type="time" required />
       </div>
-      <button type="submit" class="btn-submit">Confirmar Pedido →</button>
+      <button type="submit" class="btn-submit-form">Confirmar pedido →</button>
     </form>
   </div>
 </div>
 
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
 <script>
-  // Nav scroll
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-  });
-
-  // Hamburger
-  const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburger.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
-  });
-
-  function closeMobileMenu() {
-    mobileMenu.classList.remove('open');
+  // mobile menu
+  function toggleMenu() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobileNav').classList.remove('open');
   }
 
-  // Tabs
+  // tabs
   function switchTab(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
   }
 
-  // Toast
-  let toastTimer;
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
-  }
-
-  // Cart
-  function addToCart(name, price) {
-    showToast(`${name} agregado · $${price.toLocaleString('es-CL')}`);
-  }
-
-  // Modal
-  function openOrderModal() {
-    document.getElementById('orderModal').classList.add('open');
+  // pickup modal
+  function openPickup(e) {
+    if (e) e.preventDefault();
+    document.getElementById('pickupOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
-
-  function closeOrderModal() {
-    document.getElementById('orderModal').classList.remove('open');
+  function closePickup() {
+    document.getElementById('pickupOverlay').classList.remove('open');
     document.body.style.overflow = '';
   }
-
-  document.getElementById('orderModal').addEventListener('click', function(e) {
-    if (e.target === this) closeOrderModal();
-  });
-
-  // Forms
-  function submitPickup(e) {
-    e.preventDefault();
-    closeOrderModal();
-    showToast('¡Pedido recibido! Te avisamos cuando esté listo 🎉');
+  function handleOverlayClick(e) {
+    if (e.target === e.currentTarget) closePickup();
   }
 
-  function submitCotizacion(e) {
+  // toast
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  // forms
+  function submitPickup(e) {
     e.preventDefault();
-    showToast('¡Cotización enviada! Te respondemos en 24h ✅');
+    closePickup();
+    showToast('¡Pedido recibido! Te avisamos cuando esté listo.');
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    showToast('¡Cotización enviada! Te respondemos en menos de 24h.');
     e.target.reset();
   }
 </script>
