@@ -402,6 +402,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .testi .avatar{width:34px;height:34px;border-radius:50%;background:var(--blanco);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:.9rem;flex:none}
 .testi .quien b{font-weight:700}
 .testi .quien span{color:var(--tinta-60)}
+.google-resumen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}
+.google-resumen .puntaje{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1}
+.google-resumen .estrellas{display:flex;gap:2px;color:var(--navy)}
+.google-resumen .estrellas svg{width:17px;height:17px;fill:currentColor}
+.google-resumen .conteo{font-size:.86rem;color:var(--tinta-60)}
 
 /* ============================================================
    MULTICOLUMNA EDITORIAL
@@ -553,10 +558,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 
 <!-- ============================================================
      DATOS DE EJEMPLO QUE HAY QUE REEMPLAZAR ANTES DE PUBLICAR
-     · Valoraciones y cantidad de reseñas de cada producto
-       (los "4.9 (412)" son de relleno, conectá tu app de reseñas)
-     · Las cuatro tarjetas de la sección "Lo que dicen"
-     · El "4,9 · 1.284 reseñas" de la cinta verde
+     · Los datos de Google: puntaje, cantidad, enlace y reseñas.
+       Van en la constante GOOGLE, arriba del script del final.
      · Precios de los 13 productos
      · Montos de envío: $30.000 y $65.000 aparecen en la barra de
        anuncio y en TRAMO_1 / TRAMO_2 dentro del script
@@ -985,10 +988,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Cordillera</h3>
             <p class="prod-sub">Blend de casa · 250 g</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.9 (412)</span>
-            </div>
             <p class="prod-precio">$9.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Cordillera">
@@ -1012,10 +1011,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Cold Brew Clásico</h3>
             <p class="prod-sub">Botella 1 L · sin azúcar</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.8 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.8 (287)</span>
-            </div>
             <p class="prod-precio">$7.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Cold Brew Clásico">
@@ -1039,10 +1034,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Matcha Ceremonial</h3>
             <p class="prod-sub">80 g · primera cosecha</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.9 (198)</span>
-            </div>
             <p class="prod-precio">$16.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Matcha Ceremonial">
@@ -1065,10 +1056,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Yirgacheffe</h3>
             <p class="prod-sub">Etiopía · lavado · 250 g</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.7 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.7 (156)</span>
-            </div>
             <p class="prod-precio">$13.500</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Yirgacheffe">
@@ -1092,10 +1079,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Matcha Coco</h3>
             <p class="prod-sub">80 g · edición de verano</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.8 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.8 (74)</span>
-            </div>
             <p class="prod-precio">$17.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Matcha Coco">
@@ -1119,10 +1102,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Taza de cerámica</h3>
             <p class="prod-sub">Cerámica mate · 300 ml</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.9 (93)</span>
-            </div>
             <p class="prod-precio">$14.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Taza de cerámica">
@@ -1204,10 +1183,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Starter Pack</h3>
             <p class="prod-sub">Un poco de todo: café, matcha y taza</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.9 (204)</span>
-            </div>
             <p class="prod-precio">$29.900 <span class="antes">$35.700</span></p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Descubrir">
@@ -1230,10 +1205,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Pack Ritual</h3>
             <p class="prod-sub">Cordillera 250 g + taza de cerámica</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.8 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.8 (167)</span>
-            </div>
             <p class="prod-precio">$22.900 <span class="antes">$24.800</span></p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Ritual">
@@ -1256,10 +1227,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Pack Matcha</h3>
             <p class="prod-sub">Matcha ceremonial + batidor de bambú</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.9 (88)</span>
-            </div>
             <p class="prod-precio">$28.900 <span class="antes">$31.800</span></p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Matcha">
@@ -1283,10 +1250,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Pack Cold Brew</h3>
             <p class="prod-sub">4 botellas de 1 L · elegís los sabores</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.7 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.7 (142)</span>
-            </div>
             <p class="prod-precio">$28.900 <span class="antes">$31.600</span></p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Cold Brew">
@@ -1309,10 +1272,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Pack Oficina</h3>
             <p class="prod-sub">1 kg en grano + 2 tazas</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.8 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.8 (51)</span>
-            </div>
             <p class="prod-precio">$54.900 <span class="antes">$62.400</span></p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Oficina">
@@ -1336,10 +1295,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="prod-info">
             <h3>Pack Regalo</h3>
             <p class="prod-sub">Surtido en caja de madera</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="5.0 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>5.0 (37)</span>
-            </div>
             <p class="prod-precio">$39.900</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Pack Regalo">
@@ -1351,14 +1306,21 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </div>
   </div>
 </section>
-<!-- ===================== 06 · TESTIMONIOS ===================== -->
-<section class="modulo" id="resenas" style="background:var(--celeste)">
+<!-- ===================== 06 · RESEÑAS DE GOOGLE ===================== -->
+<!-- Los cuatro datos de Google van en la constante GOOGLE del script, al final
+     del archivo: puntaje, cantidad de reseñas, enlace al perfil y las reseñas.
+     Mientras estén vacíos, la sección no se muestra. -->
+<section class="modulo" id="resenas" style="background:var(--celeste)" hidden>
   <div class="wrap">
     <div class="mod-cab rev">
       <div>
-        <span class="micro" style="display:inline-block;background:var(--blanco);padding:.34rem .8rem;border-radius:var(--r-pill);margin-bottom:.7rem">Contenido de ejemplo</span>
-        <h2 class="t-3xl">Lo que dicen</h2>
-        <p class="copy">Reemplazá estas tarjetas por reseñas reales de tus clientes.</p>
+        <h2 class="t-3xl">Lo que dicen en Google</h2>
+        <div class="google-resumen">
+          <span class="puntaje" data-g-puntaje></span>
+          <span class="estrellas" data-g-estrellas role="img"></span>
+          <span class="conteo" data-g-conteo></span>
+          <a class="enlace-sub" data-g-enlace href="#" target="_blank" rel="noopener">Ver en Google</a>
+        </div>
       </div>
       <div class="car-nav" data-nav-de="resenas">
         <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
@@ -1366,28 +1328,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       </div>
     </div>
     <div class="car">
-      <div class="car-pista rev" data-pista="resenas">
-        <div class="testi" style="--tono:#C8D9E6">
-          <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
-          <blockquote>Acá va la reseña de un cliente. Dejala en dos o tres líneas, que se lea de una pasada.</blockquote>
-          <p class="quien"><span class="avatar">A</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
-        </div>
-        <div class="testi" style="--tono:#C8D9E6">
-          <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
-          <blockquote>Segunda reseña de ejemplo. Conviene que cada una hable de un producto distinto.</blockquote>
-          <p class="quien"><span class="avatar">B</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
-        </div>
-        <div class="testi" style="--tono:#C8D9E6">
-          <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
-          <blockquote>Tercera reseña de ejemplo. Si tenés una que mencione el envío o la suscripción, mejor.</blockquote>
-          <p class="quien"><span class="avatar">C</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
-        </div>
-        <div class="testi" style="--tono:#C8D9E6">
-          <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
-          <blockquote>Cuarta reseña de ejemplo. Las más útiles son las que cuentan algo concreto.</blockquote>
-          <p class="quien"><span class="avatar">D</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
-        </div>
-      </div>
+      <div class="car-pista rev" data-pista="resenas" data-g-lista></div>
     </div>
   </div>
 </section>
@@ -1545,6 +1486,47 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 
   $("#anio").textContent = new Date().getFullYear();
 
+  /* ============================================================
+     RESEÑAS DE GOOGLE
+     Pegá acá tus datos reales. Mientras "puntaje" esté vacío,
+     la sección no se muestra, así no queda nada inventado.
+     ============================================================ */
+  var GOOGLE = {
+    puntaje: "",          // por ejemplo "4,9"
+    conteo:  "",          // por ejemplo "218 reseñas en Google"
+    enlace:  "",          // enlace a tu ficha de Google
+    resenas: [
+      // { texto:"...", nombre:"...", fecha:"hace 2 semanas" },
+    ]
+  };
+
+  (function(){
+    var sec = $("#resenas");
+    if(!sec) return;
+    if(!GOOGLE.puntaje || !GOOGLE.resenas.length){ sec.hidden = true; return; }
+    sec.hidden = false;
+
+    var estrella = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg>';
+    var llenas = Math.round(parseFloat(String(GOOGLE.puntaje).replace(",", ".")) || 0);
+    $("[data-g-puntaje]").textContent = GOOGLE.puntaje;
+    $("[data-g-estrellas]").innerHTML = estrella.repeat(Math.max(0, Math.min(5, llenas)));
+    $("[data-g-estrellas]").setAttribute("aria-label", GOOGLE.puntaje + " de 5");
+    $("[data-g-conteo]").textContent = GOOGLE.conteo;
+    var enl = $("[data-g-enlace]");
+    if(GOOGLE.enlace) enl.href = GOOGLE.enlace; else enl.remove();
+
+    var tonos = ["#FFFFFF", "#F5EFEB", "#FFFFFF", "#F5EFEB"];  // sobre el celeste de la sección
+    $("[data-g-lista]").innerHTML = GOOGLE.resenas.map(function(r, i){
+      var inicial = (r.nombre || "?").trim().charAt(0).toUpperCase();
+      return '<div class="testi" style="--tono:' + tonos[i % tonos.length] + '">' +
+        '<span class="estrellas" role="img" aria-label="5 de 5">' + estrella.repeat(5) + '</span>' +
+        '<blockquote>' + r.texto + '</blockquote>' +
+        '<p class="quien"><span class="avatar">' + inicial + '</span>' +
+        '<span><b>' + (r.nombre || "") + '</b><br><span>' + (r.fecha || "") + '</span></span></p>' +
+      '</div>';
+    }).join("");
+  })();
+
   /* ---------- Revelados ---------- */
   if("IntersectionObserver" in window && !quieto){
     var obs = new IntersectionObserver(function(es){
@@ -1628,9 +1610,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   irA(0); arrancar();
 
   /* ---------- Cinta de ventajas ---------- */
-  var estrella = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg>';
   var ventajas = [
-    '<span class="estrellas">' + estrella.repeat(5) + '</span> 4,9 · 1.284 reseñas',
     '<svg class="ic" viewBox="0 0 24 24"><use href="#i-hoja"/></svg> Origen orgánico',
     '<svg class="ic" viewBox="0 0 24 24"><use href="#i-fuego"/></svg> Tostado esta semana',
     '<svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg> Hecho en Santiago',

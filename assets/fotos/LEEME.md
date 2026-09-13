@@ -1,5 +1,25 @@
 # Fotos del sitio
 
+## Las seis que más cambian el sitio
+
+Si vas a sacar pocas, sacá estas primero. Con estas seis la página deja de
+verse como una plantilla:
+
+| Orden | Archivo | Qué es |
+|---|---|---|
+| 1 | `hero-1.jpg` | La foto grande de portada. Es la que más pesa |
+| 2 | `prod-cordillera.jpg` | El café principal |
+| 3 | `prod-matcha-ceremonial.jpg` | La lata de matcha |
+| 4 | `prod-cold-clasico.jpg` | La botella |
+| 5 | `cafeteria.jpg` | El local, para el bloque editorial |
+| 6 | `cat-cafe.jpg` | La ficha de categoría de café |
+
+El resto puede esperar. Cada archivo que falte sigue mostrando la ilustración,
+así que podés ir subiéndolas de a una sin que nada se rompa.
+
+---
+
+
 Dejá los archivos acá con estos nombres exactos y la página los toma sola.
 **No hay que tocar código.** Si un archivo no está, esa posición muestra la
 ilustración vectorial, así que el sitio nunca se ve roto ni con imágenes rotas.

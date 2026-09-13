@@ -471,6 +471,11 @@
 .sepia2 .rev.visto{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.sepia2 *,.sepia2 *::before,.sepia2 *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
 .sepia2 .rev{opacity:1;transform:none}}
+.sepia2 .google-resumen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}
+.sepia2 .google-resumen .puntaje{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1}
+.sepia2 .google-resumen .estrellas{display:flex;gap:2px;color:var(--navy)}
+.sepia2 .google-resumen .estrellas svg{width:17px;height:17px;fill:currentColor}
+.sepia2 .google-resumen .conteo{font-size:.86rem;color:var(--tinta-60)}
 </style>
 
 <div class="sepia2" data-sepia2="{{ section.id }}">
@@ -884,10 +889,7 @@
               <div class="prod-info">
                 <h3><a href="{{ producto.url }}">{{ producto.title }}</a></h3>
                 {%- if sub != blank -%}<p class="prod-sub">{{ sub }}</p>{%- endif -%}
-                {%- if rating != blank -%}
-                  <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>{{ rating }}{% if nres != blank %} ({{ nres }}){% endif %}</span></div>
-                {%- endif -%}
-                <p class="prod-precio">{{ producto.price | money }}
+                                <p class="prod-precio">{{ producto.price | money }}
                   {%- if producto.compare_at_price > producto.price -%}<span class="antes">{{ producto.compare_at_price | money }}</span>{%- endif -%}
                 </p>
               </div>
@@ -914,7 +916,6 @@
             <div class="prod-info">
               <h3>Cordillera</h3>
               <p class="prod-sub">Blend de casa · 250 g</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.9 (412)</span></div>
               <p class="prod-precio">$9.900</p>
             </div>
           </article>
@@ -928,7 +929,6 @@
             <div class="prod-info">
               <h3>Cold Brew Clásico</h3>
               <p class="prod-sub">Botella 1 L · sin azúcar</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.8 (287)</span></div>
               <p class="prod-precio">$7.900</p>
             </div>
           </article>
@@ -942,7 +942,6 @@
             <div class="prod-info">
               <h3>Matcha Ceremonial</h3>
               <p class="prod-sub">80 g · primera cosecha</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.9 (198)</span></div>
               <p class="prod-precio">$16.900</p>
             </div>
           </article>
@@ -955,7 +954,6 @@
             <div class="prod-info">
               <h3>Yirgacheffe</h3>
               <p class="prod-sub">Etiopía · lavado · 250 g</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.7 (156)</span></div>
               <p class="prod-precio">$13.500</p>
             </div>
           </article>
@@ -969,7 +967,6 @@
             <div class="prod-info">
               <h3>Taza de cerámica</h3>
               <p class="prod-sub">Cerámica mate · 300 ml</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.9 (93)</span></div>
               <p class="prod-precio">$14.900</p>
             </div>
           </article>
@@ -1078,7 +1075,6 @@
                 <h3><a href="{{ producto.url }}">{{ producto.title }}</a></h3>
                 {%- if sub != blank -%}<p class="prod-sub">{{ sub }}</p>{%- endif -%}
                 {%- if rating != blank -%}
-                  <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>{{ rating }}{% if nres != blank %} ({{ nres }}){% endif %}</span></div>
                 {%- endif -%}
                 <p class="prod-precio">{{ producto.price | money }}
                   {%- if producto.compare_at_price > producto.price -%}<span class="antes">{{ producto.compare_at_price | money }}</span>{%- endif -%}
@@ -1106,7 +1102,6 @@
             <div class="prod-info">
               <h3>Pack Descubrir</h3>
               <p class="prod-sub">3 × 250 g</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.9 (204)</span></div>
               <p class="prod-precio">$29.900 <span class="antes">$35.700</span></p>
             </div>
           </article>
@@ -1119,7 +1114,6 @@
             <div class="prod-info">
               <h3>Pack Ritual</h3>
               <p class="prod-sub">Café + taza de cerámica</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.8 (167)</span></div>
               <p class="prod-precio">$22.900 <span class="antes">$24.800</span></p>
             </div>
           </article>
@@ -1132,7 +1126,6 @@
             <div class="prod-info">
               <h3>Pack Matcha</h3>
               <p class="prod-sub">Matcha + batidor de bambú</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.9 (88)</span></div>
               <p class="prod-precio">$28.900 <span class="antes">$31.800</span></p>
             </div>
           </article>
@@ -1145,7 +1138,6 @@
             <div class="prod-info">
               <h3>Pack Oficina</h3>
               <p class="prod-sub">1 kg + 2 tazas</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>4.8 (51)</span></div>
               <p class="prod-precio">$54.900 <span class="antes">$62.400</span></p>
             </div>
           </article>
@@ -1159,7 +1151,6 @@
             <div class="prod-info">
               <h3>Pack Regalo</h3>
               <p class="prod-sub">Surtido en caja de madera</p>
-              <div class="valoracion"><span class="estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-estrella"/></svg></span><span>5.0 (37)</span></div>
               <p class="prod-precio">$39.900</p>
             </div>
           </article>
@@ -1170,15 +1161,27 @@
 </section>
 {%- endif -%}
 
-<!-- ===================== 06 · TESTIMONIOS ===================== -->
-{%- assign testimonios = section.blocks | where: 'type', 'testimonio' -%}
-{%- if testimonios.size > 0 -%}
+<!-- ===================== 06 · RESEÑAS DE GOOGLE ===================== -->
+{%- assign resenas = section.blocks | where: 'type', 'resena' -%}
+{%- if section.settings.g_puntaje != blank and resenas.size > 0 -%}
+{%- assign llenas = section.settings.g_puntaje | replace: ',', '.' | times: 1 | round -%}
 <section class="modulo" id="resenas" style="background:{{ section.settings.testi_fondo }}">
   <div class="wrap">
     <div class="mod-cab rev">
       <div>
         <h2 class="t-3xl">{{ section.settings.testi_titulo }}</h2>
-        {%- if section.settings.testi_bajada != blank -%}<p class="copy">{{ section.settings.testi_bajada }}</p>{%- endif -%}
+        <div class="google-resumen">
+          <span class="puntaje">{{ section.settings.g_puntaje }}</span>
+          <span class="estrellas" role="img" aria-label="{{ section.settings.g_puntaje }} de 5">
+            {%- for i in (1..5) -%}
+              {%- if i <= llenas -%}<svg viewBox="0 0 24 24"><use href="#s2-i-estrella"/></svg>{%- endif -%}
+            {%- endfor -%}
+          </span>
+          {%- if section.settings.g_conteo != blank -%}<span class="conteo">{{ section.settings.g_conteo }}</span>{%- endif -%}
+          {%- if section.settings.g_enlace != blank -%}
+            <a class="enlace-sub" href="{{ section.settings.g_enlace }}" target="_blank" rel="noopener">Ver en Google</a>
+          {%- endif -%}
+        </div>
       </div>
       <div class="car-nav" data-nav-de="resenas">
         <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#s2-i-izq"/></svg></button>
@@ -1187,15 +1190,15 @@
     </div>
     <div class="car">
       <div class="car-pista rev" data-pista="resenas">
-        {%- for bloque in testimonios -%}
-          <div class="testi" style="--tono:{{ bloque.settings.color }}" {{ bloque.shopify_attributes }}>
+        {%- for bloque in resenas -%}
+          <div class="testi" style="--tono:{% cycle 'tono2': '#FFFFFF', '#F5EFEB' %}" {{ bloque.shopify_attributes }}>
             <span class="estrellas" role="img" aria-label="5 de 5">
               {%- for i in (1..5) -%}<svg viewBox="0 0 24 24"><use href="#s2-i-estrella"/></svg>{%- endfor -%}
             </span>
             <blockquote>{{ bloque.settings.texto }}</blockquote>
             <p class="quien">
               <span class="avatar">{{ bloque.settings.nombre | slice: 0 | upcase }}</span>
-              <span><b>{{ bloque.settings.nombre }}</b><br><span>{{ bloque.settings.detalle }}</span></span>
+              <span><b>{{ bloque.settings.nombre }}</b><br><span>{{ bloque.settings.fecha }}</span></span>
             </p>
           </div>
         {%- endfor -%}
@@ -1616,7 +1619,7 @@
       "type": "textarea",
       "id": "usp_textos",
       "label": "Frases separadas por coma",
-      "default": "4,9 · 1.284 reseñas, Origen orgánico, Tostado esta semana, Hecho en Santiago, Pausá cuando quieras",
+      "default": "Origen orgánico, Tostado esta semana, Hecho en Santiago, Pausá cuando quieras",
       "info": "Dejala vacía para ocultar la cinta."
     },
     {
@@ -1722,12 +1725,31 @@
       "type": "text",
       "id": "testi_titulo",
       "label": "Título",
-      "default": "Lo que dicen"
+      "default": "Lo que dicen en Google"
+    },
+    {
+      "type": "text",
+      "id": "g_puntaje",
+      "label": "Puntaje de Google",
+      "default": "",
+      "info": "Por ejemplo 4,9. Si lo dejás vacío, la sección no se muestra."
+    },
+    {
+      "type": "text",
+      "id": "g_conteo",
+      "label": "Cantidad de reseñas",
+      "default": "",
+      "info": "Por ejemplo: 218 reseñas en Google"
+    },
+    {
+      "type": "url",
+      "id": "g_enlace",
+      "label": "Enlace a tu ficha de Google"
     },
     {
       "type": "text",
       "id": "testi_bajada",
-      "label": "Bajada",
+      "label": "(sin uso)",
       "default": "Reemplazá estas tarjetas por reseñas reales de tus clientes."
     },
     {
@@ -2055,37 +2077,6 @@
       ]
     },
     {
-      "type": "testimonio",
-      "name": "Testimonio",
-      "limit": 8,
-      "settings": [
-        {
-          "type": "textarea",
-          "id": "texto",
-          "label": "Reseña",
-          "default": "Acá va la reseña de un cliente. Dejala en dos o tres líneas."
-        },
-        {
-          "type": "text",
-          "id": "nombre",
-          "label": "Nombre",
-          "default": "Nombre del cliente"
-        },
-        {
-          "type": "text",
-          "id": "detalle",
-          "label": "Detalle",
-          "default": "Producto comprado"
-        },
-        {
-          "type": "color",
-          "id": "color",
-          "label": "Color de la tarjeta",
-          "default": "#C8D9E6"
-        }
-      ]
-    },
-    {
       "type": "pie_col",
       "name": "Columna del pie",
       "limit": 5,
@@ -2102,6 +2093,32 @@
           "label": "Enlaces",
           "default": "Café en grano | /collections/cafe\nCold Brew | /collections/cold-brew",
           "info": "Una línea por enlace, formato Nombre | /ruta."
+        }
+      ]
+    },
+    {
+      "type": "resena",
+      "name": "Reseña de Google",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "texto",
+          "label": "Texto de la reseña",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "nombre",
+          "label": "Nombre",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "fecha",
+          "label": "Fecha",
+          "default": "",
+          "info": "Por ejemplo: hace 2 semanas"
         }
       ]
     }
@@ -2203,42 +2220,6 @@
             "color": "#C8D9E6",
             "arte": "taza",
             "acento": "#2F4156"
-          }
-        },
-        {
-          "type": "testimonio",
-          "settings": {
-            "texto": "Acá va la reseña de un cliente. Dejala en dos o tres líneas, que se lea de una pasada.",
-            "nombre": "Nombre del cliente",
-            "detalle": "Producto comprado",
-            "color": "#C8D9E6"
-          }
-        },
-        {
-          "type": "testimonio",
-          "settings": {
-            "texto": "Segunda reseña de ejemplo. Conviene que cada una hable de un producto distinto.",
-            "nombre": "Nombre del cliente",
-            "detalle": "Producto comprado",
-            "color": "#FFFFFF"
-          }
-        },
-        {
-          "type": "testimonio",
-          "settings": {
-            "texto": "Tercera reseña de ejemplo. Si tenés una que mencione el envío o la suscripción, mejor.",
-            "nombre": "Nombre del cliente",
-            "detalle": "Producto comprado",
-            "color": "#C8D9E6"
-          }
-        },
-        {
-          "type": "testimonio",
-          "settings": {
-            "texto": "Cuarta reseña de ejemplo. Las más útiles son las que cuentan algo concreto.",
-            "nombre": "Nombre del cliente",
-            "detalle": "Producto comprado",
-            "color": "#FFFFFF"
           }
         },
         {
