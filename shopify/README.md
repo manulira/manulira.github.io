@@ -1,4 +1,4 @@
-# Sepia Coffee Co — secciones para Shopify
+# sepia coffee — secciones para Shopify
 
 Hay dos portadas distintas. Elegí una.
 

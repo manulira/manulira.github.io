@@ -23,7 +23,7 @@ El nombre va después de `prod-`, igual que el identificador de la ficha.
 | Matcha Ceremonial | `prod-matcha-ceremonial.jpg` · `prod-matcha-ceremonial-2.jpg` |
 | Yirgacheffe | `prod-yirgacheffe.jpg` · `prod-yirgacheffe-2.jpg` |
 | Matcha Coco | `prod-matcha-coco.jpg` · `prod-matcha-coco-2.jpg` |
-| Taza Sepia | `prod-taza-sepia.jpg` · `prod-taza-sepia-2.jpg` |
+| Taza de cerámica | `prod-taza-sepia.jpg` · `prod-taza-sepia-2.jpg` |
 | Cold Brew Vainilla | `prod-cold-vainilla.jpg` · `prod-cold-vainilla-2.jpg` |
 | Pack Descubrir | `prod-pack-descubrir.jpg` · `prod-pack-descubrir-2.jpg` |
 | Pack Ritual | `prod-pack-ritual.jpg` · `prod-pack-ritual-2.jpg` |

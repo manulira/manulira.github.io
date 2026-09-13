@@ -1,4 +1,4 @@
-# Brief COSTAR — Sitio web Sepia Coffee Co
+# Brief COSTAR — Sitio web sepia coffee
 
 Documento de definición previa al desarrollo. Modelo COSTAR: Contexto, Objetivo, Estilo, Tono, Audiencia, Respuesta.
 
@@ -6,7 +6,7 @@ Documento de definición previa al desarrollo. Modelo COSTAR: Contexto, Objetivo
 
 ## C — Contexto
 
-Sepia Coffee Co es una tostaduría de café de especialidad en Santiago de Chile. Posicionamiento: lujo accesible con estética editorial y calidez latinoamericana. La referencia de calidad entregada por el cliente es **cervezaloa.cl**, un e-commerce chileno construido sobre Shopify con catálogo, packs armables, editorial de marca y footer completo de soporte.
+sepia coffee es una tostaduría de café de especialidad en Santiago de Chile. Posicionamiento: lujo accesible con estética editorial y calidez latinoamericana. La referencia de calidad entregada por el cliente es **cervezaloa.cl**, un e-commerce chileno construido sobre Shopify con catálogo, packs armables, editorial de marca y footer completo de soporte.
 
 El dominio de destino es **sepiacoffee.cl** y la tienda vivirá sobre **Shopify**, por lo que el entregable debe poder subirse al tema sin depender de archivos externos ni de un build.
 
