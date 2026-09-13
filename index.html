@@ -74,7 +74,7 @@ body{
   background:var(--crema);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
+  overflow-x:clip;
   font-variant-ligatures:common-ligatures;
 }
 img,svg{display:block;max-width:100%}
@@ -828,6 +828,19 @@ body.bloqueado{overflow:hidden}
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 
+<!-- ============================================================
+     DATOS A REEMPLAZAR ANTES DE PUBLICAR
+     · Dirección y horario de la cafetería (sección "cafeteria")
+     · Correo de contacto: hola@sepiacoffee.cl
+     · Número de WhatsApp: el enlace wa.me al final del archivo
+     · Monto del envío gratis: aparece en la barra de anuncio,
+       en el carrito (UMBRAL_ENVIO en el script) y en el plan Ritual
+     · Precios de los seis cafés y de los tres planes
+     · Enlaces de redes sociales y páginas legales del pie
+     El carrito de esta versión es una demostración local: no cobra
+     ni guarda nada. La versión de Shopify está en shopify/.
+     ============================================================ -->
+
 <!-- ===================== BIBLIOTECA SVG ===================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
  <defs>
@@ -1066,7 +1079,7 @@ body.bloqueado{overflow:hidden}
     </div>
 
     <div class="rejilla-cafes" id="rejilla-cafes">
-      <article class="cafe rev rev-d1" data-id="cordillera" data-nombre="Cordillera"
+      <article class="cafe rev rev-d1" data-id="cordillera" data-perfil="dulce" data-tueste="3" data-nombre="Cordillera"
                data-precio="9900" data-acento="#7D4047" data-metodo="filtrado espresso"
                data-origen="Blend de casa · Colombia + Brasil" data-desc="Nuestro café de todos los días. Dulce, redondo y sin filos: funciona igual de bien en la italiana de la mañana que en un filtrado lento del domingo.">
         <div class="cafe-visual">
@@ -1089,7 +1102,7 @@ body.bloqueado{overflow:hidden}
           </div>
         </div>
       </article>
-      <article class="cafe rev rev-d2" data-id="yirgacheffe" data-nombre="Yirgacheffe"
+      <article class="cafe rev rev-d2" data-id="yirgacheffe" data-perfil="frutal" data-tueste="1" data-nombre="Yirgacheffe"
                data-precio="13500" data-acento="#9A8A6E" data-metodo="filtrado"
                data-origen="Etiopía · Lavado · 2.000 msnm" data-desc="El más floral de la carta. Tueste claro para no tapar nada. Pedile un filtrado y dejalo enfriar un poco: ahí aparece el durazno.">
         <div class="cafe-visual">
@@ -1111,7 +1124,7 @@ body.bloqueado{overflow:hidden}
           </div>
         </div>
       </article>
-      <article class="cafe rev rev-d3" data-id="huila" data-nombre="Huila"
+      <article class="cafe rev rev-d3" data-id="huila" data-perfil="dulce" data-tueste="2" data-nombre="Huila"
                data-precio="12400" data-acento="#A2604A" data-metodo="filtrado espresso"
                data-origen="Colombia · Proceso honey" data-desc="El honey le deja el azúcar del mucílago adentro. Cuerpo jugoso, dulzor largo y un final a cacao que aguanta leche sin desaparecer.">
         <div class="cafe-visual">
@@ -1133,7 +1146,7 @@ body.bloqueado{overflow:hidden}
           </div>
         </div>
       </article>
-      <article class="cafe rev rev-d4" data-id="cajamarca" data-nombre="Cajamarca"
+      <article class="cafe rev rev-d4" data-id="cajamarca" data-perfil="equilibrado" data-tueste="3" data-nombre="Cajamarca"
                data-precio="11800" data-acento="#6E6A55" data-metodo="filtrado"
                data-origen="Perú · Orgánico · Lavado" data-desc="Limpio y equilibrado, con una acidez cítrica que no molesta. Es el que recomendamos para empezar a tomar café de especialidad sin azúcar.">
         <div class="cafe-visual">
@@ -1155,7 +1168,7 @@ body.bloqueado{overflow:hidden}
           </div>
         </div>
       </article>
-      <article class="cafe rev rev-d5" data-id="huehuetenango" data-nombre="Huehuetenango"
+      <article class="cafe rev rev-d5" data-id="huehuetenango" data-perfil="frutal" data-tueste="2" data-nombre="Huehuetenango"
                data-precio="13200" data-acento="#8A5A5F" data-metodo="filtrado espresso"
                data-origen="Guatemala · Lavado · 1.800 msnm" data-desc="Altura pura. Acidez de manzana, cuerpo sedoso y un retrogusto a fruto seco que se queda un rato. Lote chico, se acaba rápido.">
         <div class="cafe-visual">
@@ -1178,7 +1191,7 @@ body.bloqueado{overflow:hidden}
           </div>
         </div>
       </article>
-      <article class="cafe rev rev-d6" data-id="sin-noche" data-nombre="Sin Noche"
+      <article class="cafe rev rev-d6" data-id="sin-noche" data-perfil="dulce" data-tueste="3" data-nombre="Sin Noche"
                data-precio="12900" data-acento="#2E2E2E" data-metodo="filtrado espresso descafeinado"
                data-origen="Descafeinado · Colombia · Caña" data-desc="Descafeinado con azúcar de caña, sin solventes. Mantiene el cuerpo y el dulzor. Para la sobremesa larga o para el que no puede después de las seis.">
         <div class="cafe-visual">
@@ -2018,17 +2031,6 @@ body.bloqueado{overflow:hidden}
   });
 
   /* ---------- Recomendador ---------- */
-  var PESOS = {
-    filtrado:   {yirgacheffe:3, cajamarca:3, huehuetenango:2, huila:1},
-    espresso:   {cordillera:3, huila:2, "sin-noche":2},
-    ambos:      {cordillera:2, huila:2, huehuetenango:1, cajamarca:1},
-    negro:      {yirgacheffe:3, huehuetenango:2, cajamarca:2},
-    leche:      {cordillera:3, huila:2, "sin-noche":2},
-    frutal:     {yirgacheffe:4, huehuetenango:3},
-    dulce:      {huila:3, cordillera:3, "sin-noche":2},
-    equilibrado:{cajamarca:4, cordillera:2, huila:1}
-  };
-  var ORDEN = ["cordillera","huila","cajamarca","huehuetenango","yirgacheffe","sin-noche"];
   var respuestas = [], pasoActual = 1, recoElegido = null;
   var barraReco = $("#reco-progreso"), panelResultado = $("#reco-resultado");
 
@@ -2038,23 +2040,33 @@ body.bloqueado{overflow:hidden}
     panelResultado.classList.remove("activo");
     barraReco.style.width = (n/3*100) + "%";
   }
+  function puntuar(ficha, metodo, leche, perfil){
+    var metodos = ficha.dataset.metodo || "";
+    var suyo    = ficha.dataset.perfil || "";
+    var tueste  = parseInt(ficha.dataset.tueste || "3", 10);
+    var p = 0;
+    if(metodo === "ambos"){
+      if(metodos.indexOf("filtrado") !== -1 && metodos.indexOf("espresso") !== -1) p += 2;
+      else p += 1;
+    } else if(metodos.indexOf(metodo) !== -1) p += 3;
+    if(suyo === perfil) p += 4;
+    if(leche === "leche"){ if(suyo === "dulce") p += 2; if(tueste >= 3) p += 1; }
+    else { if(suyo === "frutal") p += 2; if(tueste <= 2) p += 1; }
+    return p;
+  }
   function resolver(){
-    var puntos = {};
-    ORDEN.forEach(function(id){ puntos[id] = 0; });
-    respuestas.forEach(function(r){
-      var tabla = PESOS[r] || {};
-      Object.keys(tabla).forEach(function(id){ puntos[id] += tabla[id]; });
+    var mejor = null, mejorPuntaje = -1;
+    fichas.forEach(function(ficha){
+      var p = puntuar(ficha, respuestas[0], respuestas[1], respuestas[2]);
+      if(p > mejorPuntaje){ mejorPuntaje = p; mejor = ficha; }
     });
-    var ganador = ORDEN[0];
-    ORDEN.forEach(function(id){ if(puntos[id] > puntos[ganador]) ganador = id; });
-
-    var ficha = $('.cafe[data-id="'+ganador+'"]');
-    var d = datosDeFicha(ficha);
+    if(!mejor) return;
+    var d = datosDeFicha(mejor);
     recoElegido = d;
     $("#reco-bolsa").style.setProperty("--acento", d.acento);
     $("#reco-nombre").textContent = d.nombre;
     $("#reco-origen").textContent = d.origen;
-    $("#reco-desc").textContent = ficha.dataset.desc;
+    $("#reco-desc").textContent = mejor.dataset.desc || "";
     $("#reco-precio").textContent = clp(d.precio);
     $$(".paso").forEach(function(p){ p.classList.remove("activo"); });
     panelResultado.classList.add("activo");
@@ -2070,9 +2082,7 @@ body.bloqueado{overflow:hidden}
   $$("[data-atras]").forEach(function(btn){
     btn.addEventListener("click", function(){ if(pasoActual > 1) mostrarPaso(pasoActual-1); });
   });
-  $("#reco-reiniciar").addEventListener("click", function(){
-    respuestas = []; mostrarPaso(1);
-  });
+  $("#reco-reiniciar").addEventListener("click", function(){ respuestas = []; mostrarPaso(1); });
   $("#reco-agregar").addEventListener("click", function(){
     if(!recoElegido) return;
     agregar(recoElegido);
@@ -2127,8 +2137,8 @@ body.bloqueado{overflow:hidden}
     $("#out-tazas").innerHTML = tazas + "<span> " + (tazas === 1 ? "taza" : "tazas") + "</span>";
     var llenado = Math.max(.12, Math.min(1, agua/760));
     var alto = 58 * llenado;
-    nivel.setAttribute("y", String(188 - alto));
-    nivel.setAttribute("height", String(alto));
+    nivel.setAttribute("y", (188 - alto).toFixed(1));
+    nivel.setAttribute("height", alto.toFixed(1));
   }
   inCafe.addEventListener("input", calcular);
   inRatio.addEventListener("input", calcular);

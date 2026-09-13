@@ -1,0 +1,2693 @@
+{%- comment -%}
+  ============================================================================
+  SEPIA COFFEE CO — Sección de portada para Shopify
+  ----------------------------------------------------------------------------
+  Un solo archivo, sin dependencias: estilos, marcado, comportamiento y panel
+  de edición van todos acá dentro.
+
+  Instalación
+    1. Panel de Shopify → Tienda online → Temas → ··· → Editar código
+    2. Secciones → Agregar una sección nueva → nombre: sepia-homepage
+    3. Borrar el contenido de ejemplo y pegar este archivo completo
+    4. Guardar, volver a Personalizar y agregar "Sepia — Portada"
+
+  Catálogo real
+    Elegí una colección en el panel de la sección. Cada producto puede llevar
+    estas etiquetas para completar su ficha (Shopify las llama "tags"):
+      origen:Colombia · Proceso honey     línea superior de la ficha
+      nota:Caramelo                       una etiqueta por nota de cata
+      tueste:2                            del 1 (claro) al 5 (oscuro)
+      metodo:filtrado                     filtrado, espresso o descafeinado
+      perfil:dulce                        frutal, dulce o equilibrado
+      acento:#A2604A                      color de la banda del envase
+    Sin colección elegida se muestran seis cafés de ejemplo.
+
+  Todo el CSS está acotado a .sepia-home y las animaciones llevan prefijo,
+  así que no interfiere con el tema.
+  ============================================================================
+{%- endcomment -%}
+
+<style>
+.sepia-home{position:relative;isolation:isolate;scroll-behavior:smooth;scroll-padding-top:96px;text-align:left}
+.sepia-home .sepia-grano{position:absolute}
+.sepia-home{
+  
+  --crema:#F1ECE6;
+  --arena:#DDD5CD;
+  --taupe:#B6A697;
+  --vino:#7D4047;
+  --carbon:#2E2E2E;
+
+  
+  --papel:#F7F4F0;
+  --arena-claro:#E7E0D9;
+  --vino-hondo:#5E2F35;
+  --vino-claro:#9A5A61;
+  --carbon-suave:#3A3835;
+  --tinta:#2E2E2E;
+  --tinta-media:#6B625B;
+  --tinta-tenue:#8E857D;
+  --linea:rgba(46,46,46,.13);
+  --linea-fuerte:rgba(46,46,46,.26);
+  --linea-clara:rgba(241,236,230,.18);
+
+  
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --sans:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+
+  
+  --ancho:1280px;
+  --gutter:clamp(20px,5vw,64px);
+  --seccion:clamp(72px,11vw,150px);
+  --r-sm:3px;
+  --r-md:6px;
+  --r-lg:14px;
+
+  
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-suave:cubic-bezier(.4,0,.2,1);
+}
+.sepia-home *,.sepia-home *::before,.sepia-home *::after{box-sizing:border-box;margin:0;padding:0}
+.sepia-home{
+  font-family:var(--sans);
+  font-weight:400;
+  font-size:16px;
+  line-height:1.7;
+  color:var(--tinta);
+  background:var(--crema);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:clip;
+  font-variant-ligatures:common-ligatures;
+}
+.sepia-home img,.sepia-home svg{display:block;max-width:100%}
+.sepia-home button,.sepia-home input,.sepia-home select,.sepia-home textarea{font:inherit;color:inherit}
+.sepia-home button{background:none;border:0;cursor:pointer}
+.sepia-home a{color:inherit;text-decoration:none}
+.sepia-home ul,.sepia-home ol{list-style:none}
+.sepia-home .sepia-grano{
+  content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
+  opacity:.035;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.sepia-home .display{
+  font-family:var(--serif);font-weight:500;
+  line-height:1.02;letter-spacing:-.022em;
+  font-size:clamp(2.9rem,7.6vw,6.1rem);
+}
+.sepia-home h1,.sepia-home h2,.sepia-home h3,.sepia-home h4{font-family:var(--serif);font-weight:500;line-height:1.12;letter-spacing:-.015em}
+.sepia-home h2{font-size:clamp(2rem,4.6vw,3.4rem)}
+.sepia-home h3{font-size:clamp(1.3rem,2.2vw,1.75rem)}
+.sepia-home h4{font-size:1.06rem;line-height:1.3}
+.sepia-home em,.sepia-home .it{font-style:italic}
+.sepia-home p{text-wrap:pretty}
+.sepia-home .eyebrow{
+  font-family:var(--sans);font-size:.665rem;font-weight:600;
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--vino);display:flex;align-items:center;gap:.75rem;
+}
+.sepia-home .eyebrow::before{content:"";width:26px;height:1px;background:currentColor;flex:none;opacity:.6}
+.sepia-home .eyebrow.centrado{justify-content:center}
+.sepia-home .eyebrow.sobre-oscuro{color:var(--taupe)}
+.sepia-home .lead{font-size:clamp(1.02rem,1.45vw,1.2rem);line-height:1.68;color:var(--tinta-media);max-width:58ch}
+.sepia-home .micro{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;color:var(--tinta-tenue)}
+.sepia-home .num{font-family:var(--serif);font-style:italic;color:var(--taupe);font-size:.95rem}
+.sepia-home .wrap{width:100%;max-width:var(--ancho);margin-inline:auto;padding-inline:var(--gutter)}
+.sepia-home .seccion{padding-block:var(--seccion);position:relative}
+.sepia-home .oscuro{background:var(--carbon);color:var(--crema)}
+.sepia-home .oscuro .lead{color:rgba(241,236,230,.66)}
+.sepia-home .oscuro .micro{color:rgba(241,236,230,.5)}
+.sepia-home .oscuro h2,.sepia-home .oscuro h3{color:var(--crema)}
+.sepia-home .arena{background:var(--arena-claro)}
+.sepia-home .sec-cabecera{display:grid;gap:1.5rem;margin-bottom:clamp(2.5rem,5vw,4.5rem)}
+@media(min-width:900px){.sepia-home .sec-cabecera{grid-template-columns:1fr auto;align-items:end;gap:3rem}
+.sepia-home .sec-cabecera .sec-texto{max-width:min(44ch,100%)}}
+.sepia-home .sec-cabecera h2{margin-top:.9rem}
+.sepia-home .regla{height:1px;background:var(--linea);border:0}
+.sepia-home .oscuro .regla{background:var(--linea-clara)}
+.sepia-home .btn{
+  --bg:var(--vino);--fg:var(--crema);--bd:var(--vino);
+  display:inline-flex;align-items:center;justify-content:center;gap:.65rem;
+  padding:1.02rem 1.9rem;background:var(--bg);color:var(--fg);
+  border:1px solid var(--bd);border-radius:var(--r-sm);
+  font-size:.71rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  position:relative;overflow:hidden;isolation:isolate;
+  transition:color .4s var(--ease),border-color .4s var(--ease);
+  text-align:center;
+}
+.sepia-home .btn::before{
+  content:"";position:absolute;inset:0;z-index:-1;background:var(--carbon);
+  transform:translateY(101%);transition:transform .46s var(--ease);
+}
+.sepia-home .btn:hover::before,.sepia-home .btn:focus-visible::before{transform:translateY(0)}
+.sepia-home .btn:hover,.sepia-home .btn:focus-visible{color:var(--crema);border-color:var(--carbon)}
+.sepia-home .btn .flecha{transition:transform .4s var(--ease)}
+.sepia-home .btn:hover .flecha{transform:translateX(4px)}
+.sepia-home .btn.fantasma{--bg:transparent;--fg:var(--tinta);--bd:var(--linea-fuerte)}
+.sepia-home .btn.fantasma::before{background:var(--vino)}
+.sepia-home .btn.claro{--bg:var(--crema);--fg:var(--carbon);--bd:var(--crema)}
+.sepia-home .btn.claro::before{background:var(--vino)}
+.sepia-home .btn.contorno-claro{--bg:transparent;--fg:var(--crema);--bd:var(--linea-clara)}
+.sepia-home .btn.contorno-claro::before{background:var(--crema)}
+.sepia-home .btn.contorno-claro:hover,.sepia-home .btn.contorno-claro:focus-visible{color:var(--carbon);border-color:var(--crema)}
+.sepia-home .btn.bloque{width:100%}
+.sepia-home .btn.chico{padding:.78rem 1.35rem;font-size:.655rem}
+.sepia-home .enlace{
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--vino);padding-bottom:.32rem;position:relative;
+}
+.sepia-home .enlace::after{
+  content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;
+  background:currentColor;transform:scaleX(1);transform-origin:right;
+  transition:transform .42s var(--ease);
+}
+.sepia-home .enlace:hover::after,.sepia-home .enlace:focus-visible::after{transform:scaleX(0)}
+.sepia-home .oscuro .enlace{color:var(--taupe)}
+.sepia-home :where(a,button,input,select,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--vino);outline-offset:3px;border-radius:2px;
+}
+.sepia-home .oscuro :where(a,button,input,select):focus-visible{outline-color:var(--taupe)}
+.sepia-home .logo{display:inline-flex;align-items:center;gap:.85rem;color:var(--vino);--fondo-logo:var(--crema)}
+.sepia-home .logo .palabra{
+  font-family:var(--serif);font-weight:500;font-size:1.62rem;
+  letter-spacing:-.012em;line-height:1;position:relative;display:inline-block;white-space:nowrap;
+}
+.sepia-home .logo .i-grano{position:relative;display:inline-block}
+.sepia-home .logo .i-grano svg{
+  position:absolute;left:50%;top:-.35em;transform:translateX(-50%);
+  width:.3em;height:.42em;fill:currentColor;
+}
+.sepia-home .logo .barra{width:1px;height:1.75rem;background:currentColor;opacity:.5}
+.sepia-home .logo .co{
+  font-family:var(--sans);font-size:.545rem;font-weight:500;
+  letter-spacing:.34em;text-transform:uppercase;padding-left:.06em;white-space:nowrap;
+}
+@media(max-width:420px){.sepia-home .logo{gap:.55rem}
+.sepia-home .logo .palabra{font-size:1.34rem}
+.sepia-home .logo .barra{height:1.45rem}
+.sepia-home .logo .co{font-size:.47rem;letter-spacing:.26em}}
+.sepia-home .logo.inverso{color:var(--crema);--fondo-logo:var(--carbon)}
+.sepia-home .logo.grande .palabra{font-size:2.5rem}
+.sepia-home .logo.grande .barra{height:2.6rem}
+.sepia-home .logo.grande .co{font-size:.72rem}
+.sepia-home .anuncio{
+  background:var(--carbon);color:var(--crema);
+  font-size:.665rem;letter-spacing:.17em;text-transform:uppercase;font-weight:500;
+  position:relative;z-index:60;overflow:hidden;
+}
+.sepia-home .anuncio-pista{display:flex;align-items:center;justify-content:center;gap:1.2rem;padding:.72rem var(--gutter);text-align:center}
+.sepia-home .anuncio .punto{width:3px;height:3px;border-radius:50%;background:var(--vino);flex:none}
+.sepia-home .anuncio-item{white-space:nowrap}
+@media(max-width:720px){.sepia-home .opcional{display:none}}
+.sepia-home .solo-movil{display:none}
+@media(max-width:560px){.sepia-home .anuncio-pista{font-size:.6rem;letter-spacing:.13em;padding-block:.62rem}
+.sepia-home .solo-movil{display:inline}
+.sepia-home .solo-ancho{display:none}}
+@media(max-width:600px){.sepia-home .cabecera-acciones .icono-btn.secundario{display:none}}
+.sepia-home .cabecera{
+  position:sticky;top:0;z-index:70;
+  background:rgba(241,236,230,0);
+  transition:background .45s var(--ease),box-shadow .45s var(--ease),border-color .45s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.sepia-home .cabecera.fija{
+  background:rgba(241,236,230,.92);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom-color:var(--linea);
+}
+.sepia-home .cabecera-fila{
+  display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
+  padding-block:1.1rem;transition:padding .45s var(--ease);
+}
+.sepia-home .cabecera.fija .cabecera-fila{padding-block:.78rem}
+.sepia-home .nav{display:none;align-items:center;gap:2.35rem}
+@media(min-width:1000px){.sepia-home .nav{display:flex}}
+.sepia-home .nav a{
+  font-size:.695rem;font-weight:500;letter-spacing:.155em;text-transform:uppercase;
+  position:relative;padding-block:.4rem;color:var(--tinta);
+}
+.sepia-home .nav a::after{
+  content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--vino);
+  transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease);
+}
+.sepia-home .nav a:hover::after,.sepia-home .nav a:focus-visible::after{transform:scaleX(1)}
+.sepia-home .cabecera-acciones{display:flex;align-items:center;gap:.35rem}
+.sepia-home .icono-btn{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
+  color:var(--tinta);transition:background .3s var(--ease),color .3s var(--ease);position:relative;
+}
+.sepia-home .icono-btn:hover{background:rgba(46,46,46,.06)}
+.sepia-home .icono-btn svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sepia-home .contador{
+  position:absolute;top:5px;right:4px;min-width:17px;height:17px;padding:0 4px;
+  background:var(--vino);color:var(--crema);border-radius:9px;
+  font-size:.6rem;font-weight:600;display:grid;place-items:center;line-height:1;
+  transform:scale(0);transition:transform .34s var(--ease);font-family:var(--sans);
+}
+.sepia-home .contador.visible{transform:scale(1)}
+.sepia-home .hamburguesa{display:grid}
+@media(min-width:1000px){.sepia-home .hamburguesa{display:none}}
+.sepia-home .progreso{position:absolute;left:0;bottom:-1px;height:1.5px;background:var(--vino);width:0;transition:width .1s linear;z-index:2}
+.sepia-home .rev{opacity:0;transform:translateY(24px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+.sepia-home .rev.visto{opacity:1;transform:none}
+.sepia-home .rev-d1{transition-delay:.08s}
+.sepia-home .rev-d2{transition-delay:.16s}
+.sepia-home .rev-d3{transition-delay:.24s}
+.sepia-home .rev-d4{transition-delay:.32s}
+.sepia-home .rev-d5{transition-delay:.4s}
+.sepia-home .rev-d6{transition-delay:.48s}
+@media(prefers-reduced-motion:reduce){.sepia-home *,.sepia-home *::before,.sepia-home *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+.sepia-home .rev{opacity:1;transform:none}}
+.sepia-home .portada{position:relative;overflow:hidden;padding-block:clamp(3rem,7vw,5.5rem) clamp(4rem,8vw,7rem)}
+.sepia-home .portada-fondo{position:absolute;inset:0;z-index:0;pointer-events:none}
+.sepia-home .portada-fondo::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(70% 58% at 72% 22%,rgba(221,213,205,.85),transparent 68%),
+    radial-gradient(52% 48% at 12% 88%,rgba(182,166,151,.3),transparent 70%);
+}
+.sepia-home .reticula{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);opacity:.5}
+.sepia-home .reticula span{border-left:1px solid var(--linea)}
+.sepia-home .reticula span:last-child{border-right:1px solid var(--linea)}
+@media(max-width:768px){.sepia-home .reticula{grid-template-columns:repeat(3,1fr)}}
+.sepia-home .portada-rejilla{position:relative;z-index:1;display:grid;gap:clamp(3rem,6vw,4rem);align-items:center}
+@media(min-width:1000px){.sepia-home .portada-rejilla{grid-template-columns:1.04fr .96fr;gap:clamp(3rem,5vw,5rem)}}
+.sepia-home .portada h1{margin:1.6rem 0 1.7rem}
+.sepia-home .portada h1 .linea2{display:block;font-style:italic;color:var(--vino)}
+.sepia-home .portada .lead{max-width:46ch}
+.sepia-home .portada-ctas{display:flex;flex-wrap:wrap;gap:.85rem;margin-top:2.3rem}
+@media(max-width:400px){.sepia-home .portada-ctas .btn{width:100%}}
+.sepia-home .portada-datos{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;
+  margin-top:clamp(2.5rem,5vw,3.6rem);padding-top:1.9rem;border-top:1px solid var(--linea);
+}
+.sepia-home .portada-datos dt{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1;color:var(--vino);margin-bottom:.5rem}
+.sepia-home .portada-datos dd{font-size:.665rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tinta-media);line-height:1.5}
+@media(max-width:520px){.sepia-home .portada-datos{grid-template-columns:1fr;gap:0}
+.sepia-home .portada-datos>div{display:flex;align-items:baseline;gap:.9rem;padding-block:.75rem;border-bottom:1px solid var(--linea)}
+.sepia-home .portada-datos>div:last-child{border-bottom:0}
+.sepia-home .portada-datos dt{margin:0;min-width:3.2rem}}
+.sepia-home .collage{position:relative;aspect-ratio:4/4.6;max-width:540px;margin-inline:auto;width:100%}
+.sepia-home .marco{
+  position:absolute;border-radius:var(--r-lg);overflow:hidden;
+  background:linear-gradient(158deg,#E0D8D0 0%,#CEC3B6 54%,#B9AC9B 100%);
+  box-shadow:0 34px 70px -32px rgba(46,46,46,.5);
+}
+.sepia-home .marco::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+.sepia-home .marco-principal{inset:0 3% 11% 7%}
+.sepia-home .marco-principal svg.arte{width:100%;height:100%}
+.sepia-home .marco-flotante{
+  position:absolute;border-radius:50%;overflow:hidden;
+  background:linear-gradient(150deg,#EFE9E3,#DDD5CD);
+  box-shadow:0 18px 40px -18px rgba(46,46,46,.45);
+  border:6px solid var(--crema);
+}
+.sepia-home .marco-taza{width:33%;left:-3%;bottom:5%;z-index:3}
+.sepia-home .marco-granos{width:20%;right:-1%;top:3%;z-index:3}
+.sepia-home .marco-flotante svg{width:100%;height:100%}
+.sepia-home .pie-foto{
+  position:absolute;right:0;bottom:9%;transform:translateY(50%);z-index:4;
+  background:var(--crema);padding:.72rem 1.15rem;border-radius:var(--r-sm);
+  box-shadow:0 12px 30px -14px rgba(46,46,46,.4);
+  display:flex;align-items:center;gap:.7rem;white-space:nowrap;
+}
+.sepia-home .pie-foto strong{font-family:var(--serif);font-weight:500;font-size:.95rem}
+.sepia-home .pie-foto span{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue)}
+.sepia-home .anillo{
+  position:absolute;left:-9%;top:6%;width:34%;aspect-ratio:1;border-radius:50%;
+  border:1px solid var(--vino);opacity:.3;z-index:0;
+}
+.sepia-home .cue{display:none;align-items:center;gap:.7rem;margin-top:3rem;color:var(--tinta-tenue)}
+@media(min-width:1000px){.sepia-home .cue{display:flex}}
+.sepia-home .cue .barra-cue{width:46px;height:1px;background:var(--linea-fuerte);position:relative;overflow:hidden}
+.sepia-home .cue .barra-cue::after{content:"";position:absolute;inset:0;background:var(--vino);animation:sepia-desliza 2.4s var(--ease) infinite}
+@keyframes sepia-desliza{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+.sepia-home .cinta{
+  background:var(--carbon);color:var(--crema);
+  padding-block:1.25rem;overflow:hidden;position:relative;
+  border-block:1px solid rgba(241,236,230,.1);
+}
+.sepia-home .cinta-pista{display:flex;width:max-content;animation:sepia-corre 42s linear infinite}
+.sepia-home .cinta:hover .cinta-pista{animation-play-state:paused}
+@keyframes sepia-corre{to{transform:translateX(-50%)}}
+.sepia-home .cinta-grupo{display:flex;align-items:center;flex:none}
+.sepia-home .cinta-grupo span{
+  font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+  padding-inline:2.1rem;white-space:nowrap;
+}
+.sepia-home .cinta-grupo svg{width:11px;height:15px;flex:none;opacity:.55}
+.sepia-home .filtros{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.sepia-home .filtro{
+  padding:.6rem 1.15rem;border:1px solid var(--linea-fuerte);border-radius:100px;
+  font-size:.655rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--tinta-media);transition:all .34s var(--ease);white-space:nowrap;
+}
+.sepia-home .filtro:hover{border-color:var(--vino);color:var(--vino)}
+.sepia-home .filtro[aria-pressed="true"]{background:var(--carbon);border-color:var(--carbon);color:var(--crema)}
+.sepia-home .rejilla-cafes{display:grid;gap:clamp(1.6rem,3vw,2.4rem);grid-template-columns:1fr}
+@media(min-width:620px){.sepia-home .rejilla-cafes{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.sepia-home .rejilla-cafes{grid-template-columns:repeat(3,1fr)}}
+.sepia-home .cafe{
+  display:flex;flex-direction:column;background:var(--papel);
+  border:1px solid var(--linea);border-radius:var(--r-lg);overflow:hidden;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease),opacity .4s var(--ease);
+}
+.sepia-home .cafe:hover{transform:translateY(-6px);box-shadow:0 30px 60px -34px rgba(46,46,46,.5);border-color:var(--taupe)}
+.sepia-home .cafe.oculto{display:none}
+.sepia-home .cafe-visual{
+  position:relative;aspect-ratio:1/1.04;
+  background:linear-gradient(158deg,#EDE7E1 0%,#E1D9D2 60%,#D6CCC3 100%);
+  display:grid;place-items:center;overflow:hidden;
+}
+.sepia-home .cafe-visual svg.bolsa{width:60%;height:auto;transition:transform .62s var(--ease)}
+.sepia-home .cafe:hover .cafe-visual svg.bolsa{transform:translateY(-8px) scale(1.045)}
+.sepia-home .cafe-indice{
+  position:absolute;top:1.05rem;left:1.15rem;font-family:var(--serif);font-style:italic;
+  font-size:.95rem;color:var(--tinta-tenue);
+}
+.sepia-home .etiqueta{
+  position:absolute;top:1rem;right:1rem;background:var(--vino);color:var(--crema);
+  padding:.34rem .68rem;border-radius:100px;
+  font-size:.565rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+}
+.sepia-home .etiqueta.neutra{background:var(--carbon)}
+.sepia-home .cafe-cuerpo{padding:1.5rem 1.5rem 1.65rem;display:flex;flex-direction:column;flex:1;gap:.9rem}
+.sepia-home .cafe-origen{font-size:.635rem;letter-spacing:.17em;text-transform:uppercase;color:var(--tinta-tenue);line-height:1.45}
+@media(min-width:620px){.sepia-home .cafe-origen{min-height:2.9em}}
+.sepia-home .cafe h3{font-size:1.42rem;margin-top:.15rem}
+.sepia-home .notas{display:flex;flex-wrap:wrap;gap:.38rem}
+.sepia-home .nota{
+  font-size:.635rem;padding:.3rem .66rem;border:1px solid var(--linea-fuerte);
+  border-radius:100px;color:var(--tinta-media);letter-spacing:.02em;
+}
+.sepia-home .medidor{display:flex;align-items:center;gap:.75rem;padding-top:.2rem}
+.sepia-home .medidor-etq{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tinta-tenue);flex:none}
+.sepia-home .puntos{display:flex;gap:4px}
+.sepia-home .puntos i{width:7px;height:7px;border-radius:50%;border:1px solid var(--taupe);background:transparent}
+.sepia-home .puntos i.lleno{background:var(--vino);border-color:var(--vino)}
+.sepia-home .cafe-pie{
+  margin-top:auto;padding-top:1.2rem;border-top:1px solid var(--linea);
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.sepia-home .precio{font-family:var(--serif);font-size:1.3rem;line-height:1}
+.sepia-home .precio small{font-family:var(--sans);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-tenue);display:block;margin-top:.3rem}
+.sepia-home .agregar{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.72rem 1.1rem;
+  border:1px solid var(--carbon);border-radius:var(--r-sm);
+  font-size:.635rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  transition:background .34s var(--ease),color .34s var(--ease);white-space:nowrap;
+}
+.sepia-home .agregar:hover{background:var(--carbon);color:var(--crema)}
+.sepia-home .agregar.hecho{background:var(--vino);border-color:var(--vino);color:var(--crema)}
+.sepia-home .vacio{grid-column:1/-1;text-align:center;padding:3.5rem 1rem;color:var(--tinta-tenue);font-family:var(--serif);font-style:italic;font-size:1.15rem}
+.sepia-home .recomendador{
+  background:var(--papel);border:1px solid var(--linea);border-radius:var(--r-lg);
+  padding:clamp(1.75rem,4vw,3.2rem);max-width:860px;margin-inline:auto;position:relative;overflow:hidden;
+}
+.sepia-home .reco-progreso{position:absolute;top:0;left:0;height:2px;background:var(--vino);width:33.33%;transition:width .5s var(--ease)}
+.sepia-home .paso{display:none}
+.sepia-home .paso.activo{display:block;animation:sepia-entra .5s var(--ease) both}
+@keyframes sepia-entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sepia-home .paso-num{font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta-tenue);margin-bottom:.9rem}
+.sepia-home .paso h3{margin-bottom:1.75rem;font-size:clamp(1.4rem,2.8vw,2rem)}
+.sepia-home .opciones{display:grid;gap:.75rem;grid-template-columns:1fr}
+@media(min-width:640px){.sepia-home .opciones{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:640px){.sepia-home .opciones.tres{grid-template-columns:repeat(3,1fr)}}
+.sepia-home .opcion{
+  text-align:left;padding:1.15rem 1.25rem;border:1px solid var(--linea-fuerte);
+  border-radius:var(--r-md);background:var(--crema);
+  display:flex;flex-direction:column;justify-content:flex-start;
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .3s var(--ease);
+}
+.sepia-home .opcion:hover{border-color:var(--vino);transform:translateY(-2px)}
+.sepia-home .opcion strong{display:block;font-family:var(--serif);font-size:1.1rem;font-weight:500;margin-bottom:.2rem}
+.sepia-home .opcion span{font-size:.78rem;color:var(--tinta-media);line-height:1.5}
+.sepia-home .reco-atras{margin-top:1.6rem;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue);display:inline-flex;gap:.5rem;align-items:center}
+.sepia-home .reco-atras:hover{color:var(--vino)}
+.sepia-home .resultado{display:none}
+.sepia-home .resultado.activo{display:grid;gap:clamp(1.5rem,3vw,2.5rem);animation:sepia-entra .55s var(--ease) both}
+@media(min-width:640px){.sepia-home .resultado.activo{grid-template-columns:190px 1fr;align-items:center}}
+.sepia-home .resultado-visual{background:linear-gradient(158deg,#EDE7E1,#D9D0C8);border-radius:var(--r-md);display:grid;place-items:center;padding:1.4rem;aspect-ratio:1/1.05}
+.sepia-home .resultado-visual svg{width:72%}
+.sepia-home .resultado h3{font-size:clamp(1.6rem,3.4vw,2.3rem);margin:.3rem 0 .7rem}
+.sepia-home .resultado .lead{margin-bottom:1.3rem;font-size:.96rem}
+.sepia-home .resultado-acciones{display:flex;flex-wrap:wrap;gap:.7rem}
+.sepia-home .frecuencia{
+  display:inline-flex;padding:4px;border:1px solid var(--linea-clara);border-radius:100px;
+  background:rgba(241,236,230,.05);gap:2px;
+}
+.sepia-home .frecuencia button{
+  padding:.66rem 1.25rem;border-radius:100px;font-size:.645rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(241,236,230,.6);
+  transition:background .36s var(--ease),color .36s var(--ease);white-space:nowrap;
+}
+.sepia-home .frecuencia button[aria-pressed="true"]{background:var(--crema);color:var(--carbon)}
+@media(max-width:460px){.sepia-home .frecuencia{width:100%;flex-direction:column;border-radius:var(--r-md)}
+.sepia-home .frecuencia button{border-radius:var(--r-sm)}}
+.sepia-home .planes{display:grid;gap:clamp(1.2rem,2.5vw,1.8rem);grid-template-columns:1fr}
+@media(min-width:780px){.sepia-home .planes{grid-template-columns:repeat(3,1fr);align-items:stretch}}
+.sepia-home .plan{
+  border:1px solid var(--linea-clara);border-radius:var(--r-lg);padding:clamp(1.6rem,3vw,2.2rem);
+  display:flex;flex-direction:column;gap:1.1rem;position:relative;
+  background:rgba(241,236,230,.035);transition:background .45s var(--ease),border-color .45s var(--ease),transform .45s var(--ease);
+}
+.sepia-home .plan:hover{background:rgba(241,236,230,.07);border-color:rgba(241,236,230,.34);transform:translateY(-5px)}
+.sepia-home .plan.destacado{background:var(--crema);color:var(--tinta);border-color:var(--crema)}
+.sepia-home .plan.destacado .plan-desc,.sepia-home .plan.destacado .plan-incluye li{color:var(--tinta-media)}
+.sepia-home .plan.destacado .plan-cantidad{color:var(--vino)}
+.sepia-home .plan-insignia{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--vino);color:var(--crema);padding:.32rem .85rem;border-radius:100px;
+  font-size:.555rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;white-space:nowrap;
+}
+.sepia-home .plan h3{font-size:1.5rem}
+.sepia-home .plan-cantidad{font-size:.64rem;letter-spacing:.17em;text-transform:uppercase;color:var(--taupe)}
+.sepia-home .plan-desc{font-size:.88rem;line-height:1.6;color:rgba(241,236,230,.66)}
+.sepia-home .plan-precio{display:flex;align-items:baseline;gap:.45rem;border-top:1px solid rgba(241,236,230,.2);margin-top:.2rem;padding-top:1.1rem}
+.sepia-home .plan.destacado .plan-precio{border-top-color:var(--linea)}
+.sepia-home .plan-precio .monto{font-family:var(--serif);font-size:2.35rem;line-height:1;transition:opacity .25s var(--ease)}
+.sepia-home .plan-precio .periodo{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;opacity:.62}
+.sepia-home .plan-ahorro{font-size:.645rem;letter-spacing:.13em;text-transform:uppercase;color:var(--vino);font-weight:600}
+.sepia-home .plan.destacado .plan-ahorro{color:var(--vino)}
+.sepia-home .plan:not(.destacado) .plan-ahorro{color:var(--taupe)}
+.sepia-home .plan-incluye{display:grid;gap:.6rem;font-size:.86rem;color:rgba(241,236,230,.7);line-height:1.5}
+.sepia-home .plan-incluye li{display:flex;gap:.6rem;align-items:flex-start}
+.sepia-home .plan-incluye svg{width:13px;height:13px;flex:none;margin-top:.35rem;stroke:var(--taupe);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sepia-home .plan.destacado .plan-incluye svg{stroke:var(--vino)}
+.sepia-home .plan .btn{margin-top:auto}
+.sepia-home .origen-rejilla{display:grid;gap:clamp(2.5rem,5vw,4rem);align-items:center}
+@media(min-width:980px){.sepia-home .origen-rejilla{grid-template-columns:.88fr 1.12fr}}
+.sepia-home .mapa{
+  background:var(--papel);border:1px solid var(--linea);border-radius:var(--r-lg);
+  padding:clamp(1.1rem,2.4vw,1.9rem);position:relative;overflow:hidden;
+}
+.sepia-home .mapa svg{width:100%;height:auto}
+.sepia-home .mapa-cab{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;padding-bottom:.95rem;margin-bottom:1.2rem;border-bottom:1px solid var(--linea)}
+.sepia-home .mapa-pie{display:flex;flex-wrap:wrap;gap:1rem 1.6rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px solid var(--linea)}
+.sepia-home .mapa-leyenda{display:flex;align-items:center;gap:.5rem;font-size:.63rem;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-tenue)}
+.sepia-home .mapa-leyenda i{width:8px;height:8px;border-radius:50%;background:var(--vino);flex:none}
+.sepia-home .mapa-leyenda i.destino{background:var(--carbon);width:9px;height:9px}
+.sepia-home .origen-valores{display:grid;gap:0;margin-top:2.4rem;border-top:1px solid var(--linea)}
+.sepia-home .origen-valores>div{padding-block:1.5rem;border-bottom:1px solid var(--linea);display:grid;gap:.45rem}
+@media(min-width:560px){.sepia-home .origen-valores>div{grid-template-columns:2.6rem 1fr;gap:1.4rem;align-items:start}}
+.sepia-home .origen-valores h4{font-size:1.06rem}
+.sepia-home .origen-valores p{font-size:.9rem;color:var(--tinta-media);line-height:1.62;max-width:52ch}
+.sepia-home .metodo-rejilla{display:grid;gap:clamp(2rem,4vw,3.4rem)}
+@media(min-width:960px){.sepia-home .metodo-rejilla{grid-template-columns:1.15fr .85fr;align-items:start}}
+.sepia-home .pestanas{display:flex;gap:.4rem;flex-wrap:wrap;border-bottom:1px solid var(--linea);padding-bottom:1.15rem;margin-bottom:1.9rem}
+.sepia-home .pestana{
+  padding:.62rem 1.1rem;border-radius:100px;font-size:.655rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-media);
+  border:1px solid transparent;transition:all .33s var(--ease);
+}
+.sepia-home .pestana:hover{color:var(--vino)}
+.sepia-home .pestana[aria-selected="true"]{background:var(--vino);color:var(--crema);border-color:var(--vino)}
+.sepia-home .panel{display:none}
+.sepia-home .panel.activo{display:block;animation:sepia-entra .45s var(--ease) both}
+.sepia-home .panel-especs{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--linea);border:1px solid var(--linea);border-radius:var(--r-md);overflow:hidden;margin-bottom:1.9rem}
+@media(min-width:560px){.sepia-home .panel-especs{grid-template-columns:repeat(4,1fr)}}
+.sepia-home .panel-especs div{background:var(--papel);padding:1.05rem .9rem;text-align:center}
+.sepia-home .panel-especs dt{font-size:.585rem;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue);margin-bottom:.42rem}
+.sepia-home .panel-especs dd{font-family:var(--serif);font-size:1.1rem;line-height:1.2}
+.sepia-home .pasos{counter-reset:p;display:grid;gap:1.15rem}
+.sepia-home .pasos li{counter-increment:p;display:grid;grid-template-columns:2rem 1fr;gap:1.1rem;align-items:start}
+.sepia-home .pasos li::before{
+  content:counter(p,decimal-leading-zero);font-family:var(--serif);font-style:italic;
+  color:var(--vino);font-size:.92rem;line-height:1.7;
+}
+.sepia-home .pasos p{font-size:.93rem;color:var(--tinta-media);line-height:1.66}
+.sepia-home .pasos strong{color:var(--tinta);font-weight:600}
+.sepia-home .calculadora{
+  background:var(--carbon);color:var(--crema);border-radius:var(--r-lg);
+  padding:clamp(1.5rem,3vw,2.2rem);position:sticky;top:110px;
+}
+.sepia-home .calc-cab{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem}
+.sepia-home .calc-cab h3{font-size:1.28rem;color:var(--crema)}
+.sepia-home .calc-visual{display:grid;place-items:center;padding-block:.4rem 1.3rem}
+.sepia-home .calc-visual svg{width:150px;height:auto}
+.sepia-home .campo{margin-bottom:1.25rem}
+.sepia-home .campo label{display:flex;justify-content:space-between;align-items:baseline;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,236,230,.6);margin-bottom:.65rem}
+.sepia-home .campo label b{font-family:var(--serif);font-size:1.12rem;font-weight:500;color:var(--crema);letter-spacing:0;text-transform:none}
+.sepia-home .campo input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:1px;background:rgba(241,236,230,.26);
+  border-radius:2px;outline-offset:8px;
+}
+.sepia-home .campo input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:19px;height:19px;border-radius:50%;
+  background:var(--vino);border:2px solid var(--crema);cursor:pointer;transition:transform .25s var(--ease);
+}
+.sepia-home .campo input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.14)}
+.sepia-home .campo input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;background:var(--vino);
+  border:2px solid var(--crema);cursor:pointer;
+}
+.sepia-home .calc-salida{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(241,236,230,.16);
+  border:1px solid rgba(241,236,230,.16);border-radius:var(--r-md);overflow:hidden;margin-top:.4rem;
+}
+.sepia-home .calc-salida div{background:var(--carbon);padding:1.1rem .9rem;text-align:center}
+.sepia-home .calc-salida dt{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,236,230,.55);margin-bottom:.4rem}
+.sepia-home .calc-salida dd{font-family:var(--serif);font-size:1.6rem;line-height:1}
+.sepia-home .calc-salida dd span{font-size:.75rem;font-family:var(--sans);letter-spacing:.08em;opacity:.6}
+.sepia-home .calc-nota{font-size:.72rem;color:rgba(241,236,230,.5);line-height:1.55;margin-top:1.1rem}
+.sepia-home .rejilla-diario{display:grid;gap:clamp(1.6rem,3vw,2.4rem);grid-template-columns:1fr}
+@media(min-width:700px){.sepia-home .rejilla-diario{grid-template-columns:repeat(3,1fr)}}
+.sepia-home .articulo{display:flex;flex-direction:column;gap:1.1rem}
+.sepia-home .articulo-visual{
+  aspect-ratio:4/3;border-radius:var(--r-md);overflow:hidden;position:relative;
+  background:linear-gradient(158deg,#EAE3DC,#D8CFC6);display:grid;place-items:center;
+}
+.sepia-home .articulo-visual svg{width:52%;transition:transform .6s var(--ease)}
+.sepia-home .articulo:hover .articulo-visual svg{transform:scale(1.07)}
+.sepia-home .articulo-meta{display:flex;gap:.8rem;align-items:center;font-size:.605rem;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue)}
+.sepia-home .articulo-meta .sep{width:14px;height:1px;background:var(--linea-fuerte)}
+.sepia-home .articulo h3{font-size:1.28rem;line-height:1.28}
+@media(min-width:700px){.sepia-home .articulo h3{min-height:2.56em}}
+.sepia-home .articulo:hover h3{color:var(--vino)}
+.sepia-home .articulo h3{transition:color .34s var(--ease)}
+.sepia-home .articulo p{font-size:.89rem;color:var(--tinta-media);line-height:1.62}
+.sepia-home .visita-rejilla{display:grid;gap:clamp(2rem,4vw,3.5rem);align-items:center}
+@media(min-width:900px){.sepia-home .visita-rejilla{grid-template-columns:1fr 1fr}}
+.sepia-home .visita-visual{
+  border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/3.2;position:relative;
+  background:linear-gradient(160deg,#3A3835 0%,#2E2E2E 55%,#242220 100%);display:grid;place-items:center;
+}
+.sepia-home .visita-visual svg{width:74%}
+.sepia-home .horario{display:grid;gap:0;margin-top:2rem;border-top:1px solid var(--linea)}
+.sepia-home .horario div{display:flex;justify-content:space-between;gap:1rem;padding-block:.85rem;border-bottom:1px solid var(--linea);font-size:.86rem}
+.sepia-home .horario dt{color:var(--tinta-media)}
+.sepia-home .horario dd{font-weight:500;font-variant-numeric:tabular-nums}
+.sepia-home .visita-datos{display:flex;flex-wrap:wrap;gap:1.8rem;margin-top:2rem}
+.sepia-home .visita-datos>div{display:grid;gap:.3rem}
+.sepia-home .visita-datos a{color:var(--vino);border-bottom:1px solid transparent;transition:border-color .3s var(--ease)}
+.sepia-home .visita-datos a:hover{border-bottom-color:currentColor}
+.sepia-home .boletin{text-align:center;max-width:620px;margin-inline:auto}
+.sepia-home .boletin h2{margin:1.1rem 0 1rem}
+.sepia-home .boletin .lead{margin-inline:auto;text-align:center}
+.sepia-home .form-boletin{display:flex;gap:.6rem;margin-top:2.1rem;flex-wrap:wrap}
+.sepia-home .form-boletin input{
+  flex:1 1 220px;min-width:0;padding:1.02rem 1.2rem;
+  background:rgba(241,236,230,.06);border:1px solid rgba(241,236,230,.24);
+  border-radius:var(--r-sm);color:var(--crema);font-size:.9rem;
+}
+.sepia-home .form-boletin input::placeholder{color:rgba(241,236,230,.42)}
+.sepia-home .form-boletin input:focus{outline:none;border-color:var(--taupe);background:rgba(241,236,230,.1)}
+.sepia-home .form-boletin .btn{flex:0 0 auto}
+@media(max-width:520px){.sepia-home .form-boletin .btn{width:100%}}
+.sepia-home .form-nota{font-size:.7rem;color:rgba(241,236,230,.42);margin-top:1.1rem;line-height:1.5}
+.sepia-home .form-ok{
+  display:none;margin-top:1.5rem;padding:1rem 1.2rem;border:1px solid var(--taupe);
+  border-radius:var(--r-sm);font-size:.88rem;color:var(--crema);
+}
+.sepia-home .form-ok.visible{display:block;animation:sepia-entra .45s var(--ease) both}
+.sepia-home .pie{background:var(--carbon);color:var(--crema);padding-top:clamp(3.5rem,7vw,5.5rem)}
+.sepia-home .pie-rejilla{display:grid;gap:clamp(2.2rem,4vw,3rem);grid-template-columns:1fr}
+@media(min-width:640px){.sepia-home .pie-rejilla{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.sepia-home .pie-rejilla{grid-template-columns:1.6fr repeat(3,1fr)}}
+.sepia-home .pie-marca p{font-size:.88rem;color:rgba(241,236,230,.58);line-height:1.65;max-width:34ch;margin-top:1.35rem}
+.sepia-home .pie h4{font-size:.645rem;letter-spacing:.2em;text-transform:uppercase;font-family:var(--sans);font-weight:600;color:var(--taupe);margin-bottom:1.2rem}
+.sepia-home .pie-lista{display:grid;gap:.72rem}
+.sepia-home .pie-lista a{font-size:.875rem;color:rgba(241,236,230,.68);transition:color .3s var(--ease)}
+.sepia-home .pie-lista a:hover{color:var(--crema)}
+.sepia-home .redes{display:flex;gap:.55rem;margin-top:1.7rem}
+.sepia-home .redes a{
+  width:38px;height:38px;border:1px solid rgba(241,236,230,.2);border-radius:50%;
+  display:grid;place-items:center;transition:background .32s var(--ease),border-color .32s var(--ease),color .32s var(--ease);
+}
+.sepia-home .redes a:hover{background:var(--crema);color:var(--carbon);border-color:var(--crema)}
+.sepia-home .redes svg{width:16px;height:16px;fill:currentColor}
+.sepia-home .pie-abajo{
+  margin-top:clamp(3rem,6vw,4.5rem);padding-block:1.6rem;border-top:1px solid rgba(241,236,230,.12);
+  display:flex;flex-wrap:wrap;gap:1rem 1.8rem;align-items:center;justify-content:space-between;
+  font-size:.7rem;color:rgba(241,236,230,.45);
+}
+.sepia-home .pie-legal{display:flex;flex-wrap:wrap;gap:1.3rem}
+.sepia-home .pie-legal a:hover{color:var(--crema)}
+.sepia-home .pagos{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
+.sepia-home .pago{
+  height:24px;padding-inline:.55rem;border:1px solid rgba(241,236,230,.18);border-radius:3px;
+  display:grid;place-items:center;font-size:.545rem;letter-spacing:.11em;font-weight:600;
+  color:rgba(241,236,230,.55);text-transform:uppercase;
+}
+.sepia-home .velo{
+  position:fixed;inset:0;background:rgba(46,46,46,.55);backdrop-filter:blur(3px);
+  z-index:90;opacity:0;visibility:hidden;transition:opacity .42s var(--ease),visibility .42s;
+}
+.sepia-home .velo.abierto{opacity:1;visibility:visible}
+.sepia-home .panel-lat{
+  position:fixed;top:0;right:0;height:100dvh;width:min(420px,100vw);
+  background:var(--crema);z-index:95;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .5s var(--ease);
+  box-shadow:-20px 0 60px -30px rgba(46,46,46,.6);
+}
+.sepia-home .panel-lat.abierto{transform:none}
+.sepia-home .panel-lat.izq{right:auto;left:0;transform:translateX(-100%);box-shadow:20px 0 60px -30px rgba(46,46,46,.6)}
+.sepia-home .panel-lat.izq.abierto{transform:none}
+.sepia-home .panel-cab{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.35rem var(--gutter);border-bottom:1px solid var(--linea);flex:none;
+}
+.sepia-home .panel-cab h2{font-size:1.2rem}
+.sepia-home .panel-cuerpo{flex:1;overflow-y:auto;padding:1.5rem var(--gutter);-webkit-overflow-scrolling:touch}
+.sepia-home .panel-pie{padding:1.35rem var(--gutter) calc(1.35rem + env(safe-area-inset-bottom));border-top:1px solid var(--linea);flex:none;background:var(--papel)}
+.sepia-home .nav-movil{display:grid;gap:.2rem}
+.sepia-home .nav-movil a{
+  font-family:var(--serif);font-size:1.85rem;padding-block:.72rem;
+  border-bottom:1px solid var(--linea);display:flex;align-items:center;justify-content:space-between;
+  transition:color .3s var(--ease),padding-left .3s var(--ease);
+}
+.sepia-home .nav-movil a:hover{color:var(--vino);padding-left:.4rem}
+.sepia-home .nav-movil a small{font-family:var(--sans);font-size:.6rem;letter-spacing:.16em;color:var(--tinta-tenue);text-transform:uppercase}
+.sepia-home .item-carro{display:grid;grid-template-columns:68px 1fr auto;gap:1rem;padding-block:1.15rem;border-bottom:1px solid var(--linea);align-items:center}
+.sepia-home .item-carro-visual{background:var(--arena-claro);border-radius:var(--r-sm);aspect-ratio:1;display:grid;place-items:center;padding:.4rem}
+.sepia-home .item-carro-visual svg{width:68%}
+.sepia-home .item-carro h4{font-size:1rem;margin-bottom:.18rem}
+.sepia-home .item-carro .sub{font-size:.665rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-tenue)}
+.sepia-home .cantidad{display:inline-flex;align-items:center;border:1px solid var(--linea-fuerte);border-radius:100px;margin-top:.5rem}
+.sepia-home .cantidad button{width:26px;height:26px;display:grid;place-items:center;font-size:.9rem;line-height:1;color:var(--tinta-media)}
+.sepia-home .cantidad button:hover{color:var(--vino)}
+.sepia-home .cantidad span{min-width:22px;text-align:center;font-size:.78rem;font-variant-numeric:tabular-nums}
+.sepia-home .item-precio{font-family:var(--serif);font-size:1rem;white-space:nowrap}
+.sepia-home .carro-vacio{text-align:center;padding:3.5rem 0;color:var(--tinta-tenue)}
+.sepia-home .carro-vacio svg{width:46px;height:46px;margin:0 auto 1.2rem;stroke:var(--taupe);stroke-width:1.2;fill:none}
+.sepia-home .carro-vacio p{font-family:var(--serif);font-style:italic;font-size:1.15rem;margin-bottom:1.5rem}
+.sepia-home .total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.1rem}
+.sepia-home .total .etq{font-size:.66rem;letter-spacing:.17em;text-transform:uppercase;color:var(--tinta-media)}
+.sepia-home .total .val{font-family:var(--serif);font-size:1.6rem}
+.sepia-home .envio-nota{font-size:.72rem;color:var(--tinta-tenue);text-align:center;margin-top:.9rem;line-height:1.5}
+.sepia-home .wsp{
+  position:fixed;right:clamp(16px,3vw,26px);bottom:clamp(16px,3vw,26px);z-index:80;
+  width:52px;height:52px;border-radius:50%;background:var(--carbon);color:var(--crema);
+  display:grid;place-items:center;box-shadow:0 14px 34px -14px rgba(46,46,46,.75);
+  transition:transform .38s var(--ease),background .38s var(--ease);
+}
+.sepia-home .wsp:hover{transform:scale(1.08) translateY(-2px);background:var(--vino)}
+.sepia-home .wsp svg{width:23px;height:23px;fill:currentColor}
+.sepia-home .saltar{
+  position:absolute;left:-9999px;top:0;z-index:200;background:var(--vino);color:var(--crema);
+  padding:.85rem 1.4rem;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+}
+.sepia-home .saltar:focus{left:12px;top:12px}
+.sepia-home .ruta{stroke-dasharray:1;stroke-dashoffset:1}
+.sepia-home .rev.visto .ruta{animation:sepia-traza 1.7s var(--ease) forwards}
+@keyframes sepia-traza{to{stroke-dashoffset:0}}
+.sepia-home .puntos-origen circle{transform-box:fill-box;transform-origin:center;transform:scale(0)}
+.sepia-home .rev.visto .puntos-origen circle{animation:sepia-brota .6s var(--ease) forwards}
+.sepia-home .rev.visto .puntos-origen circle:nth-child(2){animation-delay:.12s}
+.sepia-home .rev.visto .puntos-origen circle:nth-child(3){animation-delay:.24s}
+.sepia-home .rev.visto .puntos-origen circle:nth-child(4){animation-delay:.36s}
+.sepia-home .rev.visto .puntos-origen circle:nth-child(5){animation-delay:.48s}
+@keyframes sepia-brota{to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.sepia-home .ruta{stroke-dashoffset:0}
+.sepia-home .puntos-origen circle{transform:none}}
+.sepia-home .solo-lectores{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:520px){.sepia-home .pie-foto{right:0;padding:.6rem .85rem;gap:.5rem}
+.sepia-home .pie-foto strong{font-size:.85rem}
+.sepia-home .pie-foto span{font-size:.53rem;letter-spacing:.12em}
+.sepia-home .collage{aspect-ratio:4/4.9}}
+.sepia-home .ln{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.sepia-home .sl{fill:currentColor}
+</style>
+
+<div class="sepia-home" data-sepia-id="{{ section.id }}">
+<div class="sepia-grano" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <defs>
+  <linearGradient id="sepia-g-bolsa" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#AC9E8C"/><stop offset=".14" stop-color="#E2DAD0"/>
+    <stop offset=".44" stop-color="#F1EBE4"/><stop offset=".74" stop-color="#D6CABC"/>
+    <stop offset="1" stop-color="#A3947F"/>
+  </linearGradient>
+  <linearGradient id="sepia-g-sello" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#A89A87"/><stop offset=".42" stop-color="#CFC4B6"/>
+    <stop offset="1" stop-color="#9E8F7C"/>
+  </linearGradient>
+  <filter id="sepia-f-bolsa" x="-25%" y="-12%" width="150%" height="132%">
+    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#2E2E2E" flood-opacity=".2"/>
+  </filter>
+  <radialGradient id="sepia-g-cafe" cx=".38" cy=".32" r=".82">
+    <stop offset="0" stop-color="#7A5136"/><stop offset=".5" stop-color="#553A22"/>
+    <stop offset="1" stop-color="#2F1D10"/>
+  </radialGradient>
+  <radialGradient id="sepia-g-platillo" cx=".36" cy=".28" r=".9">
+    <stop offset="0" stop-color="#F4EFE9"/><stop offset="1" stop-color="#D6CCC2"/>
+  </radialGradient>
+  <linearGradient id="sepia-g-ceramica" x1=".2" y1="0" x2=".85" y2="1">
+    <stop offset="0" stop-color="#F7F3ED"/><stop offset="1" stop-color="#DFD6CC"/>
+  </linearGradient>
+ </defs>
+
+ <!-- Bolsa de 250 g. El color de la banda se hereda de --acento -->
+ <symbol id="sepia-i-bolsa" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#2E2E2E" opacity=".17"/>
+   <g filter="url(#sepia-f-bolsa)">
+     <path d="M32 44h136v186a14 14 0 0 1-14 14H46a14 14 0 0 1-14-14z" fill="url(#sepia-g-bolsa)"/>
+     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#2E2E2E" opacity=".085"/>
+     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#2E2E2E" opacity=".065"/>
+     <path d="M32 25h136v19H32z" fill="url(#sepia-g-sello)"/>
+     <path d="M40 25v19M48 25v19M56 25v19M64 25v19M72 25v19M80 25v19M88 25v19M96 25v19M104 25v19M112 25v19M120 25v19M128 25v19M136 25v19M144 25v19M152 25v19M160 25v19"
+           stroke="#2E2E2E" stroke-width="1" opacity=".17"/>
+     <path d="M32 44h136v3.5H32z" fill="#2E2E2E" opacity=".2"/>
+   </g>
+   <text x="101" y="84" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="6.2"
+         letter-spacing="2" fill="#2E2E2E" opacity=".45">250 G · GRANO ENTERO</text>
+   <path d="M46 94h108" stroke="#2E2E2E" stroke-width="1" opacity=".16"/>
+   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#7D4047)"/>
+   <path d="M32 106h136v3H32z" fill="#2E2E2E" opacity=".14"/>
+   <text x="100" y="148" text-anchor="middle" font-family="Playfair Display,Georgia,serif"
+         font-size="32" fill="#F1ECE6">sepia</text>
+   <text x="101" y="169" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="6.4"
+         letter-spacing="3.4" fill="#F1ECE6" opacity=".76">COFFEE CO</text>
+   <circle cx="100" cy="212" r="8.5" fill="#2E2E2E" opacity=".08"/>
+   <circle cx="100" cy="212" r="3.4" fill="#2E2E2E" opacity=".17"/>
+   <text x="101" y="238" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="5.6"
+         letter-spacing="2.4" fill="#2E2E2E" opacity=".34">TOSTADO EN SANTIAGO</text>
+ </symbol>
+
+ <!-- Taza vista cenital -->
+ <symbol id="sepia-i-taza" viewBox="0 0 200 200">
+   <ellipse cx="100" cy="108" rx="90" ry="88" fill="#2E2E2E" opacity=".07"/>
+   <circle cx="100" cy="100" r="90" fill="url(#sepia-g-platillo)"/>
+   <circle cx="100" cy="100" r="90" fill="none" stroke="#B6A697" stroke-width=".8" opacity=".5"/>
+   <circle cx="100" cy="100" r="68" fill="url(#sepia-g-ceramica)"/>
+   <circle cx="100" cy="100" r="68" fill="none" stroke="#B6A697" stroke-width=".8" opacity=".45"/>
+   <circle cx="100" cy="100" r="59" fill="#E0D7CD"/>
+   <circle cx="100" cy="100" r="53" fill="url(#sepia-g-cafe)"/>
+   <circle cx="100" cy="100" r="53" fill="none" stroke="#C3AF97" stroke-width="3" opacity=".28"/>
+   <path d="M70 78a40 40 0 0 1 24-14" fill="none" stroke="#F1ECE6" stroke-width="3" opacity=".2" stroke-linecap="round"/>
+   <path d="M66 70a68 68 0 0 1 34-18" fill="none" stroke="#F1ECE6" stroke-width="2.6" opacity=".24" stroke-linecap="round"/>
+ </symbol>
+
+ <!-- Granos -->
+ <symbol id="sepia-i-granos" viewBox="0 0 120 120">
+   <g transform="translate(40 44) rotate(-24)">
+     <ellipse rx="15" ry="21" fill="#5E4636"/>
+     <path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#3D2C21" stroke-width="2.2" stroke-linecap="round"/>
+   </g>
+   <g transform="translate(76 62) rotate(32)">
+     <ellipse rx="14" ry="20" fill="#7A5B45"/>
+     <path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#523B2B" stroke-width="2.1" stroke-linecap="round"/>
+   </g>
+   <g transform="translate(50 86) rotate(8)">
+     <ellipse rx="13" ry="18.5" fill="#4A3629"/>
+     <path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#2E211A" stroke-width="2" stroke-linecap="round"/>
+   </g>
+ </symbol>
+
+ <!-- Grano simple para cintas e íconos -->
+ <symbol id="sepia-i-grano" viewBox="0 0 24 32">
+   <ellipse cx="12" cy="16" rx="10.5" ry="15" fill="currentColor"/>
+   <path d="M12 2.5C17 10 7 22 12 29.5" fill="none" stroke="#2E2E2E" stroke-width="2.2" stroke-linecap="round" opacity=".55"/>
+ </symbol>
+
+ <!-- Íconos de interfaz -->
+ <symbol id="sepia-i-carro" viewBox="0 0 24 24"><path d="M7 8V6a5 5 0 0 1 10 0v2"/><path d="M4.5 8h15l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H7.2a1.5 1.5 0 0 1-1.5-1.3z"/></symbol>
+ <symbol id="sepia-i-menu" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h12"/></symbol>
+ <symbol id="sepia-i-cerrar" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+ <symbol id="sepia-i-check" viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 6.5"/></symbol>
+ <symbol id="sepia-i-flecha" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+ <symbol id="sepia-i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></symbol>
+ <symbol id="sepia-i-usuario" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+ <symbol id="sepia-i-ig" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.2A6.6 6.6 0 1 0 18.6 12 6.6 6.6 0 0 0 12 5.4zm0 10.9A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3zm6.9-11.1a1.55 1.55 0 1 1-1.55-1.55A1.55 1.55 0 0 1 18.9 5.2z"/></symbol>
+ <symbol id="sepia-i-wsp" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.75-.87-2-.97-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.16-.17.2-.34.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3 0-.46.13-.61.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5h-.56c-.2 0-.5.07-.77.37-.26.3-1 .98-1 2.4s1.03 2.78 1.17 2.98c.15.2 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.32.19 1.81.12.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.25.17-1.37-.07-.12-.27-.2-.56-.34zM12 2.05A9.9 9.9 0 0 0 2.1 12c0 1.75.46 3.46 1.34 4.96L2 22l5.2-1.36A9.9 9.9 0 1 0 12 2.05zm0 18.1a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.1.81.83-3.02-.2-.31A8.2 8.2 0 1 1 12 20.15z"/></symbol>
+ <symbol id="sepia-i-tiktok" viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .73-5.07V9.66a5.72 5.72 0 0 0-.73-.05A5.69 5.69 0 1 0 15.54 15.3V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.29 4.29 0 0 1-3.24-1.48z"/></symbol>
+ <symbol id="sepia-i-hoja" viewBox="0 0 24 24"><path d="M20 4s-1 12-9 12a5 5 0 0 1-5-5c0-7 14-7 14-7z"/><path d="M4 20s2-6 7-9"/></symbol>
+ <symbol id="sepia-i-fuego" viewBox="0 0 24 24"><path d="M12 2.5s5.5 4.5 5.5 9.5a5.5 5.5 0 0 1-11 0c0-2 1-3.5 1-3.5s.5 2 2 2c0-3 2.5-5.5 2.5-8z"/></symbol>
+ <symbol id="sepia-i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.4l3.5 2"/></symbol>
+ <symbol id="sepia-i-camion" viewBox="0 0 24 24"><path d="M2 7h11v10H2zM13 10h4.5l3.5 3.5V17h-8z"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></symbol>
+</svg>
+
+{%- if section.settings.mostrar_anuncio -%}
+<div class="anuncio">
+  <div class="anuncio-pista">
+    <span class="anuncio-item">{{ section.settings.anuncio_1 }}</span>
+    {%- if section.settings.anuncio_2 != blank -%}
+      <span class="punto opcional" aria-hidden="true"></span>
+      <span class="anuncio-item opcional">{{ section.settings.anuncio_2 }}</span>
+    {%- endif -%}
+    {%- if section.settings.anuncio_3 != blank -%}
+      <span class="punto opcional" aria-hidden="true"></span>
+      <span class="anuncio-item opcional">{{ section.settings.anuncio_3 }}</span>
+    {%- endif -%}
+  </div>
+</div>
+{%- endif -%}
+
+<!-- ===================== PORTADA ===================== -->
+<section class="portada" id="portada">
+  <div class="portada-fondo" aria-hidden="true">
+    <div class="reticula"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="wrap portada-rejilla">
+    <div class="portada-texto">
+      {%- if section.settings.portada_epigrafe != blank -%}
+        <p class="eyebrow rev">{{ section.settings.portada_epigrafe }}</p>
+      {%- endif -%}
+
+      <h1 class="display rev rev-d1">
+        {{ section.settings.portada_titulo }}<br>
+        <span class="linea2">{{ section.settings.portada_titulo_2 }}</span>
+      </h1>
+
+      <div class="lead rev rev-d2">{{ section.settings.portada_bajada }}</div>
+
+      <div class="portada-ctas rev rev-d3">
+        {%- if section.settings.cta_1_texto != blank -%}
+          <a href="{{ section.settings.cta_1_url | default: '#cafes' }}" class="btn">
+            {{ section.settings.cta_1_texto }}
+            <svg class="ln flecha" width="15" height="15" viewBox="0 0 24 24"><use href="#sepia-i-flecha"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.cta_2_texto != blank -%}
+          <a href="{{ section.settings.cta_2_url | default: '#suscripcion' }}" class="btn fantasma">{{ section.settings.cta_2_texto }}</a>
+        {%- endif -%}
+      </div>
+
+      <dl class="portada-datos rev rev-d4">
+        <div><dt>{{ section.settings.dato_1_cifra }}</dt><dd>{{ section.settings.dato_1_texto }}</dd></div>
+        <div><dt>{{ section.settings.dato_2_cifra }}</dt><dd>{{ section.settings.dato_2_texto }}</dd></div>
+        <div><dt>{{ section.settings.dato_3_cifra }}</dt><dd>{{ section.settings.dato_3_texto }}</dd></div>
+      </dl>
+
+      <div class="cue rev rev-d5" aria-hidden="true">
+        <span class="barra-cue"></span>
+        <span class="micro">{{ section.settings.cue_texto }}</span>
+      </div>
+    </div>
+
+    <div class="portada-visual rev rev-d2">
+      <div class="collage">
+        <div class="marco marco-principal">
+          {%- if section.settings.portada_imagen != blank -%}
+            {{ section.settings.portada_imagen | image_url: width: 1100 | image_tag:
+               loading: 'eager', fetchpriority: 'high',
+               style: 'width:100%;height:100%;object-fit:cover',
+               alt: section.settings.portada_imagen.alt | default: shop.name }}
+          {%- else -%}
+            <svg class="arte" viewBox="20 4 220 292" role="img" aria-label="Envase de 250 gramos de café de especialidad">
+              <g transform="translate(30 14) rotate(-4 100 136)" style="--acento:{{ section.settings.acento_portada }}">
+                <use href="#sepia-i-bolsa" width="200" height="272"/>
+              </g>
+            </svg>
+          {%- endif -%}
+        </div>
+
+        {%- unless section.settings.portada_imagen != blank -%}
+          <div class="marco-flotante marco-taza" aria-hidden="true">
+            <svg viewBox="0 0 200 200"><use href="#sepia-i-taza"/></svg>
+          </div>
+          <div class="marco-flotante marco-granos" aria-hidden="true">
+            <svg viewBox="0 0 120 120"><use href="#sepia-i-granos"/></svg>
+          </div>
+        {%- endunless -%}
+
+        {%- if section.settings.pie_foto_titulo != blank -%}
+          <div class="pie-foto">
+            <strong>{{ section.settings.pie_foto_titulo }}</strong>
+            <span>{{ section.settings.pie_foto_detalle }}</span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CINTA ===================== -->
+{%- if section.settings.cinta_textos != blank -%}
+<div class="cinta" aria-hidden="true" data-cinta="{{ section.settings.cinta_textos | escape }}">
+  <div class="cinta-pista" data-cinta-pista></div>
+</div>
+{%- endif -%}
+
+<!-- ===================== CATÁLOGO ===================== -->
+{%- assign coleccion = section.settings.coleccion -%}
+{%- assign hay_productos = false -%}
+{%- if coleccion != blank and coleccion.products.size > 0 -%}{%- assign hay_productos = true -%}{%- endif -%}
+
+<section class="seccion" id="cafes">
+  <div class="wrap">
+    <div class="sec-cabecera">
+      <div class="sec-texto">
+        <p class="eyebrow rev">{{ section.settings.cafes_epigrafe }}</p>
+        <h2 class="rev rev-d1">{{ section.settings.cafes_titulo }}<br><em>{{ section.settings.cafes_titulo_2 }}</em></h2>
+      </div>
+      {%- if section.settings.mostrar_filtros -%}
+      <div class="filtros rev rev-d2" role="group" aria-label="Filtrar cafés por método">
+        <button class="filtro" type="button" data-filtro="todos" aria-pressed="true">Todos</button>
+        <button class="filtro" type="button" data-filtro="filtrado" aria-pressed="false">Filtrado</button>
+        <button class="filtro" type="button" data-filtro="espresso" aria-pressed="false">Espresso</button>
+        <button class="filtro" type="button" data-filtro="descafeinado" aria-pressed="false">Sin cafeína</button>
+      </div>
+      {%- endif -%}
+    </div>
+
+    <div class="rejilla-cafes" data-rejilla>
+      {%- if hay_productos -%}
+        {%- for producto in coleccion.products limit: section.settings.cantidad -%}
+          {%- assign origen = '' -%}{%- assign tueste = 3 -%}{%- assign metodos = '' -%}
+          {%- assign perfil = 'equilibrado' -%}{%- assign acento = section.settings.acento_portada -%}
+          {%- assign notas = '' -%}
+          {%- for t in producto.tags -%}
+            {%- if t contains 'origen:' -%}{%- assign origen = t | remove: 'origen:' -%}
+            {%- elsif t contains 'tueste:' -%}{%- assign tueste = t | remove: 'tueste:' | times: 1 -%}
+            {%- elsif t contains 'metodo:' -%}{%- assign m = t | remove: 'metodo:' -%}{%- assign metodos = metodos | append: m | append: ' ' -%}
+            {%- elsif t contains 'perfil:' -%}{%- assign perfil = t | remove: 'perfil:' -%}
+            {%- elsif t contains 'acento:' -%}{%- assign acento = t | remove: 'acento:' -%}
+            {%- elsif t contains 'nota:' -%}{%- assign nt = t | remove: 'nota:' -%}{%- assign notas = notas | append: nt | append: '||' -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if origen == '' -%}{%- assign origen = producto.type | default: producto.vendor -%}{%- endif -%}
+          {%- if metodos == '' -%}{%- assign metodos = 'filtrado espresso' -%}{%- endif -%}
+          {%- assign lista_notas = notas | split: '||' -%}
+          {%- assign variante = producto.selected_or_first_available_variant -%}
+          {%- case tueste -%}
+            {%- when 1 -%}{%- assign etq_tueste = 'Claro' -%}
+            {%- when 2 -%}{%- assign etq_tueste = 'Medio-claro' -%}
+            {%- when 3 -%}{%- assign etq_tueste = 'Medio' -%}
+            {%- when 4 -%}{%- assign etq_tueste = 'Medio-oscuro' -%}
+            {%- else -%}{%- assign etq_tueste = 'Oscuro' -%}
+          {%- endcase -%}
+
+          <article class="cafe rev rev-d{% cycle '1','2','3','4','5','6' %}"
+                   data-id="{{ producto.handle }}" data-perfil="{{ perfil }}" data-tueste="{{ tueste }}"
+                   data-nombre="{{ producto.title | escape }}" data-precio="{{ producto.price | money }}"
+                   data-acento="{{ acento }}" data-metodo="{{ metodos | strip }}"
+                   data-origen="{{ origen | escape }}" data-url="{{ producto.url }}"
+                   data-desc="{{ producto.description | strip_html | truncate: 210 | escape }}">
+            <a class="cafe-enlace" href="{{ producto.url }}" tabindex="-1" aria-hidden="true">
+              <div class="cafe-visual">
+                <span class="cafe-indice" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                {%- unless producto.available -%}<span class="etiqueta neutra">Agotado</span>{%- endunless -%}
+                {%- if producto.featured_image -%}
+                  {{ producto.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', alt: producto.title }}
+                {%- else -%}
+                  <svg class="bolsa" viewBox="0 0 200 272" style="--acento:{{ acento }}"><use href="#sepia-i-bolsa"/></svg>
+                {%- endif -%}
+              </div>
+            </a>
+            <div class="cafe-cuerpo">
+              <p class="cafe-origen">{{ origen }}</p>
+              <h3><a href="{{ producto.url }}">{{ producto.title }}</a></h3>
+              {%- if lista_notas.size > 0 -%}
+              <ul class="notas">
+                {%- for nota in lista_notas -%}<li class="nota">{{ nota }}</li>{%- endfor -%}
+              </ul>
+              {%- endif -%}
+              <div class="medidor">
+                <span class="medidor-etq">Tueste</span>
+                <span class="puntos" role="img" aria-label="Tueste {{ etq_tueste | downcase }}">
+                  {%- for i in (1..5) -%}<i class="{% if i <= tueste %}lleno{% endif %}"></i>{%- endfor -%}
+                </span>
+                <span class="medidor-etq" style="color:var(--tinta-media)">{{ etq_tueste }}</span>
+              </div>
+              <div class="cafe-pie">
+                <p class="precio">{{ producto.price | money }}<small>{{ variante.title | default: '250 g' }}</small></p>
+                <form method="post" action="/cart/add" accept-charset="UTF-8" style="margin:0" data-agregar-form>
+                  <input type="hidden" name="form_type" value="product">
+                  <input type="hidden" name="utf8" value="✓">
+                  <input type="hidden" name="id" value="{{ variante.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="agregar" {% unless producto.available %}disabled{% endunless %}>
+                    {%- if producto.available -%}Agregar{%- else -%}Agotado{%- endif -%}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      {%- else -%}
+
+        <article class="cafe rev rev-d1" data-id="cordillera" data-perfil="dulce" data-tueste="3"
+                 data-nombre="Cordillera" data-precio="$9.900" data-acento="#7D4047" data-metodo="filtrado espresso"
+                 data-origen="Blend de casa · Colombia + Brasil" data-desc="Nuestro café de todos los días. Dulce, redondo y sin filos: funciona igual de bien en la italiana de la mañana que en un filtrado lento del domingo." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">01</span>
+          <span class="etiqueta">Más vendido</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#7D4047" role="img" aria-label="Envase de Cordillera, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Blend de casa · Colombia + Brasil</p>
+            <h3>Cordillera</h3>
+            <ul class="notas"><li class="nota">Chocolate de leche</li><li class="nota">Panela</li><li class="nota">Almendra</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste medio"><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Medio</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$9.900<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+        <article class="cafe rev rev-d2" data-id="yirgacheffe" data-perfil="frutal" data-tueste="1"
+                 data-nombre="Yirgacheffe" data-precio="$13.500" data-acento="#9A8A6E" data-metodo="filtrado"
+                 data-origen="Etiopía · Lavado · 2.000 msnm" data-desc="El más floral de la carta. Tueste claro para no tapar nada. Pedile un filtrado y dejalo enfriar un poco: ahí aparece el durazno." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">02</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#9A8A6E" role="img" aria-label="Envase de Yirgacheffe, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Etiopía · Lavado · 2.000 msnm</p>
+            <h3>Yirgacheffe</h3>
+            <ul class="notas"><li class="nota">Jazmín</li><li class="nota">Durazno blanco</li><li class="nota">Bergamota</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste claro"><i class="lleno"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Claro</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$13.500<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+        <article class="cafe rev rev-d3" data-id="huila" data-perfil="dulce" data-tueste="2"
+                 data-nombre="Huila" data-precio="$12.400" data-acento="#A2604A" data-metodo="filtrado espresso"
+                 data-origen="Colombia · Proceso honey" data-desc="El honey le deja el azúcar del mucílago adentro. Cuerpo jugoso, dulzor largo y un final a cacao que aguanta leche sin desaparecer." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">03</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#A2604A" role="img" aria-label="Envase de Huila, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Colombia · Proceso honey</p>
+            <h3>Huila</h3>
+            <ul class="notas"><li class="nota">Caramelo</li><li class="nota">Ciruela</li><li class="nota">Cacao</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste medio-claro"><i class="lleno"></i><i class="lleno"></i><i class=""></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Medio-claro</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$12.400<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+        <article class="cafe rev rev-d4" data-id="cajamarca" data-perfil="equilibrado" data-tueste="3"
+                 data-nombre="Cajamarca" data-precio="$11.800" data-acento="#6E6A55" data-metodo="filtrado"
+                 data-origen="Perú · Orgánico · Lavado" data-desc="Limpio y equilibrado, con una acidez cítrica que no molesta. Es el que recomendamos para empezar a tomar café de especialidad sin azúcar." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">04</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#6E6A55" role="img" aria-label="Envase de Cajamarca, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Perú · Orgánico · Lavado</p>
+            <h3>Cajamarca</h3>
+            <ul class="notas"><li class="nota">Naranja</li><li class="nota">Panela</li><li class="nota">Nuez</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste medio"><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Medio</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$11.800<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+        <article class="cafe rev rev-d5" data-id="huehuetenango" data-perfil="frutal" data-tueste="2"
+                 data-nombre="Huehuetenango" data-precio="$13.200" data-acento="#8A5A5F" data-metodo="filtrado espresso"
+                 data-origen="Guatemala · Lavado · 1.800 msnm" data-desc="Altura pura. Acidez de manzana, cuerpo sedoso y un retrogusto a fruto seco que se queda un rato. Lote chico, se acaba rápido." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">05</span>
+          <span class="etiqueta">Nuevo</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#8A5A5F" role="img" aria-label="Envase de Huehuetenango, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Guatemala · Lavado · 1.800 msnm</p>
+            <h3>Huehuetenango</h3>
+            <ul class="notas"><li class="nota">Manzana roja</li><li class="nota">Miel</li><li class="nota">Macadamia</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste medio-claro"><i class="lleno"></i><i class="lleno"></i><i class=""></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Medio-claro</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$13.200<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+        <article class="cafe rev rev-d6" data-id="sin-noche" data-perfil="dulce" data-tueste="3"
+                 data-nombre="Sin Noche" data-precio="$12.900" data-acento="#2E2E2E" data-metodo="filtrado espresso descafeinado"
+                 data-origen="Descafeinado · Colombia · Caña" data-desc="Descafeinado con azúcar de caña, sin solventes. Mantiene el cuerpo y el dulzor. Para la sobremesa larga o para el que no puede después de las seis." data-url="{{ routes.all_products_collection_url }}">
+          <div class="cafe-visual">
+            <span class="cafe-indice" aria-hidden="true">06</span>
+          <span class="etiqueta neutra">Sin cafeína</span>
+            <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#2E2E2E" role="img" aria-label="Envase de Sin Noche, 250 gramos"><use href="#sepia-i-bolsa"/></svg>
+          </div>
+          <div class="cafe-cuerpo">
+            <p class="cafe-origen">Descafeinado · Colombia · Caña</p>
+            <h3>Sin Noche</h3>
+            <ul class="notas"><li class="nota">Cacao amargo</li><li class="nota">Vainilla</li><li class="nota">Avellana</li></ul>
+            <div class="medidor">
+              <span class="medidor-etq">Tueste</span>
+              <span class="puntos" role="img" aria-label="Tueste medio"><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class=""></i><i class=""></i></span>
+              <span class="medidor-etq" style="color:var(--tinta-media)">Medio</span>
+            </div>
+            <div class="cafe-pie">
+              <p class="precio">$12.900<small>250 g · grano o molido</small></p>
+              <a class="agregar" href="{{ routes.all_products_collection_url }}">Ver en la tienda</a>
+            </div>
+          </div>
+        </article>
+      {%- endif -%}
+      <p class="vacio" data-sin-resultados hidden>No hay cafés para ese método. Probá con otro.</p>
+    </div>
+
+    {%- if hay_productos and coleccion.products.size > section.settings.cantidad -%}
+      <p style="margin-top:clamp(2rem,4vw,3rem)">
+        <a class="enlace" href="{{ coleccion.url }}">Ver la carta completa</a>
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+<!-- ===================== RECOMENDADOR ===================== -->
+{%- if section.settings.mostrar_recomendador -%}
+<section class="seccion arena" id="recomendador">
+  <div class="wrap">
+    <div class="sec-cabecera" style="text-align:center;display:block">
+      <p class="eyebrow centrado rev">{{ section.settings.reco_epigrafe }}</p>
+      <h2 class="rev rev-d1" style="margin-top:.9rem">{{ section.settings.reco_titulo }}</h2>
+      <p class="lead rev rev-d2" style="margin:1.1rem auto 0;text-align:center">{{ section.settings.reco_bajada }}</p>
+    </div>
+
+    <div class="recomendador rev rev-d3">
+      <div class="reco-progreso" data-reco-progreso aria-hidden="true"></div>
+
+      <div class="paso activo" data-paso="1">
+        <p class="paso-num">Pregunta 1 de 3</p>
+        <h3>¿Cómo lo preparás en casa?</h3>
+        <div class="opciones tres">
+          <button class="opcion" type="button" data-resp="filtrado"><strong>Filtrado</strong><span>V60, Chemex, prensa francesa o Aeropress</span></button>
+          <button class="opcion" type="button" data-resp="espresso"><strong>Espresso</strong><span>Máquina, cafetera italiana o cápsula rellenable</span></button>
+          <button class="opcion" type="button" data-resp="ambos"><strong>Las dos</strong><span>Depende del día y de las ganas</span></button>
+        </div>
+      </div>
+
+      <div class="paso" data-paso="2">
+        <p class="paso-num">Pregunta 2 de 3</p>
+        <h3>¿Negro o con leche?</h3>
+        <div class="opciones">
+          <button class="opcion" type="button" data-resp="negro"><strong>Negro</strong><span>Quiero sentir el origen sin nada encima</span></button>
+          <button class="opcion" type="button" data-resp="leche"><strong>Con leche</strong><span>Latte, cortado o capuchino la mayoría de las veces</span></button>
+        </div>
+        <button class="reco-atras" type="button" data-atras>← Volver</button>
+      </div>
+
+      <div class="paso" data-paso="3">
+        <p class="paso-num">Pregunta 3 de 3</p>
+        <h3>¿Qué te gusta más en la taza?</h3>
+        <div class="opciones tres">
+          <button class="opcion" type="button" data-resp="frutal"><strong>Frutal y floral</strong><span>Acidez viva, aromas a fruta y flores</span></button>
+          <button class="opcion" type="button" data-resp="dulce"><strong>Dulce y achocolatado</strong><span>Cuerpo, caramelo, cacao, frutos secos</span></button>
+          <button class="opcion" type="button" data-resp="equilibrado"><strong>Equilibrado</strong><span>Ni muy ácido ni muy tostado, parejo</span></button>
+        </div>
+        <button class="reco-atras" type="button" data-atras>← Volver</button>
+      </div>
+
+      <div class="resultado" data-reco-resultado role="status" aria-live="polite">
+        <div class="resultado-visual">
+          <svg class="bolsa" data-reco-bolsa viewBox="0 0 200 272" aria-hidden="true"><use href="#sepia-i-bolsa"/></svg>
+        </div>
+        <div>
+          <p class="eyebrow">Tu café es</p>
+          <h3 data-reco-nombre>—</h3>
+          <p class="micro" data-reco-origen style="margin-bottom:.9rem">—</p>
+          <p class="lead" data-reco-desc>—</p>
+          <div class="resultado-acciones">
+            <button class="btn" type="button" data-reco-agregar>Lo quiero · <span data-reco-precio></span></button>
+            <button class="btn fantasma" type="button" data-reco-reiniciar>Empezar de nuevo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<!-- ===================== SUSCRIPCIÓN ===================== -->
+{%- assign planes = section.blocks | where: 'type', 'plan' -%}
+{%- if planes.size > 0 -%}
+<section class="seccion oscuro" id="suscripcion">
+  <div class="wrap">
+    <div class="sec-cabecera">
+      <div class="sec-texto">
+        <p class="eyebrow sobre-oscuro rev">{{ section.settings.susc_epigrafe }}</p>
+        <h2 class="rev rev-d1">{{ section.settings.susc_titulo }}<br><em>{{ section.settings.susc_titulo_2 }}</em></h2>
+        <div class="lead rev rev-d2" style="margin-top:1.2rem">{{ section.settings.susc_bajada }}</div>
+      </div>
+      <div class="frecuencia rev rev-d3" role="group" aria-label="Elegir frecuencia de envío">
+        <button type="button" data-frec="4" data-desc="0.20" aria-pressed="false">Semanal</button>
+        <button type="button" data-frec="2" data-desc="0.15" aria-pressed="true">Cada 15 días</button>
+        <button type="button" data-frec="1" data-desc="0.10" aria-pressed="false">Mensual</button>
+      </div>
+    </div>
+
+    <div class="planes">
+      {%- for bloque in planes -%}
+        <article class="plan rev rev-d{{ forloop.index }}{% if bloque.settings.destacado %} destacado{% endif %}"
+                 data-base="{{ bloque.settings.precio_base }}" {{ bloque.shopify_attributes }}>
+          {%- if bloque.settings.destacado and bloque.settings.insignia != blank -%}
+            <span class="plan-insignia">{{ bloque.settings.insignia }}</span>
+          {%- endif -%}
+          <h3>{{ bloque.settings.nombre }}</h3>
+          <p class="plan-cantidad">{{ bloque.settings.cantidad }}</p>
+          <p class="plan-desc">{{ bloque.settings.descripcion }}</p>
+          <div class="plan-precio">
+            <span class="monto" data-monto></span>
+            <span class="periodo">por envío</span>
+          </div>
+          <p class="plan-ahorro" data-ahorro></p>
+          {%- assign beneficios = bloque.settings.beneficios | newline_to_br | split: '<br />' -%}
+          <ul class="plan-incluye">
+            {%- for b in beneficios -%}
+              {%- assign texto = b | strip -%}
+              {%- if texto != blank -%}
+                <li><svg viewBox="0 0 24 24"><use href="#sepia-i-check"/></svg>{{ texto }}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          <a href="{{ bloque.settings.url | default: '#' }}"
+             class="btn bloque{% unless bloque.settings.destacado %} contorno-claro{% endunless %}">{{ bloque.settings.cta }}</a>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<!-- ===================== ORIGEN ===================== -->
+{%- assign valores = section.blocks | where: 'type', 'valor' -%}
+<section class="seccion" id="origen">
+  <div class="wrap">
+    <div class="origen-rejilla">
+      <div>
+        <p class="eyebrow rev">{{ section.settings.origen_epigrafe }}</p>
+        <h2 class="rev rev-d1" style="margin:.9rem 0 1.2rem">{{ section.settings.origen_titulo }}<br><em>{{ section.settings.origen_titulo_2 }}</em></h2>
+        <div class="lead rev rev-d2">{{ section.settings.origen_bajada }}</div>
+
+        {%- if valores.size > 0 -%}
+        <div class="origen-valores rev rev-d3">
+          {%- for bloque in valores -%}
+            <div {{ bloque.shopify_attributes }}>
+              <span class="num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+              <div>
+                <h4>{{ bloque.settings.titulo }}</h4>
+                <p>{{ bloque.settings.texto }}</p>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- endif -%}
+      </div>
+
+      <div class="mapa rev rev-d2">
+        <div class="mapa-cab">
+          <span class="micro">{{ section.settings.mapa_izq }}</span>
+          <span class="micro">{{ section.settings.mapa_der }}</span>
+        </div>
+        <svg viewBox="0 84 880 326" role="img" aria-label="Diagrama del cinturón cafetero: los orígenes de Guatemala, Colombia, Perú, Brasil y Etiopía convergen en Santiago de Chile.">
+          <rect x="0" y="112" width="880" height="140" fill="#DDD5CD" opacity=".55"/>
+          <g stroke="#B6A697" stroke-width="1.2">
+            <line x1="0" y1="112" x2="880" y2="112" stroke-dasharray="4 7"/>
+            <line x1="0" y1="182" x2="880" y2="182" stroke-width="1.6"/>
+            <line x1="0" y1="252" x2="880" y2="252" stroke-dasharray="4 7"/>
+          </g>
+          <g font-family="Montserrat,sans-serif" font-size="14" letter-spacing="2" fill="#8E857D">
+            <text x="876" y="103" text-anchor="end">TRÓPICO DE CÁNCER</text>
+            <text x="876" y="176" text-anchor="end" fill="#6B625B">ECUADOR</text>
+            <text x="876" y="274" text-anchor="end">TRÓPICO DE CAPRICORNIO</text>
+          </g>
+          <text x="4" y="102" font-family="Montserrat,sans-serif" font-size="15" letter-spacing="3.4"
+                fill="#7D4047">EL CINTURÓN DEL CAFÉ</text>
+
+          <g class="rutas" fill="none" stroke="#7D4047" stroke-width="2" opacity=".5" stroke-linecap="round">
+            <path class="ruta" pathLength="1" style="animation-delay:.15s" d="M112 136 Q 34 300 236 380"/>
+            <path class="ruta" pathLength="1" style="animation-delay:.3s"  d="M176 182 Q 116 312 236 380"/>
+            <path class="ruta" pathLength="1" style="animation-delay:.45s" d="M204 228 Q 170 318 236 380"/>
+            <path class="ruta" pathLength="1" style="animation-delay:.6s"  d="M318 236 Q 356 324 236 380"/>
+            <path class="ruta" pathLength="1" style="animation-delay:.75s" d="M596 178 Q 516 384 236 380"/>
+          </g>
+
+          <g class="puntos-origen" fill="#7D4047">
+            <circle cx="112" cy="136" r="7.5"/><circle cx="176" cy="182" r="7.5"/>
+            <circle cx="204" cy="228" r="7.5"/><circle cx="318" cy="236" r="7.5"/>
+            <circle cx="596" cy="178" r="7.5"/>
+          </g>
+          <g font-family="Montserrat,sans-serif" font-size="17" letter-spacing="2" fill="#2E2E2E">
+            <text x="128" y="130">GUATEMALA</text>
+            <text x="192" y="176">COLOMBIA</text>
+            <text x="220" y="222">PERÚ</text>
+            <text x="334" y="230">BRASIL</text>
+            <text x="612" y="172">ETIOPÍA</text>
+          </g>
+          <g font-family="Montserrat,sans-serif" font-size="12.5" letter-spacing="1.2" fill="#8E857D">
+            <text x="128" y="148">Huehuetenango</text>
+            <text x="192" y="194">Huila · Nariño</text>
+            <text x="220" y="240">Cajamarca</text>
+            <text x="334" y="248">Cerrado</text>
+            <text x="612" y="190">Yirgacheffe</text>
+          </g>
+
+          <g>
+            <circle cx="236" cy="380" r="22" fill="none" stroke="#2E2E2E" stroke-width="1.2" opacity=".3"/>
+            <circle cx="236" cy="380" r="9.5" fill="#2E2E2E"/>
+            <text x="272" y="375" font-family="Playfair Display,Georgia,serif" font-size="30" fill="#2E2E2E">Santiago</text>
+            <text x="273" y="397" font-family="Montserrat,sans-serif" font-size="12" letter-spacing="2.8" fill="#8E857D">NUESTRA TOSTADURÍA</text>
+          </g>
+        </svg>
+        <div class="mapa-pie">
+          <span class="mapa-leyenda"><i></i> Origen del lote</span>
+          <span class="mapa-leyenda"><i class="destino"></i> Tueste y despacho</span>
+          <span class="mapa-leyenda" style="margin-left:auto">{{ section.settings.mapa_altura }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MÉTODO ===================== -->
+{%- assign metodos = section.blocks | where: 'type', 'metodo' -%}
+{%- if metodos.size > 0 -%}
+<section class="seccion arena" id="metodo">
+  <div class="wrap">
+    <div class="sec-cabecera">
+      <div class="sec-texto">
+        <p class="eyebrow rev">{{ section.settings.metodo_epigrafe }}</p>
+        <h2 class="rev rev-d1">{{ section.settings.metodo_titulo }}<br><em>{{ section.settings.metodo_titulo_2 }}</em></h2>
+      </div>
+      <div class="lead rev rev-d2">{{ section.settings.metodo_bajada }}</div>
+    </div>
+
+    <div class="metodo-rejilla">
+      <div class="rev rev-d1">
+        <div class="pestanas" role="tablist" aria-label="Métodos de preparación">
+          {%- for bloque in metodos -%}
+            <button class="pestana" role="tab" type="button"
+                    id="tab-{{ section.id }}-{{ forloop.index }}"
+                    aria-controls="panel-{{ section.id }}-{{ forloop.index }}"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                    {{ bloque.shopify_attributes }}>{{ bloque.settings.nombre }}</button>
+          {%- endfor -%}
+        </div>
+
+        {%- for bloque in metodos -%}
+          <div class="panel{% if forloop.first %} activo{% endif %}"
+               id="panel-{{ section.id }}-{{ forloop.index }}" role="tabpanel"
+               aria-labelledby="tab-{{ section.id }}-{{ forloop.index }}" tabindex="0">
+            <dl class="panel-especs">
+              <div><dt>Proporción</dt><dd>{{ bloque.settings.proporcion }}</dd></div>
+              <div><dt>Molienda</dt><dd>{{ bloque.settings.molienda }}</dd></div>
+              <div><dt>Agua</dt><dd>{{ bloque.settings.agua }}</dd></div>
+              <div><dt>Tiempo</dt><dd>{{ bloque.settings.tiempo }}</dd></div>
+            </dl>
+            {%- assign pasos = bloque.settings.pasos | newline_to_br | split: '<br />' -%}
+            <ol class="pasos">
+              {%- for paso in pasos -%}
+                {%- assign texto = paso | strip -%}
+                {%- if texto != blank -%}<li><p>{{ texto }}</p></li>{%- endif -%}
+              {%- endfor -%}
+            </ol>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.mostrar_calculadora -%}
+      <aside class="calculadora rev rev-d2" aria-label="Calculadora de proporción café y agua">
+        <div class="calc-cab">
+          <h3>Calculadora</h3>
+          <span class="micro" style="color:rgba(241,236,230,.5)">Café · Agua</span>
+        </div>
+
+        <div class="calc-visual">
+          <svg viewBox="0 0 160 200" aria-hidden="true">
+            <path d="M26 26h108l-33 76a9 9 0 0 1-8 5H67a9 9 0 0 1-8-5z" fill="#F1ECE6" opacity=".12"/>
+            <path d="M26 26h108l-33 76a9 9 0 0 1-8 5H67a9 9 0 0 1-8-5z" fill="none" stroke="#B6A697" stroke-width="1.4"/>
+            <path d="M40 44h80l-21 48a6 6 0 0 1-5 4H66a6 6 0 0 1-5-4z" fill="#7D4047" opacity=".5"/>
+            <g stroke="#B6A697" stroke-width=".8" opacity=".5">
+              <path d="M58 26 78 106"/><path d="M80 26v81"/><path d="M102 26 82 106"/>
+            </g>
+            <path d="M22 26h116" stroke="#B6A697" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M80 110v16" stroke="#B6A697" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>
+            <clipPath id="sepia-cp-jarra-{{ section.id }}"><path d="M44 130h72v42a16 16 0 0 1-16 16H60a16 16 0 0 1-16-16z"/></clipPath>
+            <g clip-path="url(#sepia-cp-jarra-{{ section.id }})">
+              <rect data-nivel-agua x="44" y="150" width="72" height="38" fill="#7D4047" opacity=".72"
+                    style="transition:y .45s cubic-bezier(.22,.61,.36,1),height .45s cubic-bezier(.22,.61,.36,1)"/>
+            </g>
+            <path d="M44 130h72v42a16 16 0 0 1-16 16H60a16 16 0 0 1-16-16z" fill="none" stroke="#B6A697" stroke-width="1.4"/>
+            <path d="M40 130h80" stroke="#B6A697" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="campo">
+          <label for="cafe-{{ section.id }}">Café en gramos <b data-val-cafe>20 g</b></label>
+          <input type="range" id="cafe-{{ section.id }}" data-in-cafe min="10" max="60" step="1" value="20" />
+        </div>
+        <div class="campo">
+          <label for="ratio-{{ section.id }}">Proporción <b data-val-ratio>1:16</b></label>
+          <input type="range" id="ratio-{{ section.id }}" data-in-ratio min="13" max="18" step="1" value="16" />
+        </div>
+
+        <dl class="calc-salida">
+          <div><dt>Agua</dt><dd data-out-agua>320<span> ml</span></dd></div>
+          <div><dt>Rinde</dt><dd data-out-tazas>2<span> tazas</span></dd></div>
+        </dl>
+        <p class="calc-nota">{{ section.settings.calc_nota }}</p>
+      </aside>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<!-- ===================== DIARIO ===================== -->
+{%- assign diario = section.settings.blog -%}
+{%- if section.settings.mostrar_diario -%}
+<section class="seccion" id="diario">
+  <div class="wrap">
+    <div class="sec-cabecera">
+      <div class="sec-texto">
+        <p class="eyebrow rev">{{ section.settings.diario_epigrafe }}</p>
+        <h2 class="rev rev-d1">{{ section.settings.diario_titulo }}<br><em>{{ section.settings.diario_titulo_2 }}</em></h2>
+      </div>
+      {%- if diario != blank -%}
+        <a href="{{ diario.url }}" class="enlace rev rev-d2">Ver todas las notas</a>
+      {%- endif -%}
+    </div>
+
+    <div class="rejilla-diario">
+      {%- if diario != blank and diario.articles.size > 0 -%}
+        {%- for articulo in diario.articles limit: 3 -%}
+          <a href="{{ articulo.url }}" class="articulo rev rev-d{{ forloop.index }}">
+            <div class="articulo-visual">
+              {%- if articulo.image -%}
+                {{ articulo.image | image_url: width: 700 | image_tag: loading: 'lazy', alt: articulo.title }}
+              {%- else -%}
+                <svg viewBox="0 0 120 120" aria-hidden="true"><use href="#sepia-i-granos"/></svg>
+              {%- endif -%}
+            </div>
+            <div class="articulo-meta">
+              <span>{{ articulo.tags.first | default: 'Diario' }}</span>
+              <span class="sep"></span>
+              <span>{{ articulo.published_at | date: '%d.%m.%Y' }}</span>
+            </div>
+            <h3>{{ articulo.title }}</h3>
+            <p>{{ articulo.excerpt_or_content | strip_html | truncate: 150 }}</p>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        <a href="#" class="articulo rev rev-d1">
+          <div class="articulo-visual">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <g fill="none" stroke="#8E857D" stroke-width="1.8">
+                <circle cx="28" cy="60" r="17"/><circle cx="60" cy="60" r="17"/>
+              </g>
+              <circle cx="92" cy="60" r="17" fill="none" stroke="#7D4047" stroke-width="1.8"/>
+              <g fill="#8E857D">
+                <circle cx="24.6" cy="55.1" r="2.6"/><circle cx="34.2" cy="58.4" r="2.6"/>
+                <circle cx="26.9" cy="64.8" r="2.6"/><circle cx="20.8" cy="61.7" r="2.6"/>
+                <circle cx="35.1" cy="65.9" r="2.6"/><circle cx="31.4" cy="51.6" r="2.6"/>
+                <circle cx="55.4" cy="53.2" r="1.7"/><circle cx="62.9" cy="51.8" r="1.7"/>
+                <circle cx="51.4" cy="58.9" r="1.7"/><circle cx="58.7" cy="59.8" r="1.7"/>
+                <circle cx="66.4" cy="57.6" r="1.7"/><circle cx="54.8" cy="65.7" r="1.7"/>
+                <circle cx="62.1" cy="66.6" r="1.7"/><circle cx="69.2" cy="63.1" r="1.7"/>
+                <circle cx="47.9" cy="62.4" r="1.7"/><circle cx="60.3" cy="46.8" r="1.7"/>
+              </g>
+              <g fill="#7D4047">
+                <circle cx="86.4" cy="50.3" r="1.05"/><circle cx="91.2" cy="49.4" r="1.05"/>
+                <circle cx="95.8" cy="51.6" r="1.05"/><circle cx="82.1" cy="53.7" r="1.05"/>
+                <circle cx="87.9" cy="54.2" r="1.05"/><circle cx="93.4" cy="55.1" r="1.05"/>
+                <circle cx="98.6" cy="55.8" r="1.05"/><circle cx="79.4" cy="57.9" r="1.05"/>
+                <circle cx="84.6" cy="58.3" r="1.05"/><circle cx="89.8" cy="58.7" r="1.05"/>
+                <circle cx="95.1" cy="59.4" r="1.05"/><circle cx="100.2" cy="60.1" r="1.05"/>
+                <circle cx="78.6" cy="62.4" r="1.05"/><circle cx="83.8" cy="62.8" r="1.05"/>
+                <circle cx="89.1" cy="63.2" r="1.05"/><circle cx="94.3" cy="63.6" r="1.05"/>
+                <circle cx="99.4" cy="64.2" r="1.05"/><circle cx="81.2" cy="66.8" r="1.05"/>
+                <circle cx="86.5" cy="67.2" r="1.05"/><circle cx="91.8" cy="67.6" r="1.05"/>
+                <circle cx="97.1" cy="68.1" r="1.05"/><circle cx="84.3" cy="71.1" r="1.05"/>
+                <circle cx="89.6" cy="71.4" r="1.05"/><circle cx="94.8" cy="71.2" r="1.05"/>
+                <circle cx="88.2" cy="46.4" r="1.05"/><circle cx="93.1" cy="46.9" r="1.05"/>
+              </g>
+              <g font-family="Montserrat,sans-serif" font-size="6" letter-spacing="1.1" fill="#8E857D" text-anchor="middle">
+                <text x="28" y="90">GRUESA</text><text x="60" y="90">MEDIA</text>
+                <text x="92" y="90" fill="#7D4047">FINA</text>
+              </g>
+            </svg>
+          </div>
+          <div class="articulo-meta"><span>Guía</span><span class="sep"></span><span>6 min</span></div>
+          <h3>La molienda es la variable que más cambia tu taza</h3>
+          <p>Antes de comprar otra bolsa, movete media vuelta en el molinillo. La mayoría de los cafés «malos» están mal molidos, no mal tostados.</p>
+        </a>
+        <a href="#" class="articulo rev rev-d2">
+          <div class="articulo-visual">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="58" cy="72" r="26" fill="none" stroke="#7D4047" stroke-width="2.4"/>
+              <path d="M58 46V26" stroke="#8E857D" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M58 30c14-12 30-8 30-8s2 18-14 22c-9 2-16-6-16-14z" fill="none" stroke="#8E857D" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M50 62c6 6 6 14 0 20" fill="none" stroke="#7D4047" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+            </svg>
+          </div>
+          <div class="articulo-meta"><span>Proceso</span><span class="sep"></span><span>5 min</span></div>
+          <h3>Lavado, honey y natural, explicado sin vueltas</h3>
+          <p>Qué le pasa a la cereza después de la cosecha y por qué eso define si tu café sabe a limón, a durazno o a fruta madura.</p>
+        </a>
+        <a href="#" class="articulo rev rev-d3">
+          <div class="articulo-visual">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <path d="M60 24c0 0 26 26 26 42a26 26 0 0 1-52 0c0-16 26-42 26-42z" fill="none" stroke="#7D4047" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M48 68a12 12 0 0 0 10 12" fill="none" stroke="#8E857D" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M30 98h60" stroke="#8E857D" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+          <div class="articulo-meta"><span>Técnica</span><span class="sep"></span><span>4 min</span></div>
+          <h3>El agua también es un ingrediente</h3>
+          <p>El café es 98% agua. En Santiago la de la llave es dura y aplana los aromas. Te contamos qué usar sin comprar nada raro.</p>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<!-- ===================== CAFETERÍA ===================== -->
+{%- if section.settings.mostrar_cafeteria -%}
+<section class="seccion" id="cafeteria" style="padding-top:0">
+  <div class="wrap">
+    <hr class="regla" style="margin-bottom:var(--seccion)">
+    <div class="visita-rejilla">
+      <div class="visita-visual rev">
+        {%- if section.settings.cafeteria_imagen != blank -%}
+          {{ section.settings.cafeteria_imagen | image_url: width: 1000 | image_tag: loading: 'lazy',
+             alt: section.settings.cafeteria_imagen.alt | default: shop.name }}
+        {%- else -%}
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <g stroke="#DDD5CD" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M44 96h84v40a30 30 0 0 1-30 30H74a30 30 0 0 1-30-30z"/>
+              <path d="M128 106h14a18 18 0 0 1 0 36h-14"/>
+              <path d="M36 178h130"/>
+              <g opacity=".6">
+                <path d="M78 76c-8-8 8-14 0-22"/><path d="M98 72c-8-8 8-16 0-24"/><path d="M118 76c-8-8 8-14 0-22"/>
+              </g>
+            </g>
+            <path d="M45.5 97.5h81v13h-81z" fill="#7D4047" opacity=".5"/>
+            <ellipse cx="86" cy="97.5" rx="40.5" ry="3.4" fill="#7D4047" opacity=".72"/>
+          </svg>
+        {%- endif -%}
+      </div>
+
+      <div>
+        <p class="eyebrow rev">{{ section.settings.cafeteria_epigrafe }}</p>
+        <h2 class="rev rev-d1" style="margin:.9rem 0 1.2rem">{{ section.settings.cafeteria_titulo }}<br><em>{{ section.settings.cafeteria_titulo_2 }}</em></h2>
+        <div class="lead rev rev-d2">{{ section.settings.cafeteria_texto }}</div>
+
+        {%- assign filas = section.settings.horario | newline_to_br | split: '<br />' -%}
+        {%- if filas.size > 0 -%}
+        <dl class="horario rev rev-d3">
+          {%- for fila in filas -%}
+            {%- assign partes = fila | strip | split: '|' -%}
+            {%- if partes.size > 1 -%}
+              <div><dt>{{ partes[0] | strip }}</dt><dd>{{ partes[1] | strip }}</dd></div>
+            {%- endif -%}
+          {%- endfor -%}
+        </dl>
+        {%- endif -%}
+
+        <div class="visita-datos rev rev-d4">
+          {%- if section.settings.direccion != blank -%}
+            <div><span class="micro">Dónde</span><p>{{ section.settings.direccion | newline_to_br }}</p></div>
+          {%- endif -%}
+          {%- if section.settings.correo != blank -%}
+            <div><span class="micro">Escribinos</span><p><a href="mailto:{{ section.settings.correo }}">{{ section.settings.correo }}</a></p></div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<!-- ===================== BOLETÍN ===================== -->
+{%- if section.settings.mostrar_boletin -%}
+<section class="seccion oscuro" id="boletin">
+  <div class="wrap">
+    <div class="boletin">
+      <p class="eyebrow centrado sobre-oscuro rev">{{ section.settings.boletin_epigrafe }}</p>
+      <h2 class="rev rev-d1">{{ section.settings.boletin_titulo }}<br><em>{{ section.settings.boletin_titulo_2 }}</em></h2>
+      <div class="lead rev rev-d2">{{ section.settings.boletin_bajada }}</div>
+
+      {%- form 'customer', class: 'form-boletin rev rev-d3' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label for="correo-{{ section.id }}" class="solo-lectores">Tu correo</label>
+        <input type="email" id="correo-{{ section.id }}" name="contact[email]"
+               placeholder="{{ section.settings.boletin_placeholder }}" required autocomplete="email"
+               value="{{ form.email }}">
+        <button class="btn claro" type="submit">{{ section.settings.boletin_cta }}</button>
+        {%- if form.posted_successfully? -%}
+          <p class="form-ok visible" style="flex:1 1 100%" role="status">{{ section.settings.boletin_gracias }}</p>
+        {%- elsif form.errors -%}
+          <p class="form-ok visible" style="flex:1 1 100%;border-color:#7D4047" role="alert">
+            {{ form.errors | default_errors }}
+          </p>
+        {%- endif -%}
+      {%- endform -%}
+
+      <p class="form-nota rev rev-d4">{{ section.settings.boletin_nota }}</p>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- if section.settings.whatsapp != blank -%}
+  <a class="wsp" href="https://wa.me/{{ section.settings.whatsapp | remove: '+' | remove: ' ' | remove: '-' }}"
+     target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#sepia-i-wsp"/></svg>
+  </a>
+{%- endif -%}
+
+</div>
+
+<style>
+  .sepia-home .cafe-visual img,.sepia-home .articulo-visual img,
+  .sepia-home .visita-visual img,.sepia-home .marco-principal img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .sepia-home .cafe-enlace{display:block;color:inherit}
+  .sepia-home .cafe h3 a{color:inherit;transition:color .3s var(--ease)}
+  .sepia-home .cafe:hover h3 a{color:var(--vino)}
+  .sepia-home .agregar[disabled]{opacity:.45;cursor:not-allowed}
+  .sepia-home .agregar[disabled]:hover{background:none;color:inherit}
+  .sepia-home .lead p:not(:last-child),.sepia-home .plan-desc p:not(:last-child){margin-bottom:.8rem}
+  .sepia-home .lead p:last-child{margin-bottom:0}
+</style>
+
+<script>
+(function(){
+  "use strict";
+  var ID = "{{ section.id }}";
+  var MONEDA = {{ section.settings.simbolo_moneda | json }};
+
+  function iniciar(){
+    var raiz = document.querySelector('[data-sepia-id="' + ID + '"]');
+    if(!raiz || raiz.dataset.sepiaListo === "1") return;
+    raiz.dataset.sepiaListo = "1";
+
+    var $  = function(s){ return raiz.querySelector(s); };
+    var $$ = function(s){ return Array.prototype.slice.call(raiz.querySelectorAll(s)); };
+    var clp = function(n){ return MONEDA + Math.round(n).toLocaleString("es-CL"); };
+    var menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- Revelados al scroll ---------- */
+    var objetivos = $$(".rev");
+    if("IntersectionObserver" in window && !menosMovimiento){
+      var obs = new IntersectionObserver(function(entradas){
+        entradas.forEach(function(e){
+          if(e.isIntersecting){ e.target.classList.add("visto"); obs.unobserve(e.target); }
+        });
+      },{ threshold:.12, rootMargin:"0px 0px -8% 0px" });
+      objetivos.forEach(function(el){ obs.observe(el); });
+    } else {
+      objetivos.forEach(function(el){ el.classList.add("visto"); });
+    }
+
+    /* ---------- Cinta de atributos ---------- */
+    var cinta = $("[data-cinta-pista]");
+    if(cinta){
+      var textos = (cinta.parentNode.dataset.cinta || "").split(",")
+        .map(function(t){ return t.trim(); }).filter(Boolean);
+      if(textos.length){
+        var grano = '<svg viewBox="0 0 24 32" aria-hidden="true"><use href="#sepia-i-grano"/></svg>';
+        var grupo = '<span class="cinta-grupo">' +
+          textos.map(function(t){ return "<span>" + t + "</span>" + grano; }).join("") + "</span>";
+        cinta.innerHTML = grupo + grupo;
+      }
+    }
+
+    /* ---------- Agregar al carrito sin recargar ---------- */
+    var insignia = document.querySelector(".cart-count-bubble, [data-cart-count], .cart-count");
+    function refrescarCarrito(){
+      fetch("/cart.js", { headers:{ "Accept":"application/json" } })
+        .then(function(r){ return r.json(); })
+        .then(function(c){
+          document.dispatchEvent(new CustomEvent("sepia:carrito", { detail:c }));
+          if(insignia) insignia.textContent = c.item_count;
+        })
+        .catch(function(){});
+    }
+    function enviarAlCarrito(form, boton){
+      var datos = new FormData(form);
+      boton.disabled = true;
+      return fetch("/cart/add.js", {
+        method:"POST", headers:{ "Accept":"application/json" }, body:datos
+      }).then(function(r){
+        if(!r.ok) throw new Error("no");
+        var texto = boton.textContent;
+        boton.textContent = "Agregado";
+        boton.classList.add("hecho");
+        boton.disabled = false;
+        setTimeout(function(){ boton.textContent = texto; boton.classList.remove("hecho"); }, 1600);
+        refrescarCarrito();
+      }).catch(function(){
+        boton.disabled = false;
+        form.submit();   // sin JS o con error, el formulario clásico sigue funcionando
+      });
+    }
+    $$("[data-agregar-form]").forEach(function(form){
+      form.addEventListener("submit", function(e){
+        if(!window.fetch) return;
+        e.preventDefault();
+        enviarAlCarrito(form, form.querySelector("button"));
+      });
+    });
+
+    /* ---------- Filtros del catálogo ---------- */
+    var fichas = $$(".cafe"), sinResultados = $("[data-sin-resultados]");
+    $$(".filtro").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var f = btn.dataset.filtro;
+        $$(".filtro").forEach(function(b){ b.setAttribute("aria-pressed", String(b === btn)); });
+        var visibles = 0;
+        fichas.forEach(function(ficha){
+          var ok = f === "todos" || (ficha.dataset.metodo || "").indexOf(f) !== -1;
+          ficha.classList.toggle("oculto", !ok);
+          if(ok) visibles++;
+        });
+        if(sinResultados) sinResultados.hidden = visibles > 0;
+      });
+    });
+
+    /* ---------- Recomendador ---------- */
+    var panelResultado = $("[data-reco-resultado]"), barraReco = $("[data-reco-progreso]");
+    if(panelResultado && fichas.length){
+      var respuestas = [], pasoActual = 1, elegido = null;
+
+      var mostrarPaso = function(n){
+        pasoActual = n;
+        $$(".paso").forEach(function(p){ p.classList.toggle("activo", parseInt(p.dataset.paso,10) === n); });
+        panelResultado.classList.remove("activo");
+        if(barraReco) barraReco.style.width = (n/3*100) + "%";
+      };
+      var puntuar = function(ficha, metodo, leche, perfil){
+        var metodos = ficha.dataset.metodo || "";
+        var suyo    = ficha.dataset.perfil || "";
+        var tueste  = parseInt(ficha.dataset.tueste || "3", 10);
+        var p = 0;
+        if(metodo === "ambos"){
+          p += (metodos.indexOf("filtrado") !== -1 && metodos.indexOf("espresso") !== -1) ? 2 : 1;
+        } else if(metodos.indexOf(metodo) !== -1) p += 3;
+        if(suyo === perfil) p += 4;
+        if(leche === "leche"){ if(suyo === "dulce") p += 2; if(tueste >= 3) p += 1; }
+        else { if(suyo === "frutal") p += 2; if(tueste <= 2) p += 1; }
+        return p;
+      };
+      var resolver = function(){
+        var mejor = null, top = -1;
+        fichas.forEach(function(ficha){
+          var p = puntuar(ficha, respuestas[0], respuestas[1], respuestas[2]);
+          if(p > top){ top = p; mejor = ficha; }
+        });
+        if(!mejor) return;
+        elegido = mejor;
+        var bolsa = $("[data-reco-bolsa]");
+        if(bolsa) bolsa.style.setProperty("--acento", mejor.dataset.acento || "#7D4047");
+        $("[data-reco-nombre]").textContent = mejor.dataset.nombre || "";
+        $("[data-reco-origen]").textContent = mejor.dataset.origen || "";
+        $("[data-reco-desc]").textContent   = mejor.dataset.desc || "";
+        var precio = $("[data-reco-precio]");
+        if(precio) precio.textContent = mejor.dataset.precio || "";
+        $$(".paso").forEach(function(p){ p.classList.remove("activo"); });
+        panelResultado.classList.add("activo");
+        if(barraReco) barraReco.style.width = "100%";
+      };
+
+      $$(".paso .opcion").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          respuestas[pasoActual-1] = btn.dataset.resp;
+          if(pasoActual < 3) mostrarPaso(pasoActual+1); else resolver();
+        });
+      });
+      $$("[data-atras]").forEach(function(btn){
+        btn.addEventListener("click", function(){ if(pasoActual > 1) mostrarPaso(pasoActual-1); });
+      });
+      var reiniciar = $("[data-reco-reiniciar]");
+      if(reiniciar) reiniciar.addEventListener("click", function(){ respuestas = []; mostrarPaso(1); });
+      var agregarReco = $("[data-reco-agregar]");
+      if(agregarReco) agregarReco.addEventListener("click", function(){
+        if(!elegido) return;
+        var form = elegido.querySelector("[data-agregar-form]");
+        if(form && window.fetch) enviarAlCarrito(form, agregarReco);
+        else if(elegido.dataset.url) window.location.href = elegido.dataset.url;
+      });
+    }
+
+    /* ---------- Frecuencia de suscripción ---------- */
+    var botonesFrec = $$(".frecuencia button");
+    function pintarPlanes(enviosMes, descuento){
+      $$(".plan").forEach(function(plan){
+        var base = parseFloat(plan.dataset.base || "0");
+        if(!base) return;
+        var porEnvio = base * (1 - descuento);
+        var monto = plan.querySelector("[data-monto]");
+        var ahorro = plan.querySelector("[data-ahorro]");
+        if(monto)  monto.textContent = clp(porEnvio);
+        if(ahorro) ahorro.textContent = Math.round(descuento*100) +
+          "% menos que comprar suelto · ≈" + clp(porEnvio*enviosMes) + " al mes";
+      });
+    }
+    botonesFrec.forEach(function(btn){
+      btn.addEventListener("click", function(){
+        botonesFrec.forEach(function(b){ b.setAttribute("aria-pressed", String(b === btn)); });
+        pintarPlanes(parseInt(btn.dataset.frec,10), parseFloat(btn.dataset.desc));
+      });
+    });
+    if(botonesFrec.length){
+      var activo = botonesFrec.filter(function(b){ return b.getAttribute("aria-pressed") === "true"; })[0] || botonesFrec[0];
+      pintarPlanes(parseInt(activo.dataset.frec,10), parseFloat(activo.dataset.desc));
+    }
+
+    /* ---------- Pestañas de método ---------- */
+    var pestanas = $$(".pestana");
+    function activarPestana(tab){
+      pestanas.forEach(function(t){ t.setAttribute("aria-selected", String(t === tab)); });
+      $$(".panel").forEach(function(p){ p.classList.toggle("activo", p.id === tab.getAttribute("aria-controls")); });
+    }
+    pestanas.forEach(function(tab, i){
+      tab.addEventListener("click", function(){ activarPestana(tab); });
+      tab.addEventListener("keydown", function(e){
+        var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if(!d) return;
+        e.preventDefault();
+        var siguiente = pestanas[(i + d + pestanas.length) % pestanas.length];
+        siguiente.focus(); activarPestana(siguiente);
+      });
+    });
+
+    /* ---------- Calculadora de proporción ---------- */
+    var inCafe = $("[data-in-cafe]"), inRatio = $("[data-in-ratio]"), nivel = $("[data-nivel-agua]");
+    if(inCafe && inRatio){
+      var calcular = function(){
+        var g = parseInt(inCafe.value,10), r = parseInt(inRatio.value,10);
+        var agua = g * r;
+        $("[data-val-cafe]").textContent  = g + " g";
+        $("[data-val-ratio]").textContent = "1:" + r;
+        $("[data-out-agua]").innerHTML    = agua + "<span> ml</span>";
+        var tazas = Math.max(1, Math.round(agua/150));
+        $("[data-out-tazas]").innerHTML = tazas + "<span> " + (tazas === 1 ? "taza" : "tazas") + "</span>";
+        if(nivel){
+          var alto = 58 * Math.max(.12, Math.min(1, agua/760));
+          nivel.setAttribute("y", (188 - alto).toFixed(1));
+          nivel.setAttribute("height", alto.toFixed(1));
+        }
+      };
+      inCafe.addEventListener("input", calcular);
+      inRatio.addEventListener("input", calcular);
+      calcular();
+    }
+
+    /* ---------- Enlaces internos ---------- */
+    $$('a[href^="#"]').forEach(function(a){
+      a.addEventListener("click", function(e){
+        var id = a.getAttribute("href");
+        if(id === "#" || id.length < 2) return;
+        var destino = raiz.querySelector(id) || document.querySelector(id);
+        if(!destino) return;
+        e.preventDefault();
+        destino.scrollIntoView({ behavior: menosMovimiento ? "auto" : "smooth", block:"start" });
+      });
+    });
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
+  else iniciar();
+  // El editor de temas vuelve a montar la sección al guardar
+  document.addEventListener("shopify:section:load", function(e){
+    if(e.detail && e.detail.sectionId === ID) iniciar();
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Sepia — Portada",
+  "tag": "section",
+  "class": "seccion-sepia",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Barra de anuncio"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_anuncio",
+      "label": "Mostrar la barra superior",
+      "default": true,
+      "info": "Desactivala si tu tema ya tiene una barra de anuncio propia."
+    },
+    {
+      "type": "text",
+      "id": "anuncio_1",
+      "label": "Mensaje 1",
+      "default": "Envío gratis sobre $35.000 en Región Metropolitana"
+    },
+    {
+      "type": "text",
+      "id": "anuncio_2",
+      "label": "Mensaje 2",
+      "default": "Tostamos martes y viernes"
+    },
+    {
+      "type": "text",
+      "id": "anuncio_3",
+      "label": "Mensaje 3",
+      "default": "Molienda a tu método, sin costo"
+    },
+    {
+      "type": "header",
+      "content": "Portada"
+    },
+    {
+      "type": "text",
+      "id": "portada_epigrafe",
+      "label": "Epígrafe",
+      "default": "Tostaduría de especialidad · Santiago de Chile"
+    },
+    {
+      "type": "text",
+      "id": "portada_titulo",
+      "label": "Titular, primera línea",
+      "default": "Café de especialidad."
+    },
+    {
+      "type": "text",
+      "id": "portada_titulo_2",
+      "label": "Titular, segunda línea (cursiva vino)",
+      "default": "Sin complicaciones."
+    },
+    {
+      "type": "richtext",
+      "id": "portada_bajada",
+      "label": "Bajada",
+      "default": "<p>Compramos lotes pequeños de fincas que podemos nombrar, los tostamos acá en Santiago y los despachamos recién tostados. Sin ceremonia innecesaria, sin palabras raras. Solo café que vale la pena repetir.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_1_texto",
+      "label": "Botón principal",
+      "default": "Ver los cafés"
+    },
+    {
+      "type": "url",
+      "id": "cta_1_url",
+      "label": "Enlace del botón principal"
+    },
+    {
+      "type": "text",
+      "id": "cta_2_texto",
+      "label": "Botón secundario",
+      "default": "Empezar la suscripción"
+    },
+    {
+      "type": "url",
+      "id": "cta_2_url",
+      "label": "Enlace del botón secundario"
+    },
+    {
+      "type": "text",
+      "id": "dato_1_cifra",
+      "label": "Dato 1 · cifra",
+      "default": "Seis"
+    },
+    {
+      "type": "text",
+      "id": "dato_1_texto",
+      "label": "Dato 1 · texto",
+      "default": "orígenes en rotación"
+    },
+    {
+      "type": "text",
+      "id": "dato_2_cifra",
+      "label": "Dato 2 · cifra",
+      "default": "48 h"
+    },
+    {
+      "type": "text",
+      "id": "dato_2_texto",
+      "label": "Dato 2 · texto",
+      "default": "del tueste al despacho"
+    },
+    {
+      "type": "text",
+      "id": "dato_3_cifra",
+      "label": "Dato 3 · cifra",
+      "default": "250 g"
+    },
+    {
+      "type": "text",
+      "id": "dato_3_texto",
+      "label": "Dato 3 · texto",
+      "default": "molido a tu método"
+    },
+    {
+      "type": "text",
+      "id": "cue_texto",
+      "label": "Texto del indicador de scroll",
+      "default": "Seguí bajando"
+    },
+    {
+      "type": "image_picker",
+      "id": "portada_imagen",
+      "label": "Foto de portada",
+      "info": "Opcional. Si la dejás vacía se dibuja el envase ilustrado. Recomendado 1200 × 1400 px."
+    },
+    {
+      "type": "color",
+      "id": "acento_portada",
+      "label": "Color de la banda del envase",
+      "default": "#7D4047"
+    },
+    {
+      "type": "text",
+      "id": "pie_foto_titulo",
+      "label": "Etiqueta sobre la imagen · título",
+      "default": "Cordillera"
+    },
+    {
+      "type": "text",
+      "id": "pie_foto_detalle",
+      "label": "Etiqueta sobre la imagen · detalle",
+      "default": "Blend de casa · 250 g"
+    },
+    {
+      "type": "header",
+      "content": "Cinta en movimiento"
+    },
+    {
+      "type": "textarea",
+      "id": "cinta_textos",
+      "label": "Frases separadas por coma",
+      "default": "Trazabilidad de origen, Tueste en lotes pequeños, Molienda a tu método, Envío en 24 h en Santiago, Tostado en Providencia, 100% arábica",
+      "info": "Dejala vacía para ocultar la cinta."
+    },
+    {
+      "type": "header",
+      "content": "Catálogo"
+    },
+    {
+      "type": "text",
+      "id": "cafes_epigrafe",
+      "label": "Epígrafe",
+      "default": "01 — Nuestros cafés"
+    },
+    {
+      "type": "text",
+      "id": "cafes_titulo",
+      "label": "Titular, primera línea",
+      "default": "Seis cafés."
+    },
+    {
+      "type": "text",
+      "id": "cafes_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "Ninguno de relleno."
+    },
+    {
+      "type": "collection",
+      "id": "coleccion",
+      "label": "Colección a mostrar",
+      "info": "Sin colección elegida se muestran seis cafés de ejemplo. Usá las etiquetas origen:, nota:, tueste:, metodo:, perfil: y acento: en cada producto para completar la ficha."
+    },
+    {
+      "type": "range",
+      "id": "cantidad",
+      "label": "Cantidad de productos",
+      "min": 3,
+      "max": 12,
+      "step": 3,
+      "default": 6,
+      "unit": "u"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_filtros",
+      "label": "Mostrar los filtros por método",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Recomendador"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_recomendador",
+      "label": "Mostrar el recomendador de tres preguntas",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reco_epigrafe",
+      "label": "Epígrafe",
+      "default": "Tres preguntas"
+    },
+    {
+      "type": "text",
+      "id": "reco_titulo",
+      "label": "Titular",
+      "default": "¿No sabés cuál pedir?"
+    },
+    {
+      "type": "text",
+      "id": "reco_bajada",
+      "label": "Bajada",
+      "default": "Contestá tres cosas y te decimos exactamente cuál de los seis es el tuyo."
+    },
+    {
+      "type": "header",
+      "content": "Suscripción"
+    },
+    {
+      "type": "text",
+      "id": "susc_epigrafe",
+      "label": "Epígrafe",
+      "default": "02 — Suscripción"
+    },
+    {
+      "type": "text",
+      "id": "susc_titulo",
+      "label": "Titular, primera línea",
+      "default": "El ritual,"
+    },
+    {
+      "type": "text",
+      "id": "susc_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "sin tener que pensarlo."
+    },
+    {
+      "type": "richtext",
+      "id": "susc_bajada",
+      "label": "Bajada",
+      "default": "<p>Elegís el tamaño y la frecuencia. Nosotros tostamos el día antes de despachar. Pausás, cambiás el café o cancelás desde tu cuenta, cuando quieras.</p>"
+    },
+    {
+      "type": "text",
+      "id": "simbolo_moneda",
+      "label": "Símbolo de moneda",
+      "default": "$",
+      "info": "Se usa para los precios calculados de los planes."
+    },
+    {
+      "type": "header",
+      "content": "Origen"
+    },
+    {
+      "type": "text",
+      "id": "origen_epigrafe",
+      "label": "Epígrafe",
+      "default": "03 — Origen"
+    },
+    {
+      "type": "text",
+      "id": "origen_titulo",
+      "label": "Titular, primera línea",
+      "default": "El café empieza"
+    },
+    {
+      "type": "text",
+      "id": "origen_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "mucho antes de la taza."
+    },
+    {
+      "type": "richtext",
+      "id": "origen_bajada",
+      "label": "Bajada",
+      "default": "<p>Compramos a través de importadores que trabajan directo con los productores y nos entregan la ficha completa del lote: región, variedad, altura, proceso y cosecha. Si no podemos decirte de dónde viene, no lo vendemos.</p>"
+    },
+    {
+      "type": "text",
+      "id": "mapa_izq",
+      "label": "Encabezado del mapa · izquierda",
+      "default": "De la finca a Santiago"
+    },
+    {
+      "type": "text",
+      "id": "mapa_der",
+      "label": "Encabezado del mapa · derecha",
+      "default": "Temporada en curso"
+    },
+    {
+      "type": "text",
+      "id": "mapa_altura",
+      "label": "Pie del mapa",
+      "default": "Altura de los lotes: 1.400 a 2.100 msnm"
+    },
+    {
+      "type": "header",
+      "content": "Método"
+    },
+    {
+      "type": "text",
+      "id": "metodo_epigrafe",
+      "label": "Epígrafe",
+      "default": "04 — Método"
+    },
+    {
+      "type": "text",
+      "id": "metodo_titulo",
+      "label": "Titular, primera línea",
+      "default": "Cuatro formas"
+    },
+    {
+      "type": "text",
+      "id": "metodo_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "de hacerlo bien."
+    },
+    {
+      "type": "richtext",
+      "id": "metodo_bajada",
+      "label": "Bajada",
+      "default": "<p>No hace falta una balanza de laboratorio. Hace falta constancia: misma proporción, misma molienda, misma temperatura.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_calculadora",
+      "label": "Mostrar la calculadora de proporción",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "calc_nota",
+      "label": "Nota bajo la calculadora",
+      "default": "Una taza son 150 ml servidos. Ajustá la proporción hacia 1:13 si lo querés más intenso, y hacia 1:18 si lo preferís más liviano."
+    },
+    {
+      "type": "header",
+      "content": "Diario"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_diario",
+      "label": "Mostrar la sección de notas",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "diario_epigrafe",
+      "label": "Epígrafe",
+      "default": "05 — Diario"
+    },
+    {
+      "type": "text",
+      "id": "diario_titulo",
+      "label": "Titular, primera línea",
+      "default": "Lo que aprendimos"
+    },
+    {
+      "type": "text",
+      "id": "diario_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "tostando."
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog a mostrar",
+      "info": "Sin blog elegido se muestran tres notas de ejemplo."
+    },
+    {
+      "type": "header",
+      "content": "Cafetería"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_cafeteria",
+      "label": "Mostrar la sección de la cafetería",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cafeteria_epigrafe",
+      "label": "Epígrafe",
+      "default": "06 — Cafetería"
+    },
+    {
+      "type": "text",
+      "id": "cafeteria_titulo",
+      "label": "Titular, primera línea",
+      "default": "Pasá a tomarte uno"
+    },
+    {
+      "type": "text",
+      "id": "cafeteria_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "antes de llevártelo."
+    },
+    {
+      "type": "richtext",
+      "id": "cafeteria_texto",
+      "label": "Texto",
+      "default": "<p>La barra está en el mismo lugar donde tostamos. Se puede pedir el café del día, probar dos orígenes en paralelo y llevarse la bolsa molida ahí mismo, a tu método.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "cafeteria_imagen",
+      "label": "Foto del local",
+      "info": "Opcional. Si la dejás vacía se dibuja una taza ilustrada."
+    },
+    {
+      "type": "textarea",
+      "id": "horario",
+      "label": "Horario",
+      "default": "Lunes a viernes | 08:00 — 19:00\nSábado | 09:00 — 18:00\nDomingo | 10:00 — 15:00",
+      "info": "Una línea por fila, con una barra vertical separando el día del horario."
+    },
+    {
+      "type": "textarea",
+      "id": "direccion",
+      "label": "Dirección",
+      "default": "Barrio Italia · Providencia\nSantiago, Chile"
+    },
+    {
+      "type": "text",
+      "id": "correo",
+      "label": "Correo de contacto",
+      "default": "hola@sepiacoffee.cl"
+    },
+    {
+      "type": "header",
+      "content": "Boletín"
+    },
+    {
+      "type": "checkbox",
+      "id": "mostrar_boletin",
+      "label": "Mostrar la captura de correo",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "boletin_epigrafe",
+      "label": "Epígrafe",
+      "default": "Sumate"
+    },
+    {
+      "type": "text",
+      "id": "boletin_titulo",
+      "label": "Titular, primera línea",
+      "default": "Te avisamos cuando"
+    },
+    {
+      "type": "text",
+      "id": "boletin_titulo_2",
+      "label": "Titular, segunda línea (cursiva)",
+      "default": "sale un lote nuevo."
+    },
+    {
+      "type": "richtext",
+      "id": "boletin_bajada",
+      "label": "Bajada",
+      "default": "<p>Un correo cada dos semanas: qué estamos tostando, qué se está por acabar y alguna cosa útil sobre preparación. Nada más.</p>"
+    },
+    {
+      "type": "text",
+      "id": "boletin_placeholder",
+      "label": "Texto del campo",
+      "default": "tu@correo.cl"
+    },
+    {
+      "type": "text",
+      "id": "boletin_cta",
+      "label": "Texto del botón",
+      "default": "Suscribirme"
+    },
+    {
+      "type": "text",
+      "id": "boletin_gracias",
+      "label": "Mensaje de confirmación",
+      "default": "Listo. Te escribimos cuando salga el próximo lote."
+    },
+    {
+      "type": "textarea",
+      "id": "boletin_nota",
+      "label": "Nota legal",
+      "default": "Podés darte de baja en cualquier momento. No compartimos tu correo con nadie."
+    },
+    {
+      "type": "header",
+      "content": "Extras"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp para el botón flotante",
+      "default": "",
+      "info": "Número con código de país, por ejemplo 56912345678. Vacío oculta el botón."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "plan",
+      "name": "Plan de suscripción",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "nombre",
+          "label": "Nombre",
+          "default": "Ritual"
+        },
+        {
+          "type": "text",
+          "id": "cantidad",
+          "label": "Cantidad por envío",
+          "default": "500 g por envío"
+        },
+        {
+          "type": "textarea",
+          "id": "descripcion",
+          "label": "Descripción",
+          "default": "Dos cafés en paralelo: uno fijo que ya sabés que te gusta y otro que elegimos nosotros."
+        },
+        {
+          "type": "number",
+          "id": "precio_base",
+          "label": "Precio sin suscripción",
+          "default": 19500,
+          "info": "Solo el número. El descuento por frecuencia se calcula solo."
+        },
+        {
+          "type": "textarea",
+          "id": "beneficios",
+          "label": "Beneficios",
+          "default": "Elegís uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
+          "info": "Uno por línea."
+        },
+        {
+          "type": "text",
+          "id": "cta",
+          "label": "Texto del botón",
+          "default": "Elegir Ritual"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Enlace del botón"
+        },
+        {
+          "type": "checkbox",
+          "id": "destacado",
+          "label": "Destacar este plan",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "insignia",
+          "label": "Texto de la insignia",
+          "default": "El más elegido"
+        }
+      ]
+    },
+    {
+      "type": "valor",
+      "name": "Valor de origen",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "titulo",
+          "label": "Título",
+          "default": "Trazabilidad hasta la región"
+        },
+        {
+          "type": "textarea",
+          "id": "texto",
+          "label": "Texto",
+          "default": "Cada bolsa dice país, región, proceso y altura."
+        }
+      ]
+    },
+    {
+      "type": "metodo",
+      "name": "Método de preparación",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "nombre",
+          "label": "Nombre",
+          "default": "V60"
+        },
+        {
+          "type": "text",
+          "id": "proporcion",
+          "label": "Proporción",
+          "default": "1:16"
+        },
+        {
+          "type": "text",
+          "id": "molienda",
+          "label": "Molienda",
+          "default": "Media"
+        },
+        {
+          "type": "text",
+          "id": "agua",
+          "label": "Temperatura del agua",
+          "default": "93 °C"
+        },
+        {
+          "type": "text",
+          "id": "tiempo",
+          "label": "Tiempo",
+          "default": "2:45"
+        },
+        {
+          "type": "textarea",
+          "id": "pasos",
+          "label": "Pasos",
+          "default": "Primer paso\nSegundo paso",
+          "info": "Uno por línea. Numerados automáticamente."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sepia — Portada",
+      "blocks": [
+        {
+          "type": "plan",
+          "settings": {
+            "nombre": "Descubrir",
+            "cantidad": "250 g por envío",
+            "descripcion": "Un origen distinto cada vez. La forma más simple de recorrer la carta sin decidir nada.",
+            "precio_base": 9900,
+            "beneficios": "Rotamos el origen en cada despacho\nMolido a tu método o en grano\nPausás o cancelás cuando quieras",
+            "cta": "Elegir Descubrir",
+            "destacado": false
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "nombre": "Ritual",
+            "cantidad": "500 g por envío",
+            "descripcion": "Dos cafés en paralelo: uno fijo que ya sabés que te gusta y otro que elegimos nosotros.",
+            "precio_base": 19500,
+            "beneficios": "Elegís uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
+            "cta": "Elegir Ritual",
+            "destacado": true,
+            "insignia": "El más elegido"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "nombre": "Cafetería",
+            "cantidad": "1 kg por envío",
+            "descripcion": "Para oficinas, cafeterías chicas y casas donde el café se acaba en una semana.",
+            "precio_base": 36000,
+            "beneficios": "Elegís el café y la molienda\nDía fijo de entrega coordinado\nAsesoría de calibración incluida\nDocumento tributario a tu nombre",
+            "cta": "Elegir Cafetería",
+            "destacado": false
+          }
+        },
+        {
+          "type": "valor",
+          "settings": {
+            "titulo": "Trazabilidad hasta la región",
+            "texto": "Cada bolsa dice país, región, proceso y altura. Nunca vas a leer «blend sudamericano» en una etiqueta nuestra."
+          }
+        },
+        {
+          "type": "valor",
+          "settings": {
+            "titulo": "Lotes chicos, compras seguidas",
+            "texto": "Preferimos quedarnos sin stock antes que despacharte un café que lleva cuatro meses tostado."
+          }
+        },
+        {
+          "type": "valor",
+          "settings": {
+            "titulo": "Tueste propio en Santiago",
+            "texto": "Tostamos en máquina de tambor, perfil por perfil. Cada lote se ajusta al grano, no al revés."
+          }
+        },
+        {
+          "type": "metodo",
+          "settings": {
+            "nombre": "V60",
+            "proporcion": "1:16",
+            "molienda": "Media",
+            "agua": "93 °C",
+            "tiempo": "2:45",
+            "pasos": "Poné el filtro en el cono y mojalo con agua caliente. Botá esa agua: se lleva el gusto a papel y entibia la jarra.\nPesá 20 g de café y molelo recién ahí. La textura de referencia es arena de playa.\nPrimer aporte: 40 g de agua en espiral desde el centro. Esperá 30 segundos. Si se infla, el café está fresco.\nCompletá hasta 320 g en dos aportes lentos, siempre en espiral y sin mojar el borde del filtro.\nA los 2:45 debería haber drenado todo. Si demora más, molé más grueso. Si drena antes, más fino."
+          }
+        },
+        {
+          "type": "metodo",
+          "settings": {
+            "nombre": "Prensa francesa",
+            "proporcion": "1:15",
+            "molienda": "Gruesa",
+            "agua": "94 °C",
+            "tiempo": "9:00",
+            "pasos": "Poné 30 g de café molido grueso en la prensa seca y tibia.\nAgregá 450 g de agua de una vez y arrancá el cronómetro. Que se moje todo.\nA los 4 minutos rompé la costra con una cuchara y retirá la espuma de la superficie.\nEsperá 5 minutos más sin tocar nada. Los finos se decantan solos al fondo.\nBajá el émbolo apenas hasta tocar la superficie y serví sin apretar. Menos amargor, más dulzor."
+          }
+        },
+        {
+          "type": "metodo",
+          "settings": {
+            "nombre": "Aeropress",
+            "proporcion": "1:14",
+            "molienda": "Media-fina",
+            "agua": "88 °C",
+            "tiempo": "2:00",
+            "pasos": "Armá la Aeropress invertida y cargá 16 g de café.\nEchá 220 g de agua a 88 °C y revolvé cinco veces, suave.\nTapá con el filtro mojado y dejá reposar hasta 1:30.\nDala vuelta sobre la taza y presioná parejo durante 30 segundos.\nParás cuando escuchás el silbido. No exprimas el final: ahí está todo lo amargo."
+          }
+        },
+        {
+          "type": "metodo",
+          "settings": {
+            "nombre": "Espresso",
+            "proporcion": "1:2",
+            "molienda": "Fina",
+            "agua": "93 °C",
+            "tiempo": "0:28",
+            "pasos": "18 g en el canasto doble. Nivelá antes de prensar y prensá derecho.\nPurgá el grupo dos segundos antes de enganchar el portafiltro.\nBuscá 36 g en taza entre 25 y 30 segundos desde que apretás el botón.\nSale rápido y ácido: molé más fino. Sale lento y amargo: más grueso.\nCambiá una variable por vez y anotá el resultado. Así se calibra."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
