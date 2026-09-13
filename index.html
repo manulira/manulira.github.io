@@ -370,6 +370,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
    ============================================================ */
 .cats{display:grid;gap:clamp(.8rem,1.6vw,1.15rem);grid-template-columns:repeat(2,1fr)}
 @media(min-width:760px){.cats{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:760px){.cats.de-3{grid-template-columns:repeat(3,1fr);max-width:940px;margin-inline:auto}}
+@media(max-width:759px){.cats.de-3{grid-template-columns:1fr}}
 .cat{
   display:flex;flex-direction:column;gap:.85rem;border-radius:var(--r-xl);
   background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
@@ -667,7 +669,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
    <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#C8D9E6)" stroke-width="14" stroke-linecap="round"/>
    <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F5EFEB"/>
    <ellipse cx="96" cy="97" rx="44" ry="8" fill="#2F4156"/>
-   <text x="96" y="160" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="24" font-weight="600" fill="#2F4156" opacity=".75">sepia</text>
+   <ellipse cx="96" cy="176" rx="26" ry="4.6" fill="none" stroke="#F5EFEB" stroke-width="2.6" opacity=".5"/>
  </symbol>
 
  <!-- Caja de pack -->
@@ -1091,32 +1093,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="cold-vainilla" data-nombre="Cold Brew Vainilla" data-precio="8500"
-                 data-precio-txt="$8.500" data-tono="#C8D9E6" data-acento="#2F4156"
-                 data-arte="i-botella" data-cat="cold">
-          <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-cold-vainilla.jpg" alt="Cold Brew Vainilla" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-cold-vainilla-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cold Brew Vainilla"><use href="#i-botella"/></svg>
-            <button class="prod-rapido" type="button" data-agregar>
-              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
-              Agregar · $8.500
-            </button>
-          </div>
-          <div class="prod-info">
-            <h3>Cold Brew Vainilla</h3>
-            <p class="prod-sub">Botella 1 L · vainilla real</p>
-            <div class="valoracion">
-              <span class="estrellas" role="img" aria-label="4.6 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
-              <span>4.6 (121)</span>
-            </div>
-            <p class="prod-precio">$8.500</p>
-          </div>
-          <div class="compra" role="group" aria-label="Tipo de compra de Cold Brew Vainilla">
-            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
-            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
-          </div>
-        </article>
+        
       </div>
     </div>
   </div>
@@ -1129,43 +1106,27 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <h2 class="t-3xl">Para todos los gustos</h2>
         <a href="#cafes" class="enlace-sub">Ver todo</a>
       </div>
-      <div class="cats rev">
+      <div class="cats de-3 rev">
         <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="" onerror="this.remove()">
             <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
-          <h3>Café en grano</h3>
+          <h3>Café</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
         <a class="cat" href="#cafes" style="--tono:#FFFFFF">
-          <div class="cat-media">
-            <img class="foto" src="assets/fotos/cat-coldbrew.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#567C8D" aria-hidden="true"><use href="#i-botella"/></svg>
-          </div>
-          <h3>Cold Brew</h3>
-          <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
-        </a>
-        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 120 120" style="--acento:#2F4156" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
+            <svg viewBox="0 0 120 120" style="--acento:#567C8D" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
           </div>
-          <h3>Matcha y té</h3>
-          <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
-        </a>
-        <a class="cat" href="#cafes" style="--tono:#FFFFFF">
-          <div class="cat-media">
-            <img class="foto" src="assets/fotos/cat-packs.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-caja"/></svg>
-          </div>
-          <h3>Packs</h3>
+          <h3>Matcha</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
         <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#567C8D" aria-hidden="true"><use href="#i-taza"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-taza"/></svg>
           </div>
           <h3>Accesorios</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
@@ -1180,8 +1141,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   <div class="wrap">
     <div class="mod-cab rev">
       <div>
-        <h2 class="t-3xl">Empezá con un pack</h2>
-        <p class="copy">Ahorrá armando el tuyo.</p>
+        <h2 class="t-3xl">Empezá con nuestros packs favoritos</h2>
+        <p class="copy">Ahorrá armando un pack.</p>
       </div>
       <div class="car-nav" data-nav-de="packs">
         <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
@@ -1190,13 +1151,13 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </div>
     <div class="car">
       <div class="car-pista rev" data-pista="packs">
-        <article class="prod" data-id="pack-descubrir" data-nombre="Pack Descubrir" data-precio="29900"
+        <article class="prod" data-id="pack-descubrir" data-nombre="Starter Pack" data-precio="29900"
                  data-precio-txt="$29.900" data-tono="#FFFFFF" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Pack Descubrir" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Starter Pack" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-descubrir-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Descubrir"><use href="#i-caja"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Starter Pack"><use href="#i-caja"/></svg>
             <span class="prod-etq teal">Ahorrás 16%</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1204,8 +1165,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             </button>
           </div>
           <div class="prod-info">
-            <h3>Pack Descubrir</h3>
-            <p class="prod-sub">3 × 250 g · un origen de cada región</p>
+            <h3>Starter Pack</h3>
+            <p class="prod-sub">Un poco de todo: café, matcha y taza</p>
             <div class="valoracion">
               <span class="estrellas" role="img" aria-label="4.9 de 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg></span>
               <span>4.9 (204)</span>
@@ -1611,7 +1572,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     botonesPunto.forEach(function(b,k){ b.setAttribute("aria-current", String(k === actual)); });
     slides.forEach(function(s,k){ s.setAttribute("aria-hidden", String(k !== actual)); });
   }
-  function arrancar(){ if(quieto || slides.length < 2) return; detener(); auto = setInterval(function(){ irA(actual+1); }, 5000); }
+  function arrancar(){ if(quieto || slides.length < 2) return; detener(); auto = setInterval(function(){ irA(actual+1); }, 4000); }
   function detener(){ if(auto) clearInterval(auto); auto = null; }
   botonesPunto.forEach(function(b,i){ b.addEventListener("click", function(){ irA(i); arrancar(); }); });
   $(".hero-flecha.izq").addEventListener("click", function(){ irA(actual-1); arrancar(); });

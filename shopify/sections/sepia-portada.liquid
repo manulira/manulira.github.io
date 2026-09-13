@@ -325,6 +325,8 @@
 .sepia2 .compra button[aria-pressed="true"]{background:var(--blanco);color:var(--tinta);font-weight:700;box-shadow:0 1px 4px rgba(18,35,63,.1)}
 .sepia2 .compra .ahorro{font-size:.68rem;color:var(--teal);font-weight:700}
 .sepia2 .cats{display:grid;gap:clamp(.8rem,1.6vw,1.15rem);grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.sepia2 .cats.de-3{grid-template-columns:repeat(3,1fr);max-width:940px;margin-inline:auto}}
+@media(max-width:759px){.sepia2 .cats.de-3{grid-template-columns:1fr}}
 @media(min-width:760px){.sepia2 .cats{grid-template-columns:repeat(5,1fr)}}
 .sepia2 .cat{
   display:flex;flex-direction:column;gap:.85rem;border-radius:var(--r-xl);
@@ -576,7 +578,7 @@
    <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#C8D9E6)" stroke-width="14" stroke-linecap="round"/>
    <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F5EFEB"/>
    <ellipse cx="96" cy="97" rx="44" ry="8" fill="#2F4156"/>
-   <text x="96" y="160" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="24" font-weight="600" fill="#2F4156" opacity=".75">sepia</text>
+   <ellipse cx="96" cy="176" rx="26" ry="4.6" fill="none" stroke="#F5EFEB" stroke-width="2.6" opacity=".5"/>
  </symbol>
 
  <!-- Caja de pack -->
@@ -952,7 +954,7 @@
           <a href="{{ section.settings.cats_url }}" class="enlace-sub">{{ section.settings.cats_cta }}</a>
         {%- endif -%}
       </div>
-      <div class="cats rev">
+      <div class="cats rev{% if categorias.size == 3 %} de-3{% endif %}">
         {%- for bloque in categorias -%}
           <a class="cat" href="{{ bloque.settings.url | default: '#' }}" style="--tono:{{ bloque.settings.color }}" {{ bloque.shopify_attributes }}>
             <div class="cat-media">
@@ -1381,7 +1383,7 @@
         bps.forEach(function(b,k){ b.setAttribute("aria-current", String(k===actual)); });
         slides.forEach(function(s,k){ s.setAttribute("aria-hidden", String(k!==actual)); });
       }
-      function arrancar(){ if(quieto || slides.length < 2) return; detener(); auto = setInterval(function(){ irA(actual+1); }, 5000); }
+      function arrancar(){ if(quieto || slides.length < 2) return; detener(); auto = setInterval(function(){ irA(actual+1); }, 4000); }
       function detener(){ if(auto) clearInterval(auto); auto = null; }
       bps.forEach(function(b,i){ b.addEventListener("click", function(){ irA(i); arrancar(); }); });
       var iz = $(".hero-flecha.izq"), de = $(".hero-flecha.der");
@@ -1619,7 +1621,7 @@
       "min": 4,
       "max": 12,
       "step": 1,
-      "default": 7,
+      "default": 6,
       "unit": "u"
     },
     {
@@ -1651,13 +1653,13 @@
       "type": "text",
       "id": "car2_titulo",
       "label": "Título",
-      "default": "Empezá con un pack"
+      "default": "Empezá con nuestros packs favoritos"
     },
     {
       "type": "text",
       "id": "car2_bajada",
       "label": "Bajada",
-      "default": "Ahorrá armando el tuyo."
+      "default": "Ahorrá armando un pack."
     },
     {
       "type": "collection",
@@ -2141,7 +2143,7 @@
         {
           "type": "categoria",
           "settings": {
-            "nombre": "Café en grano",
+            "nombre": "Café",
             "color": "#C8D9E6",
             "arte": "bolsa",
             "acento": "#2F4156"
@@ -2150,28 +2152,10 @@
         {
           "type": "categoria",
           "settings": {
-            "nombre": "Cold Brew",
+            "nombre": "Matcha",
             "color": "#FFFFFF",
-            "arte": "botella",
-            "acento": "#567C8D"
-          }
-        },
-        {
-          "type": "categoria",
-          "settings": {
-            "nombre": "Matcha y té",
-            "color": "#C8D9E6",
             "arte": "tarro",
-            "acento": "#2F4156"
-          }
-        },
-        {
-          "type": "categoria",
-          "settings": {
-            "nombre": "Packs",
-            "color": "#FFFFFF",
-            "arte": "caja",
-            "acento": "#2F4156"
+            "acento": "#567C8D"
           }
         },
         {
@@ -2180,7 +2164,7 @@
             "nombre": "Accesorios",
             "color": "#C8D9E6",
             "arte": "taza",
-            "acento": "#567C8D"
+            "acento": "#2F4156"
           }
         },
         {
