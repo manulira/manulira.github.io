@@ -62,10 +62,25 @@ cerámica. No son colores de marca ni se usan como fondo de nada.
 - **Bolsa de café:** cuerpo en Beige con la banda de etiqueta en Navy o Teal.
 - **Botella de cold brew:** cuerpo en Navy o Teal, etiqueta en Beige.
 
+### Logotipo
+
+El caminante no es un adorno: es el punto de la «i» de *sepia*. El lockup se arma
+con la cabeza sobre la letra y las piernas cruzando bajo la línea base, entre la
+«p» y la «a». Existen tres versiones:
+
+- **Lockup completo:** wordmark con el caminante integrado. Es el uso principal.
+- **Wordmark solo:** cuando el espacio es muy angosto o el caminante ya aparece cerca.
+- **Caminante solo:** como sello, en el envase, el patrón y la aplicación chica.
+
+En el sitio, las piernas van en contorno y el pantalón toma el color del fondo con
+la variable `--cam-fondo`. Para tamaños chicos hay una versión sólida, porque bajo
+los 30 px el contorno desaparece.
+
 ### Tipografía
 
-Fredoka para títulos, DM Sans para texto e IBM Plex Serif para citas. Las tres son
-libres, así que se pueden usar en la web y en piezas impresas sin licencia.
+**Poppins** para el wordmark y todos los títulos, que es la geométrica del logotipo.
+**DM Sans** para el texto corrido y las fichas técnicas. Las dos son libres, así que
+sirven igual para la web y para impresión, sin licencia.
 
 ### Movimiento
 
