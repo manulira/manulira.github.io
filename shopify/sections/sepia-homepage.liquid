@@ -899,14 +899,20 @@
           {%- endif -%}
         </div>
 
-        {%- unless section.settings.portada_imagen != blank -%}
-          <div class="marco-flotante marco-taza" aria-hidden="true">
+        <div class="marco-flotante marco-taza" aria-hidden="true">
+          {%- if section.settings.portada_taza != blank -%}
+            {{ section.settings.portada_taza | image_url: width: 700 | image_tag: loading: 'lazy', alt: '' }}
+          {%- else -%}
             <svg viewBox="0 0 200 200"><use href="#sepia-i-taza"/></svg>
-          </div>
-          <div class="marco-flotante marco-granos" aria-hidden="true">
+          {%- endif -%}
+        </div>
+        <div class="marco-flotante marco-granos" aria-hidden="true">
+          {%- if section.settings.portada_granos != blank -%}
+            {{ section.settings.portada_granos | image_url: width: 700 | image_tag: loading: 'lazy', alt: '' }}
+          {%- else -%}
             <svg viewBox="0 0 120 120"><use href="#sepia-i-granos"/></svg>
-          </div>
-        {%- endunless -%}
+          {%- endif -%}
+        </div>
 
         {%- if section.settings.pie_foto_titulo != blank -%}
           <div class="pie-foto">
@@ -2067,6 +2073,18 @@
       "id": "portada_imagen",
       "label": "Foto de portada",
       "info": "Opcional. Si la dejás vacía se dibuja el envase ilustrado. Recomendado 1200 × 1400 px."
+    },
+    {
+      "type": "image_picker",
+      "id": "portada_taza",
+      "label": "Foto chica · taza",
+      "info": "Opcional. Se recorta en círculo, mandá algo cuadrado de 700 × 700 px."
+    },
+    {
+      "type": "image_picker",
+      "id": "portada_granos",
+      "label": "Foto chica · granos",
+      "info": "Opcional. Se recorta en círculo, mandá algo cuadrado de 700 × 700 px."
     },
     {
       "type": "color",

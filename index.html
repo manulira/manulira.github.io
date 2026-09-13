@@ -762,7 +762,8 @@ p{text-wrap:pretty}
 .nav-movil a small{font-family:var(--sans);font-size:.6rem;letter-spacing:.16em;color:var(--tinta-tenue);text-transform:uppercase}
 
 .item-carro{display:grid;grid-template-columns:68px 1fr auto;gap:1rem;padding-block:1.15rem;border-bottom:1px solid var(--linea);align-items:center}
-.item-carro-visual{background:var(--arena-claro);border-radius:var(--r-sm);aspect-ratio:1;display:grid;place-items:center;padding:.4rem}
+.item-carro-visual{background:var(--arena-claro);border-radius:var(--r-sm);aspect-ratio:1;display:grid;place-items:center;padding:.4rem;overflow:hidden}
+.item-carro-visual:has(img){padding:0}
 .item-carro-visual svg{width:68%}
 .item-carro h4{font-size:1rem;margin-bottom:.18rem}
 .item-carro .sub{font-size:.665rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-tenue)}
@@ -821,6 +822,18 @@ body.bloqueado{overflow:hidden}
   .pie-foto span{font-size:.53rem;letter-spacing:.12em}
   .collage{aspect-ratio:4/4.9}
 }
+/* Capa de fotos: si el archivo no existe, onerror la quita y queda la ilustración */
+.foto-slot{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;z-index:1;display:block;
+}
+.cafe-indice,.etiqueta{z-index:3}
+.resultado-visual{position:relative;overflow:hidden}
+.cafe-visual .foto-slot,.articulo-visual .foto-slot{transition:transform .62s var(--ease)}
+.cafe:hover .cafe-visual .foto-slot{transform:scale(1.04)}
+.articulo:hover .articulo-visual .foto-slot{transform:scale(1.05)}
+.marco-flotante .foto-slot{border-radius:50%}
+
 .ln{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .sl{fill:currentColor}
 </style>
@@ -1033,7 +1046,9 @@ body.bloqueado{overflow:hidden}
 
     <div class="portada-visual rev rev-d2">
       <div class="collage">
-                <div class="marco marco-principal">
+        <div class="marco marco-principal">
+          <img class="foto-slot" src="assets/fotos/portada.jpg"
+               alt="Envase de 250 gramos de Cordillera, el blend de casa" onerror="this.remove()">
           <svg class="arte" viewBox="20 4 220 292" role="img" aria-label="Bolsa de 250 gramos de Cordillera, el blend de casa de Sepia Coffee Co">
             <g transform="translate(30 14) rotate(-4 100 136)" style="--acento:#7D4047">
               <use href="#i-bolsa" width="200" height="272"/>
@@ -1042,9 +1057,11 @@ body.bloqueado{overflow:hidden}
         </div>
 
         <div class="marco-flotante marco-taza" aria-hidden="true">
+          <img class="foto-slot" src="assets/fotos/portada-taza.jpg" alt="" onerror="this.remove()">
           <svg viewBox="0 0 200 200"><use href="#i-taza"/></svg>
         </div>
         <div class="marco-flotante marco-granos" aria-hidden="true">
+          <img class="foto-slot" src="assets/fotos/portada-granos.jpg" alt="" onerror="this.remove()">
           <svg viewBox="0 0 120 120"><use href="#i-granos"/></svg>
         </div>
 
@@ -1083,6 +1100,7 @@ body.bloqueado{overflow:hidden}
                data-precio="9900" data-acento="#7D4047" data-metodo="filtrado espresso"
                data-origen="Blend de casa · Colombia + Brasil" data-desc="Nuestro café de todos los días. Dulce, redondo y sin filos: funciona igual de bien en la italiana de la mañana que en un filtrado lento del domingo.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-cordillera.jpg" alt="Cordillera en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">01</span>
         <span class="etiqueta">Más vendido</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#7D4047" role="img" aria-label="Bolsa de Cordillera, 250 gramos"><use href="#i-bolsa"/></svg>
@@ -1106,6 +1124,7 @@ body.bloqueado{overflow:hidden}
                data-precio="13500" data-acento="#9A8A6E" data-metodo="filtrado"
                data-origen="Etiopía · Lavado · 2.000 msnm" data-desc="El más floral de la carta. Tueste claro para no tapar nada. Pedile un filtrado y dejalo enfriar un poco: ahí aparece el durazno.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-yirgacheffe.jpg" alt="Yirgacheffe en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">02</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#9A8A6E" role="img" aria-label="Bolsa de Yirgacheffe, 250 gramos"><use href="#i-bolsa"/></svg>
         </div>
@@ -1128,6 +1147,7 @@ body.bloqueado{overflow:hidden}
                data-precio="12400" data-acento="#A2604A" data-metodo="filtrado espresso"
                data-origen="Colombia · Proceso honey" data-desc="El honey le deja el azúcar del mucílago adentro. Cuerpo jugoso, dulzor largo y un final a cacao que aguanta leche sin desaparecer.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-huila.jpg" alt="Huila en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">03</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#A2604A" role="img" aria-label="Bolsa de Huila, 250 gramos"><use href="#i-bolsa"/></svg>
         </div>
@@ -1150,6 +1170,7 @@ body.bloqueado{overflow:hidden}
                data-precio="11800" data-acento="#6E6A55" data-metodo="filtrado"
                data-origen="Perú · Orgánico · Lavado" data-desc="Limpio y equilibrado, con una acidez cítrica que no molesta. Es el que recomendamos para empezar a tomar café de especialidad sin azúcar.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-cajamarca.jpg" alt="Cajamarca en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">04</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#6E6A55" role="img" aria-label="Bolsa de Cajamarca, 250 gramos"><use href="#i-bolsa"/></svg>
         </div>
@@ -1172,6 +1193,7 @@ body.bloqueado{overflow:hidden}
                data-precio="13200" data-acento="#8A5A5F" data-metodo="filtrado espresso"
                data-origen="Guatemala · Lavado · 1.800 msnm" data-desc="Altura pura. Acidez de manzana, cuerpo sedoso y un retrogusto a fruto seco que se queda un rato. Lote chico, se acaba rápido.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-huehuetenango.jpg" alt="Huehuetenango en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">05</span>
         <span class="etiqueta">Nuevo</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#8A5A5F" role="img" aria-label="Bolsa de Huehuetenango, 250 gramos"><use href="#i-bolsa"/></svg>
@@ -1195,6 +1217,7 @@ body.bloqueado{overflow:hidden}
                data-precio="12900" data-acento="#2E2E2E" data-metodo="filtrado espresso descafeinado"
                data-origen="Descafeinado · Colombia · Caña" data-desc="Descafeinado con azúcar de caña, sin solventes. Mantiene el cuerpo y el dulzor. Para la sobremesa larga o para el que no puede después de las seis.">
         <div class="cafe-visual">
+          <img class="foto-slot" src="assets/fotos/cafe-sin-noche.jpg" alt="Sin Noche en 250 gramos" onerror="this.remove()">
           <span class="cafe-indice" aria-hidden="true">06</span>
         <span class="etiqueta neutra">Sin cafeína</span>
           <svg class="bolsa" viewBox="0 0 200 272" style="--acento:#2E2E2E" role="img" aria-label="Bolsa de Sin Noche, 250 gramos"><use href="#i-bolsa"/></svg>
@@ -1266,6 +1289,7 @@ body.bloqueado{overflow:hidden}
 
       <div class="resultado" id="reco-resultado" role="status" aria-live="polite">
         <div class="resultado-visual">
+          <img class="foto-slot" id="reco-foto" alt="" hidden>
           <svg class="bolsa" id="reco-bolsa" viewBox="0 0 200 272" aria-hidden="true"><use href="#i-bolsa"/></svg>
         </div>
         <div>
@@ -1612,6 +1636,7 @@ body.bloqueado{overflow:hidden}
     <div class="rejilla-diario">
       <a href="#" class="articulo rev rev-d1">
         <div class="articulo-visual">
+          <img class="foto-slot" src="assets/fotos/diario-1.jpg" alt="Molienda de café en tres texturas" onerror="this.remove()">
           <svg viewBox="0 0 120 120" aria-hidden="true">
             <g fill="none" stroke="#8E857D" stroke-width="1.8">
               <circle cx="28" cy="60" r="17"/><circle cx="60" cy="60" r="17"/>
@@ -1631,6 +1656,7 @@ body.bloqueado{overflow:hidden}
 
       <a href="#" class="articulo rev rev-d2">
         <div class="articulo-visual">
+          <img class="foto-slot" src="assets/fotos/diario-2.jpg" alt="Cereza de café madura" onerror="this.remove()">
           <svg viewBox="0 0 120 120" aria-hidden="true">
             <circle cx="58" cy="72" r="26" fill="none" stroke="#7D4047" stroke-width="2.4"/>
             <path d="M58 46V26" stroke="#8E857D" stroke-width="2.4" stroke-linecap="round"/>
@@ -1645,6 +1671,7 @@ body.bloqueado{overflow:hidden}
 
       <a href="#" class="articulo rev rev-d3">
         <div class="articulo-visual">
+          <img class="foto-slot" src="assets/fotos/diario-3.jpg" alt="Agua vertida sobre café molido" onerror="this.remove()">
           <svg viewBox="0 0 120 120" aria-hidden="true">
             <path d="M60 24c0 0 26 26 26 42a26 26 0 0 1-52 0c0-16 26-42 26-42z" fill="none" stroke="#7D4047" stroke-width="2.4" stroke-linejoin="round"/>
             <path d="M48 68a12 12 0 0 0 10 12" fill="none" stroke="#8E857D" stroke-width="2.2" stroke-linecap="round"/>
@@ -1665,6 +1692,8 @@ body.bloqueado{overflow:hidden}
     <hr class="regla" style="margin-bottom:var(--seccion)">
     <div class="visita-rejilla">
       <div class="visita-visual rev">
+        <img class="foto-slot" src="assets/fotos/cafeteria.jpg"
+             alt="La barra de Sepia Coffee Co en Providencia" onerror="this.remove()">
         <svg viewBox="0 0 200 200" aria-hidden="true">
           <g stroke="#DDD5CD" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M44 96h84v40a30 30 0 0 1-30 30H74a30 30 0 0 1-30-30z"/>
@@ -1957,15 +1986,16 @@ body.bloqueado{overflow:hidden}
       elEnvio = $("#carro-envio"), elContador = $("#contador-carro");
 
   function datosDeFicha(ficha){
+    var foto = ficha.querySelector(".foto-slot");   // null si la foto no cargó
     return { id: ficha.dataset.id, nombre: ficha.dataset.nombre,
              precio: parseInt(ficha.dataset.precio,10), acento: ficha.dataset.acento,
-             origen: ficha.dataset.origen };
+             origen: ficha.dataset.origen, foto: foto ? foto.currentSrc || foto.src : null };
   }
   function agregar(item){
     var yaEsta = carro.filter(function(i){ return i.id === item.id; })[0];
     if(yaEsta) yaEsta.cantidad++;
     else carro.push({ id:item.id, nombre:item.nombre, precio:item.precio,
-                      acento:item.acento, origen:item.origen, cantidad:1 });
+                      acento:item.acento, origen:item.origen, foto:item.foto, cantidad:1 });
     pintarCarro();
   }
   function cambiarCantidad(id, delta){
@@ -1990,8 +2020,11 @@ body.bloqueado{overflow:hidden}
       : "Te faltan " + clp(UMBRAL_ENVIO - total) + " para el envío gratis en RM.";
 
     elItems.innerHTML = carro.map(function(i){
+      var visual = i.foto
+        ? '<img src="'+i.foto+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-sm)">'
+        : '<svg viewBox="0 0 200 272" style="--acento:'+i.acento+'" aria-hidden="true"><use href="#i-bolsa"/></svg>';
       return '<div class="item-carro">' +
-        '<div class="item-carro-visual"><svg viewBox="0 0 200 272" style="--acento:'+i.acento+'" aria-hidden="true"><use href="#i-bolsa"/></svg></div>' +
+        '<div class="item-carro-visual">'+visual+'</div>' +
         '<div><h4>'+i.nombre+'</h4><p class="sub">250 g · grano entero</p>' +
         '<span class="cantidad"><button type="button" data-menos="'+i.id+'" aria-label="Quitar una unidad de '+i.nombre+'">−</button>' +
         '<span>'+i.cantidad+'</span>' +
@@ -2063,6 +2096,9 @@ body.bloqueado{overflow:hidden}
     if(!mejor) return;
     var d = datosDeFicha(mejor);
     recoElegido = d;
+    var recoFoto = $("#reco-foto");
+    if(d.foto){ recoFoto.src = d.foto; recoFoto.alt = d.nombre; recoFoto.hidden = false; }
+    else { recoFoto.removeAttribute("src"); recoFoto.hidden = true; }
     $("#reco-bolsa").style.setProperty("--acento", d.acento);
     $("#reco-nombre").textContent = d.nombre;
     $("#reco-origen").textContent = d.origen;

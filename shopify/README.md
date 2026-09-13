@@ -53,7 +53,7 @@ Si no ponés etiquetas, la ficha igual funciona: toma el tipo de producto como o
 Todo el texto visible, los colores de acento, las dos fotos, y qué secciones se muestran.
 
 - **Barra de anuncio** — tres mensajes. Apagala si tu tema ya tiene una.
-- **Portada** — epígrafe, titular en dos líneas, bajada, dos botones, tres datos y la foto principal.
+- **Portada** — epígrafe, titular en dos líneas, bajada, dos botones, tres datos y tres fotos: la principal y las dos chicas que van en círculo.
 - **Cinta** — las frases que corren, separadas por coma.
 - **Catálogo** — títulos, colección, cuántos productos, filtros sí o no.
 - **Recomendador** — se puede apagar entero.
@@ -92,5 +92,9 @@ Vienen cargados con valores de ejemplo. Cambialos por los tuyos:
 ---
 
 ## Vista previa sin Shopify
+
+En la versión HTML las fotos van en `assets/fotos/` con nombres fijos. El archivo
+`assets/fotos/LEEME.md` lista cuáles son, qué medida conviene y cómo sacarlas para
+que peguen con la marca. Si una foto falta, esa posición vuelve sola a la ilustración.
 
 `index.html`, en la raíz del repositorio, es la misma página en HTML plano. Sirve para mostrarla, aprobarla o publicarla en GitHub Pages mientras la tienda se termina de armar. Ahí el carrito es una demostración local: no cobra ni guarda nada.
