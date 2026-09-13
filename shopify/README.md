@@ -1,100 +1,98 @@
-# Sepia Coffee Co — portada para Shopify
+# Sepia Coffee Co — secciones para Shopify
 
-Dos archivos. Uno es la portada completa, el otro es opcional.
+Hay dos portadas distintas. Elegí una.
 
-| Archivo | Para qué sirve |
+| Archivo | Qué es |
 |---|---|
-| `sections/sepia-homepage.liquid` | La portada entera: estilos, contenido, comportamiento y panel de edición. Es el único archivo indispensable. |
-| `templates/index.json` | Opcional. Deja la portada armada de una vez, sin tener que agregar la sección a mano. |
+| `sections/sepia-portada.liquid` | **Portada v2.** Arquitectura de tienda headless: hero en carrusel, cinta de ventajas, carruseles de producto, grilla de categorías, testimonios y bloque editorial. Trae mega menú y pie opcionales. |
+| `sections/sepia-homepage.liquid` | **Portada v1.** Estilo editorial y sereno: catálogo filtrable, recomendador de tres preguntas, calculadora de proporción, diario. |
+| `templates/index.json` | Plantilla opcional para la v1. |
+
+Las dos son de un solo archivo, sin dependencias, y el CSS de cada una está acotado
+a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 
 ---
 
-## Subirlo, paso a paso
+## Subirlas
 
-1. En el panel de Shopify entrá a **Tienda online → Temas**.
-2. En el tema donde vas a trabajar, abrí el menú **···** y elegí **Editar código**.
-3. En la barra lateral buscá la carpeta **Secciones** y hacé clic en **Agregar una sección nueva**.
-4. Ponele de nombre `sepia-homepage` y confirmá. Shopify crea el archivo con contenido de ejemplo.
-5. Seleccioná todo ese contenido de ejemplo, borralo, y pegá el contenido completo de `sections/sepia-homepage.liquid`.
-6. **Guardar**.
-7. Volvé a **Personalizar**, entrá a la portada, tocá **Agregar sección** y elegí **Sepia — Portada**.
-8. Arrastrala hasta arriba de todo y guardá.
-
-Si además querés la plantilla lista: en **Plantillas** abrí `index.json`, reemplazá su contenido por el de `templates/index.json` y guardá. Eso deja la portada armada con los diez bloques por defecto ya cargados. Ojo que esto **reemplaza** lo que la portada tenga hoy, así que copiá el contenido actual a un lado antes, por si querés volver atrás.
+1. **Tienda online → Temas → ··· → Editar código**
+2. **Secciones → Agregar una sección nueva**
+3. Ponele de nombre `sepia-portada` (o `sepia-homepage` para la v1)
+4. Borrá el contenido de ejemplo, pegá el archivo entero y guardá
+5. En **Personalizar**, agregá la sección y subila al tope
 
 ---
 
-## Conectar tu catálogo real
+## Portada v2, en detalle
 
-La sección arranca con seis cafés de ejemplo dibujados en vector. Para mostrar tus productos de verdad:
+### Módulos, en orden
+1. Barra de anuncio
+2. Cabecera con mega menú
+3. Hero en carrusel con autoplay
+4. Cinta de ventajas en movimiento
+5. Carrusel de destacados
+6. Grilla de categorías
+7. Carrusel de packs
+8. Testimonios
+9. Bloque editorial
+10. Boletín
+11. Pie con columnas plegables
 
-1. En el panel de la sección, en **Catálogo**, elegí la colección.
-2. En cada producto, agregá estas etiquetas (Shopify las llama *tags*):
+Cada módulo se apaga dejando su título vacío o quitando sus bloques.
 
-| Etiqueta | Qué hace | Ejemplo |
-|---|---|---|
-| `origen:` | Línea gris sobre el nombre | `origen:Colombia · Proceso honey` |
-| `nota:` | Una por cada nota de cata | `nota:Caramelo` |
-| `tueste:` | Nivel del 1 al 5, pinta los puntos | `tueste:2` |
-| `metodo:` | Alimenta los filtros de arriba | `metodo:filtrado` |
-| `perfil:` | Alimenta el recomendador | `perfil:dulce` |
-| `acento:` | Color de la banda del envase dibujado | `acento:#A2604A` |
+### Cabecera y pie
+Vienen **apagados** por defecto. Tu tema ya trae los suyos y si encendés estos
+quedan dos. Enciéndelos solo si vas a ocultar los del tema.
 
-Valores que entiende `metodo:` → `filtrado`, `espresso`, `descafeinado`. Un producto puede llevar varias.
-Valores que entiende `perfil:` → `frutal`, `dulce`, `equilibrado`. Una sola por producto.
+### Mega menú
+Cada ítem del menú es un bloque. En **Submenú** va una línea por enlace,
+con el formato `Nombre | /ruta`. Con dos o más líneas se arma el mega menú de
+tres columnas más la tarjeta destacada. Con el campo vacío queda un enlace simple.
 
-Si un producto tiene foto, se usa la foto. Si no, se dibuja el envase con el color de `acento:`.
-Si no ponés etiquetas, la ficha igual funciona: toma el tipo de producto como origen y asume tueste medio.
+### Catálogo real
+Elegí una colección en cada carrusel. Estas etiquetas de producto completan la ficha:
 
----
+| Etiqueta | Qué hace |
+|---|---|
+| `sub:Blend de casa · 250 g` | Línea bajo el nombre |
+| `tono:#F7D9C4` | Color de fondo de la tarjeta |
+| `acento:#8B4A3C` | Color del envase dibujado |
+| `arte:bolsa` | `bolsa`, `botella`, `tarro`, `taza`, `caja` o `batidor` |
+| `etq:Más vendido` | Etiqueta de la esquina |
+| `etqc:rojo` | Color de la etiqueta: `rojo` o `lima` |
+| `muestra:#2F7D4F` | Una por cada color disponible |
+| `rating:4.9` y `resenas:412` | Valoración mostrada |
 
-## Qué se edita desde el panel, sin tocar código
+Si el producto tiene fotos se usan las dos primeras: la segunda aparece al pasar
+el mouse. Si no tiene, se dibuja el envase con el color de `acento:`.
+Sin colección elegida se muestran productos de ejemplo.
 
-Todo el texto visible, los colores de acento, las dos fotos, y qué secciones se muestran.
-
-- **Barra de anuncio** — tres mensajes. Apagala si tu tema ya tiene una.
-- **Portada** — epígrafe, titular en dos líneas, bajada, dos botones, tres datos y tres fotos: la principal y las dos chicas que van en círculo.
-- **Cinta** — las frases que corren, separadas por coma.
-- **Catálogo** — títulos, colección, cuántos productos, filtros sí o no.
-- **Recomendador** — se puede apagar entero.
-- **Suscripción** — hasta cuatro planes, cada uno un bloque. El descuento por frecuencia se calcula solo sobre el precio base que cargues.
-- **Origen** — textos y hasta cinco valores, cada uno un bloque.
-- **Método** — hasta seis métodos, cada uno un bloque con proporción, molienda, agua, tiempo y pasos.
-- **Diario** — elegí un blog y toma las tres notas más recientes.
-- **Cafetería** — horario, dirección, correo y foto del local.
-- **Boletín** — usa el formulario de clientes de Shopify, los correos entran a tu lista.
-- **Extras** — número de WhatsApp para el botón flotante.
-
----
-
-## Cómo se lleva con tu tema
-
-- **No pisa los estilos del tema.** Todo el CSS está acotado a `.sepia-home` y las animaciones llevan prefijo propio.
-- **No trae cabecera ni pie.** Esos los sigue poniendo tu tema, así el menú y el carrito siguen siendo los de siempre.
-- **El carrito es el de Shopify.** «Agregar» usa la API de carrito sin recargar la página. Si el navegador no lo soporta, el formulario se envía a `/cart/add` como toda la vida.
-- **Funciona sin JavaScript**, con menos adornos: se ve todo el contenido y se puede comprar.
-- **Respeta «reducir movimiento»** del sistema operativo.
-- Probada con productos reales y con los de ejemplo, sin errores de consola y sin desbordes horizontales desde 360 px.
+### Carrito
+Usa el carrito de Shopify. «Agregar» va contra `/cart/add.js` sin recargar y
+actualiza el contador. Si el navegador no lo soporta, el formulario se envía
+a `/cart/add` como siempre.
 
 ---
 
-## Antes de publicar, revisá estos datos
+## Antes de publicar, cambiá estos datos
 
-Vienen cargados con valores de ejemplo. Cambialos por los tuyos:
+Vienen con valores de ejemplo:
 
-- Dirección y horario de la cafetería
-- Correo de contacto (`hola@sepiacoffee.cl`)
-- Número de WhatsApp
-- El monto del envío gratis que menciona la barra de anuncio
-- Los precios base de los tres planes de suscripción
-- Los porcentajes de descuento por frecuencia, si querés otros: están en el marcado de la sección, en los atributos `data-desc` de los botones **Semanal**, **Cada 15 días** y **Mensual**.
+- Las valoraciones y la cantidad de reseñas de cada producto
+- Las cuatro tarjetas de testimonios
+- El «4,9 · 1.284 reseñas» de la cinta de ventajas
+- El monto del envío gratis del anuncio
+- Enlaces de redes sociales y páginas legales
 
 ---
 
 ## Vista previa sin Shopify
 
-En la versión HTML las fotos van en `assets/fotos/` con nombres fijos. El archivo
-`assets/fotos/LEEME.md` lista cuáles son, qué medida conviene y cómo sacarlas para
-que peguen con la marca. Si una foto falta, esa posición vuelve sola a la ilustración.
+En la raíz del repositorio:
 
-`index.html`, en la raíz del repositorio, es la misma página en HTML plano. Sirve para mostrarla, aprobarla o publicarla en GitHub Pages mientras la tienda se termina de armar. Ahí el carrito es una demostración local: no cobra ni guarda nada.
+- `index.html` es la portada v2 en HTML plano
+- `v1-editorial.html` es la v1
+
+Las dos sirven para mostrar y aprobar el diseño, o para publicar en GitHub Pages
+mientras la tienda se termina. Ahí el carrito es una demostración local.
+Las fotos van en `assets/fotos/`, con los nombres que lista `assets/fotos/LEEME.md`.
