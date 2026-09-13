@@ -25,13 +25,52 @@ Lo que **no** es objetivo: replicar la arquitectura de packs armables de la refe
 
 ## S — Estilo
 
-Editorial impreso llevado a pantalla. Mucho aire, jerarquía tipográfica fuerte, líneas de un pixel en vez de bordes y sombras, y una capa de grano sobre toda la página para quitarle frialdad digital.
+Arquitectura de tienda headless llevada a un sitio estático y a una sección de
+Shopify: módulos apilados, tarjetas de esquina muy redondeada, display grueso y
+redondo, y bloques de color plano.
 
-- Fondo crema `#F1ECE6`, nunca blanco puro.
-- Vino `#7D4047` como único acento, reservado para llamados a la acción y detalles.
-- Bandas de carbón `#2E2E2E` para dar respiro y ritmo entre secciones.
-- Imágenes propias en vector: envases, taza cenital, granos y un diagrama del cinturón cafetero. Se evita el stock genérico, que la guía de marca prohíbe explícitamente.
-- El movimiento acompaña, no protagoniza: apariciones suaves al hacer scroll, y todo se desactiva si el sistema pide movimiento reducido.
+### Paleta bloqueada
+
+Estos cinco colores son los únicos de marca. No se agregan otros.
+
+| Uso | Color | HEX |
+|---|---|---|
+| Principal | Sky Blue · Celeste | `#C8D9E6` |
+| Secundario | Beige | `#F5EFEB` |
+| Logos y textos | Navy · Azul marino | `#2F4156` |
+| Apoyo | Teal · Azul petróleo | `#567C8D` |
+| Apoyo | White · Blanco | `#FFFFFF` |
+
+Reglas de uso en la página:
+
+- Fondo de página: Beige. Paneles y tarjetas claras: Blanco.
+- Todo el texto y los bloques oscuros: Navy.
+- Fondos de tarjeta de producto y de categoría: alternan Celeste, Blanco y Teal,
+  en ese orden de frecuencia. El Teal va poco, para dar acento.
+- Cinta de ventajas: fondo Teal, texto Blanco.
+- Botones principales: Navy con texto Blanco. Secundarios: Blanco o contorno Navy.
+- Todo gris, borde o texto secundario es Navy con transparencia, nunca un gris nuevo.
+
+Las únicas excepciones son las rampas de sombra dentro de los dibujos de producto,
+que son tintes y sombras del Beige para dar volumen cilíndrico a las bolsas y la
+cerámica. No son colores de marca ni se usan como fondo de nada.
+
+### Packaging
+
+- **Lata de matcha:** fondo Sky Blue, textos y caminante en Navy. Está fijo en el
+  dibujo, no cambia con el color de la ficha.
+- **Bolsa de café:** cuerpo en Beige con la banda de etiqueta en Navy o Teal.
+- **Botella de cold brew:** cuerpo en Navy o Teal, etiqueta en Beige.
+
+### Tipografía
+
+Fredoka para títulos, DM Sans para texto e IBM Plex Serif para citas. Las tres son
+libres, así que se pueden usar en la web y en piezas impresas sin licencia.
+
+### Movimiento
+
+Acompaña, no protagoniza. Apariciones suaves al hacer scroll, carruseles con
+autoplay pausable, y todo se desactiva si el sistema pide movimiento reducido.
 
 ## T — Tono
 

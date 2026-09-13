@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Sepia Coffee Co — Café de especialidad y matcha</title>
 <meta name="description" content="Café de especialidad tostado en Santiago, matcha ceremonial y accesorios. Envío gratis sobre $65.000 en todo Chile." />
-<meta name="theme-color" content="#F6F1E8" />
+<meta name="theme-color" content="#F5EFEB" />
 <link rel="canonical" href="https://sepiacoffee.cl/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Sepia Coffee Co" />
@@ -25,41 +25,40 @@
    Los tokens de abajo son el único lugar donde tocar la marca.
    ============================================================ */
 :root{
-  /* --- Base --- */
-  --tinta:#12233F;          /* azul marino, texto y bloques oscuros */
-  --tinta-2:#1B3050;
-  --papel:#F6F1E8;          /* fondo de página, nunca blanco puro */
-  --blanco:#FFFFFF;
-  --humo:#EFE8DC;
+  /* ---------- PALETA BLOQUEADA ----------
+     Estos cinco son los únicos colores de marca. Todo lo demás
+     en la página es uno de ellos, o navy/blanco con transparencia. */
+  --celeste:#C8D9E6;   /* principal */
+  --beige:#F5EFEB;     /* secundario */
+  --navy:#2F4156;      /* logos y textos */
+  --teal:#567C8D;      /* apoyo */
+  --blanco:#FFFFFF;    /* apoyo */
 
-  /* --- Acentos de categoría y producto --- */
-  --verde:#2F7D4F;
-  --lima:#B6D45C;
-  --rojo:#D8382F;
-  --amarillo:#F5C042;
-  --durazno:#F7D9C4;
-  --menta:#BFDCD6;
-  --celeste:#CFE0EA;
-  --lila:#D6CCE8;
+  /* ---------- Roles ---------- */
+  --tinta:var(--navy);
+  --papel:var(--beige);
+  --humo:rgba(47,65,86,.06);
 
-  /* --- Derivados --- */
-  --tinta-60:rgba(18,35,63,.6);
-  --tinta-40:rgba(18,35,63,.4);
-  --tinta-14:rgba(18,35,63,.14);
-  --tinta-08:rgba(18,35,63,.08);
-  --claro-24:rgba(255,255,255,.24);
-  --claro-64:rgba(255,255,255,.64);
+  /* Transparencias de navy sobre fondos claros */
+  --tinta-70:rgba(47,65,86,.72);
+  --tinta-60:rgba(47,65,86,.66);
+  --tinta-40:rgba(47,65,86,.45);
+  --tinta-14:rgba(47,65,86,.16);
+  --tinta-08:rgba(47,65,86,.08);
+  /* Transparencias de blanco sobre navy o teal */
+  --claro-24:rgba(255,255,255,.26);
+  --claro-64:rgba(255,255,255,.72);
 
-  /* --- Tipografía --- */
+  /* ---------- Tipografía ---------- */
   --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
   --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
   --serif:'IBM Plex Serif',Georgia,serif;
 
-  /* --- Métrica --- */
+  /* ---------- Métrica ---------- */
   --ancho:1440px;
   --gutter:clamp(16px,3.4vw,48px);
   --modulo:clamp(48px,7vw,80px);
-  --r-xl:28px;    /* rounded-3xl */
+  --r-xl:28px;
   --r-lg:20px;
   --r-md:14px;
   --r-pill:999px;
@@ -119,9 +118,9 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
 .btn:active{transform:translateY(0)}
 .btn.blanco{--bg:var(--blanco);--fg:var(--tinta)}
-.btn.verde{--bg:var(--verde);--fg:var(--blanco)}
-.btn.amarillo{--bg:var(--amarillo);--fg:var(--tinta)}
-.btn.rojo{--bg:var(--rojo);--fg:var(--blanco)}
+.btn.teal{--bg:var(--teal);--fg:var(--blanco)}
+.btn.celeste{--bg:var(--celeste);--fg:var(--navy)}
+.btn.navy{--bg:var(--navy);--fg:var(--blanco)}
 .btn.linea{--bg:transparent;--fg:var(--tinta);border-color:var(--tinta)}
 .btn.linea:hover{background:var(--tinta);color:var(--blanco)}
 .btn.linea-clara{--bg:transparent;--fg:var(--blanco);border-color:var(--claro-24)}
@@ -178,7 +177,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .ic-btn:hover{background:var(--tinta-08)}
 .burbuja{
   position:absolute;top:3px;right:2px;min-width:19px;height:19px;padding:0 5px;
-  background:var(--rojo);color:var(--blanco);border-radius:var(--r-pill);
+  background:var(--teal);color:var(--blanco);border-radius:var(--r-pill);
   font-family:var(--display);font-size:.68rem;font-weight:600;
   display:grid;place-items:center;line-height:1;transform:scale(0);transition:transform .3s var(--ease);
 }
@@ -205,7 +204,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .mega-col h4{font-family:var(--display);font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-40);margin-bottom:1rem}
 .mega-col li + li{margin-top:.55rem}
 .mega-col a{font-size:.97rem;transition:color .2s var(--ease)}
-.mega-col a:hover{color:var(--verde)}
+.mega-col a:hover{color:var(--teal)}
 .mega-destacado{display:grid;gap:.9rem}
 .mega-tarjeta{
   border-radius:var(--r-lg);overflow:hidden;background:var(--humo);
@@ -270,7 +269,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 /* ============================================================
    BARRA DE VENTAJAS
    ============================================================ */
-.usp{background:var(--verde);color:var(--blanco);overflow:hidden;padding-block:.95rem}
+.usp{background:var(--teal);color:var(--blanco);overflow:hidden;padding-block:.95rem}
 .usp-pista{display:flex;width:max-content;animation:usp-corre 34s linear infinite}
 .usp:hover .usp-pista{animation-play-state:paused}
 @keyframes usp-corre{to{transform:translateX(-50%)}}
@@ -311,7 +310,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .prod{display:flex;flex-direction:column;gap:.75rem;position:relative}
 .prod-media{
   position:relative;aspect-ratio:1;border-radius:var(--r-xl);overflow:hidden;
-  background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;
+  background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
 }
 .prod-media .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transition:opacity .4s var(--ease)}
 .prod-media .foto.alterna{opacity:0;z-index:2}
@@ -323,8 +322,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   background:var(--tinta);color:var(--blanco);border-radius:var(--r-pill);
   padding:.34rem .78rem;font-family:var(--display);font-weight:600;font-size:.74rem;
 }
-.prod-etq.rojo{background:var(--rojo)}
-.prod-etq.lima{background:var(--lima);color:var(--tinta)}
+.prod-etq.teal{background:var(--teal)}
+.prod-etq.celeste{background:var(--celeste);color:var(--navy)}
 .prod-rapido{
   position:absolute;left:.7rem;right:.7rem;bottom:.7rem;z-index:4;
   background:var(--blanco);color:var(--tinta);border-radius:var(--r-pill);
@@ -336,7 +335,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 }
 .prod:hover .prod-rapido,.prod:focus-within .prod-rapido{transform:none;opacity:1}
 .prod-rapido:hover{background:var(--tinta);color:var(--blanco)}
-.prod-rapido.hecho{background:var(--verde);color:var(--blanco)}
+.prod-rapido.hecho{background:var(--teal);color:var(--blanco)}
 @media(hover:none){.prod-rapido{transform:none;opacity:1}}
 
 .muestras{display:flex;gap:.38rem;align-items:center;min-height:22px}
@@ -353,7 +352,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .prod-info h3{font-size:1.05rem;font-weight:600;line-height:1.2}
 .prod-sub{font-size:.83rem;color:var(--tinta-60)}
 .valoracion{display:flex;align-items:center;gap:.35rem;font-size:.79rem;color:var(--tinta-60)}
-.valoracion .estrellas{display:flex;gap:1px;color:var(--amarillo)}
+.valoracion .estrellas{display:flex;gap:1px;color:var(--teal)}
 .valoracion .estrellas svg{width:13px;height:13px;fill:currentColor}
 .prod-precio{display:flex;align-items:baseline;gap:.5rem;font-family:var(--display);font-weight:600;font-size:1.05rem;margin-top:.1rem}
 .prod-precio .antes{font-size:.86rem;font-weight:400;color:var(--tinta-40);text-decoration:line-through}
@@ -364,7 +363,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   color:var(--tinta-60);transition:background .24s var(--ease),color .24s var(--ease);white-space:nowrap;
 }
 .compra button[aria-pressed="true"]{background:var(--blanco);color:var(--tinta);font-weight:700;box-shadow:0 1px 4px rgba(18,35,63,.1)}
-.compra .ahorro{font-size:.68rem;color:var(--verde);font-weight:700}
+.compra .ahorro{font-size:.68rem;color:var(--teal);font-weight:700}
 
 /* ============================================================
    GRILLA DE CATEGORÍAS
@@ -373,7 +372,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 @media(min-width:760px){.cats{grid-template-columns:repeat(5,1fr)}}
 .cat{
   display:flex;flex-direction:column;gap:.85rem;border-radius:var(--r-xl);
-  background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;
+  background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
   transition:transform .3s var(--ease);
 }
 .cat:hover{transform:translateY(-5px)}
@@ -387,7 +386,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
    TESTIMONIOS
    ============================================================ */
 .testi{border-radius:var(--r-xl);padding:clamp(1.3rem,2.4vw,1.9rem);background:var(--tono,var(--blanco));display:flex;flex-direction:column;gap:.9rem;min-height:100%}
-.testi .estrellas{display:flex;gap:2px;color:var(--amarillo)}
+.testi .estrellas{display:flex;gap:2px;color:var(--teal)}
 .testi .estrellas svg{width:16px;height:16px;fill:currentColor}
 .testi blockquote{font-family:var(--serif);font-size:1.04rem;line-height:1.5}
 .testi .quien{margin-top:auto;display:flex;align-items:center;gap:.6rem;font-size:.83rem}
@@ -406,7 +405,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .editorial .btn{margin-top:1.8rem}
 .editorial-fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.7rem,1.4vw,1rem)}
 .editorial-fotos > div{
-  position:relative;border-radius:var(--r-lg);overflow:hidden;background:var(--tinta-2);
+  position:relative;border-radius:var(--r-lg);overflow:hidden;background:rgba(255,255,255,.08);
   display:grid;place-items:center;
 }
 .editorial-fotos > div:first-child{aspect-ratio:3/4}
@@ -417,7 +416,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 /* ============================================================
    BOLETÍN Y PIE
    ============================================================ */
-.boletin{background:var(--durazno);border-radius:var(--r-xl);padding:clamp(1.8rem,4vw,3.2rem);text-align:center}
+.boletin{background:var(--celeste);border-radius:var(--r-xl);padding:clamp(1.8rem,4vw,3.2rem);text-align:center}
 .boletin .copy{margin:.8rem auto 0;max-width:44ch;color:var(--tinta-60)}
 .form-bol{display:flex;gap:.55rem;max-width:470px;margin:1.7rem auto 0;flex-wrap:wrap}
 .form-bol input{
@@ -426,7 +425,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 }
 .form-bol input:focus{outline:none;border-color:var(--tinta)}
 @media(max-width:460px){.form-bol .btn{width:100%}}
-.bol-ok{display:none;margin-top:1rem;font-weight:700;color:var(--verde)}
+.bol-ok{display:none;margin-top:1rem;font-weight:700;color:var(--teal)}
 .bol-ok.visible{display:block}
 
 .pie{background:var(--tinta);color:var(--blanco);margin-top:var(--modulo)}
@@ -494,10 +493,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .envio p{font-size:.85rem;margin-bottom:.75rem}
 .envio b{font-weight:700}
 .barra{height:7px;background:var(--tinta-08);border-radius:var(--r-pill);position:relative;overflow:hidden}
-.barra i{position:absolute;inset:0 auto 0 0;background:var(--verde);border-radius:var(--r-pill);transition:width .5s var(--ease)}
+.barra i{position:absolute;inset:0 auto 0 0;background:var(--teal);border-radius:var(--r-pill);transition:width .5s var(--ease)}
 .hitos{display:flex;justify-content:space-between;margin-top:.55rem;font-size:.7rem;color:var(--tinta-40)}
 .hitos span{display:flex;align-items:center;gap:.25rem}
-.hitos span.ok{color:var(--verde);font-weight:700}
+.hitos span.ok{color:var(--teal);font-weight:700}
 .hitos svg{width:13px;height:13px}
 
 .linea-carro{display:grid;grid-template-columns:72px 1fr auto;gap:.9rem;padding-block:1rem;border-bottom:1px solid var(--tinta-08);align-items:center}
@@ -505,7 +504,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .linea-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .linea-media svg{width:66%}
 .linea-carro h4{font-size:.95rem;font-weight:600}
-.linea-carro .plan{font-size:.74rem;color:var(--verde);font-weight:700}
+.linea-carro .plan{font-size:.74rem;color:var(--teal);font-weight:700}
 .cant{display:inline-flex;align-items:center;border:1.5px solid var(--tinta-14);border-radius:var(--r-pill);margin-top:.45rem}
 .cant button{width:26px;height:26px;display:grid;place-items:center;color:var(--tinta-60)}
 .cant button:hover{color:var(--tinta)}
@@ -560,26 +559,26 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 <!-- ===================== BIBLIOTECA SVG ===================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
 <linearGradient id="g-bolsa" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#AC9E8C"/><stop offset=".14" stop-color="#E2DAD0"/>
-    <stop offset=".44" stop-color="#F1EBE4"/><stop offset=".74" stop-color="#D6CABC"/>
-    <stop offset="1" stop-color="#A3947F"/>
+    <stop offset="0" stop-color="#CFC6BF"/><stop offset=".14" stop-color="#F5EFEB"/>
+    <stop offset=".44" stop-color="#FFFFFF"/><stop offset=".74" stop-color="#EAE2DC"/>
+    <stop offset="1" stop-color="#C6BCB4"/>
   </linearGradient>
   <linearGradient id="g-sello" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#A89A87"/><stop offset=".42" stop-color="#CFC4B6"/>
-    <stop offset="1" stop-color="#9E8F7C"/>
+    <stop offset="0" stop-color="#C6BCB4"/><stop offset=".42" stop-color="#D8D0C9"/>
+    <stop offset="1" stop-color="#BCB2AA"/>
   </linearGradient>
   <filter id="f-bolsa" x="-25%" y="-12%" width="150%" height="132%">
-    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#2E2E2E" flood-opacity=".2"/>
+    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#2F4156" flood-opacity=".2"/>
   </filter>
   <radialGradient id="g-cafe" cx=".38" cy=".32" r=".82">
-    <stop offset="0" stop-color="#7A5136"/><stop offset=".5" stop-color="#553A22"/>
-    <stop offset="1" stop-color="#2F1D10"/>
+    <stop offset="0" stop-color="#567C8D"/><stop offset=".5" stop-color="#3E5670"/>
+    <stop offset="1" stop-color="#2F4156"/>
   </radialGradient>
   <radialGradient id="g-platillo" cx=".36" cy=".28" r=".9">
-    <stop offset="0" stop-color="#F4EFE9"/><stop offset="1" stop-color="#D6CCC2"/>
+    <stop offset="0" stop-color="#F5EFEB"/><stop offset="1" stop-color="#DED6CF"/>
   </radialGradient>
   <linearGradient id="g-ceramica" x1=".2" y1="0" x2=".85" y2="1">
-    <stop offset="0" stop-color="#F7F3ED"/><stop offset="1" stop-color="#DFD6CC"/>
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6DED8"/>
   </linearGradient>
  
   <linearGradient id="g-vidrio" x1="0" y1="0" x2="1" y2="0">
@@ -594,105 +593,120 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 </defs>
 
 <symbol id="i-bolsa" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#2E2E2E" opacity=".17"/>
+   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#2F4156" opacity=".17"/>
    <g filter="url(#f-bolsa)">
      <path d="M32 44h136v186a14 14 0 0 1-14 14H46a14 14 0 0 1-14-14z" fill="url(#g-bolsa)"/>
-     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#2E2E2E" opacity=".085"/>
-     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#2E2E2E" opacity=".065"/>
+     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#2F4156" opacity=".085"/>
+     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#2F4156" opacity=".065"/>
      <path d="M32 25h136v19H32z" fill="url(#g-sello)"/>
      <path d="M40 25v19M48 25v19M56 25v19M64 25v19M72 25v19M80 25v19M88 25v19M96 25v19M104 25v19M112 25v19M120 25v19M128 25v19M136 25v19M144 25v19M152 25v19M160 25v19"
-           stroke="#2E2E2E" stroke-width="1" opacity=".17"/>
-     <path d="M32 44h136v3.5H32z" fill="#2E2E2E" opacity=".2"/>
+           stroke="#2F4156" stroke-width="1" opacity=".17"/>
+     <path d="M32 44h136v3.5H32z" fill="#2F4156" opacity=".2"/>
    </g>
    <text x="101" y="84" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="6.2"
-         letter-spacing="2" fill="#2E2E2E" opacity=".45">250 G · GRANO ENTERO</text>
-   <path d="M46 94h108" stroke="#2E2E2E" stroke-width="1" opacity=".16"/>
-   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#7D4047)"/>
-   <path d="M32 106h136v3H32z" fill="#2E2E2E" opacity=".14"/>
+         letter-spacing="2" fill="#2F4156" opacity=".45">250 G · GRANO ENTERO</text>
+   <path d="M46 94h108" stroke="#2F4156" stroke-width="1" opacity=".16"/>
+   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#2F4156)"/>
+   <path d="M32 106h136v3H32z" fill="#2F4156" opacity=".14"/>
    <text x="100" y="148" text-anchor="middle" font-family="Playfair Display,Georgia,serif"
-         font-size="32" fill="#F1ECE6">sepia</text>
+         font-size="32" fill="#F5EFEB">sepia</text>
    <text x="101" y="169" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="6.4"
-         letter-spacing="3.4" fill="#F1ECE6" opacity=".76">COFFEE CO</text>
-   <circle cx="100" cy="212" r="8.5" fill="#2E2E2E" opacity=".08"/>
-   <circle cx="100" cy="212" r="3.4" fill="#2E2E2E" opacity=".17"/>
+         letter-spacing="3.4" fill="#F5EFEB" opacity=".76">COFFEE CO</text>
+   <circle cx="100" cy="212" r="8.5" fill="#2F4156" opacity=".08"/>
+   <circle cx="100" cy="212" r="3.4" fill="#2F4156" opacity=".17"/>
    <text x="101" y="238" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="5.6"
-         letter-spacing="2.4" fill="#2E2E2E" opacity=".34">TOSTADO EN SANTIAGO</text>
+         letter-spacing="2.4" fill="#2F4156" opacity=".34">TOSTADO EN SANTIAGO</text>
  </symbol>
 
  <!-- Botella de cold brew -->
  <symbol id="i-botella" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="256" rx="52" ry="7" fill="#12233F" opacity=".16"/>
-   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="var(--acento,#2F7D4F)"/>
+   <ellipse cx="100" cy="256" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
+   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="var(--acento,#567C8D)"/>
    <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="url(#g-vidrio)"/>
-   <rect x="80" y="8" width="40" height="16" rx="5" fill="#12233F" opacity=".82"/>
-   <rect x="58" y="120" width="84" height="76" fill="#F6F1E8"/>
-   <text x="100" y="152" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="26" font-weight="600" fill="#12233F">sepia</text>
-   <text x="100" y="172" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#12233F" opacity=".65">COLD BREW</text>
-   <path d="M58 214h84" stroke="#12233F" stroke-width="1" opacity=".18"/>
-   <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#F6F1E8" opacity=".8">1 LITRO</text>
+   <rect x="80" y="8" width="40" height="16" rx="5" fill="#2F4156" opacity=".82"/>
+   <rect x="58" y="120" width="84" height="76" fill="#F5EFEB"/>
+   <text x="100" y="152" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="26" font-weight="600" fill="#2F4156">sepia</text>
+   <text x="100" y="172" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#2F4156" opacity=".65">COLD BREW</text>
+   <path d="M58 214h84" stroke="#2F4156" stroke-width="1" opacity=".18"/>
+   <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#F5EFEB" opacity=".8">1 LITRO</text>
  </symbol>
 
  <!-- Tarro de matcha -->
  <symbol id="i-tarro" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#12233F" opacity=".16"/>
-   <rect x="46" y="76" width="108" height="168" rx="14" fill="var(--acento,#B6D45C)"/>
+   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <!-- Cuerpo en Sky Blue, fijo: es el color de la lata en el packaging -->
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="#C8D9E6"/>
    <rect x="46" y="76" width="108" height="168" rx="14" fill="url(#g-lata)"/>
-   <rect x="40" y="52" width="120" height="30" rx="10" fill="#12233F" opacity=".86"/>
-   <rect x="52" y="44" width="96" height="12" rx="6" fill="#12233F" opacity=".5"/>
-   <rect x="46" y="128" width="108" height="66" fill="#F6F1E8"/>
-   <text x="100" y="160" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="27" font-weight="600" fill="#12233F">sepia</text>
-   <text x="100" y="180" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" letter-spacing="2.6" fill="#12233F" opacity=".65">MATCHA</text>
-   <text x="100" y="222" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#12233F" opacity=".55">80 G · CEREMONIAL</text>
+   <!-- Tapa en Navy -->
+   <rect x="40" y="52" width="120" height="30" rx="10" fill="#2F4156"/>
+   <rect x="52" y="44" width="96" height="12" rx="6" fill="#2F4156" opacity=".55"/>
+   <!-- Caminante -->
+   <g stroke="#2F4156" stroke-width="4.6" stroke-linecap="round" fill="none">
+     <path d="M100 116v18"/>
+     <path d="M100 134l-10 19"/>
+     <path d="M100 134l12 17"/>
+     <path d="M100 121l-11 10"/>
+     <path d="M100 121l12 7"/>
+   </g>
+   <circle cx="100" cy="108" r="6.6" fill="#2F4156"/>
+   <!-- Textos en Navy -->
+   <text x="100" y="182" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif"
+         font-size="27" font-weight="600" fill="#2F4156">sepia</text>
+   <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">MATCHA</text>
+   <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
+   <text x="101" y="232" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="7.5" letter-spacing="1.8" fill="#2F4156" opacity=".6">80 G · CEREMONIAL</text>
  </symbol>
 
  <!-- Taza de cerámica -->
  <symbol id="i-taza" viewBox="0 0 200 272">
-   <ellipse cx="96" cy="238" rx="58" ry="7" fill="#12233F" opacity=".16"/>
-   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="var(--acento,#CFE0EA)"/>
+   <ellipse cx="96" cy="238" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="var(--acento,#C8D9E6)"/>
    <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="url(#g-lata)"/>
-   <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#CFE0EA)" stroke-width="14" stroke-linecap="round"/>
-   <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F6F1E8"/>
-   <ellipse cx="96" cy="97" rx="44" ry="8" fill="#5B3A22"/>
-   <text x="96" y="160" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="24" font-weight="600" fill="#12233F" opacity=".75">sepia</text>
+   <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#C8D9E6)" stroke-width="14" stroke-linecap="round"/>
+   <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F5EFEB"/>
+   <ellipse cx="96" cy="97" rx="44" ry="8" fill="#2F4156"/>
+   <text x="96" y="160" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="24" font-weight="600" fill="#2F4156" opacity=".75">sepia</text>
  </symbol>
 
  <!-- Caja de pack -->
  <symbol id="i-caja" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="248" rx="66" ry="8" fill="#12233F" opacity=".16"/>
-   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="var(--acento,#F5C042)"/>
+   <ellipse cx="100" cy="248" rx="66" ry="8" fill="#2F4156" opacity=".16"/>
+   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="var(--acento,#C8D9E6)"/>
    <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="url(#g-lata)"/>
-   <path d="M22 74h156v34H22z" fill="#12233F" opacity=".86"/>
-   <path d="M92 74h16v170H92z" fill="#F6F1E8" opacity=".9"/>
-   <path d="M30 150h140v10H30z" fill="#F6F1E8" opacity=".9"/>
-   <path d="M100 74c-14-22-42-22-42-4 0 10 18 10 42 4zM100 74c14-22 42-22 42-4 0 10-18 10-42 4z" fill="#F6F1E8" opacity=".92"/>
-   <text x="100" y="200" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="22" font-weight="600" fill="#12233F">pack</text>
+   <path d="M22 74h156v34H22z" fill="#2F4156" opacity=".86"/>
+   <path d="M92 74h16v170H92z" fill="#F5EFEB" opacity=".9"/>
+   <path d="M30 150h140v10H30z" fill="#F5EFEB" opacity=".9"/>
+   <path d="M100 74c-14-22-42-22-42-4 0 10 18 10 42 4zM100 74c14-22 42-22 42-4 0 10-18 10-42 4z" fill="#F5EFEB" opacity=".92"/>
+   <text x="100" y="200" text-anchor="middle" font-family="Fredoka,Trebuchet MS,sans-serif" font-size="22" font-weight="600" fill="#2F4156">pack</text>
  </symbol>
 
  <!-- Batidor de matcha -->
  <symbol id="i-batidor" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="248" rx="52" ry="7" fill="#12233F" opacity=".16"/>
-   <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#E8D9B8)"/>
-   <path d="M70 146h60l-4 30H74z" fill="var(--acento,#E8D9B8)"/>
-   <g stroke="var(--acento,#E8D9B8)" stroke-width="3" stroke-linecap="round" fill="none">
+   <ellipse cx="100" cy="248" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
+   <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#F5EFEB)"/>
+   <path d="M70 146h60l-4 30H74z" fill="var(--acento,#F5EFEB)"/>
+   <g stroke="var(--acento,#F5EFEB)" stroke-width="3" stroke-linecap="round" fill="none">
      <path d="M76 176c-8 24-4 48 4 60M88 178c-5 24-2 48 3 58M100 178v60M112 178c5 24 2 48-3 58M124 176c8 24 4 48-4 60"/>
      <path d="M68 174c-10 24-6 50 4 62M132 174c10 24 6 50-4 62"/>
    </g>
-   <path d="M64 172h72" stroke="#12233F" stroke-width="2" opacity=".2"/>
+   <path d="M64 172h72" stroke="#2F4156" stroke-width="2" opacity=".2"/>
  </symbol>
 
  <!-- Granos -->
  <symbol id="i-granos" viewBox="0 0 120 120">
-   <g transform="translate(40 44) rotate(-24)"><ellipse rx="15" ry="21" fill="#5E4636"/><path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#3D2C21" stroke-width="2.2" stroke-linecap="round"/></g>
-   <g transform="translate(76 62) rotate(32)"><ellipse rx="14" ry="20" fill="#7A5B45"/><path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#523B2B" stroke-width="2.1" stroke-linecap="round"/></g>
-   <g transform="translate(50 86) rotate(8)"><ellipse rx="13" ry="18.5" fill="#4A3629"/><path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#2E211A" stroke-width="2" stroke-linecap="round"/></g>
+   <g transform="translate(40 44) rotate(-24)"><ellipse rx="15" ry="21" fill="#2F4156"/><path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#C8D9E6" stroke-width="2.2" stroke-linecap="round"/></g>
+   <g transform="translate(76 62) rotate(32)"><ellipse rx="14" ry="20" fill="#567C8D"/><path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#C8D9E6" stroke-width="2.1" stroke-linecap="round"/></g>
+   <g transform="translate(50 86) rotate(8)"><ellipse rx="13" ry="18.5" fill="#2F4156"/><path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#C8D9E6" stroke-width="2" stroke-linecap="round"/></g>
  </symbol>
  <symbol id="i-grano" viewBox="0 0 24 32">
    <ellipse cx="12" cy="16" rx="10.5" ry="15" fill="currentColor"/>
-   <path d="M12 3.5C16.6 10.5 7.4 21.5 12 28.5" fill="none" stroke="var(--fondo-grano,#F6F1E8)" stroke-width="2.8" stroke-linecap="round"/>
+   <path d="M12 3.5C16.6 10.5 7.4 21.5 12 28.5" fill="none" stroke="var(--fondo-grano,#F5EFEB)" stroke-width="2.8" stroke-linecap="round"/>
  </symbol>
  <symbol id="i-hoja-matcha" viewBox="0 0 120 120">
-   <path d="M96 24s-4 58-42 58a24 24 0 0 1-24-24c0-34 66-34 66-34z" fill="var(--acento,#2F7D4F)"/>
-   <path d="M24 98s10-30 36-46" fill="none" stroke="#12233F" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+   <path d="M96 24s-4 58-42 58a24 24 0 0 1-24-24c0-34 66-34 66-34z" fill="var(--acento,#567C8D)"/>
+   <path d="M24 98s10-30 36-46" fill="none" stroke="#2F4156" stroke-width="4" stroke-linecap="round" opacity=".45"/>
  </symbol>
 
  <!-- Íconos de interfaz -->
@@ -729,7 +743,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   <div class="cab-fila">
     <a href="#portada" class="marca" aria-label="Sepia Coffee Co, ir al inicio">
       <span class="palabra">sepia</span>
-      <svg class="grano" viewBox="0 0 24 32" aria-hidden="true" style="--fondo-grano:#F6F1E8"><use href="#i-grano"/></svg>
+      <svg class="grano" viewBox="0 0 24 32" aria-hidden="true" style="--fondo-grano:#F5EFEB"><use href="#i-grano"/></svg>
     </a>
 
     <nav aria-label="Navegación principal" style="flex:1">
@@ -770,7 +784,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <li><a href="#cafes">Filtrado</a></li><li><a href="#cafes">Espresso</a></li>
         <li><a href="#cafes">Prensa francesa</a></li><li><a href="#cafes">Molido a pedido</a></li></ul></div>
       <div class="mega-destacado">
-        <a class="mega-tarjeta" href="#cafes" style="background:var(--durazno)">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
           <img class="foto-mega" src="assets/fotos/mega-cafe.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
           <span class="etq">Nuevo · Huehuetenango</span>
         </a>
@@ -790,7 +804,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <li><a href="#cafes">Con hielo</a></li><li><a href="#cafes">Recetas</a></li>
         <li><a href="#cafes">Guía de preparación</a></li></ul></div>
       <div class="mega-destacado">
-        <a class="mega-tarjeta" href="#cafes" style="background:var(--menta)">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
           <img class="foto-mega" src="assets/fotos/mega-coldbrew.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
           <span class="etq">Pack de 4 · 15% menos</span>
         </a>
@@ -809,7 +823,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <div class="mega-col"><h4>Aprender</h4><ul>
         <li><a href="#cafes">Cómo preparar matcha</a></li><li><a href="#cafes">Ceremonial o culinario</a></li></ul></div>
       <div class="mega-destacado">
-        <a class="mega-tarjeta" href="#cafes" style="background:var(--lima)">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
           <img class="foto-mega" src="assets/fotos/mega-matcha.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
           <span class="etq">Matcha coco</span>
         </a>
@@ -829,7 +843,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <li><a href="#packs">Tarjeta de regalo</a></li><li><a href="#packs">Packs de regalo</a></li>
         <li><a href="#packs">Empresas</a></li></ul></div>
       <div class="mega-destacado">
-        <a class="mega-tarjeta" href="#packs" style="background:var(--amarillo)">
+        <a class="mega-tarjeta" href="#packs" style="background:var(--teal)">
           <img class="foto-mega" src="assets/fotos/mega-packs.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
           <span class="etq">Armá el tuyo</span>
         </a>
@@ -845,14 +859,14 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   <div class="hero-pista" id="hero-pista">
 
     <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="1 de 2">
-      <div class="hero-caja" style="background:linear-gradient(120deg,#1B3050,#2F7D4F)">
+      <div class="hero-caja" style="background:linear-gradient(120deg,rgba(255,255,255,.08),#567C8D)">
         <div class="hero-fondo">
           <img src="assets/fotos/hero-1.jpg" alt="" onerror="this.remove()">
           <div class="hero-arte" aria-hidden="true">
             <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
-            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#8B4A3C"><use href="#i-bolsa"/></svg>
-            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#B6D45C"><use href="#i-tarro"/></svg>
-            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#F5C042"><use href="#i-botella"/></svg>
+            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#2F4156"><use href="#i-bolsa"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#C8D9E6"><use href="#i-botella"/></svg>
           </div>
         </div>
         <div class="hero-velo"></div>
@@ -868,14 +882,14 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </article>
 
     <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="2 de 2">
-      <div class="hero-caja" style="background:linear-gradient(120deg,#2F7D4F,#B6D45C)">
+      <div class="hero-caja" style="background:linear-gradient(120deg,#567C8D,#C8D9E6)">
         <div class="hero-fondo">
           <img src="assets/fotos/hero-2.jpg" alt="" onerror="this.remove()">
           <div class="hero-arte" aria-hidden="true">
             <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
-            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#D9E8A8"><use href="#i-tarro"/></svg>
-            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#CFE0EA"><use href="#i-taza"/></svg>
-            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#E8D9B8"><use href="#i-batidor"/></svg>
+            <svg class="pieza p1" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#C8D9E6"><use href="#i-taza"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#F5EFEB"><use href="#i-batidor"/></svg>
           </div>
         </div>
         <div class="hero-velo"></div>
@@ -916,19 +930,19 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     <div class="car">
       <div class="car-pista rev" data-pista="cafes">
         <article class="prod" data-id="cordillera" data-nombre="Cordillera" data-precio="9900"
-                 data-precio-txt="$9.900" data-tono="#F7D9C4" data-acento="#8B4A3C"
+                 data-precio-txt="$9.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-bolsa" data-cat="cafe">
-          <div class="prod-media" style="--tono:#F7D9C4">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-cordillera.jpg" alt="Cordillera" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-cordillera-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#8B4A3C" role="img" aria-label="Cordillera"><use href="#i-bolsa"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cordillera"><use href="#i-bolsa"/></svg>
             <span class="prod-etq">Más vendido</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $9.900
             </button>
           </div>
-          <div class="muestras"><button class="muestra" type="button" style="--c:#8B4A3C" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#9A8A6E" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#2F7D4F" aria-pressed="false" aria-label="Color 3"></button></div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button></div>
           <div class="prod-info">
             <h3>Cordillera</h3>
             <p class="prod-sub">Blend de casa · 250 g</p>
@@ -944,18 +958,18 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="cold-clasico" data-nombre="Cold Brew Clásico" data-precio="7900"
-                 data-precio-txt="$7.900" data-tono="#CFE0EA" data-acento="#2F7D4F"
+                 data-precio-txt="$7.900" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-botella" data-cat="cold">
-          <div class="prod-media" style="--tono:#CFE0EA">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-cold-clasico.jpg" alt="Cold Brew Clásico" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-cold-clasico-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F7D4F" role="img" aria-label="Cold Brew Clásico"><use href="#i-botella"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Cold Brew Clásico"><use href="#i-botella"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $7.900
             </button>
           </div>
-          <div class="muestras"><button class="muestra" type="button" style="--c:#2F7D4F" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#C59A5B" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#8B6A4A" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#B6D45C" aria-pressed="false" aria-label="Color 4"></button></div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
           <div class="prod-info">
             <h3>Cold Brew Clásico</h3>
             <p class="prod-sub">Botella 1 L · sin azúcar</p>
@@ -971,13 +985,13 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="matcha-ceremonial" data-nombre="Matcha Ceremonial" data-precio="16900"
-                 data-precio-txt="$16.900" data-tono="#E4F0C4" data-acento="#B6D45C"
+                 data-precio-txt="$16.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-tarro" data-cat="matcha">
-          <div class="prod-media" style="--tono:#E4F0C4">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-matcha-ceremonial.jpg" alt="Matcha Ceremonial" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-matcha-ceremonial-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#B6D45C" role="img" aria-label="Matcha Ceremonial"><use href="#i-tarro"/></svg>
-            <span class="prod-etq lima">Orgánico</span>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Ceremonial"><use href="#i-tarro"/></svg>
+            <span class="prod-etq celeste">Orgánico</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $16.900
@@ -998,12 +1012,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="yirgacheffe" data-nombre="Yirgacheffe" data-precio="13500"
-                 data-precio-txt="$13.500" data-tono="#BFDCD6" data-acento="#9A8A6E"
+                 data-precio-txt="$13.500" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-bolsa" data-cat="cafe">
-          <div class="prod-media" style="--tono:#BFDCD6">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-yirgacheffe.jpg" alt="Yirgacheffe" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-yirgacheffe-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#9A8A6E" role="img" aria-label="Yirgacheffe"><use href="#i-bolsa"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Yirgacheffe"><use href="#i-bolsa"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $13.500
@@ -1024,13 +1038,13 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="matcha-coco" data-nombre="Matcha Coco" data-precio="17900"
-                 data-precio-txt="$17.900" data-tono="#F2EAD8" data-acento="#D9E8A8"
+                 data-precio-txt="$17.900" data-tono="#567C8D" data-acento="#2F4156"
                  data-arte="i-tarro" data-cat="matcha">
-          <div class="prod-media" style="--tono:#F2EAD8">
+          <div class="prod-media" style="--tono:#567C8D">
             <img class="foto" src="assets/fotos/prod-matcha-coco.jpg" alt="Matcha Coco" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-matcha-coco-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#D9E8A8" role="img" aria-label="Matcha Coco"><use href="#i-tarro"/></svg>
-            <span class="prod-etq rojo">Nuevo</span>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Coco"><use href="#i-tarro"/></svg>
+            <span class="prod-etq teal">Nuevo</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $17.900
@@ -1051,18 +1065,18 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="taza-sepia" data-nombre="Taza Sepia" data-precio="14900"
-                 data-precio-txt="$14.900" data-tono="#D6CCE8" data-acento="#CFE0EA"
+                 data-precio-txt="$14.900" data-tono="#FFFFFF" data-acento="#C8D9E6"
                  data-arte="i-taza" data-cat="accesorios">
-          <div class="prod-media" style="--tono:#D6CCE8">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-taza-sepia.jpg" alt="Taza Sepia" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-taza-sepia-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#CFE0EA" role="img" aria-label="Taza Sepia"><use href="#i-taza"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#C8D9E6" role="img" aria-label="Taza Sepia"><use href="#i-taza"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $14.900
             </button>
           </div>
-          <div class="muestras"><button class="muestra" type="button" style="--c:#CFE0EA" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#F7D9C4" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#BFDCD6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5C042" aria-pressed="false" aria-label="Color 4"></button><span class="resto">+1</span></div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button><span class="resto">+1</span></div>
           <div class="prod-info">
             <h3>Taza Sepia</h3>
             <p class="prod-sub">Cerámica mate · 300 ml</p>
@@ -1078,12 +1092,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="cold-vainilla" data-nombre="Cold Brew Vainilla" data-precio="8500"
-                 data-precio-txt="$8.500" data-tono="#FBE7B0" data-acento="#C59A5B"
+                 data-precio-txt="$8.500" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-botella" data-cat="cold">
-          <div class="prod-media" style="--tono:#FBE7B0">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-cold-vainilla.jpg" alt="Cold Brew Vainilla" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-cold-vainilla-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#C59A5B" role="img" aria-label="Cold Brew Vainilla"><use href="#i-botella"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cold Brew Vainilla"><use href="#i-botella"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $8.500
@@ -1116,42 +1130,42 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <a href="#cafes" class="enlace-sub">Ver todo</a>
       </div>
       <div class="cats rev">
-        <a class="cat" href="#cafes" style="--tono:#F7D9C4">
+        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#8B4A3C" aria-hidden="true"><use href="#i-bolsa"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <h3>Café en grano</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
-        <a class="cat" href="#cafes" style="--tono:#CFE0EA">
+        <a class="cat" href="#cafes" style="--tono:#FFFFFF">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-coldbrew.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#2F7D4F" aria-hidden="true"><use href="#i-botella"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#567C8D" aria-hidden="true"><use href="#i-botella"/></svg>
           </div>
           <h3>Cold Brew</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
-        <a class="cat" href="#cafes" style="--tono:#E4F0C4">
+        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 120 120" style="--acento:#2F7D4F" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
+            <svg viewBox="0 0 120 120" style="--acento:#2F4156" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
           </div>
           <h3>Matcha y té</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
-        <a class="cat" href="#cafes" style="--tono:#FBE7B0">
+        <a class="cat" href="#cafes" style="--tono:#FFFFFF">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-packs.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#F5C042" aria-hidden="true"><use href="#i-caja"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-caja"/></svg>
           </div>
           <h3>Packs</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
-        <a class="cat" href="#cafes" style="--tono:#D6CCE8">
+        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#CFE0EA" aria-hidden="true"><use href="#i-taza"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#567C8D" aria-hidden="true"><use href="#i-taza"/></svg>
           </div>
           <h3>Accesorios</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
@@ -1177,13 +1191,13 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     <div class="car">
       <div class="car-pista rev" data-pista="packs">
         <article class="prod" data-id="pack-descubrir" data-nombre="Pack Descubrir" data-precio="29900"
-                 data-precio-txt="$29.900" data-tono="#F7D9C4" data-acento="#F5C042"
+                 data-precio-txt="$29.900" data-tono="#FFFFFF" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
-          <div class="prod-media" style="--tono:#F7D9C4">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Pack Descubrir" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-descubrir-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5C042" role="img" aria-label="Pack Descubrir"><use href="#i-caja"/></svg>
-            <span class="prod-etq rojo">Ahorrás 16%</span>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Descubrir"><use href="#i-caja"/></svg>
+            <span class="prod-etq teal">Ahorrás 16%</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $29.900
@@ -1204,12 +1218,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="pack-ritual" data-nombre="Pack Ritual" data-precio="22900"
-                 data-precio-txt="$22.900" data-tono="#CFE0EA" data-acento="#CFE0EA"
+                 data-precio-txt="$22.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-taza" data-cat="packs">
-          <div class="prod-media" style="--tono:#CFE0EA">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-pack-ritual.jpg" alt="Pack Ritual" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-ritual-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#CFE0EA" role="img" aria-label="Pack Ritual"><use href="#i-taza"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Ritual"><use href="#i-taza"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $22.900
@@ -1230,12 +1244,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="pack-matcha" data-nombre="Pack Matcha" data-precio="28900"
-                 data-precio-txt="$28.900" data-tono="#E4F0C4" data-acento="#E8D9B8"
+                 data-precio-txt="$28.900" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-batidor" data-cat="packs">
-          <div class="prod-media" style="--tono:#E4F0C4">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-pack-matcha.jpg" alt="Pack Matcha" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-matcha-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#E8D9B8" role="img" aria-label="Pack Matcha"><use href="#i-batidor"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Pack Matcha"><use href="#i-batidor"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $28.900
@@ -1256,18 +1270,18 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="pack-coldbrew" data-nombre="Pack Cold Brew" data-precio="28900"
-                 data-precio-txt="$28.900" data-tono="#BFDCD6" data-acento="#2F7D4F"
+                 data-precio-txt="$28.900" data-tono="#567C8D" data-acento="#F5EFEB"
                  data-arte="i-botella" data-cat="packs">
-          <div class="prod-media" style="--tono:#BFDCD6">
+          <div class="prod-media" style="--tono:#567C8D">
             <img class="foto" src="assets/fotos/prod-pack-coldbrew.jpg" alt="Pack Cold Brew" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-coldbrew-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F7D4F" role="img" aria-label="Pack Cold Brew"><use href="#i-botella"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Pack Cold Brew"><use href="#i-botella"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $28.900
             </button>
           </div>
-          <div class="muestras"><button class="muestra" type="button" style="--c:#2F7D4F" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#C59A5B" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#8B6A4A" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#B6D45C" aria-pressed="false" aria-label="Color 4"></button></div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
           <div class="prod-info">
             <h3>Pack Cold Brew</h3>
             <p class="prod-sub">4 botellas de 1 L · elegís los sabores</p>
@@ -1283,12 +1297,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="pack-oficina" data-nombre="Pack Oficina" data-precio="54900"
-                 data-precio-txt="$54.900" data-tono="#D6CCE8" data-acento="#F5C042"
+                 data-precio-txt="$54.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
-          <div class="prod-media" style="--tono:#D6CCE8">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-pack-oficina.jpg" alt="Pack Oficina" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-oficina-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5C042" role="img" aria-label="Pack Oficina"><use href="#i-caja"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Oficina"><use href="#i-caja"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
               Agregar · $54.900
@@ -1309,12 +1323,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </div>
         </article>
         <article class="prod" data-id="pack-regalo" data-nombre="Pack Regalo" data-precio="39900"
-                 data-precio-txt="$39.900" data-tono="#FBE7B0" data-acento="#D8382F"
+                 data-precio-txt="$39.900" data-tono="#FFFFFF" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
-          <div class="prod-media" style="--tono:#FBE7B0">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-pack-regalo.jpg" alt="Pack Regalo" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-pack-regalo-2.jpg" alt="" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#D8382F" role="img" aria-label="Pack Regalo"><use href="#i-caja"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Regalo"><use href="#i-caja"/></svg>
             <span class="prod-etq">Para regalar</span>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1340,7 +1354,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   </div>
 </section>
 <!-- ===================== 06 · TESTIMONIOS ===================== -->
-<section class="modulo" id="resenas" style="background:var(--menta)">
+<section class="modulo" id="resenas" style="background:var(--celeste)">
   <div class="wrap">
     <div class="mod-cab rev">
       <div>
@@ -1355,22 +1369,22 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </div>
     <div class="car">
       <div class="car-pista rev" data-pista="resenas">
-        <div class="testi" style="--tono:#F7D9C4">
+        <div class="testi" style="--tono:#C8D9E6">
           <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
           <blockquote>Acá va la reseña de un cliente. Dejala en dos o tres líneas, que se lea de una pasada.</blockquote>
           <p class="quien"><span class="avatar">A</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
         </div>
-        <div class="testi" style="--tono:#CFE0EA">
+        <div class="testi" style="--tono:#C8D9E6">
           <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
           <blockquote>Segunda reseña de ejemplo. Conviene que cada una hable de un producto distinto.</blockquote>
           <p class="quien"><span class="avatar">B</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
         </div>
-        <div class="testi" style="--tono:#E4F0C4">
+        <div class="testi" style="--tono:#C8D9E6">
           <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
           <blockquote>Tercera reseña de ejemplo. Si tenés una que mencione el envío o la suscripción, mejor.</blockquote>
           <p class="quien"><span class="avatar">C</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
         </div>
-        <div class="testi" style="--tono:#FBE7B0">
+        <div class="testi" style="--tono:#C8D9E6">
           <span class="estrellas" role="img" aria-label="5 de 5"><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg><svg viewBox="0 0 24 24"><use href="#i-estrella"/></svg></span>
           <blockquote>Cuarta reseña de ejemplo. Las más útiles son las que cuentan algo concreto.</blockquote>
           <p class="quien"><span class="avatar">D</span><span><b>Nombre del cliente</b><br><span>Producto comprado</span></span></p>
@@ -1396,11 +1410,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <div class="editorial-fotos">
           <div>
             <img class="foto" src="assets/fotos/nosotros-1.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#F5C042" aria-hidden="true"><use href="#i-bolsa"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <div>
             <img class="foto" src="assets/fotos/nosotros-2.jpg" alt="" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#B6D45C" aria-hidden="true"><use href="#i-tarro"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-tarro"/></svg>
           </div>
         </div>
       </div>
@@ -1796,7 +1810,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var c = $("#correo");
-    if(!c.value || c.value.indexOf("@") === -1 || c.value.indexOf(".") === -1){ c.focus(); c.style.borderColor = "#D8382F"; return; }
+    if(!c.value || c.value.indexOf("@") === -1 || c.value.indexOf(".") === -1){ c.focus(); c.style.borderColor = "#567C8D"; return; }
     c.style.borderColor = "";
     form.style.display = "none";
     $("#bol-ok").classList.add("visible");
