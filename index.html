@@ -254,6 +254,28 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .hero-txt .copy{color:var(--blanco);margin-top:.9rem;font-weight:500;text-shadow:0 2px 14px rgba(18,35,63,.4)}
 .hero-txt .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.7rem}
 
+/* Variante partida: para fotos verticales. Rompe además la monotonía
+   de que todos los módulos sean bandas del mismo alto. */
+.hero-caja.dividida{display:grid;grid-template-columns:1fr;min-height:auto;align-items:stretch}
+@media(min-width:900px){
+  .hero-caja.dividida{grid-template-columns:1fr 1fr;min-height:clamp(490px,66vh,660px)}
+}
+.hero-panel{display:grid;align-content:center;padding:clamp(2.2rem,5vw,3.4rem) var(--gutter);position:relative;z-index:2}
+@media(min-width:900px){
+  .hero-panel{padding-left:max(var(--gutter),calc((100vw - var(--ancho)) / 2 + var(--gutter)));padding-right:clamp(1.5rem,3vw,3rem)}
+}
+.hero-panel .interno{max-width:min(30ch,100%)}
+/* En media columna el display de portada es demasiado grande */
+.hero-panel h2.t-6xl{font-size:clamp(2.4rem,4.6vw,4rem)}
+.hero-panel h2{color:var(--navy);text-shadow:none}
+.hero-panel .copy{color:var(--tinta-60);text-shadow:none;margin-top:.9rem;font-weight:400}
+.hero-panel .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
+.hero-foto{position:relative;overflow:hidden;background:var(--celeste);min-height:clamp(320px,52vw,420px)}
+@media(min-width:900px){.hero-foto{min-height:0}}
+@media(max-width:899px){.hero-foto{order:-1}}
+.hero-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:2}
+.hero-foto .hero-arte{z-index:1}
+
 .hero-puntos{
   position:absolute;left:0;right:0;bottom:1.1rem;z-index:4;
   display:flex;justify-content:center;gap:.45rem;
@@ -270,8 +292,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 }
 @media(min-width:900px){.hero-flecha{display:grid}}
 .hero-flecha:hover{background:var(--blanco)}
-.hero-flecha.izq{left:calc(var(--gutter) / 2)}
-.hero-flecha.der{right:calc(var(--gutter) / 2)}
+/* Al costado pisaban el titular del hero partido: van abajo a la derecha */
+.hero-flecha{top:auto;bottom:1rem;transform:none}
+.hero-flecha.izq{left:auto;right:calc(var(--gutter) + 52px)}
+.hero-flecha.der{right:var(--gutter)}
 
 /* ============================================================
    BARRA DE VENTAJAS
@@ -901,25 +925,24 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   <div class="hero-pista" id="hero-pista">
 
     <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="1 de 2">
-      <div class="hero-caja" style="background:linear-gradient(120deg,rgba(255,255,255,.08),#567C8D)">
-        <div class="hero-fondo">
-          <img src="assets/fotos/hero-1.jpg" alt="" onerror="this.remove()">
-          <div class="hero-arte" aria-hidden="true">
-            <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
-            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#2F4156"><use href="#i-bolsa"/></svg>
-            <svg class="pieza p2" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
-            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#C8D9E6"><use href="#i-botella"/></svg>
-          </div>
-        </div>
-        <div class="hero-velo"></div>
-        <div class="hero-txt"><div class="interno">
+      <div class="hero-caja dividida" style="background:var(--beige)">
+        <div class="hero-panel"><div class="interno">
           <h2 class="t-6xl">Café orgánico y matcha</h2>
           <p class="copy">Hecho para tu ritual diario.</p>
           <div class="btns">
-            <a href="#cafes" class="btn blanco">Ver todo</a>
-            <a href="#packs" class="btn linea-clara">Suscribirme</a>
+            <a href="#cafes" class="btn">Ver todo</a>
+            <a href="#packs" class="btn linea">Suscribirme</a>
           </div>
         </div></div>
+        <div class="hero-foto">
+          <img src="assets/fotos/hero-1.jpg" alt="Dos manos sosteniendo un matcha helado y un café de sepia coffee" onerror="this.remove()">
+          <div class="hero-arte" aria-hidden="true">
+            <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
+            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#2F4156"><use href="#i-bolsa"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272"><use href="#i-tarro"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#567C8D"><use href="#i-botella"/></svg>
+          </div>
+        </div>
       </div>
     </article>
 

@@ -31,7 +31,6 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap');
-
 .sepia2{position:relative;isolation:isolate;text-align:left;font-size:16px}
 .sepia2{
   
@@ -227,6 +226,20 @@
 .sepia2 .hero-txt h2{color:var(--blanco);text-shadow:0 2px 18px rgba(18,35,63,.35)}
 .sepia2 .hero-txt .copy{color:var(--blanco);margin-top:.9rem;font-weight:500;text-shadow:0 2px 14px rgba(18,35,63,.4)}
 .sepia2 .hero-txt .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.7rem}
+.sepia2 .hero-caja.dividida{display:grid;grid-template-columns:1fr;min-height:auto;align-items:stretch}
+@media(min-width:900px){.sepia2 .hero-caja.dividida{grid-template-columns:1fr 1fr;min-height:clamp(490px,66vh,660px)}}
+.sepia2 .hero-panel{display:grid;align-content:center;padding:clamp(2.2rem,5vw,3.4rem) var(--gutter);position:relative;z-index:2}
+@media(min-width:900px){.sepia2 .hero-panel{padding-left:max(var(--gutter),calc((100vw - var(--ancho)) / 2 + var(--gutter)));padding-right:clamp(1.5rem,3vw,3rem)}}
+.sepia2 .hero-panel .interno{max-width:min(30ch,100%)}
+.sepia2 .hero-panel h2.t-6xl{font-size:clamp(2.4rem,4.6vw,4rem)}
+.sepia2 .hero-panel h2{color:var(--navy);text-shadow:none}
+.sepia2 .hero-panel .copy{color:var(--tinta-60);text-shadow:none;margin-top:.9rem;font-weight:400}
+.sepia2 .hero-panel .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
+.sepia2 .hero-foto{position:relative;overflow:hidden;background:var(--celeste);min-height:clamp(320px,52vw,420px)}
+@media(min-width:900px){.sepia2 .hero-foto{min-height:0}}
+@media(max-width:899px){.sepia2 .hero-foto{order:-1}}
+.sepia2 .hero-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:2}
+.sepia2 .hero-foto .hero-arte{z-index:1}
 .sepia2 .hero-puntos{
   position:absolute;left:0;right:0;bottom:1.1rem;z-index:4;
   display:flex;justify-content:center;gap:.45rem;
@@ -243,8 +256,9 @@
 }
 @media(min-width:900px){.sepia2 .hero-flecha{display:grid}}
 .sepia2 .hero-flecha:hover{background:var(--blanco)}
-.sepia2 .hero-flecha.izq{left:calc(var(--gutter) / 2)}
-.sepia2 .hero-flecha.der{right:calc(var(--gutter) / 2)}
+.sepia2 .hero-flecha{top:auto;bottom:1rem;transform:none}
+.sepia2 .hero-flecha.izq{left:auto;right:calc(var(--gutter) + 52px)}
+.sepia2 .hero-flecha.der{right:var(--gutter)}
 .sepia2 .usp{background:var(--teal);color:var(--blanco);overflow:hidden;padding-block:.95rem}
 .sepia2 .usp-pista{display:flex;width:max-content;animation:sepia2-usp-corre 34s linear infinite}
 .sepia2 .usp:hover .usp-pista{animation-play-state:paused}
@@ -354,6 +368,11 @@
 .sepia2 .testi .avatar{width:34px;height:34px;border-radius:50%;background:var(--blanco);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:.9rem;flex:none}
 .sepia2 .testi .quien b{font-weight:700}
 .sepia2 .testi .quien span{color:var(--tinta-60)}
+.sepia2 .google-resumen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}
+.sepia2 .google-resumen .puntaje{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1}
+.sepia2 .google-resumen .estrellas{display:flex;gap:2px;color:var(--navy)}
+.sepia2 .google-resumen .estrellas svg{width:17px;height:17px;fill:currentColor}
+.sepia2 .google-resumen .conteo{font-size:.86rem;color:var(--tinta-60)}
 .sepia2 .editorial{background:var(--tinta);color:var(--blanco);border-radius:var(--r-xl);overflow:hidden}
 .sepia2 .editorial-rejilla{display:grid;gap:clamp(1.6rem,3vw,3rem);align-items:center;padding:clamp(1.6rem,4vw,3.4rem)}
 @media(min-width:900px){.sepia2 .editorial-rejilla{grid-template-columns:1.05fr .95fr}}
@@ -471,11 +490,6 @@
 .sepia2 .rev.visto{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.sepia2 *,.sepia2 *::before,.sepia2 *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
 .sepia2 .rev{opacity:1;transform:none}}
-.sepia2 .google-resumen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}
-.sepia2 .google-resumen .puntaje{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1}
-.sepia2 .google-resumen .estrellas{display:flex;gap:2px;color:var(--navy)}
-.sepia2 .google-resumen .estrellas svg{width:17px;height:17px;fill:currentColor}
-.sepia2 .google-resumen .conteo{font-size:.86rem;color:var(--tinta-60)}
 </style>
 
 <div class="sepia2" data-sepia2="{{ section.id }}">
@@ -782,30 +796,56 @@
     {%- for bloque in slides -%}
       <article class="hero-slide" role="group" aria-roledescription="diapositiva"
                aria-label="{{ forloop.index }} de {{ slides.size }}" {{ bloque.shopify_attributes }}>
-        <div class="hero-caja" style="background:{{ bloque.settings.fondo }}">
-          <div class="hero-fondo">
-            {%- if bloque.settings.imagen != blank -%}
-              {{ bloque.settings.imagen | image_url: width: 2400 | image_tag:
-                 loading: 'eager', alt: bloque.settings.imagen.alt | default: bloque.settings.titulo }}
-            {%- else -%}
-              <div class="hero-arte" aria-hidden="true">
-                <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
-                <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_1 }}"><use href="#s2-i-bolsa"/></svg>
-                <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_2 }}"><use href="#s2-i-tarro"/></svg>
-                <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_3 }}"><use href="#s2-i-botella"/></svg>
+        {%- if bloque.settings.diseno == 'partido' -%}
+          <div class="hero-caja dividida" style="background:{{ bloque.settings.fondo_panel }}">
+            <div class="hero-panel"><div class="interno">
+              <h2 class="t-6xl">{{ bloque.settings.titulo }}</h2>
+              {%- if bloque.settings.copy != blank -%}<p class="copy">{{ bloque.settings.copy }}</p>{%- endif -%}
+              <div class="btns">
+                {%- if bloque.settings.cta1 != blank -%}<a href="{{ bloque.settings.cta1_url | default: '#' }}" class="btn">{{ bloque.settings.cta1 }}</a>{%- endif -%}
+                {%- if bloque.settings.cta2 != blank -%}<a href="{{ bloque.settings.cta2_url | default: '#' }}" class="btn linea">{{ bloque.settings.cta2 }}</a>{%- endif -%}
               </div>
-            {%- endif -%}
-          </div>
-          <div class="hero-velo"></div>
-          <div class="hero-txt"><div class="interno">
-            <h2 class="t-6xl">{{ bloque.settings.titulo }}</h2>
-            {%- if bloque.settings.copy != blank -%}<p class="copy">{{ bloque.settings.copy }}</p>{%- endif -%}
-            <div class="btns">
-              {%- if bloque.settings.cta1 != blank -%}<a href="{{ bloque.settings.cta1_url | default: '#' }}" class="btn blanco">{{ bloque.settings.cta1 }}</a>{%- endif -%}
-              {%- if bloque.settings.cta2 != blank -%}<a href="{{ bloque.settings.cta2_url | default: '#' }}" class="btn linea-clara">{{ bloque.settings.cta2 }}</a>{%- endif -%}
+            </div></div>
+            <div class="hero-foto">
+              {%- if bloque.settings.imagen != blank -%}
+                {{ bloque.settings.imagen | image_url: width: 1400 | image_tag:
+                   loading: 'eager', alt: bloque.settings.imagen.alt | default: bloque.settings.titulo }}
+              {%- else -%}
+                <div class="hero-arte" aria-hidden="true">
+                  <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
+                  <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_1 }}"><use href="#s2-i-bolsa"/></svg>
+                  <svg class="pieza p2" viewBox="0 0 200 272"><use href="#s2-i-tarro"/></svg>
+                  <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_3 }}"><use href="#s2-i-botella"/></svg>
+                </div>
+              {%- endif -%}
             </div>
-          </div></div>
-        </div>
+          </div>
+        {%- else -%}
+          <div class="hero-caja" style="background:{{ bloque.settings.fondo }}">
+            <div class="hero-fondo">
+              {%- if bloque.settings.imagen != blank -%}
+                {{ bloque.settings.imagen | image_url: width: 2400 | image_tag:
+                   loading: 'eager', alt: bloque.settings.imagen.alt | default: bloque.settings.titulo }}
+              {%- else -%}
+                <div class="hero-arte" aria-hidden="true">
+                  <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
+                  <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_1 }}"><use href="#s2-i-bolsa"/></svg>
+                  <svg class="pieza p2" viewBox="0 0 200 272"><use href="#s2-i-tarro"/></svg>
+                  <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:{{ bloque.settings.acento_3 }}"><use href="#s2-i-botella"/></svg>
+                </div>
+              {%- endif -%}
+            </div>
+            <div class="hero-velo"></div>
+            <div class="hero-txt"><div class="interno">
+              <h2 class="t-6xl">{{ bloque.settings.titulo }}</h2>
+              {%- if bloque.settings.copy != blank -%}<p class="copy">{{ bloque.settings.copy }}</p>{%- endif -%}
+              <div class="btns">
+                {%- if bloque.settings.cta1 != blank -%}<a href="{{ bloque.settings.cta1_url | default: '#' }}" class="btn blanco">{{ bloque.settings.cta1 }}</a>{%- endif -%}
+                {%- if bloque.settings.cta2 != blank -%}<a href="{{ bloque.settings.cta2_url | default: '#' }}" class="btn linea-clara">{{ bloque.settings.cta2 }}</a>{%- endif -%}
+              </div>
+            </div></div>
+          </div>
+        {%- endif -%}
       </article>
     {%- endfor -%}
   </div>
@@ -1887,6 +1927,23 @@
       "limit": 5,
       "settings": [
         {
+          "type": "select",
+          "id": "diseno",
+          "label": "Diseño",
+          "options": [
+            {
+              "value": "completo",
+              "label": "Foto a todo el ancho, texto encima"
+            },
+            {
+              "value": "partido",
+              "label": "Partido: texto al lado de la foto"
+            }
+          ],
+          "default": "completo",
+          "info": "Usá partido cuando la foto sea vertical."
+        },
+        {
           "type": "text",
           "id": "titulo",
           "label": "Título",
@@ -1952,6 +2009,12 @@
           "id": "acento_3",
           "label": "Botella",
           "default": "#C8D9E6"
+        },
+        {
+          "type": "color",
+          "id": "fondo_panel",
+          "label": "Color del panel de texto (diseño partido)",
+          "default": "#F5EFEB"
         }
       ]
     },
@@ -2137,7 +2200,9 @@
             "cta2": "Suscribirme",
             "acento_1": "#2F4156",
             "acento_2": "#C8D9E6",
-            "acento_3": "#567C8D"
+            "acento_3": "#567C8D",
+            "diseno": "partido",
+            "fondo_panel": "#F5EFEB"
           }
         },
         {

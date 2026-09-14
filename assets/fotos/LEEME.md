@@ -5,9 +5,13 @@
 Si vas a sacar pocas, sacá estas primero. Con estas seis la página deja de
 verse como una plantilla:
 
+**Ya cargadas** con la foto de los dos vasos que mandaste: `hero-1.jpg`,
+`nosotros-1.jpg`, `cat-cafe.jpg` y `cat-matcha.jpg`. Cuando tengas fotos
+propias para cada una, reemplazalas y listo.
+
 | Orden | Archivo | Qué es |
 |---|---|---|
-| 1 | `hero-1.jpg` | La foto grande de portada. Es la que más pesa |
+| 1 | `hero-1.jpg` | Portada. Va en el panel derecho, conviene vertical 3:4 |
 | 2 | `prod-cordillera.jpg` | El café principal |
 | 3 | `prod-matcha-ceremonial.jpg` | La lata de matcha |
 | 4 | `prod-cold-clasico.jpg` | La botella |
