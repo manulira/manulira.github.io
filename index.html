@@ -1,1440 +1,1382 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CL">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sepia Coffee Co.</title>
-  <link rel="icon" href="assets/favicon.ico" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --cream: #FAF7F2;
-      --warm-white: #FFF9F2;
-      --espresso: #1C0F08;
-      --coffee: #3D1F0D;
-      --sepia: #7B4F2E;
-      --caramel: #C47B3A;
-      --latte: #D4A96A;
-      --matcha: #6B7C4A;
-      --matcha-light: #A8B87A;
-      --gray-light: #F0EBE3;
-      --gray-mid: #C8BFB3;
-      --gray-dark: #6B6057;
-      --font-body: 'Inter', sans-serif;
-      --font-display: 'Playfair Display', serif;
-      --radius: 4px;
-      --radius-lg: 12px;
-      --shadow: 0 2px 20px rgba(28, 15, 8, 0.08);
-      --shadow-lg: 0 8px 40px rgba(28, 15, 8, 0.15);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--cream);
-      color: var(--espresso);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    img { max-width: 100%; display: block; }
-
-    a { text-decoration: none; color: inherit; }
-
-    /* ─── NAV ─── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      background: var(--cream);
-      border-bottom: 1px solid var(--gray-light);
-      padding: 0 2rem;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background 0.3s;
-    }
-
-    nav.scrolled { background: rgba(250, 247, 242, 0.95); backdrop-filter: blur(12px); }
-
-    .nav-logo {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--espresso);
-      letter-spacing: -0.02em;
-    }
-
-    .nav-logo span { color: var(--caramel); }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-      align-items: center;
-    }
-
-    .nav-links a {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-dark);
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--espresso); }
-
-    .nav-cta {
-      background: var(--espresso);
-      color: var(--cream) !important;
-      padding: 0.5rem 1.2rem;
-      border-radius: var(--radius);
-      transition: background 0.2s !important;
-    }
-
-    .nav-cta:hover { background: var(--sepia) !important; color: var(--cream) !important; }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--espresso);
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 64px; left: 0; right: 0;
-      background: var(--cream);
-      border-bottom: 1px solid var(--gray-light);
-      padding: 1.5rem 2rem;
-      z-index: 99;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .mobile-menu.open { display: flex; }
-
-    .mobile-menu a {
-      font-size: 1rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--gray-dark);
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--gray-light);
-    }
-
-    /* ─── HERO ─── */
-    .hero {
-      min-height: 100vh;
-      padding-top: 64px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--espresso);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 4rem 3rem 4rem 5rem;
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(196, 123, 58, 0.2);
-      border: 1px solid rgba(196, 123, 58, 0.4);
-      color: var(--latte);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      margin-bottom: 2rem;
-      width: fit-content;
-    }
-
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: var(--caramel);
-      border-radius: 50%;
-    }
-
-    .hero h1 {
-      font-family: var(--font-display);
-      font-size: clamp(3rem, 6vw, 5.5rem);
-      font-weight: 800;
-      line-height: 1.05;
-      color: var(--cream);
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    .hero h1 em {
-      font-style: italic;
-      color: var(--caramel);
-    }
-
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--gray-mid);
-      margin-bottom: 2.5rem;
-      max-width: 440px;
-      line-height: 1.7;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: var(--caramel);
-      color: var(--espresso);
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary:hover { background: var(--latte); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--cream);
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,0.3);
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-secondary:hover { border-color: var(--cream); background: rgba(255,255,255,0.08); }
-
-    .hero-visual {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .hero-visual-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--sepia) 0%, var(--coffee) 50%, #0D0706 100%);
-    }
-
-    .hero-visual-pattern {
-      position: absolute;
-      inset: 0;
-      opacity: 0.05;
-      background-image: radial-gradient(circle, var(--latte) 1px, transparent 1px);
-      background-size: 32px 32px;
-    }
-
-    .hero-card {
-      position: relative;
-      z-index: 2;
-      background: rgba(250, 247, 242, 0.06);
-      border: 1px solid rgba(250, 247, 242, 0.12);
-      border-radius: var(--radius-lg);
-      padding: 3rem 2.5rem;
-      text-align: center;
-      color: var(--cream);
-      max-width: 320px;
-      backdrop-filter: blur(10px);
-    }
-
-    .hero-card-icon {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-card h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: var(--latte);
-    }
-
-    .hero-card p {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      line-height: 1.6;
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 3.5rem;
-    }
-
-    .hero-stat-num {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--caramel);
-      line-height: 1;
-    }
-
-    .hero-stat-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-mid);
-      margin-top: 0.25rem;
-    }
-
-    /* ─── SECTION COMMONS ─── */
-    section { padding: 6rem 0; }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--caramel);
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.2rem, 4vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--espresso);
-      margin-bottom: 1.25rem;
-    }
-
-    .section-sub {
-      font-size: 1.05rem;
-      color: var(--gray-dark);
-      max-width: 520px;
-      line-height: 1.7;
-    }
-
-    .section-header { margin-bottom: 3.5rem; }
-
-    /* ─── MENU / PICK UP ─── */
-    #menu { background: var(--warm-white); }
-
-    .menu-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2.5rem;
-      border-bottom: 1px solid var(--gray-light);
-      padding-bottom: 0;
-    }
-
-    .tab-btn {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-dark);
-      padding: 0.75rem 1.5rem;
-      border: none;
-      background: none;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .tab-btn.active {
-      color: var(--espresso);
-      border-bottom-color: var(--caramel);
-    }
-
-    .tab-btn:hover { color: var(--espresso); }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .menu-item {
-      background: var(--cream);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-
-    .menu-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-
-    .menu-item-emoji { font-size: 2.5rem; flex-shrink: 0; }
-
-    .menu-item-info { flex: 1; }
-
-    .menu-item-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--espresso);
-      margin-bottom: 0.2rem;
-    }
-
-    .menu-item-desc {
-      font-size: 0.8rem;
-      color: var(--gray-dark);
-      line-height: 1.4;
-    }
-
-    .menu-item-price {
-      font-weight: 800;
-      font-size: 1rem;
-      color: var(--sepia);
-      white-space: nowrap;
-    }
-
-    .pickup-banner {
-      background: var(--espresso);
-      color: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-      margin-top: 3rem;
-      flex-wrap: wrap;
-    }
-
-    .pickup-banner h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .pickup-banner p { color: var(--gray-mid); font-size: 0.95rem; }
-
-    .btn-caramel {
-      background: var(--caramel);
-      color: var(--espresso);
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.9rem 2rem;
-      border-radius: var(--radius);
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-      display: inline-block;
-    }
-
-    .btn-caramel:hover { background: var(--latte); }
-
-    /* ─── TIENDA ─── */
-    #tienda { background: var(--cream); }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-
-    .product-card {
-      background: var(--warm-white);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: box-shadow 0.25s, transform 0.25s;
-      cursor: pointer;
-    }
-
-    .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-
-    .product-img {
-      height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-      background: var(--gray-light);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .product-badge {
-      position: absolute;
-      top: 12px; left: 12px;
-      background: var(--espresso);
-      color: var(--cream);
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.25rem 0.6rem;
-      border-radius: 100px;
-    }
-
-    .product-badge.matcha { background: var(--matcha); }
-    .product-badge.merch { background: var(--sepia); }
-
-    .product-info { padding: 1.25rem 1.5rem 1.5rem; }
-
-    .product-category {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--caramel);
-      margin-bottom: 0.4rem;
-    }
-
-    .product-name {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--espresso);
-      margin-bottom: 0.3rem;
-      line-height: 1.3;
-    }
-
-    .product-desc {
-      font-size: 0.8rem;
-      color: var(--gray-dark);
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-
-    .product-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .product-price {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--espresso);
-    }
-
-    .product-price small {
-      font-size: 0.75rem;
-      color: var(--gray-dark);
-      font-weight: 500;
-    }
-
-    .btn-add {
-      background: var(--espresso);
-      color: var(--cream);
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.55rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .btn-add:hover { background: var(--sepia); }
-
-    /* ─── EVENTOS ─── */
-    #eventos { background: var(--espresso); color: var(--cream); }
-
-    #eventos .section-label { color: var(--latte); }
-    #eventos .section-title { color: var(--cream); }
-    #eventos .section-sub { color: var(--gray-mid); }
-
-    .eventos-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-
-    .servicio-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .servicio-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .servicio-card:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(196, 123, 58, 0.4);
-    }
-
-    .servicio-icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-      line-height: 1;
-      margin-top: 0.2rem;
-    }
-
-    .servicio-title {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--latte);
-      margin-bottom: 0.35rem;
-    }
-
-    .servicio-desc {
-      font-size: 0.85rem;
-      color: var(--gray-mid);
-      line-height: 1.6;
-    }
-
-    .eventos-highlights {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .highlight {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--gray-mid);
-    }
-
-    .highlight::before {
-      content: '✓';
-      color: var(--caramel);
-      font-weight: 700;
-    }
-
-    .cotizacion-form {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      color: var(--espresso);
-    }
-
-    .cotizacion-form h3 {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--espresso);
-    }
-
-    .cotizacion-form p {
-      font-size: 0.9rem;
-      color: var(--gray-dark);
-      margin-bottom: 1.75rem;
-    }
-
-    .form-group { margin-bottom: 1.25rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--gray-dark);
-      margin-bottom: 0.5rem;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      background: var(--cream);
-      border: 1px solid var(--gray-mid);
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      color: var(--espresso);
-      outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--caramel);
-      box-shadow: 0 0 0 3px rgba(196, 123, 58, 0.15);
-    }
-
-    .form-group textarea { resize: vertical; min-height: 100px; }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: var(--espresso);
-      color: var(--cream);
-      border: none;
-      border-radius: var(--radius);
-      padding: 1rem;
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 0.5rem;
-    }
-
-    .btn-submit:hover { background: var(--sepia); }
-
-    /* ─── TESTIMONIOS ─── */
-    #testimonios { background: var(--gray-light); }
-
-    .testimonios-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-
-    .testimonio-card {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      border: 1px solid rgba(0,0,0,0.06);
-    }
-
-    .stars {
-      color: var(--caramel);
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      letter-spacing: 2px;
-    }
-
-    .testimonio-text {
-      font-size: 0.95rem;
-      color: var(--gray-dark);
-      line-height: 1.7;
-      margin-bottom: 1.5rem;
-      font-style: italic;
-    }
-
-    .testimonio-author {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .author-avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--caramel);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-
-    .author-name {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--espresso);
-    }
-
-    .author-role {
-      font-size: 0.75rem;
-      color: var(--gray-dark);
-    }
-
-    /* ─── UBICACION ─── */
-    #ubicacion { background: var(--warm-white); }
-
-    .ubicacion-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 4rem;
-      align-items: center;
-    }
-
-    .info-items {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .info-item { display: flex; gap: 1rem; align-items: flex-start; }
-
-    .info-icon {
-      width: 44px; height: 44px;
-      background: var(--gray-light);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    .info-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--caramel);
-      margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-      font-size: 0.95rem;
-      color: var(--espresso);
-      line-height: 1.5;
-    }
-
-    .map-placeholder {
-      background: var(--gray-light);
-      border-radius: var(--radius-lg);
-      height: 360px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      font-size: 3rem;
-      color: var(--gray-mid);
-      border: 1px solid var(--gray-light);
-    }
-
-    .map-placeholder p {
-      font-size: 0.9rem;
-      color: var(--gray-dark);
-      font-size: 1rem;
-    }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background: var(--espresso);
-      color: var(--cream);
-      padding: 4rem 0 2rem;
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 3rem;
-      margin-bottom: 3rem;
-    }
-
-    .footer-brand .nav-logo { font-size: 1.6rem; margin-bottom: 1rem; display: block; }
-
-    .footer-brand p {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      line-height: 1.7;
-      max-width: 280px;
-    }
-
-    .footer-social {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-
-    .social-link {
-      width: 38px; height: 38px;
-      background: rgba(255,255,255,0.08);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
-
-    .social-link:hover { background: var(--caramel); }
-
-    .footer-col h4 {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--latte);
-      margin-bottom: 1.25rem;
-    }
-
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-
-    .footer-col ul a {
-      font-size: 0.9rem;
-      color: var(--gray-mid);
-      transition: color 0.2s;
-    }
-
-    .footer-col ul a:hover { color: var(--cream); }
-
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .footer-bottom p {
-      font-size: 0.8rem;
-      color: var(--gray-mid);
-    }
-
-    /* ─── CART TOAST ─── */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--espresso);
-      color: var(--cream);
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius-lg);
-      font-size: 0.9rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: transform 0.3s, opacity 0.3s;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    /* ─── MODAL ORDER ─── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(28, 15, 8, 0.7);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: var(--cream);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      max-width: 480px;
-      width: 100%;
-      position: relative;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 1.25rem; right: 1.25rem;
-      background: var(--gray-light);
-      border: none;
-      border-radius: 50%;
-      width: 32px; height: 32px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-dark);
-    }
-
-    .modal h3 {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .modal p { font-size: 0.9rem; color: var(--gray-dark); margin-bottom: 1.5rem; }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 1024px) {
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
-      .eventos-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .testimonios-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; min-height: auto; }
-      .hero-content { padding: 3rem 1.5rem 2rem; }
-      .hero-visual { display: none; }
-      .hero-stats { gap: 1.5rem; }
-      nav { padding: 0 1.5rem; }
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      section { padding: 4rem 0; }
-      .container { padding: 0 1.5rem; }
-      .ubicacion-grid { grid-template-columns: 1fr; }
-      .testimonios-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .pickup-banner { flex-direction: column; text-align: center; }
-      .form-row { grid-template-columns: 1fr; }
-      .footer-bottom { flex-direction: column; text-align: center; }
-    }
-
-    @media (max-width: 480px) {
-      .footer-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2.5rem; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>sepia coffee — Café de especialidad y matcha</title>
+<meta name="description" content="Café de especialidad tostado en Santiago, matcha ceremonial y accesorios. Envío gratis sobre $65.000 en todo Chile." />
+<meta name="theme-color" content="#F5EFEB" />
+<link rel="canonical" href="https://sepiacoffee.cl/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="sepia coffee" />
+<meta property="og:locale" content="es_CL" />
+<meta property="og:title" content="sepia coffee — Café de especialidad y matcha" />
+<meta property="og:description" content="Tostado en Santiago. Hecho para tu ritual diario." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   SEPIA COFFEE
+   Arquitectura calcada de una tienda headless de Shopify:
+   módulos apilados, tarjetas de esquina muy redondeada,
+   display grueso y redondo, bloques de color plano.
+   Los tokens de abajo son el único lugar donde tocar la marca.
+   ============================================================ */
+:root{
+  /* ---------- PALETA BLOQUEADA ----------
+     Estos cinco son los únicos colores de marca. Todo lo demás
+     en la página es uno de ellos, o navy/blanco con transparencia. */
+  --celeste:#C8D9E6;   /* principal */
+  --beige:#F5EFEB;     /* secundario */
+  --navy:#2F4156;      /* logos y textos */
+  --teal:#567C8D;      /* apoyo */
+  --blanco:#FFFFFF;    /* apoyo */
+
+  /* ---------- Roles ---------- */
+  --tinta:var(--navy);
+  --papel:var(--beige);
+  --humo:rgba(47,65,86,.06);
+
+  /* Transparencias de navy sobre fondos claros */
+  --tinta-70:rgba(47,65,86,.72);
+  --tinta-60:rgba(47,65,86,.66);
+  --tinta-40:rgba(47,65,86,.45);
+  --tinta-14:rgba(47,65,86,.16);
+  --tinta-08:rgba(47,65,86,.08);
+  /* Transparencias de blanco sobre navy o teal */
+  --claro-24:rgba(255,255,255,.26);
+  --claro-64:rgba(255,255,255,.72);
+
+  /* ---------- Tipografía ---------- */
+  --display:'Poppins',system-ui,sans-serif;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'DM Sans',Georgia,serif;
+
+  /* ---------- Métrica ---------- */
+  --ancho:1440px;
+  --gutter:clamp(16px,3.4vw,48px);
+  --modulo:clamp(48px,7vw,80px);
+  --r-xl:28px;
+  --r-lg:20px;
+  --r-md:14px;
+  --r-pill:999px;
+  --cab:68px;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--cab) + 16px)}
+body{
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  color:var(--tinta);background:var(--papel);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overflow-x:clip;
+}
+img,svg,video{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;color:inherit}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+:where(a,button,input,select,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--tinta);outline-offset:2px;border-radius:6px;
+}
+.solo-lectores{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body.bloqueado{overflow:hidden}
+
+/* ---------- Tipografía de display ---------- */
+h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02;letter-spacing:-.02em}
+.t-6xl{font-size:clamp(2.7rem,6.4vw,5rem)}
+.t-4xl{font-size:clamp(2rem,4.2vw,3.3rem)}
+.t-3xl{font-size:clamp(1.7rem,3.2vw,2.5rem)}
+.t-2xl{font-size:clamp(1.4rem,2.4vw,1.9rem)}
+.t-xl{font-size:1.22rem}
+.copy{font-size:clamp(1rem,1.25vw,1.12rem);line-height:1.55}
+.micro{font-family:var(--sans);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+
+/* ---------- Estructura de módulo ---------- */
+.wrap{width:100%;max-width:var(--ancho);margin-inline:auto;padding-inline:var(--gutter)}
+.modulo{position:relative;width:100%;padding-block:var(--modulo)}
+.modulo.sin-top{padding-top:0}
+.modulo.sin-bottom{padding-bottom:0}
+.panel{background:var(--blanco);border-radius:var(--r-xl);overflow:hidden}
+.mod-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:clamp(1.5rem,3vw,2.4rem);flex-wrap:wrap}
+.mod-cab .copy{margin-top:.5rem;color:var(--tinta-60);max-width:46ch}
+
+/* ---------- Botones ---------- */
+.btn{
+  --bg:var(--tinta);--fg:var(--blanco);
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.95rem 1.9rem;background:var(--bg);color:var(--fg);
+  border:2px solid var(--bg);border-radius:var(--r-pill);
+  font-family:var(--display);font-size:.95rem;font-weight:600;letter-spacing:.01em;
+  transition:transform .2s var(--ease),filter .25s var(--ease),background .25s var(--ease),color .25s var(--ease);
+  white-space:nowrap;text-align:center;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn:active{transform:translateY(0)}
+.btn.blanco{--bg:var(--blanco);--fg:var(--tinta)}
+.btn.teal{--bg:var(--teal);--fg:var(--blanco)}
+.btn.celeste{--bg:var(--celeste);--fg:var(--navy)}
+.btn.navy{--bg:var(--navy);--fg:var(--blanco)}
+.btn.linea{--bg:transparent;--fg:var(--tinta);border-color:var(--tinta)}
+.btn.linea:hover{background:var(--tinta);color:var(--blanco)}
+.btn.linea-clara{--bg:transparent;--fg:var(--blanco);border-color:var(--claro-24)}
+.btn.linea-clara:hover{background:var(--blanco);color:var(--tinta);border-color:var(--blanco)}
+.btn.chico{padding:.62rem 1.15rem;font-size:.85rem;border-width:2px}
+.btn.bloque{width:100%}
+.enlace-sub{font-family:var(--display);font-weight:600;border-bottom:2px solid currentColor;padding-bottom:2px;white-space:nowrap}
+
+/* ---------- Iconos ---------- */
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic-full{fill:currentColor;stroke:none}
+
+/* ============================================================
+   BARRA DE ANUNCIO
+   ============================================================ */
+.anuncio{
+  background:var(--tinta);color:var(--blanco);
+  font-size:.82rem;font-weight:500;text-align:center;
+  padding:.62rem var(--gutter);position:relative;z-index:60;
+}
+.anuncio a{border-bottom:1px solid var(--claro-24)}
+.anuncio a:hover{border-bottom-color:currentColor}
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+.cabecera{
+  position:sticky;top:0;z-index:70;background:var(--papel);
+  border-bottom:1px solid var(--tinta-08);
+  transition:box-shadow .3s var(--ease);
+}
+.cabecera.pegada{box-shadow:0 6px 24px -18px rgba(18,35,63,.6)}
+.cab-fila{
+  display:flex;align-items:center;gap:1rem;height:var(--cab);
+  max-width:var(--ancho);margin-inline:auto;padding-inline:var(--gutter);
+}
+.marca{display:flex;align-items:center;flex:none;margin-right:.5rem}
+.marca .palabra{
+  font-family:var(--display);font-weight:700;font-size:1.42rem;
+  letter-spacing:-.025em;line-height:1;white-space:nowrap;display:inline-block;
+}
+/* El caminante es el punto de la i: cabeza arriba, piernas bajo la línea base */
+.cam{position:relative;display:inline-block}
+/* max-width:100% de la regla global achicaba ambos al ancho de la "i" */
+.cam .cab{position:absolute;left:50%;top:-.40em;transform:translateX(-50%);width:.44em;height:.44em;max-width:none;fill:currentColor}
+.cam .patas{position:absolute;left:50%;top:.58em;transform:translateX(-50%);width:1.62em;height:1.06em;max-width:none;color:inherit;pointer-events:none}
+
+.nav-prin{display:none;align-items:center;gap:.25rem;flex:1}
+@media(min-width:1060px){.nav-prin{display:flex}}
+.nav-prin > li > a,.nav-prin > li > button{
+  display:flex;align-items:center;gap:.3rem;padding:.55rem .85rem;border-radius:var(--r-pill);
+  font-family:var(--display);font-weight:500;font-size:.98rem;
+  transition:background .22s var(--ease);
+}
+.nav-prin > li > a:hover,.nav-prin > li[data-abierto] > button{background:var(--tinta-08)}
+.nav-prin .caret{width:13px;height:13px;transition:transform .25s var(--ease)}
+.nav-prin > li[data-abierto] .caret{transform:rotate(180deg)}
+
+.cab-acciones{display:flex;align-items:center;gap:.15rem;margin-left:auto;flex:none}
+.ic-btn{width:42px;height:42px;display:grid;place-items:center;border-radius:var(--r-pill);position:relative;transition:background .22s var(--ease)}
+.ic-btn:hover{background:var(--tinta-08)}
+.burbuja{
+  position:absolute;top:3px;right:2px;min-width:19px;height:19px;padding:0 5px;
+  background:var(--teal);color:var(--blanco);border-radius:var(--r-pill);
+  font-family:var(--display);font-size:.68rem;font-weight:600;
+  display:grid;place-items:center;line-height:1;transform:scale(0);transition:transform .3s var(--ease);
+}
+.burbuja.visible{transform:scale(1)}
+.hamb{display:grid}
+@media(min-width:1060px){.hamb{display:none}}
+
+/* ---------- Mega menú ---------- */
+.mega{
+  position:absolute;left:0;right:0;top:100%;background:var(--blanco);
+  border-top:1px solid var(--tinta-08);
+  box-shadow:0 26px 40px -30px rgba(18,35,63,.55);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .25s var(--ease),transform .25s var(--ease),visibility .25s;
+  z-index:65;
+}
+.mega[data-visible]{opacity:1;visibility:visible;transform:none}
+/* El mega menú solo existe donde existe la nav de escritorio */
+@media(max-width:1059px){.mega{display:none}}
+.mega-rejilla{
+  max-width:var(--ancho);margin-inline:auto;padding:2.2rem var(--gutter) 2.6rem;
+  display:grid;gap:2rem;grid-template-columns:repeat(4,1fr);
+}
+.mega-col h4{font-family:var(--display);font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-40);margin-bottom:1rem}
+.mega-col li + li{margin-top:.55rem}
+.mega-col a{font-size:.97rem;transition:color .2s var(--ease)}
+.mega-col a:hover{color:var(--teal)}
+.mega-destacado{display:grid;gap:.9rem}
+.mega-tarjeta{
+  border-radius:var(--r-lg);overflow:hidden;background:var(--humo);
+  position:relative;aspect-ratio:16/10;display:grid;place-items:end start;padding:1rem;
+}
+.mega-tarjeta .etq{
+  position:relative;z-index:2;background:var(--blanco);border-radius:var(--r-pill);
+  padding:.4rem .9rem;font-family:var(--display);font-weight:600;font-size:.85rem;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;overflow:hidden}
+.hero-pista{display:flex;transition:transform .62s var(--ease)}
+.hero-slide{flex:0 0 100%;min-width:0;position:relative}
+.hero-caja{
+  position:relative;min-height:clamp(430px,62vh,620px);
+  display:grid;align-items:center;overflow:hidden;
+}
+.hero-fondo{position:absolute;inset:0;z-index:0}
+.hero-fondo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+/* Composición de respaldo mientras no haya foto cargada */
+.hero-arte{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.hero-arte .pieza{position:absolute;filter:drop-shadow(0 22px 34px rgba(18,35,63,.34))}
+.hero-arte .p1{width:clamp(150px,20vw,290px);right:9%;top:50%;transform:translateY(-50%) rotate(-6deg)}
+.hero-arte .p2{width:clamp(100px,13vw,185px);right:30%;top:50%;transform:rotate(7deg)}
+.hero-arte .p3{width:clamp(88px,11vw,155px);right:2%;top:16%;transform:rotate(11deg)}
+.hero-arte .burbuja-deco{position:absolute;border-radius:50%;background:rgba(255,255,255,.1)}
+.hero-arte .b1{width:34vw;height:34vw;right:6%;top:12%}
+.hero-arte .b2{width:16vw;height:16vw;right:38%;bottom:6%}
+@media(max-width:760px){
+  .hero-arte .p2,.hero-arte .p3{display:none}
+  .hero-arte .p1{right:-6%;opacity:.45}
+}
+.hero-velo{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(18,35,63,.5) 0%,rgba(18,35,63,.18) 55%,transparent 80%)}
+.hero-txt{position:relative;z-index:2;max-width:var(--ancho);margin-inline:auto;width:100%;padding:clamp(2rem,5vw,3.5rem) var(--gutter)}
+.hero-txt .interno{max-width:min(38ch,100%)}
+.hero-txt h2{color:var(--blanco);text-shadow:0 2px 18px rgba(18,35,63,.35)}
+.hero-txt .copy{color:var(--blanco);margin-top:.9rem;font-weight:500;text-shadow:0 2px 14px rgba(18,35,63,.4)}
+.hero-txt .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.7rem}
+
+/* Variante partida: para fotos verticales. Rompe además la monotonía
+   de que todos los módulos sean bandas del mismo alto. */
+.hero-caja.dividida{display:grid;grid-template-columns:1fr;min-height:auto;align-items:stretch}
+@media(min-width:900px){
+  .hero-caja.dividida{grid-template-columns:1fr 1fr;min-height:clamp(490px,66vh,660px)}
+}
+.hero-panel{display:grid;align-content:center;padding:clamp(2.2rem,5vw,3.4rem) var(--gutter);position:relative;z-index:2}
+@media(min-width:900px){
+  .hero-panel{padding-left:max(var(--gutter),calc((100vw - var(--ancho)) / 2 + var(--gutter)));padding-right:clamp(1.5rem,3vw,3rem)}
+}
+.hero-panel .interno{max-width:min(30ch,100%)}
+/* En media columna el display de portada es demasiado grande */
+.hero-panel h2.t-6xl{font-size:clamp(2.4rem,4.6vw,4rem)}
+.hero-panel h2{color:var(--navy);text-shadow:none}
+.hero-panel .copy{color:var(--tinta-60);text-shadow:none;margin-top:.9rem;font-weight:400}
+.hero-panel .btns{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
+.hero-foto{position:relative;overflow:hidden;background:var(--celeste);min-height:clamp(320px,52vw,420px)}
+@media(min-width:900px){.hero-foto{min-height:0}}
+@media(max-width:899px){.hero-foto{order:-1}}
+.hero-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:2}
+.hero-foto .hero-arte{z-index:1}
+
+.hero-puntos{
+  position:absolute;left:0;right:0;bottom:1.1rem;z-index:4;
+  display:flex;justify-content:center;gap:.45rem;
+}
+.hero-puntos button{
+  width:9px;height:9px;border-radius:var(--r-pill);background:var(--claro-64);
+  transition:width .3s var(--ease),background .3s var(--ease);
+}
+.hero-puntos button[aria-current="true"]{width:28px;background:var(--blanco)}
+.hero-flecha{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:4;
+  width:44px;height:44px;border-radius:var(--r-pill);background:var(--claro-64);
+  display:none;place-items:center;color:var(--tinta);transition:background .22s var(--ease);
+}
+@media(min-width:900px){.hero-flecha{display:grid}}
+.hero-flecha:hover{background:var(--blanco)}
+/* Al costado pisaban el titular del hero partido: van abajo a la derecha */
+.hero-flecha{top:auto;bottom:1rem;transform:none}
+.hero-flecha.izq{left:auto;right:calc(var(--gutter) + 52px)}
+.hero-flecha.der{right:var(--gutter)}
+
+/* ============================================================
+   BARRA DE VENTAJAS
+   ============================================================ */
+.usp{background:var(--teal);color:var(--blanco);overflow:hidden;padding-block:.95rem}
+.usp-pista{display:flex;width:max-content;animation:usp-corre 34s linear infinite}
+.usp:hover .usp-pista{animation-play-state:paused}
+@keyframes usp-corre{to{transform:translateX(-50%)}}
+.usp-grupo{display:flex;align-items:center;flex:none}
+.usp-item{
+  display:flex;align-items:center;gap:.55rem;padding-inline:1.7rem;white-space:nowrap;
+  font-family:var(--display);font-weight:500;font-size:.95rem;
+}
+.usp-item .ic{width:19px;height:19px;stroke-width:2}
+.usp-item .estrellas{display:flex;gap:2px}
+.usp-item .estrellas svg{width:14px;height:14px;fill:currentColor}
+.usp-sep{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;flex:none}
+
+/* ============================================================
+   CARRUSEL DE PRODUCTOS
+   ============================================================ */
+.car{position:relative}
+.car-pista{
+  display:flex;gap:clamp(.8rem,1.5vw,1.2rem);overflow-x:auto;scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;scrollbar-width:none;
+  padding:0 var(--gutter) .4rem 0;   /* alinea con el título y deja sangrar a la derecha */
+}
+.car-pista::-webkit-scrollbar{display:none}
+.car-pista > *{scroll-snap-align:start;flex:0 0 78%;min-width:0}
+@media(min-width:620px){.car-pista > *{flex-basis:44%}}
+@media(min-width:900px){.car-pista > *{flex-basis:30%}}
+@media(min-width:1200px){.car-pista > *{flex-basis:23.2%}}
+.car-nav{display:none;gap:.45rem}
+@media(min-width:900px){.car-nav{display:flex}}
+.car-nav button{
+  width:42px;height:42px;border-radius:var(--r-pill);border:2px solid var(--tinta-14);
+  display:grid;place-items:center;transition:background .22s var(--ease),border-color .22s var(--ease),opacity .22s;
+}
+.car-nav button:hover{background:var(--tinta);border-color:var(--tinta);color:var(--blanco)}
+.car-nav button[disabled]{opacity:.3;pointer-events:none}
+
+/* ---------- Tarjeta de producto ---------- */
+.prod{display:flex;flex-direction:column;gap:.75rem;position:relative}
+.prod-media{
+  position:relative;aspect-ratio:1;border-radius:var(--r-xl);overflow:hidden;
+  background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
+}
+.prod-media .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transition:opacity .4s var(--ease)}
+.prod-media .foto.alterna{opacity:0;z-index:2}
+.prod:hover .prod-media .foto.alterna{opacity:1}
+.prod-media .arte{width:62%;height:auto;z-index:1;transition:transform .5s var(--ease)}
+.prod:hover .prod-media .arte{transform:translateY(-6px) scale(1.04)}
+.prod-etq{
+  position:absolute;top:.8rem;left:.8rem;z-index:4;
+  background:var(--tinta);color:var(--blanco);border-radius:var(--r-pill);
+  padding:.34rem .78rem;font-family:var(--display);font-weight:600;font-size:.74rem;
+}
+.prod-etq.teal{background:var(--teal)}
+.prod-etq.celeste{background:var(--celeste);color:var(--navy)}
+.prod-rapido{
+  position:absolute;left:.7rem;right:.7rem;bottom:.7rem;z-index:4;
+  background:var(--blanco);color:var(--tinta);border-radius:var(--r-pill);
+  padding:.78rem 1rem;font-family:var(--display);font-weight:600;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;gap:.45rem;
+  transform:translateY(calc(100% + .9rem));opacity:0;
+  transition:transform .34s var(--ease),opacity .34s var(--ease),background .2s var(--ease);
+  box-shadow:0 8px 22px -12px rgba(18,35,63,.6);
+}
+.prod:hover .prod-rapido,.prod:focus-within .prod-rapido{transform:none;opacity:1}
+.prod-rapido:hover{background:var(--tinta);color:var(--blanco)}
+.prod-rapido.hecho{background:var(--teal);color:var(--blanco)}
+@media(hover:none){.prod-rapido{transform:none;opacity:1}}
+
+.muestras{display:flex;gap:.38rem;align-items:center;min-height:22px}
+.muestra{
+  width:19px;height:19px;border-radius:50%;background:var(--c);
+  border:2px solid var(--blanco);box-shadow:0 0 0 1.5px var(--tinta-14);
+  transition:box-shadow .2s var(--ease),transform .2s var(--ease);
+}
+.muestra:hover{transform:scale(1.12)}
+.muestra[aria-pressed="true"]{box-shadow:0 0 0 2px var(--tinta)}
+.muestras .resto{font-size:.76rem;color:var(--tinta-40);margin-left:.15rem}
+
+.prod-info{display:flex;flex-direction:column;gap:.3rem}
+.prod-info h3{font-size:1.05rem;font-weight:600;line-height:1.2}
+.prod-sub{font-size:.83rem;color:var(--tinta-60)}
+.valoracion{display:flex;align-items:center;gap:.35rem;font-size:.79rem;color:var(--tinta-60)}
+.valoracion .estrellas{display:flex;gap:1px;color:var(--teal)}
+.valoracion .estrellas svg{width:13px;height:13px;fill:currentColor}
+.prod-precio{display:flex;align-items:baseline;gap:.5rem;font-family:var(--display);font-weight:600;font-size:1.05rem;margin-top:.1rem}
+.prod-precio .antes{font-size:.86rem;font-weight:400;color:var(--tinta-40);text-decoration:line-through}
+
+.compra{display:flex;gap:.3rem;padding:3px;background:var(--tinta-08);border-radius:var(--r-pill);margin-top:.15rem}
+.compra button{
+  flex:1;padding:.5rem .4rem;border-radius:var(--r-pill);font-size:.79rem;font-weight:500;
+  color:var(--tinta-60);transition:background .24s var(--ease),color .24s var(--ease);white-space:nowrap;
+}
+.compra button[aria-pressed="true"]{background:var(--blanco);color:var(--tinta);font-weight:700;box-shadow:0 1px 4px rgba(18,35,63,.1)}
+.compra .ahorro{font-size:.68rem;color:var(--teal);font-weight:700}
+
+/* ============================================================
+   GRILLA DE CATEGORÍAS
+   ============================================================ */
+.cats{display:grid;gap:clamp(.8rem,1.6vw,1.15rem);grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.cats{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:760px){.cats.de-3{grid-template-columns:repeat(3,1fr);max-width:940px;margin-inline:auto}}
+@media(max-width:759px){.cats.de-3{grid-template-columns:1fr}}
+.cat{
+  display:flex;flex-direction:column;gap:.85rem;border-radius:var(--r-xl);
+  background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
+  transition:transform .3s var(--ease);
+}
+.cat:hover{transform:translateY(-5px)}
+.cat-media{position:relative;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;display:grid;place-items:center}
+.cat-media .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.cat-media svg{width:60%;height:auto}
+.cat h3{font-size:1rem;font-weight:600;text-align:center}
+.cat .flecha{display:flex;align-items:center;justify-content:center;gap:.3rem;font-size:.8rem;color:var(--tinta-60)}
+
+/* ============================================================
+   TESTIMONIOS
+   ============================================================ */
+.testi{border-radius:var(--r-xl);padding:clamp(1.3rem,2.4vw,1.9rem);background:var(--tono,var(--blanco));display:flex;flex-direction:column;gap:.9rem;min-height:100%}
+.testi .estrellas{display:flex;gap:2px;color:var(--teal)}
+.testi .estrellas svg{width:16px;height:16px;fill:currentColor}
+.testi blockquote{font-family:var(--serif);font-size:1.04rem;line-height:1.5}
+.testi .quien{margin-top:auto;display:flex;align-items:center;gap:.6rem;font-size:.83rem}
+.testi .avatar{width:34px;height:34px;border-radius:50%;background:var(--blanco);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:.9rem;flex:none}
+.testi .quien b{font-weight:700}
+.testi .quien span{color:var(--tinta-60)}
+.google-resumen{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.8rem}
+.google-resumen .puntaje{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1}
+.google-resumen .estrellas{display:flex;gap:2px;color:var(--navy)}
+.google-resumen .estrellas svg{width:17px;height:17px;fill:currentColor}
+.google-resumen .conteo{font-size:.86rem;color:var(--tinta-60)}
+
+/* ============================================================
+   MULTICOLUMNA EDITORIAL
+   ============================================================ */
+.editorial{background:var(--tinta);color:var(--blanco);border-radius:var(--r-xl);overflow:hidden}
+.editorial-rejilla{display:grid;gap:clamp(1.6rem,3vw,3rem);align-items:center;padding:clamp(1.6rem,4vw,3.4rem)}
+@media(min-width:900px){.editorial-rejilla{grid-template-columns:1.05fr .95fr}}
+.editorial h2{color:var(--blanco);max-width:16ch}
+.editorial p{color:var(--claro-64);margin-top:1.1rem;max-width:52ch;font-size:1rem;line-height:1.6}
+.editorial .btn{margin-top:1.8rem}
+.editorial-fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.7rem,1.4vw,1rem)}
+.editorial-fotos > div{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;background:rgba(255,255,255,.08);
+  display:grid;place-items:center;
+}
+.editorial-fotos > div:first-child{aspect-ratio:3/4}
+.editorial-fotos > div:last-child{aspect-ratio:3/4;margin-top:clamp(1rem,3vw,2.2rem)}
+.editorial-fotos .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.editorial-fotos svg{width:58%;height:auto;opacity:.85}
+
+/* ============================================================
+   BOLETÍN Y PIE
+   ============================================================ */
+.boletin{background:var(--celeste);border-radius:var(--r-xl);padding:clamp(1.8rem,4vw,3.2rem);text-align:center}
+.boletin .copy{margin:.8rem auto 0;max-width:44ch;color:var(--tinta-60)}
+.form-bol{display:flex;gap:.55rem;max-width:470px;margin:1.7rem auto 0;flex-wrap:wrap}
+.form-bol input{
+  flex:1 1 200px;min-width:0;padding:.92rem 1.25rem;border-radius:var(--r-pill);
+  border:2px solid var(--tinta-14);background:var(--blanco);font-size:.95rem;
+}
+.form-bol input:focus{outline:none;border-color:var(--tinta)}
+@media(max-width:460px){.form-bol .btn{width:100%}}
+.bol-ok{display:none;margin-top:1rem;font-weight:700;color:var(--teal)}
+.bol-ok.visible{display:block}
+
+.pie{background:var(--tinta);color:var(--blanco);margin-top:var(--modulo)}
+.pie-top{
+  display:grid;gap:2.2rem;padding-block:clamp(2.5rem,5vw,3.8rem);
+  grid-template-columns:1fr;
+}
+@media(min-width:820px){.pie-top{grid-template-columns:1.4fr repeat(4,1fr);gap:2.6rem}}
+.pie-marca .palabra{font-family:var(--display);font-size:1.55rem;font-weight:700;letter-spacing:-.025em;display:inline-block}
+.pie-marca p{color:var(--claro-64);font-size:.9rem;margin-top:.9rem;max-width:32ch;line-height:1.6}
+.redes{display:flex;gap:.5rem;margin-top:1.4rem}
+.redes a{width:38px;height:38px;border-radius:var(--r-pill);border:1.5px solid var(--claro-24);display:grid;place-items:center;transition:background .22s var(--ease),color .22s var(--ease)}
+.redes a:hover{background:var(--blanco);color:var(--tinta)}
+.redes svg{width:17px;height:17px;fill:currentColor}
+
+.pie-col > button,.pie-col > h4{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  font-family:var(--display);font-size:.98rem;font-weight:600;text-align:left;padding-block:.85rem;
+}
+.pie-col .caret{width:15px;height:15px;transition:transform .25s var(--ease)}
+.pie-col[data-abierto] .caret{transform:rotate(180deg)}
+.pie-col ul{display:grid;gap:.6rem;padding-bottom:1rem}
+.pie-col a{font-size:.9rem;color:var(--claro-64);transition:color .2s var(--ease)}
+.pie-col a:hover{color:var(--blanco)}
+@media(max-width:819px){
+  .pie-col{border-bottom:1px solid var(--claro-24)}
+  .pie-col ul{display:none}
+  .pie-col[data-abierto] ul{display:grid}
+}
+@media(min-width:820px){
+  .pie-col > button{pointer-events:none;padding-top:0}
+  .pie-col .caret{display:none}
+  .pie-col ul{display:grid !important}
+}
+.pie-abajo{
+  border-top:1px solid var(--claro-24);padding-block:1.3rem;
+  display:flex;flex-wrap:wrap;gap:.8rem 1.6rem;align-items:center;justify-content:space-between;
+  font-size:.82rem;color:var(--claro-64);
+}
+.pie-abajo nav{display:flex;flex-wrap:wrap;gap:1.3rem}
+.pie-abajo a:hover{color:var(--blanco)}
+.pagos{display:flex;gap:.4rem;flex-wrap:wrap}
+.pago{height:26px;padding-inline:.6rem;border:1px solid var(--claro-24);border-radius:5px;display:grid;place-items:center;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+/* ============================================================
+   PANELES LATERALES
+   ============================================================ */
+.velo{position:fixed;inset:0;background:rgba(18,35,63,.5);backdrop-filter:blur(3px);z-index:90;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
+.velo.abierto{opacity:1;visibility:visible}
+.lateral{
+  position:fixed;top:0;right:0;height:100dvh;width:min(430px,100vw);background:var(--papel);
+  z-index:95;display:flex;flex-direction:column;transform:translateX(100%);
+  transition:transform .42s var(--ease);box-shadow:-18px 0 50px -30px rgba(18,35,63,.7);
+}
+.lateral.abierto{transform:none}
+.lateral.izq{right:auto;left:0;transform:translateX(-100%);box-shadow:18px 0 50px -30px rgba(18,35,63,.7)}
+.lateral.izq.abierto{transform:none}
+.lat-cab{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem var(--gutter);border-bottom:1px solid var(--tinta-08);flex:none}
+.lat-cab h2{font-size:1.2rem}
+.lat-cuerpo{flex:1;overflow-y:auto;padding:1.2rem var(--gutter)}
+.lat-pie{padding:1.2rem var(--gutter) calc(1.2rem + env(safe-area-inset-bottom));border-top:1px solid var(--tinta-08);background:var(--blanco);flex:none}
+
+/* Progreso de envío, dos tramos */
+.envio{padding:1rem 1.1rem;background:var(--blanco);border-radius:var(--r-lg);margin-bottom:1.2rem}
+.envio p{font-size:.85rem;margin-bottom:.75rem}
+.envio b{font-weight:700}
+.barra{height:7px;background:var(--tinta-08);border-radius:var(--r-pill);position:relative;overflow:hidden}
+.barra i{position:absolute;inset:0 auto 0 0;background:var(--teal);border-radius:var(--r-pill);transition:width .5s var(--ease)}
+.hitos{display:flex;justify-content:space-between;margin-top:.55rem;font-size:.7rem;color:var(--tinta-40)}
+.hitos span{display:flex;align-items:center;gap:.25rem}
+.hitos span.ok{color:var(--teal);font-weight:700}
+.hitos svg{width:13px;height:13px}
+
+.linea-carro{display:grid;grid-template-columns:72px 1fr auto;gap:.9rem;padding-block:1rem;border-bottom:1px solid var(--tinta-08);align-items:center}
+.linea-media{background:var(--tono,var(--humo));border-radius:var(--r-md);aspect-ratio:1;display:grid;place-items:center;overflow:hidden;position:relative}
+.linea-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.linea-media svg{width:66%}
+.linea-carro h4{font-size:.95rem;font-weight:600}
+.linea-carro .plan{font-size:.74rem;color:var(--teal);font-weight:700}
+.cant{display:inline-flex;align-items:center;border:1.5px solid var(--tinta-14);border-radius:var(--r-pill);margin-top:.45rem}
+.cant button{width:26px;height:26px;display:grid;place-items:center;color:var(--tinta-60)}
+.cant button:hover{color:var(--tinta)}
+.cant span{min-width:22px;text-align:center;font-size:.82rem}
+.linea-precio{font-family:var(--display);font-weight:600;font-size:.98rem;white-space:nowrap}
+.carro-vacio{text-align:center;padding:3rem 0}
+.carro-vacio svg{width:46px;height:46px;margin:0 auto 1rem;stroke:var(--tinta-40);fill:none;stroke-width:1.5}
+.carro-vacio p{font-family:var(--display);font-size:1.15rem;margin-bottom:1.3rem}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.9rem}
+.total .etq{font-size:.85rem;color:var(--tinta-60)}
+.total .val{font-family:var(--display);font-size:1.5rem;font-weight:600}
+
+/* Menú móvil */
+.nav-movil{display:grid;gap:.1rem}
+.nav-movil > li > a,.nav-movil > li > button{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  font-family:var(--display);font-size:1.35rem;font-weight:600;padding-block:.85rem;
+  border-bottom:1px solid var(--tinta-08);text-align:left;
+}
+.nav-movil .caret{width:16px;height:16px;transition:transform .25s var(--ease)}
+.nav-movil li[data-abierto] .caret{transform:rotate(180deg)}
+.nav-movil .sub{display:none;padding:.3rem 0 .9rem .3rem;gap:.5rem}
+.nav-movil li[data-abierto] .sub{display:grid}
+.nav-movil .sub a{font-family:var(--sans);font-size:.98rem;color:var(--tinta-60);padding-block:.3rem}
+
+/* Revelados */
+.rev{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rev.visto{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .rev{opacity:1;transform:none}
+}
+</style>
 </head>
 <body>
+<a class="solo-lectores" href="#contenido">Saltar al contenido</a>
 
-<!-- ─── NAV ─── -->
-<nav id="mainNav">
-  <a href="#" class="nav-logo">Sepia<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="#menu">Menú</a></li>
-    <li><a href="#tienda">Tienda</a></li>
-    <li><a href="#eventos">Eventos</a></li>
-    <li><a href="#ubicacion">Visítanos</a></li>
-    <li><a href="#menu" class="nav-cta">Pedir Pick Up</a></li>
-  </ul>
-  <div class="hamburger" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
-</nav>
+<!-- ============================================================
+     DATOS DE EJEMPLO QUE HAY QUE REEMPLAZAR ANTES DE PUBLICAR
+     · Los datos de Google: puntaje, cantidad, enlace y reseñas.
+       Van en la constante GOOGLE, arriba del script del final.
+     · Precios de los 13 productos
+     · Montos de envío: $30.000 y $65.000 aparecen en la barra de
+       anuncio y en TRAMO_1 / TRAMO_2 dentro del script
+     · Enlaces de redes sociales y páginas legales del pie
+     Las fotos van en assets/fotos/ con los nombres que lista
+     assets/fotos/LEEME.md. Si falta una, se dibuja la ilustración.
+     ============================================================ -->
 
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#menu" onclick="closeMobileMenu()">Menú</a>
-  <a href="#tienda" onclick="closeMobileMenu()">Tienda</a>
-  <a href="#eventos" onclick="closeMobileMenu()">Eventos</a>
-  <a href="#ubicacion" onclick="closeMobileMenu()">Visítanos</a>
-  <a href="#menu" onclick="closeMobileMenu()" style="color: var(--caramel)">Pedir Pick Up →</a>
+<!-- ===================== BIBLIOTECA SVG ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="g-bolsa" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#CFC6BF"/><stop offset=".14" stop-color="#F5EFEB"/>
+    <stop offset=".44" stop-color="#FFFFFF"/><stop offset=".74" stop-color="#EAE2DC"/>
+    <stop offset="1" stop-color="#C6BCB4"/>
+  </linearGradient>
+  <linearGradient id="g-sello" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#C6BCB4"/><stop offset=".42" stop-color="#D8D0C9"/>
+    <stop offset="1" stop-color="#BCB2AA"/>
+  </linearGradient>
+  <filter id="f-bolsa" x="-25%" y="-12%" width="150%" height="132%">
+    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#2F4156" flood-opacity=".2"/>
+  </filter>
+  <radialGradient id="g-cafe" cx=".38" cy=".32" r=".82">
+    <stop offset="0" stop-color="#567C8D"/><stop offset=".5" stop-color="#3E5670"/>
+    <stop offset="1" stop-color="#2F4156"/>
+  </radialGradient>
+  <radialGradient id="g-platillo" cx=".36" cy=".28" r=".9">
+    <stop offset="0" stop-color="#F5EFEB"/><stop offset="1" stop-color="#DED6CF"/>
+  </radialGradient>
+  <linearGradient id="g-ceramica" x1=".2" y1="0" x2=".85" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6DED8"/>
+  </linearGradient>
+ 
+  <linearGradient id="g-vidrio" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#00000022"/><stop offset=".18" stop-color="#ffffff55"/>
+    <stop offset=".52" stop-color="#ffffff22"/><stop offset=".84" stop-color="#00000018"/>
+    <stop offset="1" stop-color="#00000030"/>
+  </linearGradient>
+  <linearGradient id="g-lata" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#00000026"/><stop offset=".2" stop-color="#ffffff4d"/>
+    <stop offset=".55" stop-color="#ffffff1a"/><stop offset="1" stop-color="#00000033"/>
+  </linearGradient>
+</defs>
+
+<symbol id="i-bolsa" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#2F4156" opacity=".17"/>
+   <g filter="url(#f-bolsa)">
+     <path d="M32 44h136v186a14 14 0 0 1-14 14H46a14 14 0 0 1-14-14z" fill="url(#g-bolsa)"/>
+     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#2F4156" opacity=".085"/>
+     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#2F4156" opacity=".065"/>
+     <path d="M32 25h136v19H32z" fill="url(#g-sello)"/>
+     <path d="M40 25v19M48 25v19M56 25v19M64 25v19M72 25v19M80 25v19M88 25v19M96 25v19M104 25v19M112 25v19M120 25v19M128 25v19M136 25v19M144 25v19M152 25v19M160 25v19"
+           stroke="#2F4156" stroke-width="1" opacity=".17"/>
+     <path d="M32 44h136v3.5H32z" fill="#2F4156" opacity=".2"/>
+   </g>
+   <text x="101" y="84" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.2"
+         letter-spacing="2" fill="#2F4156" opacity=".45">250 G · GRANO ENTERO</text>
+   <path d="M46 94h108" stroke="#2F4156" stroke-width="1" opacity=".16"/>
+   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#2F4156)"/>
+   <path d="M32 106h136v3H32z" fill="#2F4156" opacity=".14"/>
+   <text x="100" y="153" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700"
+         font-size="18" letter-spacing="-.4" fill="#F5EFEB">sepia coffee</text>
+   <circle cx="100" cy="214" r="21" fill="#F5EFEB"/>
+   <g transform="translate(89,201) scale(.104)" style="color:#2F4156">
+     <use href="#i-caminante-solido"/>
+   </g>
+   <text x="101" y="238" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.6"
+         letter-spacing="2.4" fill="#2F4156" opacity=".34">TOSTADO EN SANTIAGO</text>
+ </symbol>
+
+ <!-- Botella de cold brew -->
+ <symbol id="i-botella" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="256" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
+   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="var(--acento,#567C8D)"/>
+   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="url(#g-vidrio)"/>
+   <rect x="80" y="8" width="40" height="16" rx="5" fill="#2F4156" opacity=".82"/>
+   <rect x="58" y="120" width="84" height="76" fill="#F5EFEB"/>
+   <text x="100" y="150" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11.5" font-weight="700" letter-spacing="-.25" fill="#2F4156">sepia coffee</text>
+   <text x="100" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#2F4156" opacity=".65">COLD BREW</text>
+   <path d="M58 214h84" stroke="#2F4156" stroke-width="1" opacity=".18"/>
+   <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#F5EFEB" opacity=".8">1 LITRO</text>
+ </symbol>
+
+ <!-- Tarro de matcha -->
+ <symbol id="i-tarro" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <!-- Cuerpo en Sky Blue, fijo: es el color de la lata en el packaging -->
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="#C8D9E6"/>
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="url(#g-lata)"/>
+   <!-- Tapa en Navy -->
+   <rect x="40" y="52" width="120" height="30" rx="10" fill="#2F4156"/>
+   <rect x="52" y="44" width="96" height="12" rx="6" fill="#2F4156" opacity=".55"/>
+   <!-- Caminante de marca -->
+   <g transform="translate(74,88) scale(.26)" style="color:#2F4156;--cam-fondo:#C8D9E6">
+     <use href="#i-caminante"/>
+   </g>
+   <!-- Textos en Navy -->
+   <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">sepia coffee</text>
+   <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">MATCHA</text>
+   <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
+   <text x="101" y="232" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="7.5" letter-spacing="1.8" fill="#2F4156" opacity=".6">80 G · CEREMONIAL</text>
+ </symbol>
+
+ <!-- Taza de cerámica -->
+ <symbol id="i-taza" viewBox="0 0 200 272">
+   <ellipse cx="96" cy="238" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="var(--acento,#C8D9E6)"/>
+   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="url(#g-lata)"/>
+   <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#C8D9E6)" stroke-width="14" stroke-linecap="round"/>
+   <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F5EFEB"/>
+   <ellipse cx="96" cy="97" rx="44" ry="8" fill="#2F4156"/>
+   <ellipse cx="96" cy="176" rx="26" ry="4.6" fill="none" stroke="#F5EFEB" stroke-width="2.6" opacity=".5"/>
+ </symbol>
+
+ <!-- Caja de pack -->
+ <symbol id="i-caja" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="248" rx="66" ry="8" fill="#2F4156" opacity=".16"/>
+   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="var(--acento,#C8D9E6)"/>
+   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="url(#g-lata)"/>
+   <path d="M22 74h156v34H22z" fill="#2F4156" opacity=".86"/>
+   <path d="M92 74h16v170H92z" fill="#F5EFEB" opacity=".9"/>
+   <path d="M30 150h140v10H30z" fill="#F5EFEB" opacity=".9"/>
+   <path d="M100 74c-14-22-42-22-42-4 0 10 18 10 42 4zM100 74c14-22 42-22 42-4 0 10-18 10-42 4z" fill="#F5EFEB" opacity=".92"/>
+   <text x="100" y="200" text-anchor="middle" font-family="Poppins,sans-serif" font-size="22" font-weight="600" fill="#2F4156">pack</text>
+ </symbol>
+
+ <!-- Batidor de matcha -->
+ <symbol id="i-batidor" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="248" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
+   <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#F5EFEB)"/>
+   <path d="M70 146h60l-4 30H74z" fill="var(--acento,#F5EFEB)"/>
+   <g stroke="var(--acento,#F5EFEB)" stroke-width="3" stroke-linecap="round" fill="none">
+     <path d="M76 176c-8 24-4 48 4 60M88 178c-5 24-2 48 3 58M100 178v60M112 178c5 24 2 48-3 58M124 176c8 24 4 48-4 60"/>
+     <path d="M68 174c-10 24-6 50 4 62M132 174c10 24 6 50-4 62"/>
+   </g>
+   <path d="M64 172h72" stroke="#2F4156" stroke-width="2" opacity=".2"/>
+ </symbol>
+
+ <!-- Granos -->
+ <symbol id="i-granos" viewBox="0 0 120 120">
+   <g transform="translate(40 44) rotate(-24)"><ellipse rx="15" ry="21" fill="#2F4156"/><path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#C8D9E6" stroke-width="2.2" stroke-linecap="round"/></g>
+   <g transform="translate(76 62) rotate(32)"><ellipse rx="14" ry="20" fill="#567C8D"/><path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#C8D9E6" stroke-width="2.1" stroke-linecap="round"/></g>
+   <g transform="translate(50 86) rotate(8)"><ellipse rx="13" ry="18.5" fill="#2F4156"/><path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#C8D9E6" stroke-width="2" stroke-linecap="round"/></g>
+ </symbol>
+ <symbol id="i-grano" viewBox="0 0 24 32">
+   <ellipse cx="12" cy="16" rx="10.5" ry="15" fill="currentColor"/>
+   <path d="M12 3.5C16.6 10.5 7.4 21.5 12 28.5" fill="none" stroke="var(--fondo-grano,#F5EFEB)" stroke-width="2.8" stroke-linecap="round"/>
+ </symbol>
+ <symbol id="i-hoja-matcha" viewBox="0 0 120 120">
+   <path d="M96 24s-4 58-42 58a24 24 0 0 1-24-24c0-34 66-34 66-34z" fill="var(--acento,#567C8D)"/>
+   <path d="M24 98s10-30 36-46" fill="none" stroke="#2F4156" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+ </symbol>
+
+
+ <!-- Caminante: la marca. Las piernas van en contorno, así que el
+      pantalón toma el color del fondo con --cam-fondo. -->
+ <symbol id="i-caminante" viewBox="0 0 200 250">
+   <g transform="translate(0,114)"><g stroke="currentColor" stroke-width="7" stroke-linejoin="round" fill="var(--cam-fondo,none)">
+     <path d="M106.9 13.1 L73.8 63.8 L58.3 108.3 L33.7 99.7 L50.2 52.2 L85.1 -1.1 Z"/>
+     <path d="M115.3 -0.5 L145.5 51.9 L165.7 94.4 L142.3 105.6 L122.5 64.1 L92.7 12.5 Z"/>
+   </g>
+   <g stroke="currentColor" stroke-width="5.5" stroke-linecap="round">
+     <path d="M55.5 97.5 L38.5 91.5"/><path d="M146 89 L162.5 95"/>
+   </g>
+   <path d="M60 103 Q62 113 52 117 L30 123 Q18 125 16.5 116.5 Q15 108 25 105 L46 98 Z" fill="currentColor"/>
+   <path d="M141 100 Q139 110 149 114 L171 120 Q183 122 184.5 113.5 Q186 105 176 102 L155 95 Z" fill="currentColor"/></g>
+   <circle cx="100" cy="26" r="25" fill="currentColor"/>
+   <path d="M85 58h30v62a7 7 0 0 1-7 7H92a7 7 0 0 1-7-7z" fill="currentColor"/>
+ </symbol>
+ <symbol id="i-caminante-solido" viewBox="0 0 200 250">
+   <g transform="translate(0,114)" fill="currentColor">
+     <path d="M106.9 13.1 L73.8 63.8 L58.3 108.3 L33.7 99.7 L50.2 52.2 L85.1 -1.1 Z"/>
+     <path d="M115.3 -0.5 L145.5 51.9 L165.7 94.4 L142.3 105.6 L122.5 64.1 L92.7 12.5 Z"/>
+     <path d="M60 103 Q62 113 52 117 L30 123 Q18 125 16.5 116.5 Q15 108 25 105 L46 98 Z"/>
+     <path d="M141 100 Q139 110 149 114 L171 120 Q183 122 184.5 113.5 Q186 105 176 102 L155 95 Z"/>
+   </g>
+   <circle cx="100" cy="26" r="25" fill="currentColor"/>
+   <path d="M85 58h30v62a7 7 0 0 1-7 7H92a7 7 0 0 1-7-7z" fill="currentColor"/>
+ </symbol>
+ <symbol id="i-piernas" viewBox="0 0 200 130"><g stroke="currentColor" stroke-width="7" stroke-linejoin="round" fill="var(--cam-fondo,none)">
+     <path d="M106.9 13.1 L73.8 63.8 L58.3 108.3 L33.7 99.7 L50.2 52.2 L85.1 -1.1 Z"/>
+     <path d="M115.3 -0.5 L145.5 51.9 L165.7 94.4 L142.3 105.6 L122.5 64.1 L92.7 12.5 Z"/>
+   </g>
+   <g stroke="currentColor" stroke-width="5.5" stroke-linecap="round">
+     <path d="M55.5 97.5 L38.5 91.5"/><path d="M146 89 L162.5 95"/>
+   </g>
+   <path d="M60 103 Q62 113 52 117 L30 123 Q18 125 16.5 116.5 Q15 108 25 105 L46 98 Z" fill="currentColor"/>
+   <path d="M141 100 Q139 110 149 114 L171 120 Q183 122 184.5 113.5 Q186 105 176 102 L155 95 Z" fill="currentColor"/></symbol>
+
+ <!-- Íconos de interfaz -->
+ <symbol id="i-buscar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></symbol>
+ <symbol id="i-usuario" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+ <symbol id="i-carro" viewBox="0 0 24 24"><path d="M7 8V6a5 5 0 0 1 10 0v2"/><path d="M4.5 8h15l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H7.2a1.5 1.5 0 0 1-1.5-1.3z"/></symbol>
+ <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h12"/></symbol>
+ <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+ <symbol id="i-caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+ <symbol id="i-izq" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="i-der" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+ <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></symbol>
+ <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+ <symbol id="i-estrella" viewBox="0 0 24 24"><path d="m12 2.6 2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.1-5.9 3.1 1.2-6.5L2.5 9.5l6.6-.9z"/></symbol>
+ <symbol id="i-camion" viewBox="0 0 24 24"><path d="M2 7h11v10H2zM13 10h4.5l3.5 3.5V17h-8z"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></symbol>
+ <symbol id="i-hoja" viewBox="0 0 24 24"><path d="M20 4s-1 12-9 12a5 5 0 0 1-5-5c0-7 14-7 14-7z"/><path d="M4 20s2-6 7-9"/></symbol>
+ <symbol id="i-fuego" viewBox="0 0 24 24"><path d="M12 2.5s5.5 4.5 5.5 9.5a5.5 5.5 0 0 1-11 0c0-2 1-3.5 1-3.5s.5 2 2 2c0-3 2.5-5.5 2.5-8z"/></symbol>
+ <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+ <symbol id="i-repetir" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 20v-4h4"/></symbol>
+ <symbol id="i-ig" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.2A6.6 6.6 0 1 0 18.6 12 6.6 6.6 0 0 0 12 5.4zm0 10.9A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3zm6.9-11.1a1.55 1.55 0 1 1-1.55-1.55A1.55 1.55 0 0 1 18.9 5.2z"/></symbol>
+ <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .73-5.07V9.66a5.72 5.72 0 0 0-.73-.05A5.69 5.69 0 1 0 15.54 15.3V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.29 4.29 0 0 1-3.24-1.48z"/></symbol>
+ <symbol id="i-wsp" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.75-.87-2-.97-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.16-.17.2-.34.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3 0-.46.13-.61.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5h-.56c-.2 0-.5.07-.77.37-.26.3-1 .98-1 2.4s1.03 2.78 1.17 2.98c.15.2 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.32.19 1.81.12.55-.08 1.7-.7 1.94-1.37.24-.68.24-1.25.17-1.37-.07-.12-.27-.2-.56-.34zM12 2.05A9.9 9.9 0 0 0 2.1 12c0 1.75.46 3.46 1.34 4.96L2 22l5.2-1.36A9.9 9.9 0 1 0 12 2.05zm0 18.1a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.1.81.83-3.02-.2-.31A8.2 8.2 0 1 1 12 20.15z"/></symbol>
+</svg>
+
+<!-- ===================== ANUNCIO ===================== -->
+<div class="anuncio">
+  <a href="#cafes">Envío gratis en todo Chile sobre $65.000.</a>
 </div>
 
-<!-- ─── HERO ─── -->
-<section class="hero" id="home">
-  <div class="hero-content">
-    <div class="hero-badge">Café de especialidad · Santiago</div>
-    <h1>El café que<br /><em>inspira</em> tu<br />momento.</h1>
-    <p class="hero-sub">Granos de origen, matcha premium y coctelería de autor para tu próximo evento. Todo nace desde Sepia.</p>
-    <div class="hero-actions">
-      <a href="#menu" class="btn-primary">Ver Menú &amp; Pick Up →</a>
-      <a href="#eventos" class="btn-secondary">Eventos &amp; Coctelería</a>
+<!-- ===================== CABECERA ===================== -->
+<header class="cabecera" id="cabecera">
+  <div class="cab-fila">
+    <a href="#portada" class="marca" aria-label="sepia coffee, ir al inicio">
+      <span class="palabra" style="--cam-fondo:var(--papel)">sep<span class="cam">&#305;<svg class="cab" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20"/></svg><svg class="patas" viewBox="0 0 200 130" aria-hidden="true"><use href="#i-piernas"/></svg></span>a coffee</span>
+    </a>
+
+    <nav aria-label="Navegación principal" style="flex:1">
+      <ul class="nav-prin" id="nav-prin">
+        <li data-mega="cafe"><button type="button" aria-expanded="false">Café en grano <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button></li>
+        <li data-mega="cold"><button type="button" aria-expanded="false">Cold Brew <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button></li>
+        <li data-mega="matcha"><button type="button" aria-expanded="false">Matcha <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button></li>
+        <li data-mega="packs"><button type="button" aria-expanded="false">Packs <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button></li>
+        <li><a href="#cafes">Accesorios</a></li>
+        <li><a href="#cafes">Ver todo</a></li>
+      </ul>
+    </nav>
+
+    <div class="cab-acciones">
+      <button class="ic-btn" type="button" aria-label="Buscar"><svg class="ic" viewBox="0 0 24 24"><use href="#i-buscar"/></svg></button>
+      <a class="ic-btn" href="#" aria-label="Mi cuenta"><svg class="ic" viewBox="0 0 24 24"><use href="#i-usuario"/></svg></a>
+      <button class="ic-btn" type="button" id="abrir-carro" aria-label="Abrir el carrito" aria-expanded="false">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-carro"/></svg>
+        <span class="burbuja" id="burbuja">0</span>
+      </button>
+      <button class="ic-btn hamb" type="button" id="abrir-menu" aria-label="Abrir el menú" aria-expanded="false">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-menu"/></svg>
+      </button>
     </div>
-    <div class="hero-stats">
+  </div>
+
+  <!-- Mega menús -->
+  <div class="mega" data-panel="cafe">
+    <div class="mega-rejilla">
+      <div class="mega-col"><h4>Por origen</h4><ul>
+        <li><a href="#cafes">Colombia</a></li><li><a href="#cafes">Etiopía</a></li>
+        <li><a href="#cafes">Perú</a></li><li><a href="#cafes">Guatemala</a></li>
+        <li><a href="#cafes">Brasil</a></li></ul></div>
+      <div class="mega-col"><h4>Por tueste</h4><ul>
+        <li><a href="#cafes">Tueste claro</a></li><li><a href="#cafes">Tueste medio</a></li>
+        <li><a href="#cafes">Tueste oscuro</a></li><li><a href="#cafes">Descafeinado</a></li></ul></div>
+      <div class="mega-col"><h4>Por método</h4><ul>
+        <li><a href="#cafes">Filtrado</a></li><li><a href="#cafes">Espresso</a></li>
+        <li><a href="#cafes">Prensa francesa</a></li><li><a href="#cafes">Molido a pedido</a></li></ul></div>
+      <div class="mega-destacado">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
+          <img class="foto-mega" src="assets/fotos/mega-cafe.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
+          <span class="etq">Nuevo · Huehuetenango</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mega" data-panel="cold">
+    <div class="mega-rejilla">
+      <div class="mega-col"><h4>Sabores</h4><ul>
+        <li><a href="#cafes">Clásico</a></li><li><a href="#cafes">Vainilla</a></li>
+        <li><a href="#cafes">Avellana</a></li><li><a href="#cafes">Con leche de avena</a></li></ul></div>
+      <div class="mega-col"><h4>Formato</h4><ul>
+        <li><a href="#cafes">Botella 1 L</a></li><li><a href="#cafes">Pack de 4</a></li>
+        <li><a href="#cafes">Concentrado</a></li></ul></div>
+      <div class="mega-col"><h4>Cómo tomarlo</h4><ul>
+        <li><a href="#cafes">Con hielo</a></li><li><a href="#cafes">Recetas</a></li>
+        <li><a href="#cafes">Guía de preparación</a></li></ul></div>
+      <div class="mega-destacado">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
+          <img class="foto-mega" src="assets/fotos/mega-coldbrew.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
+          <span class="etq">Pack de 4 · 15% menos</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mega" data-panel="matcha">
+    <div class="mega-rejilla">
+      <div class="mega-col"><h4>Matcha</h4><ul>
+        <li><a href="#cafes">Ceremonial</a></li><li><a href="#cafes">Culinario</a></li>
+        <li><a href="#cafes">Matcha coco</a></li><li><a href="#cafes">Matcha vainilla</a></li></ul></div>
+      <div class="mega-col"><h4>Accesorios</h4><ul>
+        <li><a href="#cafes">Batidor de bambú</a></li><li><a href="#cafes">Cuenco</a></li>
+        <li><a href="#cafes">Cuchara medidora</a></li></ul></div>
+      <div class="mega-col"><h4>Aprender</h4><ul>
+        <li><a href="#cafes">Cómo preparar matcha</a></li><li><a href="#cafes">Ceremonial o culinario</a></li></ul></div>
+      <div class="mega-destacado">
+        <a class="mega-tarjeta" href="#cafes" style="background:var(--celeste)">
+          <img class="foto-mega" src="assets/fotos/mega-matcha.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
+          <span class="etq">Matcha coco</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mega" data-panel="packs">
+    <div class="mega-rejilla">
+      <div class="mega-col"><h4>Packs</h4><ul>
+        <li><a href="#packs">Pack Descubrir</a></li><li><a href="#packs">Pack Ritual</a></li>
+        <li><a href="#packs">Pack Matcha</a></li><li><a href="#packs">Pack Oficina</a></li></ul></div>
+      <div class="mega-col"><h4>Suscripción</h4><ul>
+        <li><a href="#packs">Cómo funciona</a></li><li><a href="#packs">Ahorrá 15%</a></li>
+        <li><a href="#packs">Pausar o cancelar</a></li></ul></div>
+      <div class="mega-col"><h4>Regalo</h4><ul>
+        <li><a href="#packs">Tarjeta de regalo</a></li><li><a href="#packs">Packs de regalo</a></li>
+        <li><a href="#packs">Empresas</a></li></ul></div>
+      <div class="mega-destacado">
+        <a class="mega-tarjeta" href="#packs" style="background:var(--teal)">
+          <img class="foto-mega" src="assets/fotos/mega-packs.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">
+          <span class="etq">Armá el tuyo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="contenido">
+
+<!-- ===================== 01 · HERO ===================== -->
+<section class="hero" id="portada" aria-roledescription="carrusel" aria-label="Destacados">
+  <div class="hero-pista" id="hero-pista">
+
+    <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="1 de 2">
+      <div class="hero-caja dividida" style="background:var(--beige)">
+        <div class="hero-panel"><div class="interno">
+          <h2 class="t-6xl">Café orgánico y matcha</h2>
+          <p class="copy">Hecho para tu ritual diario.</p>
+          <div class="btns">
+            <a href="#cafes" class="btn">Ver todo</a>
+            <a href="#packs" class="btn linea">Suscribirme</a>
+          </div>
+        </div></div>
+        <div class="hero-foto">
+          <img src="assets/fotos/hero-1.jpg" alt="Dos manos sosteniendo un matcha helado y un café de sepia coffee" onerror="this.remove()">
+          <div class="hero-arte" aria-hidden="true">
+            <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
+            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#2F4156"><use href="#i-bolsa"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272"><use href="#i-tarro"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#567C8D"><use href="#i-botella"/></svg>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="2 de 2">
+      <div class="hero-caja" style="background:linear-gradient(120deg,#567C8D,#C8D9E6)">
+        <div class="hero-fondo">
+          <img src="assets/fotos/hero-2.jpg" alt="" onerror="this.remove()">
+          <div class="hero-arte" aria-hidden="true">
+            <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
+            <svg class="pieza p1" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#C8D9E6"><use href="#i-taza"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#F5EFEB"><use href="#i-batidor"/></svg>
+          </div>
+        </div>
+        <div class="hero-velo"></div>
+        <div class="hero-txt"><div class="interno">
+          <h2 class="t-6xl">Sabe a vacaciones</h2>
+          <p class="copy">Llegó el matcha coco.</p>
+          <div class="btns">
+            <a href="#cafes" class="btn blanco">Ver el verano</a>
+          </div>
+        </div></div>
+      </div>
+    </article>
+
+  </div>
+
+  <button class="hero-flecha izq" type="button" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
+  <button class="hero-flecha der" type="button" aria-label="Siguiente"><svg class="ic" viewBox="0 0 24 24"><use href="#i-der"/></svg></button>
+  <div class="hero-puntos" id="hero-puntos" role="tablist" aria-label="Elegir diapositiva"></div>
+</section>
+
+<!-- ===================== 02 · BARRA DE VENTAJAS ===================== -->
+<div class="usp" aria-label="Nuestras ventajas">
+  <div class="usp-pista" id="usp-pista"></div>
+</div>
+
+<!-- ===================== LO MÁS VENDIDO ===================== -->
+<section class="modulo" id="cafes">
+  <div class="wrap">
+    <div class="mod-cab rev">
       <div>
-        <div class="hero-stat-num">100+</div>
-        <div class="hero-stat-label">Eventos realizados</div>
+        <h2 class="t-3xl">Lo más vendido</h2>
       </div>
+      <div class="car-nav" data-nav-de="cafes">
+        <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
+        <button type="button" data-dir="1" aria-label="Siguiente"><svg class="ic" viewBox="0 0 24 24"><use href="#i-der"/></svg></button>
+      </div>
+    </div>
+    <div class="car">
+      <div class="car-pista rev" data-pista="cafes">
+        <article class="prod" data-id="cordillera" data-nombre="Cordillera" data-precio="9900"
+                 data-precio-txt="$9.900" data-tono="#C8D9E6" data-acento="#2F4156"
+                 data-arte="i-bolsa" data-cat="cafe">
+          <div class="prod-media" style="--tono:#C8D9E6">
+            <img class="foto" src="assets/fotos/prod-cordillera.jpg" alt="Cordillera" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-cordillera-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cordillera"><use href="#i-bolsa"/></svg>
+            <span class="prod-etq">Más vendido</span>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $9.900
+            </button>
+          </div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button></div>
+          <div class="prod-info">
+            <h3>Cordillera</h3>
+            <p class="prod-sub">Blend de casa · 250 g</p>
+            <p class="prod-precio">$9.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Cordillera">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="cold-clasico" data-nombre="Cold Brew Clásico" data-precio="7900"
+                 data-precio-txt="$7.900" data-tono="#FFFFFF" data-acento="#567C8D"
+                 data-arte="i-botella" data-cat="cold">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-cold-clasico.jpg" alt="Cold Brew Clásico" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-cold-clasico-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Cold Brew Clásico"><use href="#i-botella"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $7.900
+            </button>
+          </div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
+          <div class="prod-info">
+            <h3>Cold Brew Clásico</h3>
+            <p class="prod-sub">Botella 1 L · sin azúcar</p>
+            <p class="prod-precio">$7.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Cold Brew Clásico">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="matcha-ceremonial" data-nombre="Matcha Ceremonial" data-precio="16900"
+                 data-precio-txt="$16.900" data-tono="#C8D9E6" data-acento="#2F4156"
+                 data-arte="i-tarro" data-cat="matcha">
+          <div class="prod-media" style="--tono:#C8D9E6">
+            <img class="foto" src="assets/fotos/prod-matcha-ceremonial.jpg" alt="Matcha Ceremonial" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-matcha-ceremonial-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Ceremonial"><use href="#i-tarro"/></svg>
+            <span class="prod-etq celeste">Orgánico</span>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $16.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Matcha Ceremonial</h3>
+            <p class="prod-sub">80 g · primera cosecha</p>
+            <p class="prod-precio">$16.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Matcha Ceremonial">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="yirgacheffe" data-nombre="Yirgacheffe" data-precio="13500"
+                 data-precio-txt="$13.500" data-tono="#FFFFFF" data-acento="#567C8D"
+                 data-arte="i-bolsa" data-cat="cafe">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-yirgacheffe.jpg" alt="Yirgacheffe" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-yirgacheffe-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Yirgacheffe"><use href="#i-bolsa"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $13.500
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Yirgacheffe</h3>
+            <p class="prod-sub">Etiopía · lavado · 250 g</p>
+            <p class="prod-precio">$13.500</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Yirgacheffe">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="matcha-coco" data-nombre="Matcha Coco" data-precio="17900"
+                 data-precio-txt="$17.900" data-tono="#567C8D" data-acento="#2F4156"
+                 data-arte="i-tarro" data-cat="matcha">
+          <div class="prod-media" style="--tono:#567C8D">
+            <img class="foto" src="assets/fotos/prod-matcha-coco.jpg" alt="Matcha Coco" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-matcha-coco-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Coco"><use href="#i-tarro"/></svg>
+            <span class="prod-etq teal">Nuevo</span>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $17.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Matcha Coco</h3>
+            <p class="prod-sub">80 g · edición de verano</p>
+            <p class="prod-precio">$17.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Matcha Coco">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="taza-sepia" data-nombre="Taza de cerámica" data-precio="14900"
+                 data-precio-txt="$14.900" data-tono="#FFFFFF" data-acento="#C8D9E6"
+                 data-arte="i-taza" data-cat="accesorios">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-taza-sepia.jpg" alt="Taza de cerámica" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-taza-sepia-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#C8D9E6" role="img" aria-label="Taza de cerámica"><use href="#i-taza"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $14.900
+            </button>
+          </div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button><span class="resto">+1</span></div>
+          <div class="prod-info">
+            <h3>Taza de cerámica</h3>
+            <p class="prod-sub">Cerámica mate · 300 ml</p>
+            <p class="prod-precio">$14.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Taza de cerámica">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== 04 · GRILLA DE CATEGORÍAS ===================== -->
+<section class="modulo" id="categorias">
+  <div class="wrap">
+    <div class="panel" style="padding:clamp(1.5rem,3.4vw,3rem)">
+      <div class="mod-cab rev">
+        <h2 class="t-3xl">Para todos los gustos</h2>
+        <a href="#cafes" class="enlace-sub">Ver todo</a>
+      </div>
+      <div class="cats de-3 rev">
+        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
+          <div class="cat-media">
+            <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="" onerror="this.remove()">
+            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-bolsa"/></svg>
+          </div>
+          <h3>Café</h3>
+          <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
+        </a>
+        <a class="cat" href="#cafes" style="--tono:#FFFFFF">
+          <div class="cat-media">
+            <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="" onerror="this.remove()">
+            <svg viewBox="0 0 120 120" style="--acento:#567C8D" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
+          </div>
+          <h3>Matcha</h3>
+          <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
+        </a>
+        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
+          <div class="cat-media">
+            <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="" onerror="this.remove()">
+            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-taza"/></svg>
+          </div>
+          <h3>Accesorios</h3>
+          <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EMPEZÁ CON UN PACK ===================== -->
+<section class="modulo" id="packs">
+  <div class="wrap">
+    <div class="mod-cab rev">
       <div>
-        <div class="hero-stat-num">6</div>
-        <div class="hero-stat-label">Orígenes de café</div>
+        <h2 class="t-3xl">Empezá con nuestros packs favoritos</h2>
+        <p class="copy">Ahorrá armando un pack.</p>
       </div>
+      <div class="car-nav" data-nav-de="packs">
+        <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
+        <button type="button" data-dir="1" aria-label="Siguiente"><svg class="ic" viewBox="0 0 24 24"><use href="#i-der"/></svg></button>
+      </div>
+    </div>
+    <div class="car">
+      <div class="car-pista rev" data-pista="packs">
+        <article class="prod" data-id="pack-descubrir" data-nombre="Starter Pack" data-precio="29900"
+                 data-precio-txt="$29.900" data-tono="#FFFFFF" data-acento="#2F4156"
+                 data-arte="i-caja" data-cat="packs">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Starter Pack" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-descubrir-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Starter Pack"><use href="#i-caja"/></svg>
+            <span class="prod-etq teal">Ahorrás 16%</span>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $29.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Starter Pack</h3>
+            <p class="prod-sub">Un poco de todo: café, matcha y taza</p>
+            <p class="prod-precio">$29.900 <span class="antes">$35.700</span></p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Descubrir">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="pack-ritual" data-nombre="Pack Ritual" data-precio="22900"
+                 data-precio-txt="$22.900" data-tono="#C8D9E6" data-acento="#2F4156"
+                 data-arte="i-taza" data-cat="packs">
+          <div class="prod-media" style="--tono:#C8D9E6">
+            <img class="foto" src="assets/fotos/prod-pack-ritual.jpg" alt="Pack Ritual" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-ritual-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Ritual"><use href="#i-taza"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $22.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Pack Ritual</h3>
+            <p class="prod-sub">Cordillera 250 g + taza de cerámica</p>
+            <p class="prod-precio">$22.900 <span class="antes">$24.800</span></p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Ritual">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="pack-matcha" data-nombre="Pack Matcha" data-precio="28900"
+                 data-precio-txt="$28.900" data-tono="#FFFFFF" data-acento="#567C8D"
+                 data-arte="i-batidor" data-cat="packs">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-pack-matcha.jpg" alt="Pack Matcha" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-matcha-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Pack Matcha"><use href="#i-batidor"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $28.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Pack Matcha</h3>
+            <p class="prod-sub">Matcha ceremonial + batidor de bambú</p>
+            <p class="prod-precio">$28.900 <span class="antes">$31.800</span></p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Matcha">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="pack-coldbrew" data-nombre="Pack Cold Brew" data-precio="28900"
+                 data-precio-txt="$28.900" data-tono="#567C8D" data-acento="#F5EFEB"
+                 data-arte="i-botella" data-cat="packs">
+          <div class="prod-media" style="--tono:#567C8D">
+            <img class="foto" src="assets/fotos/prod-pack-coldbrew.jpg" alt="Pack Cold Brew" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-coldbrew-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Pack Cold Brew"><use href="#i-botella"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $28.900
+            </button>
+          </div>
+          <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
+          <div class="prod-info">
+            <h3>Pack Cold Brew</h3>
+            <p class="prod-sub">4 botellas de 1 L · elegís los sabores</p>
+            <p class="prod-precio">$28.900 <span class="antes">$31.600</span></p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Cold Brew">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="pack-oficina" data-nombre="Pack Oficina" data-precio="54900"
+                 data-precio-txt="$54.900" data-tono="#C8D9E6" data-acento="#2F4156"
+                 data-arte="i-caja" data-cat="packs">
+          <div class="prod-media" style="--tono:#C8D9E6">
+            <img class="foto" src="assets/fotos/prod-pack-oficina.jpg" alt="Pack Oficina" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-oficina-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Oficina"><use href="#i-caja"/></svg>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $54.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Pack Oficina</h3>
+            <p class="prod-sub">1 kg en grano + 2 tazas</p>
+            <p class="prod-precio">$54.900 <span class="antes">$62.400</span></p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Oficina">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" data-id="pack-regalo" data-nombre="Pack Regalo" data-precio="39900"
+                 data-precio-txt="$39.900" data-tono="#FFFFFF" data-acento="#2F4156"
+                 data-arte="i-caja" data-cat="packs">
+          <div class="prod-media" style="--tono:#FFFFFF">
+            <img class="foto" src="assets/fotos/prod-pack-regalo.jpg" alt="Pack Regalo" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-regalo-2.jpg" alt="" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Regalo"><use href="#i-caja"/></svg>
+            <span class="prod-etq">Para regalar</span>
+            <button class="prod-rapido" type="button" data-agregar>
+              <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
+              Agregar · $39.900
+            </button>
+          </div>
+          <div class="prod-info">
+            <h3>Pack Regalo</h3>
+            <p class="prod-sub">Surtido en caja de madera</p>
+            <p class="prod-precio">$39.900</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Pack Regalo">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== 06 · RESEÑAS DE GOOGLE ===================== -->
+<!-- Los cuatro datos de Google van en la constante GOOGLE del script, al final
+     del archivo: puntaje, cantidad de reseñas, enlace al perfil y las reseñas.
+     Mientras estén vacíos, la sección no se muestra. -->
+<section class="modulo" id="resenas" style="background:var(--celeste)" hidden>
+  <div class="wrap">
+    <div class="mod-cab rev">
       <div>
-        <div class="hero-stat-num">★ 4.9</div>
-        <div class="hero-stat-label">Valoración Google</div>
-      </div>
-    </div>
-  </div>
-  <div class="hero-visual">
-    <div class="hero-visual-bg"></div>
-    <div class="hero-visual-pattern"></div>
-    <div class="hero-card">
-      <div class="hero-card-icon">☕</div>
-      <h3>Pick Up<br/>en 15 min</h3>
-      <p>Haz tu pedido online y retíralo listo en nuestra cafetería sin espera.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ─── MENU / PICK UP ─── -->
-<section id="menu">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Menú &amp; Pedidos</div>
-      <h2 class="section-title">Todo lo que amamos,<br />ahora con pick up.</h2>
-      <p class="section-sub">Elige tu bebida favorita, personalízala y recógela lista. Sin filas, sin esperas.</p>
-    </div>
-
-    <div class="menu-tabs">
-      <button class="tab-btn active" onclick="switchTab('cafes', this)">Cafés</button>
-      <button class="tab-btn" onclick="switchTab('matcha', this)">Matcha</button>
-      <button class="tab-btn" onclick="switchTab('frios', this)">Bebidas Frías</button>
-      <button class="tab-btn" onclick="switchTab('pasteles', this)">Pasteles</button>
-    </div>
-
-    <div id="cafes" class="tab-content active">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">☕</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Espresso Sepia</div>
-            <div class="menu-item-desc">Doble shot, notas de chocolate y frutos secos</div>
-          </div>
-          <div class="menu-item-price">$2.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥛</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Flat White</div>
-            <div class="menu-item-desc">Microespuma sedosa sobre espresso doble</div>
-          </div>
-          <div class="menu-item-price">$3.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🫧</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cappuccino</div>
-            <div class="menu-item-desc">Espuma densa, equilibrio perfecto</div>
-          </div>
-          <div class="menu-item-price">$3.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🌟</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Latte Caramelo</div>
-            <div class="menu-item-desc">Espresso, leche vaporizada y caramelo artesanal</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍯</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Honey Oat Latte</div>
-            <div class="menu-item-desc">Leche de avena, miel de flores y espresso</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">☁️</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cold Brew Nitro</div>
-            <div class="menu-item-desc">Infusión 18h, servido en grifo de nitrógeno</div>
-          </div>
-          <div class="menu-item-price">$4.800</div>
+        <h2 class="t-3xl">Lo que dicen en Google</h2>
+        <div class="google-resumen">
+          <span class="puntaje" data-g-puntaje></span>
+          <span class="estrellas" data-g-estrellas role="img"></span>
+          <span class="conteo" data-g-conteo></span>
+          <a class="enlace-sub" data-g-enlace href="#" target="_blank" rel="noopener">Ver en Google</a>
         </div>
       </div>
-    </div>
-
-    <div id="matcha" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍵</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Latte</div>
-            <div class="menu-item-desc">Matcha ceremonial japonés con leche vaporizada</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🧊</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Iced Matcha</div>
-            <div class="menu-item-desc">Matcha frío con leche de avena y hielo</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🌸</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Espresso</div>
-            <div class="menu-item-desc">Espresso sobre matcha, explosión de sabores</div>
-          </div>
-          <div class="menu-item-price">$5.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍓</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Matcha Strawberry</div>
-            <div class="menu-item-desc">Matcha con coulis de frutilla fresca</div>
-          </div>
-          <div class="menu-item-price">$4.800</div>
-        </div>
+      <div class="car-nav" data-nav-de="resenas">
+        <button type="button" data-dir="-1" aria-label="Anterior"><svg class="ic" viewBox="0 0 24 24"><use href="#i-izq"/></svg></button>
+        <button type="button" data-dir="1" aria-label="Siguiente"><svg class="ic" viewBox="0 0 24 24"><use href="#i-der"/></svg></button>
       </div>
     </div>
-
-    <div id="frios" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🧋</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cold Brew</div>
-            <div class="menu-item-desc">Infusión en frío, suave y sin acidez</div>
-          </div>
-          <div class="menu-item-price">$3.800</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍋</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Espresso Tonic</div>
-            <div class="menu-item-desc">Espresso sobre agua tónica con limón</div>
-          </div>
-          <div class="menu-item-price">$4.200</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍦</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Affogato</div>
-            <div class="menu-item-desc">Espresso caliente sobre helado de vainilla</div>
-          </div>
-          <div class="menu-item-price">$4.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥤</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Iced Latte</div>
-            <div class="menu-item-desc">Espresso doble sobre leche fría con hielo</div>
-          </div>
-          <div class="menu-item-price">$3.800</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="pasteles" class="tab-content">
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-emoji">🥐</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Croissant Mantequilla</div>
-            <div class="menu-item-desc">Hojaldre francés, horneado fresco</div>
-          </div>
-          <div class="menu-item-price">$2.800</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍰</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cheesecake Sepia</div>
-            <div class="menu-item-desc">Cremoso, con costra de galleta y caramelo</div>
-          </div>
-          <div class="menu-item-price">$3.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍫</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Brownie Espresso</div>
-            <div class="menu-item-desc">Chocolate 70%, con shot de espresso</div>
-          </div>
-          <div class="menu-item-price">$2.500</div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-emoji">🍪</div>
-          <div class="menu-item-info">
-            <div class="menu-item-name">Cookie Tahini &amp; Choco</div>
-            <div class="menu-item-desc">Borde crocante, centro suave, receta exclusiva</div>
-          </div>
-          <div class="menu-item-price">$1.800</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pickup-banner">
-      <div>
-        <h3>¿Prefieres llevar? 📦</h3>
-        <p>Haz tu pedido pick up en menos de 2 minutos. Listo en 15 min.</p>
-      </div>
-      <a href="#" class="btn-caramel" onclick="openOrderModal()">Pedir Pick Up Ahora</a>
+    <div class="car">
+      <div class="car-pista rev" data-pista="resenas" data-g-lista></div>
     </div>
   </div>
 </section>
 
-<!-- ─── TIENDA ─── -->
-<section id="tienda">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Tienda Online</div>
-      <h2 class="section-title">Lleva Sepia<br />a tu casa.</h2>
-      <p class="section-sub">Café de especialidad, matcha premium y merch exclusivo. Envíos a todo Chile.</p>
-    </div>
-
-    <div class="products-grid">
-      <!-- Café en grano -->
-      <div class="product-card">
-        <div class="product-img">
-          ☕
-          <div class="product-badge">Café</div>
+<!-- ===================== 08 · MULTICOLUMNA EDITORIAL ===================== -->
+<section class="modulo" id="nosotros">
+  <div class="wrap">
+    <div class="editorial rev">
+      <div class="editorial-rejilla">
+        <div>
+          <h2 class="t-4xl">Hecho en Santiago</h2>
+          <p>En sepia coffee nos tomamos en serio lo que tomás todos los días. Compramos lotes chicos
+             de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>
+          <p>Creemos que una taza puede ser más que una taza: es la primera cosa buena del día.
+             Por eso cuidamos cada parte del proceso, desde el origen hasta cómo te llega.</p>
+          <a href="#categorias" class="btn blanco">Conocenos</a>
         </div>
-        <div class="product-info">
-          <div class="product-category">Café de Especialidad</div>
-          <div class="product-name">Blend Sepia — Tueste Medio</div>
-          <div class="product-desc">Notas de chocolate, caramelo y nuez. Perfecto para espresso y filtrado.</div>
-          <div class="product-footer">
-            <div class="product-price">$9.900 <small>/ 250g</small></div>
-            <button class="btn-add" onclick="addToCart('Blend Sepia 250g', 9900)">+ Agregar</button>
+        <div class="editorial-fotos">
+          <div>
+            <img class="foto" src="assets/fotos/nosotros-1.jpg" alt="" onerror="this.remove()">
+            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          ☕
-          <div class="product-badge">Café</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Café de Especialidad</div>
-          <div class="product-name">Blend Sepia — Formato Familiar</div>
-          <div class="product-desc">El mismo blend que amas, en formato 1 kg para el mes completo.</div>
-          <div class="product-footer">
-            <div class="product-price">$34.900 <small>/ 1kg</small></div>
-            <button class="btn-add" onclick="addToCart('Blend Sepia 1kg', 34900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          🌿
-          <div class="product-badge matcha">Matcha</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Matcha Premium</div>
-          <div class="product-name">Matcha Ceremonial Uji</div>
-          <div class="product-desc">Grado ceremonial, cosecha de primavera, Uji Japón. Sabor umami intenso.</div>
-          <div class="product-footer">
-            <div class="product-price">$12.900 <small>/ 30g</small></div>
-            <button class="btn-add" onclick="addToCart('Matcha Ceremonial 30g', 12900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          🫖
-          <div class="product-badge matcha">Matcha</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Set Matcha</div>
-          <div class="product-name">Kit Matcha Completo</div>
-          <div class="product-desc">Matcha 30g + chasen (batidor bambú) + chawan (cuenco) + recetario.</div>
-          <div class="product-footer">
-            <div class="product-price">$38.900 <small>/ set</small></div>
-            <button class="btn-add" onclick="addToCart('Kit Matcha Completo', 38900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          🍵
-          <div class="product-badge merch">Merch</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Mug Sepia — Edición Limitada</div>
-          <div class="product-desc">Cerámica artesanal 300ml, color arena con logo grabado. Viene en caja regalo.</div>
-          <div class="product-footer">
-            <div class="product-price">$19.900</div>
-            <button class="btn-add" onclick="addToCart('Mug Sepia', 19900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          👕
-          <div class="product-badge merch">Merch</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Polera Sepia — Heavyweight</div>
-          <div class="product-desc">Cotton 100%, 280g/m². Corte oversize unisex. Disponible en blanco y negro.</div>
-          <div class="product-footer">
-            <div class="product-price">$29.900</div>
-            <button class="btn-add" onclick="addToCart('Polera Sepia', 29900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          🧢
-          <div class="product-badge merch">Merch</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Merch Sepia</div>
-          <div class="product-name">Gorro Sepia — 5 Panel</div>
-          <div class="product-desc">Tela canvas beige, bordado frontal, ajuste posterior. Talla única.</div>
-          <div class="product-footer">
-            <div class="product-price">$22.900</div>
-            <button class="btn-add" onclick="addToCart('Gorro Sepia', 22900)">+ Agregar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          🎁
-          <div class="product-badge">Gift</div>
-        </div>
-        <div class="product-info">
-          <div class="product-category">Caja Regalo</div>
-          <div class="product-name">Sepia Gift Box</div>
-          <div class="product-desc">Café 250g + Matcha 30g + Mug. La caja ideal para regalar momentos.</div>
-          <div class="product-footer">
-            <div class="product-price">$45.900 <small>/ caja</small></div>
-            <button class="btn-add" onclick="addToCart('Sepia Gift Box', 45900)">+ Agregar</button>
+          <div>
+            <img class="foto" src="assets/fotos/nosotros-2.jpg" alt="" onerror="this.remove()">
+            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-tarro"/></svg>
           </div>
         </div>
       </div>
@@ -1442,390 +1384,451 @@
   </div>
 </section>
 
-<!-- ─── EVENTOS & COCTELERÍA ─── -->
-<section id="eventos">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Eventos &amp; Coctelería</div>
-      <h2 class="section-title">Tu evento merece<br />algo especial.</h2>
-      <p class="section-sub">Bar móvil de coctelería con base de café y alcohol premium. Matrimonios, corporativos, activaciones y celebraciones privadas.</p>
-    </div>
-
-    <div class="eventos-grid">
-      <div>
-        <div class="servicio-cards">
-          <div class="servicio-card">
-            <div class="servicio-icon">💍</div>
-            <div>
-              <div class="servicio-title">Matrimonios</div>
-              <div class="servicio-desc">Bar de cócteles con café para el cóctel de bienvenida, cena y after. Estaciones personalizadas con branding de la pareja.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">🏢</div>
-            <div>
-              <div class="servicio-title">Eventos Corporativos</div>
-              <div class="servicio-desc">Estaciones de café de especialidad y cócteles sin alcohol para lanzamientos, team building y conferencias.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">✨</div>
-            <div>
-              <div class="servicio-title">Activaciones de Marca</div>
-              <div class="servicio-desc">Experiencias de café y coctelería con branding completo, baristas uniformados y setup instagrameable.</div>
-            </div>
-          </div>
-          <div class="servicio-card">
-            <div class="servicio-icon">🎉</div>
-            <div>
-              <div class="servicio-title">Celebraciones Privadas</div>
-              <div class="servicio-desc">Cumpleaños, baby showers, despedidas y cualquier ocasión especial que merezca un bar de autor.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="eventos-highlights">
-          <div class="highlight">Baristas certificados</div>
-          <div class="highlight">Equipos propios</div>
-          <div class="highlight">Cócteles con y sin alcohol</div>
-          <div class="highlight">Branding personalizado</div>
-          <div class="highlight">Mínimo 30 personas</div>
-          <div class="highlight">Todo Chile</div>
-        </div>
-      </div>
-
-      <div class="cotizacion-form">
-        <h3>Cotiza tu evento</h3>
-        <p>Cuéntanos los detalles y te respondemos en menos de 24 horas.</p>
-
-        <form onsubmit="submitCotizacion(event)">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" placeholder="Tu nombre" required />
-            </div>
-            <div class="form-group">
-              <label>Teléfono</label>
-              <input type="tel" placeholder="+56 9 XXXX XXXX" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" placeholder="tu@email.com" required />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Tipo de Evento</label>
-              <select required>
-                <option value="">Seleccionar...</option>
-                <option>Matrimonio</option>
-                <option>Evento Corporativo</option>
-                <option>Activación de Marca</option>
-                <option>Cumpleaños / Celebración</option>
-                <option>Baby Shower</option>
-                <option>Despedida</option>
-                <option>Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>N° de Personas</label>
-              <select required>
-                <option value="">Seleccionar...</option>
-                <option>30 – 60 personas</option>
-                <option>60 – 100 personas</option>
-                <option>100 – 200 personas</option>
-                <option>200 – 300 personas</option>
-                <option>+300 personas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha del Evento</label>
-              <input type="date" required />
-            </div>
-            <div class="form-group">
-              <label>Duración (horas)</label>
-              <select>
-                <option>2 horas</option>
-                <option>3 horas</option>
-                <option>4 horas</option>
-                <option>5+ horas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Cuéntanos más</label>
-            <textarea placeholder="Temática, requerimientos especiales, si requieres cócteles con o sin alcohol, etc."></textarea>
-          </div>
-
-          <button type="submit" class="btn-submit">Solicitar Cotización →</button>
-        </form>
-      </div>
+<!-- ===================== BOLETÍN ===================== -->
+<section class="modulo sin-top" id="boletin">
+  <div class="wrap">
+    <div class="boletin rev">
+      <h2 class="t-3xl">5% de descuento</h2>
+      <p class="copy">Sumate a la lista y enterate antes que nadie de los lotes nuevos, las ediciones limitadas y lo que sale del tostador cada semana.</p>
+      <form class="form-bol" id="form-bol" novalidate>
+        <label for="correo" class="solo-lectores">Tu correo</label>
+        <input type="email" id="correo" name="correo" placeholder="tu@correo.cl" required autocomplete="email" />
+        <button class="btn" type="submit">Suscribirme</button>
+      </form>
+      <p class="bol-ok" id="bol-ok" role="status">Listo. Revisá tu correo para el cupón.</p>
     </div>
   </div>
 </section>
+</main>
 
-<!-- ─── TESTIMONIOS ─── -->
-<section id="testimonios">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Testimonios</div>
-      <h2 class="section-title">Lo que dicen<br />nuestros clientes.</h2>
-    </div>
-
-    <div class="testimonios-grid">
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"El bar de café en nuestro matrimonio fue lo más comentado de la noche. Los cócteles con espresso eran increíbles y los baristas súper profesionales."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">👰</div>
-          <div>
-            <div class="author-name">Valentina R.</div>
-            <div class="author-role">Matrimonio · 180 personas</div>
-          </div>
+<!-- ===================== PIE ===================== -->
+<footer class="pie">
+  <div class="wrap">
+    <div class="pie-top">
+      <div class="pie-marca">
+        <span class="palabra" style="--cam-fondo:var(--navy)">sep<span class="cam">&#305;<svg class="cab" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20"/></svg><svg class="patas" viewBox="0 0 200 130" aria-hidden="true"><use href="#i-piernas"/></svg></span>a coffee</span>
+        <p>Café de especialidad y matcha, tostado y preparado en Santiago de Chile.</p>
+        <div class="redes">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><use href="#i-ig"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><use href="#i-tiktok"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><use href="#i-wsp"/></svg></a>
         </div>
       </div>
 
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"Ordenamos el pick up antes de entrar a reunión y estuvo listo en exactamente 10 minutos. El café es lo mejor que he tomado en Santiago, sin exagerar."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">👨‍💼</div>
-          <div>
-            <div class="author-name">Rodrigo M.</div>
-            <div class="author-role">Cliente regular</div>
-          </div>
-        </div>
+      <div class="pie-col" data-acordeon>
+        <button type="button" aria-expanded="false">Tienda <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <ul><li><a href="#cafes">Café en grano</a></li><li><a href="#cafes">Cold Brew</a></li>
+            <li><a href="#cafes">Matcha</a></li><li><a href="#packs">Packs</a></li>
+            <li><a href="#cafes">Accesorios</a></li></ul>
       </div>
-
-      <div class="testimonio-card">
-        <div class="stars">★★★★★</div>
-        <p class="testimonio-text">"Compramos el kit de matcha y quedamos enamorados. El ceremonial Uji es de otro nivel. Ya pedimos el segundo. El empaque es precioso para regalar."</p>
-        <div class="testimonio-author">
-          <div class="author-avatar">🌿</div>
-          <div>
-            <div class="author-name">Camila T.</div>
-            <div class="author-role">Cliente tienda online</div>
-          </div>
-        </div>
+      <div class="pie-col" data-acordeon>
+        <button type="button" aria-expanded="false">Sepia <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <ul><li><a href="#nosotros">Nosotros</a></li><li><a href="#">Preguntas frecuentes</a></li>
+            <li><a href="#">Nuestra cafetería</a></li><li><a href="#">Trabajá con nosotros</a></li></ul>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── UBICACION ─── -->
-<section id="ubicacion">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-label">Encuéntranos</div>
-      <h2 class="section-title">Ven a visitarnos.</h2>
-      <p class="section-sub">Un espacio diseñado para que te quedes. Café de especialidad, ambiente acogedor y equipo apasionado.</p>
-    </div>
-
-    <div class="ubicacion-grid">
-      <div class="info-items">
-        <div class="info-item">
-          <div class="info-icon">📍</div>
-          <div>
-            <div class="info-label">Dirección</div>
-            <div class="info-value">Av. El Bosque Norte 0177<br />Las Condes, Santiago</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">🕐</div>
-          <div>
-            <div class="info-label">Horario</div>
-            <div class="info-value">Lunes a Viernes: 7:30 – 19:00<br />Sábados: 9:00 – 16:00<br />Domingos: Cerrado</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📞</div>
-          <div>
-            <div class="info-label">Contacto</div>
-            <div class="info-value">+56 9 XXXX XXXX<br />hola@sepiacoffee.cl</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📱</div>
-          <div>
-            <div class="info-label">Redes Sociales</div>
-            <div class="info-value">@sepiacoffeeco</div>
-          </div>
-        </div>
+      <div class="pie-col" data-acordeon>
+        <button type="button" aria-expanded="false">Tu cuenta <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <ul><li><a href="#">Crear una cuenta</a></li><li><a href="#">Iniciar sesión</a></li>
+            <li><a href="#">Mi suscripción</a></li><li><a href="#">Seguir mi pedido</a></li></ul>
       </div>
-
-      <div class="map-placeholder">
-        <span>📍</span>
-        <p style="font-size:0.9rem; color: var(--gray-dark); text-align:center;">
-          Las Condes, Santiago<br />
-          <a href="https://maps.google.com" target="_blank" style="color: var(--caramel); font-weight:600; margin-top: 0.5rem; display:inline-block;">
-            Ver en Google Maps →
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── FOOTER ─── -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a class="nav-logo">Sepia<span>.</span></a>
-        <p>Café de especialidad, matcha premium y coctelería de autor. Desde Santiago para el mundo.</p>
-        <div class="footer-social">
-          <a href="#" class="social-link">📸</a>
-          <a href="#" class="social-link">🎵</a>
-          <a href="#" class="social-link">🐦</a>
-        </div>
-      </div>
-
-      <div class="footer-col">
-        <h4>Cafetería</h4>
-        <ul>
-          <li><a href="#menu">Ver Menú</a></li>
-          <li><a href="#menu">Pick Up</a></li>
-          <li><a href="#ubicacion">Ubicación</a></li>
-          <li><a href="#ubicacion">Horario</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Tienda</h4>
-        <ul>
-          <li><a href="#tienda">Café en Grano</a></li>
-          <li><a href="#tienda">Matcha</a></li>
-          <li><a href="#tienda">Merch</a></li>
-          <li><a href="#tienda">Gift Box</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Eventos</h4>
-        <ul>
-          <li><a href="#eventos">Matrimonios</a></li>
-          <li><a href="#eventos">Corporativos</a></li>
-          <li><a href="#eventos">Activaciones</a></li>
-          <li><a href="#eventos">Cotizar</a></li>
-        </ul>
+      <div class="pie-col" data-acordeon>
+        <button type="button" aria-expanded="false">Ayuda <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <ul><li><a href="#">Contacto</a></li><li><a href="#">Envíos y devoluciones</a></li>
+            <li><a href="#">Política de privacidad</a></li><li><a href="#">Términos y condiciones</a></li></ul>
       </div>
     </div>
 
-    <div class="footer-bottom">
-      <p>© 2024 Sepia Coffee Co. Todos los derechos reservados.</p>
-      <p>Hecho con ☕ en Santiago, Chile</p>
+    <div class="pie-abajo">
+      <span>© <span id="anio">2026</span> sepia coffee Todos los derechos reservados.</span>
+      <nav aria-label="Legal"><a href="#">Privacidad</a><a href="#">Términos</a></nav>
+      <div class="pagos" aria-label="Medios de pago"><span class="pago">Webpay</span><span class="pago">Mercado Pago</span><span class="pago">Visa</span><span class="pago">Mastercard</span></div>
     </div>
   </div>
 </footer>
 
-<!-- ─── TOAST ─── -->
-<div class="toast" id="toast">
-  <span>☕</span>
-  <span id="toastMsg">¡Agregado al carrito!</span>
-</div>
+<!-- ===================== PANELES ===================== -->
+<div class="velo" id="velo" hidden></div>
 
-<!-- ─── MODAL PICK UP ─── -->
-<div class="modal-overlay" id="orderModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeOrderModal()">✕</button>
-    <h3>Pedir Pick Up 📦</h3>
-    <p>Completa tus datos y te avisamos cuando tu pedido esté listo (aprox. 15 min).</p>
-    <form onsubmit="submitPickup(event)">
-      <div class="form-group">
-        <label>Nombre</label>
-        <input type="text" placeholder="¿Cómo te llamamos?" required />
-      </div>
-      <div class="form-group">
-        <label>Teléfono / WhatsApp</label>
-        <input type="tel" placeholder="+56 9 XXXX XXXX" required />
-      </div>
-      <div class="form-group">
-        <label>¿Qué vas a pedir?</label>
-        <textarea placeholder="Ej: 1 Flat White con leche de avena, 1 Iced Matcha sin azúcar, 1 Cookie" required></textarea>
-      </div>
-      <div class="form-group">
-        <label>¿A qué hora retirarás?</label>
-        <input type="time" required />
-      </div>
-      <button type="submit" class="btn-submit">Confirmar Pedido →</button>
-    </form>
+<aside class="lateral izq" id="panel-menu" aria-label="Menú" aria-hidden="true">
+  <div class="lat-cab">
+    <span class="marca"><span class="palabra" style="--cam-fondo:var(--papel)">sep<span class="cam">&#305;<svg class="cab" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20"/></svg><svg class="patas" viewBox="0 0 200 130" aria-hidden="true"><use href="#i-piernas"/></svg></span>a coffee</span></span>
+    <button class="ic-btn" type="button" data-cerrar aria-label="Cerrar el menú"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cerrar"/></svg></button>
   </div>
-</div>
+  <div class="lat-cuerpo">
+    <ul class="nav-movil">
+      <li data-acordeon><button type="button" aria-expanded="false">Café en grano <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <div class="sub"><a href="#cafes">Colombia</a><a href="#cafes">Etiopía</a><a href="#cafes">Perú</a><a href="#cafes">Guatemala</a><a href="#cafes">Descafeinado</a></div></li>
+      <li data-acordeon><button type="button" aria-expanded="false">Cold Brew <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <div class="sub"><a href="#cafes">Clásico</a><a href="#cafes">Vainilla</a><a href="#cafes">Pack de 4</a></div></li>
+      <li data-acordeon><button type="button" aria-expanded="false">Matcha <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
+        <div class="sub"><a href="#cafes">Ceremonial</a><a href="#cafes">Matcha coco</a><a href="#cafes">Batidor</a></div></li>
+      <li><a href="#packs">Packs</a></li>
+      <li><a href="#cafes">Accesorios</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+    </ul>
+  </div>
+  <div class="lat-pie">
+    <a href="#packs" class="btn bloque" data-cerrar>Suscribirme y ahorrar 15%</a>
+  </div>
+</aside>
+
+<aside class="lateral" id="panel-carro" aria-label="Carrito" aria-hidden="true">
+  <div class="lat-cab">
+    <h2>Tu carrito</h2>
+    <button class="ic-btn" type="button" data-cerrar aria-label="Cerrar el carrito"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cerrar"/></svg></button>
+  </div>
+  <div class="lat-cuerpo">
+    <div class="envio" id="envio">
+      <p id="envio-txt">Te faltan <b>$30.000</b> para el envío con descuento.</p>
+      <div class="barra"><i id="envio-barra" style="width:0%"></i></div>
+      <div class="hitos">
+        <span id="hito-1"><svg class="ic" viewBox="0 0 24 24"><use href="#i-camion"/></svg> $30.000</span>
+        <span id="hito-2"><svg class="ic" viewBox="0 0 24 24"><use href="#i-estrella"/></svg> Gratis $65.000</span>
+      </div>
+    </div>
+    <div class="carro-vacio" id="carro-vacio">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-carro"/></svg>
+      <p>Tu carrito está vacío.</p>
+      <a href="#cafes" class="btn" data-cerrar>Ver los productos</a>
+    </div>
+    <div id="carro-items"></div>
+  </div>
+  <div class="lat-pie" id="carro-pie" hidden>
+    <div class="total"><span class="etq">Total</span><span class="val" id="carro-total">$0</span></div>
+    <a href="#" class="btn bloque">Ir a pagar</a>
+  </div>
+</aside>
 
 <script>
-  // Nav scroll
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
+(function(){
+  "use strict";
+  var $  = function(s,c){ return (c||document).querySelector(s); };
+  var $$ = function(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+  var clp = function(n){ return "$" + Math.round(n).toLocaleString("es-CL"); };
+  var quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  $("#anio").textContent = new Date().getFullYear();
+
+  /* ============================================================
+     RESEÑAS DE GOOGLE
+     Pegá acá tus datos reales. Mientras "puntaje" esté vacío,
+     la sección no se muestra, así no queda nada inventado.
+     ============================================================ */
+  var GOOGLE = {
+    puntaje: "",          // por ejemplo "4,9"
+    conteo:  "",          // por ejemplo "218 reseñas en Google"
+    enlace:  "",          // enlace a tu ficha de Google
+    resenas: [
+      // { texto:"...", nombre:"...", fecha:"hace 2 semanas" },
+    ]
+  };
+
+  (function(){
+    var sec = $("#resenas");
+    if(!sec) return;
+    if(!GOOGLE.puntaje || !GOOGLE.resenas.length){ sec.hidden = true; return; }
+    sec.hidden = false;
+
+    var estrella = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-estrella"/></svg>';
+    var llenas = Math.round(parseFloat(String(GOOGLE.puntaje).replace(",", ".")) || 0);
+    $("[data-g-puntaje]").textContent = GOOGLE.puntaje;
+    $("[data-g-estrellas]").innerHTML = estrella.repeat(Math.max(0, Math.min(5, llenas)));
+    $("[data-g-estrellas]").setAttribute("aria-label", GOOGLE.puntaje + " de 5");
+    $("[data-g-conteo]").textContent = GOOGLE.conteo;
+    var enl = $("[data-g-enlace]");
+    if(GOOGLE.enlace) enl.href = GOOGLE.enlace; else enl.remove();
+
+    var tonos = ["#FFFFFF", "#F5EFEB", "#FFFFFF", "#F5EFEB"];  // sobre el celeste de la sección
+    $("[data-g-lista]").innerHTML = GOOGLE.resenas.map(function(r, i){
+      var inicial = (r.nombre || "?").trim().charAt(0).toUpperCase();
+      return '<div class="testi" style="--tono:' + tonos[i % tonos.length] + '">' +
+        '<span class="estrellas" role="img" aria-label="5 de 5">' + estrella.repeat(5) + '</span>' +
+        '<blockquote>' + r.texto + '</blockquote>' +
+        '<p class="quien"><span class="avatar">' + inicial + '</span>' +
+        '<span><b>' + (r.nombre || "") + '</b><br><span>' + (r.fecha || "") + '</span></span></p>' +
+      '</div>';
+    }).join("");
+  })();
+
+  /* ---------- Revelados ---------- */
+  if("IntersectionObserver" in window && !quieto){
+    var obs = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("visto"); obs.unobserve(e.target); } });
+    },{ threshold:.08, rootMargin:"0px 0px -6% 0px" });
+    $$(".rev").forEach(function(el){ obs.observe(el); });
+  } else { $$(".rev").forEach(function(el){ el.classList.add("visto"); }); }
+
+  /* ---------- Cabecera ---------- */
+  var cab = $("#cabecera"), tick = false;
+  window.addEventListener("scroll", function(){
+    if(tick) return; tick = true;
+    window.requestAnimationFrame(function(){
+      cab.classList.toggle("pegada", (window.pageYOffset||0) > 8); tick = false;
+    });
+  },{passive:true});
+
+  /* ---------- Mega menú ---------- */
+  var megas = $$("#nav-prin li[data-mega]"), cierreTimer = null;
+  function abrirMega(li){
+    clearTimeout(cierreTimer);
+    megas.forEach(function(o){
+      var activo = o === li;
+      o.toggleAttribute("data-abierto", activo);
+      var b = $("button", o); if(b) b.setAttribute("aria-expanded", String(activo));
+      var panel = $('.mega[data-panel="' + o.dataset.mega + '"]');
+      if(panel) panel.toggleAttribute("data-visible", activo);
+    });
+  }
+  function cerrarMega(){
+    megas.forEach(function(o){
+      o.removeAttribute("data-abierto");
+      var b = $("button", o); if(b) b.setAttribute("aria-expanded","false");
+      var panel = $('.mega[data-panel="' + o.dataset.mega + '"]');
+      if(panel) panel.removeAttribute("data-visible");
+    });
+  }
+  function cierreDiferido(){ clearTimeout(cierreTimer); cierreTimer = setTimeout(cerrarMega, 160); }
+  megas.forEach(function(li){
+    var panel = $('.mega[data-panel="' + li.dataset.mega + '"]');
+    li.addEventListener("mouseenter", function(){ abrirMega(li); });
+    li.addEventListener("mouseleave", cierreDiferido);
+    if(panel){
+      panel.addEventListener("mouseenter", function(){ clearTimeout(cierreTimer); });
+      panel.addEventListener("mouseleave", cierreDiferido);
+    }
+    $("button", li).addEventListener("click", function(){
+      li.hasAttribute("data-abierto") ? cerrarMega() : abrirMega(li);
+    });
+  });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") cerrarMega(); });
+
+  /* ---------- Hero ---------- */
+  var pista = $("#hero-pista"), slides = $$(".hero-slide", pista), puntos = $("#hero-puntos"), actual = 0, auto = null;
+  puntos.innerHTML = slides.map(function(_,i){
+    return '<button type="button" role="tab" aria-label="Diapositiva ' + (i+1) + '" aria-current="' + (i===0) + '"></button>';
+  }).join("");
+  var botonesPunto = $$("button", puntos);
+  function irA(i){
+    actual = (i + slides.length) % slides.length;
+    pista.style.transform = "translateX(" + (-actual * 100) + "%)";
+    botonesPunto.forEach(function(b,k){ b.setAttribute("aria-current", String(k === actual)); });
+    slides.forEach(function(s,k){ s.setAttribute("aria-hidden", String(k !== actual)); });
+  }
+  function arrancar(){ if(quieto || slides.length < 2) return; detener(); auto = setInterval(function(){ irA(actual+1); }, 4000); }
+  function detener(){ if(auto) clearInterval(auto); auto = null; }
+  botonesPunto.forEach(function(b,i){ b.addEventListener("click", function(){ irA(i); arrancar(); }); });
+  $(".hero-flecha.izq").addEventListener("click", function(){ irA(actual-1); arrancar(); });
+  $(".hero-flecha.der").addEventListener("click", function(){ irA(actual+1); arrancar(); });
+  var hero = $("#portada");
+  hero.addEventListener("mouseenter", detener);
+  hero.addEventListener("mouseleave", arrancar);
+  var x0 = null;
+  hero.addEventListener("touchstart", function(e){ x0 = e.touches[0].clientX; detener(); },{passive:true});
+  hero.addEventListener("touchend", function(e){
+    if(x0 === null) return;
+    var d = e.changedTouches[0].clientX - x0;
+    if(Math.abs(d) > 45) irA(actual + (d < 0 ? 1 : -1));
+    x0 = null; arrancar();
+  },{passive:true});
+  irA(0); arrancar();
+
+  /* ---------- Cinta de ventajas ---------- */
+  var ventajas = [
+    '<svg class="ic" viewBox="0 0 24 24"><use href="#i-hoja"/></svg> Origen orgánico',
+    '<svg class="ic" viewBox="0 0 24 24"><use href="#i-fuego"/></svg> Tostado esta semana',
+    '<svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg> Hecho en Santiago',
+    '<svg class="ic" viewBox="0 0 24 24"><use href="#i-repetir"/></svg> Pausá cuando quieras'
+  ];
+  var grupo = '<span class="usp-grupo">' + ventajas.map(function(v){
+    return '<span class="usp-item">' + v + '</span><span class="usp-sep"></span>';
+  }).join("") + '</span>';
+  $("#usp-pista").innerHTML = grupo + grupo;
+
+  /* ---------- Carruseles horizontales ---------- */
+  $$(".car-nav").forEach(function(nav){
+    var pistaC = $('[data-pista="' + nav.dataset.navDe + '"]');
+    if(!pistaC) return;
+    var btns = $$("button", nav);
+    function paso(){ var t = pistaC.firstElementChild; return t ? t.getBoundingClientRect().width + 16 : 320; }
+    function estado(){
+      var max = pistaC.scrollWidth - pistaC.clientWidth - 2;
+      btns[0].disabled = pistaC.scrollLeft <= 2;
+      btns[1].disabled = pistaC.scrollLeft >= max;
+    }
+    btns.forEach(function(b){
+      b.addEventListener("click", function(){
+        pistaC.scrollBy({ left: paso() * parseInt(b.dataset.dir,10), behavior: quieto ? "auto" : "smooth" });
+      });
+    });
+    pistaC.addEventListener("scroll", estado, {passive:true});
+    window.addEventListener("resize", estado);
+    estado();
   });
 
-  // Hamburger
-  const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburger.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
+  /* ---------- Muestras de color y tipo de compra ---------- */
+  $$(".muestras").forEach(function(g){
+    $$(".muestra", g).forEach(function(m){
+      m.addEventListener("click", function(){
+        $$(".muestra", g).forEach(function(o){ o.setAttribute("aria-pressed", String(o === m)); });
+        var ficha = m.closest(".prod"), arte = $(".arte", ficha);
+        if(arte) arte.style.setProperty("--acento", getComputedStyle(m).getPropertyValue("--c"));
+      });
+    });
+  });
+  $$(".compra").forEach(function(g){
+    $$("button", g).forEach(function(b){
+      b.addEventListener("click", function(){
+        $$("button", g).forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      });
+    });
   });
 
-  function closeMobileMenu() {
-    mobileMenu.classList.remove('open');
-  }
+  /* ---------- Carrito ---------- */
+  var TRAMO_1 = 30000, TRAMO_2 = 65000, carro = [];
+  var elItems = $("#carro-items"), elVacio = $("#carro-vacio"), elPie = $("#carro-pie"),
+      elTotal = $("#carro-total"), burbuja = $("#burbuja");
 
-  // Tabs
-  function switchTab(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
+  function plan(ficha){
+    var b = $('.compra button[data-plan="susc"]', ficha);
+    return (b && b.getAttribute("aria-pressed") === "true") ? "susc" : "unica";
   }
-
-  // Toast
-  let toastTimer;
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  function agregar(ficha){
+    var tipo = plan(ficha);
+    var base = parseInt(ficha.dataset.precio,10);
+    var precio = tipo === "susc" ? Math.round(base * 0.85) : base;
+    var clave = ficha.dataset.id + "-" + tipo;
+    var foto = $(".prod-media .foto", ficha);
+    var ya = carro.filter(function(i){ return i.clave === clave; })[0];
+    if(ya) ya.cantidad++;
+    else carro.push({ clave:clave, id:ficha.dataset.id, nombre:ficha.dataset.nombre, precio:precio,
+                      tipo:tipo, tono:ficha.dataset.tono, acento:ficha.dataset.acento,
+                      arte:ficha.dataset.arte, foto: foto ? (foto.currentSrc || foto.src) : null, cantidad:1 });
+    pintar();
   }
-
-  // Cart
-  function addToCart(name, price) {
-    showToast(`${name} agregado · $${price.toLocaleString('es-CL')}`);
+  function mover(clave, d){
+    var i = carro.filter(function(x){ return x.clave === clave; })[0];
+    if(!i) return;
+    i.cantidad += d;
+    if(i.cantidad <= 0) carro = carro.filter(function(x){ return x.clave !== clave; });
+    pintar();
   }
+  function pintar(){
+    var unidades = carro.reduce(function(a,i){ return a + i.cantidad; }, 0);
+    var total = carro.reduce(function(a,i){ return a + i.precio * i.cantidad; }, 0);
 
-  // Modal
-  function openOrderModal() {
-    document.getElementById('orderModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    burbuja.textContent = unidades;
+    burbuja.classList.toggle("visible", unidades > 0);
+    elVacio.hidden = unidades > 0;
+    elPie.hidden = unidades === 0;
+    elTotal.textContent = clp(total);
+
+    $("#envio-barra").style.width = Math.min(100, total / TRAMO_2 * 100) + "%";
+    var t = $("#envio-txt");
+    if(total >= TRAMO_2) t.innerHTML = "Tenés <b>envío gratis</b>.";
+    else if(total >= TRAMO_1) t.innerHTML = "Envío con descuento activo. Te faltan <b>" + clp(TRAMO_2 - total) + "</b> para el envío gratis.";
+    else t.innerHTML = "Te faltan <b>" + clp(TRAMO_1 - total) + "</b> para el envío con descuento.";
+    $("#hito-1").classList.toggle("ok", total >= TRAMO_1);
+    $("#hito-2").classList.toggle("ok", total >= TRAMO_2);
+
+    elItems.innerHTML = carro.map(function(i){
+      var visual = i.foto
+        ? '<img src="' + i.foto + '" alt="">'
+        : '<svg viewBox="0 0 200 272" style="--acento:' + i.acento + '" aria-hidden="true"><use href="#' + i.arte + '"/></svg>';
+      return '<div class="linea-carro">' +
+        '<div class="linea-media" style="--tono:' + i.tono + '">' + visual + '</div>' +
+        '<div><h4>' + i.nombre + '</h4>' +
+        (i.tipo === "susc" ? '<p class="plan">Suscripción · 15% menos</p>' : '<p class="prod-sub">Compra única</p>') +
+        '<span class="cant">' +
+          '<button type="button" data-menos="' + i.clave + '" aria-label="Quitar uno de ' + i.nombre + '"><svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24"><use href="#i-menos"/></svg></button>' +
+          '<span>' + i.cantidad + '</span>' +
+          '<button type="button" data-mas="' + i.clave + '" aria-label="Agregar uno de ' + i.nombre + '"><svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24"><use href="#i-mas"/></svg></button>' +
+        '</span></div>' +
+        '<span class="linea-precio">' + clp(i.precio * i.cantidad) + '</span></div>';
+    }).join("");
   }
+  elItems.addEventListener("click", function(e){
+    var m = e.target.closest("[data-menos]"), p = e.target.closest("[data-mas]");
+    if(m) mover(m.dataset.menos, -1);
+    if(p) mover(p.dataset.mas, 1);
+  });
+  $$("[data-agregar]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var ficha = btn.closest(".prod");
+      agregar(ficha);
+      var previo = btn.innerHTML;
+      btn.innerHTML = '<svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24"><use href="#i-check"/></svg> Agregado';
+      btn.classList.add("hecho");
+      setTimeout(function(){ btn.innerHTML = previo; btn.classList.remove("hecho"); }, 1500);
+    });
+  });
+  pintar();
 
-  function closeOrderModal() {
-    document.getElementById('orderModal').classList.remove('open');
-    document.body.style.overflow = '';
+  /* ---------- Paneles ---------- */
+  var velo = $("#velo"), abierto = null, ultimoFoco = null;
+  function abrirPanel(panel, disp){
+    if(abierto) cerrarPanel();
+    abierto = panel; ultimoFoco = disp || null;
+    velo.hidden = false;
+    requestAnimationFrame(function(){ velo.classList.add("abierto"); panel.classList.add("abierto"); });
+    panel.setAttribute("aria-hidden","false");
+    document.body.classList.add("bloqueado");
+    if(disp) disp.setAttribute("aria-expanded","true");
+    var f = $("[data-cerrar]", panel); if(f) f.focus();
   }
+  function cerrarPanel(){
+    if(!abierto) return;
+    abierto.classList.remove("abierto");
+    abierto.setAttribute("aria-hidden","true");
+    velo.classList.remove("abierto");
+    document.body.classList.remove("bloqueado");
+    $$(".cab-acciones [aria-expanded]").forEach(function(b){ b.setAttribute("aria-expanded","false"); });
+    var previo = abierto; abierto = null;
+    setTimeout(function(){ if(!abierto) velo.hidden = true; }, 440);
+    if(ultimoFoco){ ultimoFoco.focus(); ultimoFoco = null; }
+  }
+  $("#abrir-menu").addEventListener("click", function(){ abrirPanel($("#panel-menu"), this); });
+  $("#abrir-carro").addEventListener("click", function(){ abrirPanel($("#panel-carro"), this); });
+  velo.addEventListener("click", cerrarPanel);
+  document.addEventListener("click", function(e){
+    if(e.target.closest && e.target.closest("[data-cerrar]")) cerrarPanel();
+  });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") cerrarPanel(); });
+  $$(".nav-movil a").forEach(function(a){ a.addEventListener("click", cerrarPanel); });
 
-  document.getElementById('orderModal').addEventListener('click', function(e) {
-    if (e.target === this) closeOrderModal();
+  /* ---------- Acordeones ---------- */
+  $$("[data-acordeon]").forEach(function(item){
+    var b = $("button", item);
+    if(!b) return;
+    b.addEventListener("click", function(){
+      var ab = item.hasAttribute("data-abierto");
+      item.toggleAttribute("data-abierto", !ab);
+      b.setAttribute("aria-expanded", String(!ab));
+    });
   });
 
-  // Forms
-  function submitPickup(e) {
+  /* ---------- Boletín ---------- */
+  var form = $("#form-bol");
+  form.addEventListener("submit", function(e){
     e.preventDefault();
-    closeOrderModal();
-    showToast('¡Pedido recibido! Te avisamos cuando esté listo 🎉');
-  }
+    var c = $("#correo");
+    if(!c.value || c.value.indexOf("@") === -1 || c.value.indexOf(".") === -1){ c.focus(); c.style.borderColor = "#567C8D"; return; }
+    c.style.borderColor = "";
+    form.style.display = "none";
+    $("#bol-ok").classList.add("visible");
+  });
 
-  function submitCotizacion(e) {
-    e.preventDefault();
-    showToast('¡Cotización enviada! Te respondemos en 24h ✅');
-    e.target.reset();
-  }
+  /* ---------- Enlaces internos ---------- */
+  $$('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      var id = a.getAttribute("href");
+      if(id === "#" || id.length < 2) return;
+      var d = document.querySelector(id);
+      if(!d) return;
+      e.preventDefault(); cerrarMega();
+      d.scrollIntoView({ behavior: quieto ? "auto" : "smooth", block:"start" });
+    });
+  });
+})();
 </script>
 </body>
 </html>
