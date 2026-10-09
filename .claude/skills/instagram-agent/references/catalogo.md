@@ -3,7 +3,7 @@
 > Si el sitio cambia, actualiza este archivo. Precios en CLP.
 
 ## Datos generales
-- Instagram: `@sepiacoffeeco` · Email: `hola@sepiacoffee.cl`
+- Instagram: `@sepiacoffee.cl` · Email: `hola@sepiacoffee.cl`
 - Café de especialidad · Santiago · 6 orígenes de café · ★4.9 en Google · +100 eventos realizados
 - **Pick up:** pedido online, listo en 15 min, sin filas.
 - **Tienda online:** envíos a todo Chile.
