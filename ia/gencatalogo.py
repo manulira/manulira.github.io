@@ -5,8 +5,12 @@
    · ../catalogo.json      — el feed legible por máquina
 """
 import io, json, os, html, datetime
-from datos import (PRODUCTOS, CATEGORIAS, SITIO, ENVIO_GRATIS,
+from datos import (PRODUCTOS as TODOS, CATEGORIAS, SITIO, ENVIO_GRATIS,
                    ENVIO_REDUCIDO, SUSCRIPCION_DESC)
+
+# Solo los activos salen a la página y al JSON-LD. Los inactivos se
+# quedan en datos.py y aparecen en catalogo.json marcados como tales.
+PRODUCTOS = [p for p in TODOS if p[9]]
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.join(AQUI, "..")
@@ -33,7 +37,7 @@ def clave_inicial(p):
 def tarjetas():
     out = []
     for i, p in enumerate(PRODUCTOS):
-        pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq = p
+        pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo = p
         tono, acento = TONOS[i % len(TONOS)], ACENTOS[i % len(ACENTOS)]
         ini = clave_inicial(p)
         precio = variantes.get(ini)
@@ -115,7 +119,7 @@ ALT2 = {
 
 # ================================================================== JSON-LD
 def nodo_producto(p):
-    pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq = p
+    pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo = p
     base = {
         "@id": SITIO + "/#producto-" + pid,
         "name": nombre,
@@ -207,11 +211,14 @@ def main():
     catalogo = {
         "@type": "OfferCatalog", "@id": SITIO + "/#catalogo",
         "name": "Catálogo sepia coffee", "numberOfItems": len(productos),
+        # Solo las categorías que hoy tienen algún producto activo: una
+        # categoría vacía en el JSON-LD es ruido para el rastreador.
         "itemListElement": [
             {"@type": "OfferCatalog", "name": c,
              "itemListElement": [{"@type": "Offer", "itemOffered": {"@id": pr["@id"]}}
                                  for pr in productos if pr["category"] == c]}
-            for c in CATEGORIAS],
+            for c in CATEGORIAS
+            if any(pr["category"] == c for pr in productos)],
     }
 
     envio = {
@@ -252,7 +259,7 @@ def main():
                         "nota": "aplica a todos los productos"},
         "productos": [],
     }
-    for pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq in PRODUCTOS:
+    for pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo in TODOS:
         feed["productos"].append({
             "id": "sepia-" + pid, "nombre": nombre, "categoria": cat,
             "bajada": bajada, "descripcion": desc,
@@ -260,6 +267,7 @@ def main():
             "variantes": [{"variante": k or None, "precio": v,
                            "precio_confirmado": v is not None}
                           for k, v in variantes.items()],
+            "activo": activo,
             "url": SITIO + "/#producto-" + pid,
             "imagen": SITIO + "/assets/fotos/prod-" + pid + ".jpg",
         })

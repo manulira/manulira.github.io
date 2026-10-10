@@ -23,7 +23,11 @@ FORMATO_MATCHA = ("Formato", ["30 g en lata", "80 g en sobre"])
 
 # ---------------------------------------------------------------------
 # id, nombre, categoría, arte, bajada, descripción larga,
-# opciones, variantes {clave: precio}, etiqueta
+# opciones, variantes {clave: precio}, etiqueta, activo
+#
+# activo=False: el producto se queda guardado acá pero no sale en la página,
+# ni en el JSON-LD, ni como disponible en el feed. Sirve para tener listo algo
+# que todavía no se vende. Para activarlo, basta cambiarlo a True.
 #
 # La clave de cada variante es la combinación de valores separada por ' · '
 # en el mismo orden que `opciones`. Sin opciones, la clave es "".
@@ -38,7 +42,7 @@ PRODUCTOS = [
   [TAMANO_CAFE, MOLIENDA],
   {"250 g · En grano": None, "250 g · Molido": None,
    "1 kg · En grano": None,  "1 kg · Molido": None},
-  "Más vendido"),
+  "Más vendido", True),
 
  ("matcha", "Matcha", "Matcha", "i-tarro",
   "En lata o en sobre de recarga",
@@ -47,7 +51,7 @@ PRODUCTOS = [
   "conveniente por gramo y genera menos envase.",
   [FORMATO_MATCHA],
   {"30 g en lata": None, "80 g en sobre": None},
-  None),
+  None, True),
 
  ("lata-edicion", "Lata edición limitada", "Café en grano", "i-lata-cafe",
   "200 g · mientras dure",
@@ -56,7 +60,16 @@ PRODUCTOS = [
   "para lo que está pensada. Cuando se acaba la tirada, no vuelve.",
   [],
   {"": None},
-  "Edición limitada"),
+  "Edición limitada", True),
+
+ ("coldbrew-lata", "Cold brew en lata", "Cold brew", "i-coldbrew-lata",
+  "Listo para tomar",
+  "Café de especialidad extraído en frío, sin azúcar y sin endulzantes, en "
+  "lata. Viene listo: lo sirves con hielo y nada más. Para quien no tiene "
+  "cafetera o quiere café frío sin prepararlo.",
+  [],
+  {"": None},
+  None, False),   # <- guardado, todavía no se vende
 
  ("kit-matcha", "Kit matcha", "Kits", "i-batidor",
   "Todo para partir",
@@ -64,7 +77,7 @@ PRODUCTOS = [
   "comprar las cosas por separado.",
   [],
   {"": None},
-  None),
+  None, True),
 
  ("kit-cafetero", "Kit cafetero", "Kits", "i-caja",
   "Todo para partir",
@@ -72,7 +85,7 @@ PRODUCTOS = [
   "dónde empezar con el equipo.",
   [],
   {"": None},
-  None),
+  None, True),
 
  ("musette", "Musette", "Accesorios", "i-musette",
   "Bolso de hombro",
@@ -81,14 +94,14 @@ PRODUCTOS = [
   "café.",
   [],
   {"": None},
-  None),
+  None, True),
 
  ("polera", "Polera", "Accesorios", "i-polera",
   "Algodón, con el caminante",
   "Polera de algodón con el caminante de sepia coffee.",
   [],
   {"": None},
-  None),
+  None, True),
 
  ("vaso", "Vaso", "Accesorios", "i-taza",
   "Reutilizable",
@@ -96,11 +109,11 @@ PRODUCTOS = [
   "mañana o para el matcha helado de la tarde.",
   [],
   {"": None},
-  None),
+  None, True),
 ]
 
 # Categorías en el orden en que se muestran
-CATEGORIAS = ["Café en grano", "Matcha", "Kits", "Accesorios"]
+CATEGORIAS = ["Café en grano", "Matcha", "Cold brew", "Kits", "Accesorios"]
 
 ENVIO_REDUCIDO = 30000
 ENVIO_GRATIS = 65000

@@ -58,6 +58,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-colombia",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-colombia.jpg"
     },
@@ -88,6 +89,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-matcha",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-matcha.jpg"
     },
@@ -105,8 +107,27 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-lata-edicion",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-lata-edicion.jpg"
+    },
+    {
+      "id": "sepia-coldbrew-lata",
+      "nombre": "Cold brew en lata",
+      "categoria": "Cold brew",
+      "bajada": "Listo para tomar",
+      "descripcion": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes, en lata. Viene listo: lo sirves con hielo y nada más. Para quien no tiene cafetera o quiere café frío sin prepararlo.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": false,
+      "url": "https://sepiacoffee.cl/#producto-coldbrew-lata",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-coldbrew-lata.jpg"
     },
     {
       "id": "sepia-kit-matcha",
@@ -122,6 +143,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-kit-matcha",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-kit-matcha.jpg"
     },
@@ -139,6 +161,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-kit-cafetero",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-kit-cafetero.jpg"
     },
@@ -156,6 +179,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-musette",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-musette.jpg"
     },
@@ -173,6 +197,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-polera",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-polera.jpg"
     },
@@ -190,6 +215,7 @@
           "precio_confirmado": false
         }
       ],
+      "activo": true,
       "url": "https://sepiacoffee.cl/#producto-vaso",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-vaso.jpg"
     }
