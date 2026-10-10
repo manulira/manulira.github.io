@@ -1,6 +1,6 @@
 # sepia coffee — secciones para Shopify
 
-Hay dos portadas distintas. Elegí una.
+Hay dos portadas distintas. Elige una.
 
 | Archivo | Qué es |
 |---|---|
@@ -18,8 +18,8 @@ a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 1. **Tienda online → Temas → ··· → Editar código**
 2. **Secciones → Agregar una sección nueva**
 3. Ponele de nombre `sepia-portada` (o `sepia-homepage` para la v1)
-4. Borrá el contenido de ejemplo, pegá el archivo entero y guardá
-5. En **Personalizar**, agregá la sección y subila al tope
+4. Borra el contenido de ejemplo, pega el archivo entero y guarda
+5. En **Personalizar**, agrega la sección y subila al tope
 
 ---
 
@@ -35,15 +35,16 @@ a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 7. Carrusel de packs
 8. Testimonios
 9. Guía comparativa
-10. Bloque editorial
-11. Preguntas frecuentes
-12. Boletín
-13. Pie con columnas plegables
+10. Recetas
+11. Bloque editorial
+12. Preguntas frecuentes
+13. Boletín
+14. Pie con columnas plegables
 
 Cada módulo se apaga dejando su título vacío o quitando sus bloques.
 
 ### Cabecera y pie
-Vienen **apagados** por defecto. Tu tema ya trae los suyos y si encendés estos
+Vienen **apagados** por defecto. Tu tema ya trae los suyos y si enciendes estos
 quedan dos. Enciéndelos solo si vas a ocultar los del tema.
 
 ### Mega menú
@@ -52,7 +53,7 @@ con el formato `Nombre | /ruta`. Con dos o más líneas se arma el mega menú de
 tres columnas más la tarjeta destacada. Con el campo vacío queda un enlace simple.
 
 ### Catálogo real
-Elegí una colección en cada carrusel. Estas etiquetas de producto completan la ficha:
+Elige una colección en cada carrusel. Estas etiquetas de producto completan la ficha:
 
 | Etiqueta | Qué hace |
 |---|---|
@@ -86,7 +87,7 @@ Ajuste **«Datos estructurados de la tienda»**. Publica un `Organization` +
 `OnlineStore` armado con los datos reales de tu Shopify: nombre, dirección,
 correo, teléfono, moneda. No hay nada que escribir dos veces.
 
-Lo único que sí tenés que cargar es **«Perfiles de la marca»**: un enlace por
+Lo único que sí tienes que cargar es **«Perfiles de la marca»**: un enlace por
 línea, con tu Instagram, tu TikTok, tu ficha de Google y tu GPT. Ese campo
 (`sameAs`) es lo que le permite a un asistente entender que todo eso es la
 misma marca y no cuatro cosas sueltas.
@@ -99,8 +100,8 @@ Shopify ya publica el `Product` de cada ficha, así que eso no hay que tocarlo.
 Bloques **«Fila de la comparativa»**. Es una tabla de «cuál me conviene»: qué
 es cada producto, cómo se prepara, para quién y cuánto cuesta.
 
-Si en la fila elegís un producto del catálogo, toma su nombre y su precio
-reales y se actualizan solos. Si no, escribís el nombre y el precio a mano.
+Si en la fila eliges un producto del catálogo, toma su nombre y su precio
+reales y se actualizan solos. Si no, escribes el nombre y el precio a mano.
 
 En el teléfono la tabla se apila en tarjetas, pero sigue siendo una `<table>`
 de verdad: eso es justo lo que leen los rastreadores.
@@ -109,9 +110,20 @@ de verdad: eso es justo lo que leen los rastreadores.
 Bloques **«Pregunta frecuente»**. Cada uno sale en la página y además en el
 `FAQPage` de los datos estructurados, que es el formato que un asistente cita.
 
-Escribí la pregunta **como la hace un cliente**: «¿cuánto matcha uso por
+Escribe la pregunta **como la hace un cliente**: «¿cuánto matcha uso por
 taza?», no «Dosificación del matcha ceremonial». La idea es que coincida con
 lo que la persona efectivamente escribió en el chat.
+
+### Recetas
+Bloques **«Receta»**. Título, minutos, rinde, ingredientes (uno por línea),
+pasos (uno por línea) y un dato al pie. Si eliges un producto, la receta queda
+enlazada con su ficha.
+
+Cada una se publica además como `schema.org/Recipe`. Es el contenido que más
+rinde: cuando alguien le pregunta a un asistente «cómo preparo matcha para que
+no quede amargo», la respuesta ya está medida y atribuida a la marca.
+
+El preset trae seis recetas listas.
 
 ### robots.txt
 `templates/robots.txt.liquid`. En Shopify el `robots.txt` lo genera el tema, no
@@ -133,7 +145,7 @@ Google**: es el índice que alimenta las búsquedas de ChatGPT.
 
 ---
 
-## Antes de publicar, cambiá estos datos
+## Antes de publicar, cambia estos datos
 
 Vienen con valores de ejemplo:
 

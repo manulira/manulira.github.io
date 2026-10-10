@@ -73,7 +73,7 @@ def main():
         "currenciesAccepted": "CLP",
         "paymentAccepted": "Webpay, Mercado Pago, Visa, Mastercard",
         "knowsLanguage": "es-CL",
-        # Completá sameAs con tus perfiles reales: sin esto los asistentes
+        # Completa sameAs con tus perfiles reales: sin esto los asistentes
         # no pueden cruzar la marca con Instagram ni con la ficha de Google.
         "sameAs": [],
         "hasOfferCatalog": {"@id": SITIO + "/#catalogo"},

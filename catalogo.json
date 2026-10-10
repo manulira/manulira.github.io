@@ -33,7 +33,7 @@
       "precio": 7900,
       "precio_antes": null,
       "formato": "1 L",
-      "descripcion": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes. Viene listo para tomar: lo servís con hielo directo de la botella. Botella de 1 litro, rinde unos cuatro vasos.",
+      "descripcion": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes. Viene listo para tomar: lo sirves con hielo directo de la botella. Botella de 1 litro, rinde unos cuatro vasos.",
       "url": "https://sepiacoffee.cl/#producto-cold-clasico",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-cold-clasico.jpg",
       "disponible": true
@@ -93,7 +93,7 @@
       "precio": 29900,
       "precio_antes": 35700,
       "formato": "Café + matcha + taza",
-      "descripcion": "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de cerámica, así probás las tres cosas antes de decidir cuál repetís. Es la forma más barata de conocer la marca.",
+      "descripcion": "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de cerámica, así pruebas las tres cosas antes de decidir cuál repites. Es la forma más barata de conocer la marca.",
       "url": "https://sepiacoffee.cl/#producto-pack-descubrir",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-descubrir.jpg",
       "disponible": true
@@ -129,7 +129,7 @@
       "precio": 28900,
       "precio_antes": 31600,
       "formato": "4 × 1 L",
-      "descripcion": "Cuatro botellas de 1 litro de cold brew, y elegís los sabores. Rinde unos dieciséis vasos: es el pack para tener la semana cubierta.",
+      "descripcion": "Cuatro botellas de 1 litro de cold brew, y eliges los sabores. Rinde unos dieciséis vasos: es el pack para tener la semana cubierta.",
       "url": "https://sepiacoffee.cl/#producto-pack-coldbrew",
       "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-coldbrew.jpg",
       "disponible": true

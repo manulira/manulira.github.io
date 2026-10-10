@@ -2,14 +2,14 @@
 # sepia coffee — https://sepiacoffee.cl
 #
 # Punto 3 del plan: REVISAR EL ACCESO.
-# Si bloqueás los rastreadores, ChatGPT y los demás asistentes
+# Si bloqueas los rastreadores, ChatGPT y los demás asistentes
 # no pueden leer la tienda y simplemente no te nombran.
 # Acá están todos permitidos de forma explícita.
 #
-# Si algún día querés que tu contenido NO se use para entrenar
-# modelos, cambiá "Allow: /" por "Disallow: /" solo en GPTBot,
+# Si algún día quieres que tu contenido NO se use para entrenar
+# modelos, cambia "Allow: /" por "Disallow: /" solo en GPTBot,
 # Google-Extended, Applebot-Extended, ClaudeBot y CCBot.
-# Dejá siempre abiertos los de búsqueda y los de navegación
+# Deja siempre abiertos los de búsqueda y los de navegación
 # en vivo (OAI-SearchBot, ChatGPT-User, Claude-User,
 # PerplexityBot, Bingbot, Googlebot): esos son los que te
 # recomiendan cuando alguien pregunta.

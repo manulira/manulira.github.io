@@ -15,7 +15,7 @@ PRODUCTOS = [
      "250 g", "i-bolsa"),
     ("cold-clasico", "Cold Brew Clásico", 7900, None, "Cold brew",
      "Café de especialidad extraído en frío, sin azúcar y sin "
-     "endulzantes. Viene listo para tomar: lo servís con hielo directo de la botella. "
+     "endulzantes. Viene listo para tomar: lo sirves con hielo directo de la botella. "
      "Botella de 1 litro, rinde unos cuatro vasos.",
      "1 L", "i-botella"),
     ("matcha-ceremonial", "Matcha Ceremonial", 16900, None, "Matcha",
@@ -38,7 +38,7 @@ PRODUCTOS = [
     # ---- packs ----
     ("pack-descubrir", "Starter Pack", 29900, 35700, "Packs",
      "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de "
-     "cerámica, así probás las tres cosas antes de decidir cuál repetís. Es la forma más "
+     "cerámica, así pruebas las tres cosas antes de decidir cuál repites. Es la forma más "
      "barata de conocer la marca.",
      "Café + matcha + taza", "i-caja"),
     ("pack-ritual", "Pack Ritual", 22900, 24800, "Packs",
@@ -50,7 +50,7 @@ PRODUCTOS = [
      "para preparar matcha en casa como corresponde, sin grumos.",
      "Matcha + batidor", "i-batidor"),
     ("pack-coldbrew", "Pack Cold Brew", 28900, 31600, "Packs",
-     "Cuatro botellas de 1 litro de cold brew, y elegís los sabores. Rinde unos "
+     "Cuatro botellas de 1 litro de cold brew, y eliges los sabores. Rinde unos "
      "dieciséis vasos: es el pack para tener la semana cubierta.",
      "4 × 1 L", "i-botella"),
     ("pack-oficina", "Pack Oficina", 54900, 62400, "Packs",

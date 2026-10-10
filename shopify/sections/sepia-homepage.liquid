@@ -12,7 +12,7 @@
     4. Guardar, volver a Personalizar y agregar "Sepia — Portada"
 
   Catálogo real
-    Elegí una colección en el panel de la sección. Cada producto puede llevar
+    Elige una colección en el panel de la sección. Cada producto puede llevar
     estas etiquetas para completar su ficha (Shopify las llama "tags"):
       origen:Colombia · Proceso honey     línea superior de la ficha
       nota:Caramelo                       una etiqueta por nota de cata
@@ -1166,7 +1166,7 @@
           </div>
         </article>
       {%- endif -%}
-      <p class="vacio" data-sin-resultados hidden>No hay cafés para ese método. Probá con otro.</p>
+      <p class="vacio" data-sin-resultados hidden>No hay cafés para ese método. Prueba con otro.</p>
     </div>
 
     {%- if hay_productos and coleccion.products.size > section.settings.cantidad -%}
@@ -1192,7 +1192,7 @@
 
       <div class="paso activo" data-paso="1">
         <p class="paso-num">Pregunta 1 de 3</p>
-        <h3>¿Cómo lo preparás en casa?</h3>
+        <h3>¿Cómo lo preparas en casa?</h3>
         <div class="opciones tres">
           <button class="opcion" type="button" data-resp="filtrado"><strong>Filtrado</strong><span>V60, Chemex, prensa francesa o Aeropress</span></button>
           <button class="opcion" type="button" data-resp="espresso"><strong>Espresso</strong><span>Máquina, cafetera italiana o cápsula rellenable</span></button>
@@ -1633,7 +1633,7 @@
             <div><span class="micro">Dónde</span><p>{{ section.settings.direccion | newline_to_br }}</p></div>
           {%- endif -%}
           {%- if section.settings.correo != blank -%}
-            <div><span class="micro">Escribinos</span><p><a href="mailto:{{ section.settings.correo }}">{{ section.settings.correo }}</a></p></div>
+            <div><span class="micro">Escríbenos</span><p><a href="mailto:{{ section.settings.correo }}">{{ section.settings.correo }}</a></p></div>
           {%- endif -%}
         </div>
       </div>
@@ -1675,7 +1675,7 @@
 
 {%- if section.settings.whatsapp != blank -%}
   <a class="wsp" href="https://wa.me/{{ section.settings.whatsapp | remove: '+' | remove: ' ' | remove: '-' }}"
-     target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+     target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#sepia-i-wsp"/></svg>
   </a>
 {%- endif -%}
@@ -2066,25 +2066,25 @@
       "type": "text",
       "id": "cue_texto",
       "label": "Texto del indicador de scroll",
-      "default": "Seguí bajando"
+      "default": "Sigue bajando"
     },
     {
       "type": "image_picker",
       "id": "portada_imagen",
       "label": "Foto de portada",
-      "info": "Opcional. Si la dejás vacía se dibuja el envase ilustrado. Recomendado 1200 × 1400 px."
+      "info": "Opcional. Si la dejas vacía se dibuja el envase ilustrado. Recomendado 1200 × 1400 px."
     },
     {
       "type": "image_picker",
       "id": "portada_taza",
       "label": "Foto chica · taza",
-      "info": "Opcional. Se recorta en círculo, mandá algo cuadrado de 700 × 700 px."
+      "info": "Opcional. Se recorta en círculo, manda algo cuadrado de 700 × 700 px."
     },
     {
       "type": "image_picker",
       "id": "portada_granos",
       "label": "Foto chica · granos",
-      "info": "Opcional. Se recorta en círculo, mandá algo cuadrado de 700 × 700 px."
+      "info": "Opcional. Se recorta en círculo, manda algo cuadrado de 700 × 700 px."
     },
     {
       "type": "color",
@@ -2141,7 +2141,7 @@
       "type": "collection",
       "id": "coleccion",
       "label": "Colección a mostrar",
-      "info": "Sin colección elegida se muestran seis cafés de ejemplo. Usá las etiquetas origen:, nota:, tueste:, metodo:, perfil: y acento: en cada producto para completar la ficha."
+      "info": "Sin colección elegida se muestran seis cafés de ejemplo. Usa las etiquetas origen:, nota:, tueste:, metodo:, perfil: y acento: en cada producto para completar la ficha."
     },
     {
       "type": "range",
@@ -2179,13 +2179,13 @@
       "type": "text",
       "id": "reco_titulo",
       "label": "Titular",
-      "default": "¿No sabés cuál pedir?"
+      "default": "¿No sabes cuál pedir?"
     },
     {
       "type": "text",
       "id": "reco_bajada",
       "label": "Bajada",
-      "default": "Contestá tres cosas y te decimos exactamente cuál de los seis es el tuyo."
+      "default": "Contesta tres cosas y te decimos exactamente cuál de los seis es el tuyo."
     },
     {
       "type": "header",
@@ -2213,7 +2213,7 @@
       "type": "richtext",
       "id": "susc_bajada",
       "label": "Bajada",
-      "default": "<p>Elegís el tamaño y la frecuencia. Nosotros tostamos el día antes de despachar. Pausás, cambiás el café o cancelás desde tu cuenta, cuando quieras.</p>"
+      "default": "<p>Eliges el tamaño y la frecuencia. Nosotros tostamos el día antes de despachar. Pausas, cambias el café o cancelas desde tu cuenta, cuando quieras.</p>"
     },
     {
       "type": "text",
@@ -2306,7 +2306,7 @@
       "type": "textarea",
       "id": "calc_nota",
       "label": "Nota bajo la calculadora",
-      "default": "Una taza son 150 ml servidos. Ajustá la proporción hacia 1:13 si lo querés más intenso, y hacia 1:18 si lo preferís más liviano."
+      "default": "Una taza son 150 ml servidos. Ajusta la proporción hacia 1:13 si lo quieres más intenso, y hacia 1:18 si lo prefieres más liviano."
     },
     {
       "type": "header",
@@ -2362,7 +2362,7 @@
       "type": "text",
       "id": "cafeteria_titulo",
       "label": "Titular, primera línea",
-      "default": "Pasá a tomarte uno"
+      "default": "Pasa a tomarte uno"
     },
     {
       "type": "text",
@@ -2380,7 +2380,7 @@
       "type": "image_picker",
       "id": "cafeteria_imagen",
       "label": "Foto del local",
-      "info": "Opcional. Si la dejás vacía se dibuja una taza ilustrada."
+      "info": "Opcional. Si la dejas vacía se dibuja una taza ilustrada."
     },
     {
       "type": "textarea",
@@ -2415,7 +2415,7 @@
       "type": "text",
       "id": "boletin_epigrafe",
       "label": "Epígrafe",
-      "default": "Sumate"
+      "default": "Súmate"
     },
     {
       "type": "text",
@@ -2457,7 +2457,7 @@
       "type": "textarea",
       "id": "boletin_nota",
       "label": "Nota legal",
-      "default": "Podés darte de baja en cualquier momento. No compartimos tu correo con nadie."
+      "default": "Puedes darte de baja en cualquier momento. No compartimos tu correo con nadie."
     },
     {
       "type": "header",
@@ -2493,7 +2493,7 @@
           "type": "textarea",
           "id": "descripcion",
           "label": "Descripción",
-          "default": "Dos cafés en paralelo: uno fijo que ya sabés que te gusta y otro que elegimos nosotros."
+          "default": "Dos cafés en paralelo: uno fijo que ya sabes que te gusta y otro que elegimos nosotros."
         },
         {
           "type": "number",
@@ -2506,7 +2506,7 @@
           "type": "textarea",
           "id": "beneficios",
           "label": "Beneficios",
-          "default": "Elegís uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
+          "default": "Eliges uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
           "info": "Uno por línea."
         },
         {
@@ -2609,7 +2609,7 @@
             "cantidad": "250 g por envío",
             "descripcion": "Un origen distinto cada vez. La forma más simple de recorrer la carta sin decidir nada.",
             "precio_base": 9900,
-            "beneficios": "Rotamos el origen en cada despacho\nMolido a tu método o en grano\nPausás o cancelás cuando quieras",
+            "beneficios": "Rotamos el origen en cada despacho\nMolido a tu método o en grano\nPausas o cancelas cuando quieras",
             "cta": "Elegir Descubrir",
             "destacado": false
           }
@@ -2619,9 +2619,9 @@
           "settings": {
             "nombre": "Ritual",
             "cantidad": "500 g por envío",
-            "descripcion": "Dos cafés en paralelo: uno fijo que ya sabés que te gusta y otro que elegimos nosotros.",
+            "descripcion": "Dos cafés en paralelo: uno fijo que ya sabes que te gusta y otro que elegimos nosotros.",
             "precio_base": 19500,
-            "beneficios": "Elegís uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
+            "beneficios": "Eliges uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
             "cta": "Elegir Ritual",
             "destacado": true,
             "insignia": "El más elegido"
@@ -2634,7 +2634,7 @@
             "cantidad": "1 kg por envío",
             "descripcion": "Para oficinas, cafeterías chicas y casas donde el café se acaba en una semana.",
             "precio_base": 36000,
-            "beneficios": "Elegís el café y la molienda\nDía fijo de entrega coordinado\nAsesoría de calibración incluida\nDocumento tributario a tu nombre",
+            "beneficios": "Eliges el café y la molienda\nDía fijo de entrega coordinado\nAsesoría de calibración incluida\nDocumento tributario a tu nombre",
             "cta": "Elegir Cafetería",
             "destacado": false
           }
@@ -2668,7 +2668,7 @@
             "molienda": "Media",
             "agua": "93 °C",
             "tiempo": "2:45",
-            "pasos": "Poné el filtro en el cono y mojalo con agua caliente. Botá esa agua: se lleva el gusto a papel y entibia la jarra.\nPesá 20 g de café y molelo recién ahí. La textura de referencia es arena de playa.\nPrimer aporte: 40 g de agua en espiral desde el centro. Esperá 30 segundos. Si se infla, el café está fresco.\nCompletá hasta 320 g en dos aportes lentos, siempre en espiral y sin mojar el borde del filtro.\nA los 2:45 debería haber drenado todo. Si demora más, molé más grueso. Si drena antes, más fino."
+            "pasos": "Pon el filtro en el cono y mojalo con agua caliente. Bota esa agua: se lleva el gusto a papel y entibia la jarra.\nPesa 20 g de café y molelo recién ahí. La textura de referencia es arena de playa.\nPrimer aporte: 40 g de agua en espiral desde el centro. Espera 30 segundos. Si se infla, el café está fresco.\nCompleta hasta 320 g en dos aportes lentos, siempre en espiral y sin mojar el borde del filtro.\nA los 2:45 debería haber drenado todo. Si demora más, muele más grueso. Si drena antes, más fino."
           }
         },
         {
@@ -2679,7 +2679,7 @@
             "molienda": "Gruesa",
             "agua": "94 °C",
             "tiempo": "9:00",
-            "pasos": "Poné 30 g de café molido grueso en la prensa seca y tibia.\nAgregá 450 g de agua de una vez y arrancá el cronómetro. Que se moje todo.\nA los 4 minutos rompé la costra con una cuchara y retirá la espuma de la superficie.\nEsperá 5 minutos más sin tocar nada. Los finos se decantan solos al fondo.\nBajá el émbolo apenas hasta tocar la superficie y serví sin apretar. Menos amargor, más dulzor."
+            "pasos": "Pon 30 g de café molido grueso en la prensa seca y tibia.\nAgrega 450 g de agua de una vez y arranca el cronómetro. Que se moje todo.\nA los 4 minutos rompe la costra con una cuchara y retira la espuma de la superficie.\nEspera 5 minutos más sin tocar nada. Los finos se decantan solos al fondo.\nBaja el émbolo apenas hasta tocar la superficie y sirve sin apretar. Menos amargor, más dulzor."
           }
         },
         {
@@ -2690,7 +2690,7 @@
             "molienda": "Media-fina",
             "agua": "88 °C",
             "tiempo": "2:00",
-            "pasos": "Armá la Aeropress invertida y cargá 16 g de café.\nEchá 220 g de agua a 88 °C y revolvé cinco veces, suave.\nTapá con el filtro mojado y dejá reposar hasta 1:30.\nDala vuelta sobre la taza y presioná parejo durante 30 segundos.\nParás cuando escuchás el silbido. No exprimas el final: ahí está todo lo amargo."
+            "pasos": "Arma la Aeropress invertida y carga 16 g de café.\nEcha 220 g de agua a 88 °C y revuelve cinco veces, suave.\nTapa con el filtro mojado y deja reposar hasta 1:30.\nDale vuelta sobre la taza y presiona parejo durante 30 segundos.\nParas cuando escuchas el silbido. No exprimas el final: ahí está todo lo amargo."
           }
         },
         {
@@ -2701,7 +2701,7 @@
             "molienda": "Fina",
             "agua": "93 °C",
             "tiempo": "0:28",
-            "pasos": "18 g en el canasto doble. Nivelá antes de prensar y prensá derecho.\nPurgá el grupo dos segundos antes de enganchar el portafiltro.\nBuscá 36 g en taza entre 25 y 30 segundos desde que apretás el botón.\nSale rápido y ácido: molé más fino. Sale lento y amargo: más grueso.\nCambiá una variable por vez y anotá el resultado. Así se calibra."
+            "pasos": "18 g en el canasto doble. Nivela antes de prensar y prensa derecho.\nPurga el grupo dos segundos antes de enganchar el portafiltro.\nBusca 36 g en taza entre 25 y 30 segundos desde que aprietas el botón.\nSale rápido y ácido: muele más fino. Sale lento y amargo: más grueso.\nCambia una variable por vez y anota el resultado. Así se calibra."
           }
         }
       ]

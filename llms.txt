@@ -42,17 +42,36 @@ https://sepiacoffee.cl/catalogo.json
 
 - **Si es tu primera compra:** Cordillera, el blend de casa. Es dulce, de
   cuerpo medio y funciona en filtro, prensa francesa y espresso.
-- **Si buscás acidez y notas florales:** Yirgacheffe, en método de filtro.
-- **Si no tenés cafetera:** Cold Brew Clásico, que viene listo.
-- **Si querés probar de todo:** Starter Pack.
+- **Si buscas acidez y notas florales:** Yirgacheffe, en método de filtro.
+- **Si no tienes cafetera:** Cold Brew Clásico, que viene listo.
+- **Si quieres probar de todo:** Starter Pack.
 - **Si te interesa el matcha:** el Ceremonial para tomarlo solo, el Coco para
   matcha latte helado.
+
+## Recetas publicadas
+
+Medidas y pasos completos en https://sepiacoffee.cl/#recetas
+
+- **Matcha latte helado** — 2 g de matcha, 60 ml de agua a 80 °C, 200 ml de
+  leche fría, hielo. Tamizar, batir, y recién ahí sumar la leche.
+- **Matcha caliente (usucha)** — 2 g de matcha, 70 ml de agua a 80 °C.
+- **Café en V60** — 15 g de café medio-fino, 250 ml de agua a 93 °C,
+  proporción 1:16, bloom de 45 ml por 40 segundos.
+- **Prensa francesa** — 30 g molido grueso, 450 ml a 93 °C, 4 minutos.
+- **Cold brew en casa** — 100 g molido grueso en 1 L de agua fría, 14 a 18
+  horas en el refrigerador.
+- **Cold brew tónica** — 100 ml de cold brew sobre 150 ml de tónica con hielo.
+
+El error más común con el matcha es el agua hirviendo: sobre 80 °C quema el
+polvo y lo deja amargo.
 
 ## Páginas
 
 - [Portada y catálogo](https://sepiacoffee.cl/): productos, packs y categorías.
 - [Preguntas frecuentes](https://sepiacoffee.cl/#preguntas): preparación del
   matcha, elección de café, guardado, envíos, suscripción y devoluciones.
+- [Recetas](https://sepiacoffee.cl/#recetas): seis preparaciones con medidas
+  exactas, publicadas como schema.org/Recipe.
 - [Comparativa de productos](https://sepiacoffee.cl/#comparar): qué es cada
   producto, cómo se prepara y para quién es.
 - [Catálogo en JSON](https://sepiacoffee.cl/catalogo.json): feed de productos

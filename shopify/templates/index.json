@@ -10,7 +10,7 @@
             "cantidad": "250 g por envío",
             "descripcion": "Un origen distinto cada vez. La forma más simple de recorrer la carta sin decidir nada.",
             "precio_base": 9900,
-            "beneficios": "Rotamos el origen en cada despacho\nMolido a tu método o en grano\nPausás o cancelás cuando quieras",
+            "beneficios": "Rotamos el origen en cada despacho\nMolido a tu método o en grano\nPausas o cancelas cuando quieras",
             "cta": "Elegir Descubrir",
             "destacado": false
           }
@@ -20,9 +20,9 @@
           "settings": {
             "nombre": "Ritual",
             "cantidad": "500 g por envío",
-            "descripcion": "Dos cafés en paralelo: uno fijo que ya sabés que te gusta y otro que elegimos nosotros.",
+            "descripcion": "Dos cafés en paralelo: uno fijo que ya sabes que te gusta y otro que elegimos nosotros.",
             "precio_base": 19500,
-            "beneficios": "Elegís uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
+            "beneficios": "Eliges uno, rotamos el otro\nEnvío incluido en Región Metropolitana\nPrimero en los lotes chicos\nMolido a tu método o en grano",
             "cta": "Elegir Ritual",
             "destacado": true,
             "insignia": "El más elegido"
@@ -35,7 +35,7 @@
             "cantidad": "1 kg por envío",
             "descripcion": "Para oficinas, cafeterías chicas y casas donde el café se acaba en una semana.",
             "precio_base": 36000,
-            "beneficios": "Elegís el café y la molienda\nDía fijo de entrega coordinado\nAsesoría de calibración incluida\nDocumento tributario a tu nombre",
+            "beneficios": "Eliges el café y la molienda\nDía fijo de entrega coordinado\nAsesoría de calibración incluida\nDocumento tributario a tu nombre",
             "cta": "Elegir Cafetería",
             "destacado": false
           }
@@ -69,7 +69,7 @@
             "molienda": "Media",
             "agua": "93 °C",
             "tiempo": "2:45",
-            "pasos": "Poné el filtro en el cono y mojalo con agua caliente. Botá esa agua: se lleva el gusto a papel y entibia la jarra.\nPesá 20 g de café y molelo recién ahí. La textura de referencia es arena de playa.\nPrimer aporte: 40 g de agua en espiral desde el centro. Esperá 30 segundos. Si se infla, el café está fresco.\nCompletá hasta 320 g en dos aportes lentos, siempre en espiral y sin mojar el borde del filtro.\nA los 2:45 debería haber drenado todo. Si demora más, molé más grueso. Si drena antes, más fino."
+            "pasos": "Pon el filtro en el cono y mojalo con agua caliente. Bota esa agua: se lleva el gusto a papel y entibia la jarra.\nPesa 20 g de café y molelo recién ahí. La textura de referencia es arena de playa.\nPrimer aporte: 40 g de agua en espiral desde el centro. Espera 30 segundos. Si se infla, el café está fresco.\nCompleta hasta 320 g en dos aportes lentos, siempre en espiral y sin mojar el borde del filtro.\nA los 2:45 debería haber drenado todo. Si demora más, muele más grueso. Si drena antes, más fino."
           }
         },
         "metodo-2": {
@@ -80,7 +80,7 @@
             "molienda": "Gruesa",
             "agua": "94 °C",
             "tiempo": "9:00",
-            "pasos": "Poné 30 g de café molido grueso en la prensa seca y tibia.\nAgregá 450 g de agua de una vez y arrancá el cronómetro. Que se moje todo.\nA los 4 minutos rompé la costra con una cuchara y retirá la espuma de la superficie.\nEsperá 5 minutos más sin tocar nada. Los finos se decantan solos al fondo.\nBajá el émbolo apenas hasta tocar la superficie y serví sin apretar. Menos amargor, más dulzor."
+            "pasos": "Pon 30 g de café molido grueso en la prensa seca y tibia.\nAgrega 450 g de agua de una vez y arranca el cronómetro. Que se moje todo.\nA los 4 minutos rompe la costra con una cuchara y retira la espuma de la superficie.\nEspera 5 minutos más sin tocar nada. Los finos se decantan solos al fondo.\nBaja el émbolo apenas hasta tocar la superficie y sirve sin apretar. Menos amargor, más dulzor."
           }
         },
         "metodo-3": {
@@ -91,7 +91,7 @@
             "molienda": "Media-fina",
             "agua": "88 °C",
             "tiempo": "2:00",
-            "pasos": "Armá la Aeropress invertida y cargá 16 g de café.\nEchá 220 g de agua a 88 °C y revolvé cinco veces, suave.\nTapá con el filtro mojado y dejá reposar hasta 1:30.\nDala vuelta sobre la taza y presioná parejo durante 30 segundos.\nParás cuando escuchás el silbido. No exprimas el final: ahí está todo lo amargo."
+            "pasos": "Arma la Aeropress invertida y carga 16 g de café.\nEcha 220 g de agua a 88 °C y revuelve cinco veces, suave.\nTapa con el filtro mojado y deja reposar hasta 1:30.\nDale vuelta sobre la taza y presiona parejo durante 30 segundos.\nParas cuando escuchas el silbido. No exprimas el final: ahí está todo lo amargo."
           }
         },
         "metodo-4": {
@@ -102,7 +102,7 @@
             "molienda": "Fina",
             "agua": "93 °C",
             "tiempo": "0:28",
-            "pasos": "18 g en el canasto doble. Nivelá antes de prensar y prensá derecho.\nPurgá el grupo dos segundos antes de enganchar el portafiltro.\nBuscá 36 g en taza entre 25 y 30 segundos desde que apretás el botón.\nSale rápido y ácido: molé más fino. Sale lento y amargo: más grueso.\nCambiá una variable por vez y anotá el resultado. Así se calibra."
+            "pasos": "18 g en el canasto doble. Nivela antes de prensar y prensa derecho.\nPurga el grupo dos segundos antes de enganchar el portafiltro.\nBusca 36 g en taza entre 25 y 30 segundos desde que aprietas el botón.\nSale rápido y ácido: muele más fino. Sale lento y amargo: más grueso.\nCambia una variable por vez y anota el resultado. Así se calibra."
           }
         }
       },

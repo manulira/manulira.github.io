@@ -2,7 +2,7 @@
 
 ## Las seis que más cambian el sitio
 
-Si vas a sacar pocas, sacá estas primero. Con estas seis la página deja de
+Si vas a sacar pocas, saca estas primero. Con estas seis la página deja de
 verse como una plantilla:
 
 **Ya cargadas** con la foto de los dos vasos que mandaste: `hero-1.jpg`,
@@ -19,12 +19,12 @@ propias para cada una, reemplazalas y listo.
 | 6 | `cat-cafe.jpg` | La ficha de categoría de café |
 
 El resto puede esperar. Cada archivo que falte sigue mostrando la ilustración,
-así que podés ir subiéndolas de a una sin que nada se rompa.
+así que puedes ir subiéndolas de a una sin que nada se rompa.
 
 ---
 
 
-Dejá los archivos acá con estos nombres exactos y la página los toma sola.
+Deja los archivos acá con estos nombres exactos y la página los toma sola.
 **No hay que tocar código.** Si un archivo no está, esa posición muestra la
 ilustración vectorial, así que el sitio nunca se ve roto ni con imágenes rotas.
 
@@ -32,7 +32,7 @@ ilustración vectorial, así que el sitio nunca se ve roto ni con imágenes rota
 
 | Archivo | Medida | Qué va |
 |---|---|---|
-| `hero-1.jpg` | 2400 × 1200 | Foto ancha del primer slide. El texto va sobre la mitad izquierda, dejá esa zona despejada |
+| `hero-1.jpg` | 2400 × 1200 | Foto ancha del primer slide. El texto va sobre la mitad izquierda, deja esa zona despejada |
 | `hero-2.jpg` | 2400 × 1200 | Lo mismo para el segundo slide |
 
 ## Productos
@@ -92,7 +92,7 @@ Verticales, 800 × 1060.
 
 - `.jpg` con calidad 80 a 85.
 - Que ninguna pase de 400 KB. Las del hero pueden llegar a 600 KB por el ancho.
-- También sirve `.webp`: cambiá la extensión en el nombre y ajustá el `src` en `index.html`.
+- También sirve `.webp`: cambia la extensión en el nombre y ajusta el `src` en `index.html`.
 
 ## En Shopify es distinto
 

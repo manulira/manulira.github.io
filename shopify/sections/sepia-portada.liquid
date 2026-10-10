@@ -13,7 +13,7 @@
     4. En Personalizar, agregar la sección "Sepia — Portada v2"
 
   Catálogo real
-    Elegí una colección en cada carrusel. Etiquetas que lee de cada producto:
+    Elige una colección en cada carrusel. Etiquetas que lee de cada producto:
       sub:Blend de casa · 250 g     línea bajo el nombre
       tono:#F7D9C4                  color de fondo de la tarjeta
       acento:#8B4A3C                color del envase dibujado
@@ -532,6 +532,33 @@
 .sepia2 .guia td::before{content:attr(data-etq);font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-60)}
 .sepia2 .guia tbody tr:hover{background:var(--papel)}
 }
+
+/* ---------- Recetas (punto 5 del plan de IA) ---------- */
+.sepia2 .recetas{display:grid;gap:clamp(.8rem,1.6vw,1.1rem);grid-template-columns:1fr}
+@media(min-width:720px){.sepia2 .recetas{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1180px){.sepia2 .recetas{grid-template-columns:repeat(3,1fr)}}
+.sepia2 .receta{background:var(--blanco);border-radius:var(--r-xl);padding:clamp(1.2rem,2.2vw,1.6rem);display:flex;flex-direction:column;gap:.85rem}
+.sepia2 .receta-cab{display:flex;align-items:center;gap:.9rem}
+.sepia2 .receta-arte{flex:none;width:44px;height:60px;max-width:none;--acento:var(--teal)}
+.sepia2 .receta-cab h3{font-size:clamp(1.14rem,1.7vw,1.3rem);line-height:1.15}
+.sepia2 .receta-meta{display:flex;gap:.5rem;margin-top:.3rem;font-size:.78rem;color:var(--tinta-60)}
+.sepia2 .receta-meta span{font-family:var(--display);font-weight:600;letter-spacing:.02em}
+.sepia2 .receta-meta span+span::before{content:"·";margin-right:.5rem;color:var(--tinta-40)}
+.sepia2 .receta-bajada{font-size:.94rem;color:var(--tinta-70);line-height:1.5}
+.sepia2 .receta-cuerpo{display:grid;gap:1rem;padding-top:.3rem;border-top:1px solid var(--tinta-14)}
+.sepia2 .receta h4{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-60);margin-bottom:.5rem}
+.sepia2 .receta-ingr ul{display:grid;gap:.3rem;font-size:.9rem}
+.sepia2 .receta-ingr li{padding-left:.95rem;position:relative;color:var(--tinta-70)}
+.sepia2 .receta-ingr li::before{content:"";position:absolute;left:0;top:.52em;width:5px;height:5px;border-radius:50%;background:var(--celeste)}
+.sepia2 .receta-prod{margin-top:.6rem;font-size:.85rem;color:var(--tinta-60)}
+.sepia2 .receta-prod a{font-family:var(--display);font-weight:600;color:var(--tinta);border-bottom:2px solid var(--celeste)}
+.sepia2 .receta-prod a:hover{border-bottom-color:var(--teal)}
+.sepia2 .receta-pasos ol{display:grid;gap:.6rem;counter-reset:paso;font-size:.9rem}
+.sepia2 .receta-pasos li{counter-increment:paso;padding-left:1.8rem;position:relative;color:var(--tinta-70);line-height:1.5}
+.sepia2 .receta-pasos li::before{content:counter(paso);position:absolute;left:0;top:0;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--celeste);color:var(--navy);font-family:var(--display);font-weight:600;font-size:.72rem;display:grid;place-items:center}
+.sepia2 .receta-tip{margin-top:auto;background:var(--papel);border-radius:var(--r-md);padding:.75rem .9rem;font-size:.86rem;color:var(--tinta-70);line-height:1.45}
+.sepia2 .receta-tip b{font-family:var(--display);color:var(--tinta)}
+
 </style>
 
 
@@ -1251,7 +1278,7 @@
                    data-tono="#FFFFFF" data-acento="#2F4156" data-arte="s2-i-caja">
             <div class="prod-media" style="--tono:#FFFFFF">
               <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Descubrir"><use href="#s2-i-caja"/></svg>
-              <span class="prod-etq rojo">Ahorrás 16%</span>
+              <span class="prod-etq rojo">Ahorras 16%</span>
               <span class="prod-rapido">Ver producto</span>
             </div>
             <div class="prod-info">
@@ -1420,6 +1447,129 @@
     </div>
   </div>
 </section>
+{%- endif -%}
+
+<!-- ===================== 08 · RECETAS =====================
+     Punto 5 del plan de IA: contenido útil. Cada receta va también como
+     schema.org/Recipe: es de los formatos que más citan los asistentes
+     cuando alguien pregunta cómo preparar algo. -->
+{%- assign recetas = section.blocks | where: 'type', 'receta' -%}
+{%- if recetas.size > 0 and section.settings.rec_titulo != blank -%}
+<section class="modulo" id="recetas">
+  <div class="wrap">
+    <div class="mod-cab rev">
+      <div>
+        <h2 class="t-3xl">{{ section.settings.rec_titulo }}</h2>
+        {%- if section.settings.rec_copy != blank -%}<p class="copy">{{ section.settings.rec_copy }}</p>{%- endif -%}
+      </div>
+      {%- if section.settings.rec_cta != blank -%}
+        <a href="{{ section.settings.rec_url | default: '#preguntas' }}" class="enlace-sub">{{ section.settings.rec_cta }}</a>
+      {%- endif -%}
+    </div>
+    <div class="recetas rev">
+      {%- for b in recetas -%}
+        {%- assign ingr = b.settings.ingredientes | newline_to_br | split: '<br />' -%}
+        {%- assign pasos = b.settings.pasos | newline_to_br | split: '<br />' -%}
+        <article class="receta" id="receta-{{ b.id }}" {{ b.shopify_attributes }}>
+          <div class="receta-cab">
+            {%- if b.settings.foto != blank -%}
+              {{ b.settings.foto | image_url: width: 160 | image_tag: loading: 'lazy', class: 'receta-foto', alt: b.settings.titulo }}
+            {%- else -%}
+              <svg class="receta-arte" viewBox="0 0 200 272" aria-hidden="true"><use href="#s2-i-{{ b.settings.arte | default: 'tarro' }}"/></svg>
+            {%- endif -%}
+            <div>
+              <h3>{{ b.settings.titulo }}</h3>
+              <p class="receta-meta">
+                {%- if b.settings.minutos > 0 -%}<span>{{ b.settings.minutos }} min</span>{%- endif -%}
+                {%- if b.settings.rinde != blank -%}<span>{{ b.settings.rinde }}</span>{%- endif -%}
+              </p>
+            </div>
+          </div>
+          {%- if b.settings.bajada != blank -%}
+            <p class="receta-bajada">{{ b.settings.bajada }}</p>
+          {%- endif -%}
+          <div class="receta-cuerpo">
+            <div class="receta-ingr">
+              <h4>{{ section.settings.rec_et_ingr }}</h4>
+              <ul>
+                {%- for i in ingr -%}
+                  {%- assign t = i | strip_html | strip -%}
+                  {%- if t != blank -%}<li>{{ t }}</li>{%- endif -%}
+                {%- endfor -%}
+              </ul>
+              {%- if b.settings.producto != blank -%}
+                <p class="receta-prod">Con <a href="{{ b.settings.producto.url }}">{{ b.settings.producto.title }}</a></p>
+              {%- endif -%}
+            </div>
+            <div class="receta-pasos">
+              <h4>{{ section.settings.rec_et_pasos }}</h4>
+              <ol>
+                {%- for p in pasos -%}
+                  {%- assign t = p | strip_html | strip -%}
+                  {%- if t != blank -%}<li>{{ t }}</li>{%- endif -%}
+                {%- endfor -%}
+              </ol>
+            </div>
+          </div>
+          {%- if b.settings.dato != blank -%}
+            <p class="receta-tip"><b>{{ section.settings.rec_et_dato }}</b> {{ b.settings.dato }}</p>
+          {%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} Las mismas recetas, como datos estructurados. {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {%- for b in recetas -%}
+      {%- assign ingr = b.settings.ingredientes | newline_to_br | split: '<br />' -%}
+      {%- assign pasos = b.settings.pasos | newline_to_br | split: '<br />' -%}
+      {
+        "@type": "Recipe",
+        "@id": {{ shop.url | append: '/#receta-' | append: b.id | json }},
+        "name": {{ b.settings.titulo | strip_html | json }},
+        {%- if b.settings.bajada != blank %}
+        "description": {{ b.settings.bajada | strip_html | strip_newlines | json }},
+        {%- endif %}
+        "inLanguage": {{ request.locale.iso_code | default: 'es-CL' | json }},
+        "author": { "@id": {{ shop.url | append: '/#tienda' | json }} },
+        {%- if b.settings.minutos > 0 %}
+        "totalTime": "PT{{ b.settings.minutos }}M",
+        {%- endif %}
+        {%- if b.settings.rinde != blank %}
+        "recipeYield": {{ b.settings.rinde | json }},
+        {%- endif %}
+        "recipeCategory": "Bebida",
+        "recipeIngredient": [
+          {%- assign primero = true -%}
+          {%- for i in ingr -%}
+            {%- assign t = i | strip_html | strip -%}
+            {%- if t != blank -%}
+              {%- unless primero -%},{%- endunless -%}{{ t | json }}
+              {%- assign primero = false -%}
+            {%- endif -%}
+          {%- endfor -%}
+        ],
+        "recipeInstructions": [
+          {%- assign n = 0 -%}
+          {%- for p in pasos -%}
+            {%- assign t = p | strip_html | strip -%}
+            {%- if t != blank -%}
+              {%- if n > 0 -%},{%- endif -%}
+              {%- assign n = n | plus: 1 -%}
+              { "@type": "HowToStep", "position": {{ n }}, "text": {{ t | json }} }
+            {%- endif -%}
+          {%- endfor -%}
+        ]
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
 {%- endif -%}
 
 <!-- ===================== 08 · BLOQUE EDITORIAL ===================== -->
@@ -1885,7 +2035,7 @@
       "type": "textarea",
       "id": "usp_textos",
       "label": "Frases separadas por coma",
-      "default": "Origen orgánico, Tostado esta semana, Hecho en Santiago, Pausá cuando quieras",
+      "default": "Origen orgánico, Tostado esta semana, Hecho en Santiago, Pausa cuando quieras",
       "info": "Dejala vacía para ocultar la cinta."
     },
     {
@@ -1960,13 +2110,13 @@
       "type": "text",
       "id": "car2_titulo",
       "label": "Título",
-      "default": "Empezá con nuestros packs favoritos"
+      "default": "Empieza con nuestros packs favoritos"
     },
     {
       "type": "text",
       "id": "car2_bajada",
       "label": "Bajada",
-      "default": "Ahorrá armando un pack."
+      "default": "Ahorra armando un pack."
     },
     {
       "type": "collection",
@@ -1998,7 +2148,7 @@
       "id": "g_puntaje",
       "label": "Puntaje de Google",
       "default": "",
-      "info": "Por ejemplo 4,9. Si lo dejás vacío, la sección no se muestra."
+      "info": "Por ejemplo 4,9. Si lo dejas vacío, la sección no se muestra."
     },
     {
       "type": "text",
@@ -2016,7 +2166,7 @@
       "type": "text",
       "id": "testi_bajada",
       "label": "(sin uso)",
-      "default": "Reemplazá estas tarjetas por reseñas reales de tus clientes."
+      "default": "Reemplaza estas tarjetas por reseñas reales de tus clientes."
     },
     {
       "type": "color",
@@ -2038,13 +2188,13 @@
       "type": "richtext",
       "id": "edi_texto",
       "label": "Texto",
-      "default": "<p>En sepia coffee nos tomamos en serio lo que tomás todos los días. Compramos lotes chicos de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>"
+      "default": "<p>En sepia coffee nos tomamos en serio lo que tomas todos los días. Compramos lotes chicos de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>"
     },
     {
       "type": "text",
       "id": "edi_cta",
       "label": "Texto del botón",
-      "default": "Conocenos"
+      "default": "Conócenos"
     },
     {
       "type": "url",
@@ -2081,7 +2231,7 @@
       "type": "textarea",
       "id": "bol_copy",
       "label": "Texto",
-      "default": "Sumate a la lista y enterate antes que nadie de los lotes nuevos."
+      "default": "Súmate a la lista y entérate antes que nadie de los lotes nuevos."
     },
     {
       "type": "text",
@@ -2099,7 +2249,7 @@
       "type": "text",
       "id": "bol_gracias",
       "label": "Mensaje de confirmación",
-      "default": "Listo. Revisá tu correo para el cupón."
+      "default": "Listo. Revisa tu correo para el cupón."
     },
     {
       "type": "color",
@@ -2116,7 +2266,7 @@
       "id": "mostrar_pie",
       "label": "Mostrar el pie",
       "default": false,
-      "info": "Igual que la cabecera: solo si ocultás el de tu tema."
+      "info": "Igual que la cabecera: solo si ocultas el de tu tema."
     },
     {
       "type": "textarea",
@@ -2168,12 +2318,12 @@
       "type": "textarea",
       "id": "ld_descripcion",
       "label": "Descripción de la marca",
-      "info": "Una o dos frases: qué vendés y dónde. Si lo dejás vacío usa la del panel de Shopify."
+      "info": "Una o dos frases: qué vendes y dónde. Si lo dejas vacío usa la del panel de Shopify."
     },
     {
       "type": "text",
       "id": "ld_pais",
-      "label": "País al que despachás",
+      "label": "País al que despachas",
       "default": "Chile"
     },
     {
@@ -2242,7 +2392,7 @@
       "type": "text",
       "id": "comp_col4",
       "label": "Columna 4",
-      "default": "Elegilo si…"
+      "default": "Elígelo si…"
     },
     {
       "type": "text",
@@ -2262,7 +2412,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Escribí cada pregunta como la hace un cliente, no como la escribiría la marca. Van también al FAQPage de los datos estructurados."
+      "content": "Escribe cada pregunta como la hace un cliente, no como la escribiría la marca. Van también al FAQPage de los datos estructurados."
     },
     {
       "type": "text",
@@ -2274,7 +2424,56 @@
       "type": "text",
       "id": "faq_copy",
       "label": "Bajada",
-      "default": "Sin vueltas. Si falta la tuya, escribinos."
+      "default": "Directo al grano. Si falta la tuya, escríbenos."
+    },
+    {
+      "type": "header",
+      "content": "Recetas"
+    },
+    {
+      "type": "paragraph",
+      "content": "Cada receta se publica además como schema.org/Recipe, que es lo que cita un asistente cuando alguien pregunta cómo preparar algo. Escribe un ingrediente y un paso por línea."
+    },
+    {
+      "type": "text",
+      "id": "rec_titulo",
+      "label": "Título",
+      "default": "Cómo se prepara"
+    },
+    {
+      "type": "text",
+      "id": "rec_copy",
+      "label": "Bajada",
+      "default": "Recetas con las medidas exactas. Las mismas que usamos nosotros."
+    },
+    {
+      "type": "text",
+      "id": "rec_cta",
+      "label": "Texto del enlace",
+      "default": "Más dudas"
+    },
+    {
+      "type": "url",
+      "id": "rec_url",
+      "label": "Enlace"
+    },
+    {
+      "type": "text",
+      "id": "rec_et_ingr",
+      "label": "Etiqueta de ingredientes",
+      "default": "Necesitas"
+    },
+    {
+      "type": "text",
+      "id": "rec_et_pasos",
+      "label": "Etiqueta de pasos",
+      "default": "Paso a paso"
+    },
+    {
+      "type": "text",
+      "id": "rec_et_dato",
+      "label": "Etiqueta del dato",
+      "default": "Dato:"
     }
   ],
   "blocks": [
@@ -2298,7 +2497,7 @@
             }
           ],
           "default": "completo",
-          "info": "Usá partido cuando la foto sea vertical."
+          "info": "Usa partido cuando la foto sea vertical."
         },
         {
           "type": "text",
@@ -2316,7 +2515,7 @@
           "type": "image_picker",
           "id": "imagen",
           "label": "Foto de fondo",
-          "info": "2400 × 1200 px. Dejá despejada la mitad izquierda, ahí va el texto."
+          "info": "2400 × 1200 px. Deja despejada la mitad izquierda, ahí va el texto."
         },
         {
           "type": "color",
@@ -2551,7 +2750,7 @@
           "type": "product",
           "id": "producto",
           "label": "Producto",
-          "info": "Si elegís uno, toma su nombre y su precio reales."
+          "info": "Si eliges uno, toma su nombre y su precio reales."
         },
         {
           "type": "text",
@@ -2584,7 +2783,7 @@
         {
           "type": "text",
           "id": "para_quien",
-          "label": "Elegilo si…"
+          "label": "Elígelo si…"
         }
       ]
     },
@@ -2603,6 +2802,95 @@
           "type": "richtext",
           "id": "respuesta",
           "label": "La respuesta"
+        }
+      ]
+    },
+    {
+      "type": "receta",
+      "name": "Receta",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "titulo",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "bajada",
+          "label": "Bajada"
+        },
+        {
+          "type": "range",
+          "id": "minutos",
+          "label": "Minutos",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "unit": "min",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "rinde",
+          "label": "Rinde",
+          "info": "Por ejemplo: 1 vaso de 350 ml."
+        },
+        {
+          "type": "product",
+          "id": "producto",
+          "label": "Producto que usa",
+          "info": "Enlaza la receta con el producto de tu catálogo."
+        },
+        {
+          "type": "image_picker",
+          "id": "foto",
+          "label": "Foto"
+        },
+        {
+          "type": "select",
+          "id": "arte",
+          "label": "Dibujo si no hay foto",
+          "default": "tarro",
+          "options": [
+            {
+              "value": "tarro",
+              "label": "Lata de matcha"
+            },
+            {
+              "value": "bolsa",
+              "label": "Bolsa de café"
+            },
+            {
+              "value": "botella",
+              "label": "Botella"
+            },
+            {
+              "value": "taza",
+              "label": "Taza"
+            },
+            {
+              "value": "batidor",
+              "label": "Batidor"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "id": "ingredientes",
+          "label": "Ingredientes",
+          "info": "Uno por línea."
+        },
+        {
+          "type": "textarea",
+          "id": "pasos",
+          "label": "Paso a paso",
+          "info": "Un paso por línea."
+        },
+        {
+          "type": "text",
+          "id": "dato",
+          "label": "Dato al pie"
         }
       ]
     }
@@ -2744,7 +3032,7 @@
             "etiqueta": "Más vendido",
             "que_es": "Blend de casa en grano, 250 g",
             "preparacion": "Filtro, prensa francesa o espresso",
-            "para_quien": "Es tu primera compra y querés algo dulce y parejo"
+            "para_quien": "Es tu primera compra y quieres algo dulce y parejo"
           }
         },
         {
@@ -2755,7 +3043,7 @@
             "etiqueta": "",
             "que_es": "Café de origen de Etiopía, lavado, 250 g",
             "preparacion": "Métodos de filtro: V60, Chemex",
-            "para_quien": "Buscás la taza más floral y ácida de la carta"
+            "para_quien": "Buscas la taza más floral y ácida de la carta"
           }
         },
         {
@@ -2765,8 +3053,8 @@
             "precio": "$7.900",
             "etiqueta": "",
             "que_es": "Café extraído en frío, botella de 1 L",
-            "preparacion": "No se prepara: lo servís con hielo",
-            "para_quien": "No tenés cafetera, o querés café frío sin pensarlo"
+            "preparacion": "No se prepara: lo sirves con hielo",
+            "para_quien": "No tienes cafetera, o quieres café frío sin pensarlo"
           }
         },
         {
@@ -2777,7 +3065,7 @@
             "etiqueta": "Orgánico",
             "que_es": "Matcha en polvo de grado ceremonial, 80 g",
             "preparacion": "Batido con agua a 70–80 °C, solo o con leche",
-            "para_quien": "Querés el grado más alto, para tomarlo solo y sin amargor"
+            "para_quien": "Quieres el grado más alto, para tomarlo solo y sin amargor"
           }
         },
         {
@@ -2791,14 +3079,14 @@
           "type": "pregunta",
           "settings": {
             "pregunta": "¿Cuánto matcha uso por taza y a qué temperatura va el agua?",
-            "respuesta": "<p>Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo. Lo batís en zigzag unos 15 segundos.</p>"
+            "respuesta": "<p>Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo. Lo bates en zigzag unos 15 segundos.</p>"
           }
         },
         {
           "type": "pregunta",
           "settings": {
             "pregunta": "¿Qué café me conviene si recién empiezo?",
-            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitás equipo especial.</p>"
+            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitas equipo especial.</p>"
           }
         },
         {
@@ -2806,6 +3094,84 @@
           "settings": {
             "pregunta": "¿Cómo guardo el café para que no se pase?",
             "respuesta": "<p>En un envase hermético, en un lugar fresco y oscuro, lejos del horno y del sol. No en el refrigerador: la humedad y los olores lo arruinan más rápido que el aire. Y en grano, moliendo justo antes de preparar.</p>"
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Matcha latte helado",
+            "bajada": "El que más nos preguntan. Si el matcha te queda con grumos, es por el orden: primero el agua, después la leche.",
+            "minutos": 5,
+            "rinde": "1 vaso de 350 ml",
+            "arte": "tarro",
+            "ingredientes": "2 g de matcha ceremonial (1 cucharadita rasa)\n60 ml de agua a 80 °C\n200 ml de leche fría, o bebida vegetal\nHielo\nOpcional: 1 cucharadita de miel",
+            "pasos": "Tamiza el matcha sobre un bowl. Este paso es el que evita los grumos, no el batidor.\nAgrega los 60 ml de agua a 80 °C. Nunca hirviendo: el agua muy caliente quema el polvo y lo deja amargo.\nBate en zigzag con el batidor de bambú, rápido y desde la muñeca, unos 20 segundos, hasta que se forme una espuma pareja.\nLlena un vaso alto con hielo y agrega la leche.\nVierte el matcha por encima, despacio, para que quede en capas.\nRevuelve antes de tomar.",
+            "dato": "Si lo quieres dulce, la miel va disuelta en el matcha caliente, no sobre la leche fría."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Matcha caliente",
+            "bajada": "La preparación tradicional, usucha. Tres minutos y nada más que matcha y agua.",
+            "minutos": 3,
+            "rinde": "1 taza de 100 ml",
+            "arte": "tarro",
+            "ingredientes": "2 g de matcha ceremonial (1 cucharadita rasa)\n70 ml de agua a 80 °C",
+            "pasos": "Entibia el bowl con agua caliente y sécalo. Un bowl frío baja la temperatura y corta la espuma.\nTamiza el matcha.\nAgrega los 70 ml de agua a 80 °C.\nBate en zigzag, sin tocar el fondo, unos 20 segundos. Termina con un movimiento lento en espiral para romper las burbujas grandes.\nTómalo de inmediato: el matcha se asienta en un par de minutos.",
+            "dato": "Si no tienes termómetro: hierve el agua y déjala reposar dos minutos fuera del fuego."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Café en V60",
+            "bajada": "El método que mejor le queda al Yirgacheffe. Limpio, aromático, con la acidez arriba.",
+            "minutos": 4,
+            "rinde": "1 taza de 250 ml",
+            "arte": "bolsa",
+            "ingredientes": "15 g de café molido medio-fino\n250 ml de agua a 93 °C\nFiltro de papel",
+            "pasos": "Enjuaga el filtro con agua caliente y bota esa agua. Saca el gusto a papel y entibia la taza.\nAgrega el café y empareja la cama con un golpe suave.\nBloom: moja con 45 ml de agua y espera 40 segundos. El café se infla; eso es el gas saliendo.\nVierte en círculos desde el centro hasta llegar a 150 ml.\nCompleta hasta 250 ml en un segundo vertido.\nDebería terminar de filtrar entre 2:30 y 3:00. Si demora más, muele un poco más grueso.",
+            "dato": "La proporción es 1 de café por 16 de agua. Con eso puedes escalar a cualquier tamaño."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Prensa francesa",
+            "bajada": "El método más indulgente y el mejor para el blend de casa. No necesita pulso ni cronómetro fino.",
+            "minutos": 5,
+            "rinde": "2 tazas",
+            "arte": "bolsa",
+            "ingredientes": "30 g de café molido grueso\n450 ml de agua a 93 °C",
+            "pasos": "Muele grueso, como sal de mar. Si lo mueles fino, se cuela por el filtro y la taza queda barrosa.\nAgrega el café y el agua de una vez, y revuelve una sola vez.\nEspera 4 minutos con la tapa puesta, sin bajar el émbolo.\nRompe la costra que se formó arriba y retira la espuma con una cuchara.\nBaja el émbolo lento, sin forzar.\nSirve todo de inmediato en otro recipiente: si lo dejas en la prensa, sigue extrayendo y se pone amargo.",
+            "dato": "Este es el método para hacer café para varias personas sin complicarse."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Cold brew en casa",
+            "bajada": "Cero equipo, pero hay que planificarlo: se hace solo mientras duermes.",
+            "minutos": 10,
+            "rinde": "1 litro",
+            "arte": "botella",
+            "ingredientes": "100 g de café molido grueso\n1 litro de agua fría\nUn frasco grande y un filtro de papel",
+            "pasos": "Mezcla el café y el agua en el frasco. Revuelve para que no quede polvo seco flotando.\nTápalo y déjalo en el refrigerador entre 14 y 18 horas.\nFiltra con filtro de papel. Va a demorar: no lo apures apretando.\nGuárdalo tapado en el refrigerador. Dura entre 7 y 10 días.",
+            "dato": "A diferencia del café caliente enfriado, el cold brew no tiene acidez: por eso es más dulce y menos ácido al estómago."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Cold brew tónica",
+            "bajada": "El trago de verano. Se ve mejor de lo que cuesta hacerlo.",
+            "minutos": 2,
+            "rinde": "1 vaso alto",
+            "arte": "botella",
+            "ingredientes": "100 ml de cold brew\n150 ml de agua tónica fría\nHielo\nUna rodaja de naranja",
+            "pasos": "Llena el vaso con hielo hasta arriba.\nAgrega la tónica primero.\nVierte el cold brew encima, despacio y por el borde, para que quede en dos capas.\nNaranja, y a tomar antes de que se mezcle.",
+            "dato": "Funciona porque el cold brew es menos denso que la tónica. Si lo echas al revés, se mezcla al tiro."
           }
         }
       ]

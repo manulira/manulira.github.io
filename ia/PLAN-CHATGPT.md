@@ -6,7 +6,7 @@ cuentas, tus datos reales o tus fotos.
 
 ---
 
-## 1 · Registrá tu web — *parcial*
+## 1 · Registra tu web — *parcial*
 
 Hecho:
 - `sitemap.xml` en la raíz, listo para enviar.
@@ -17,17 +17,17 @@ Hecho:
   `google-site-verification` y `msvalidate.01`.
 
 **(tuyo)**
-1. Entrá a [Google Search Console](https://search.google.com/search-console),
-   agregá `sepiacoffee.cl`, copiá el código de verificación y pegalo en el
+1. Entra a [Google Search Console](https://search.google.com/search-console),
+   agrega `sepiacoffee.cl`, copia el código de verificación y pegalo en el
    `content=""` de la etiqueta `google-site-verification` del `<head>`.
 2. Lo mismo en [Bing Webmaster Tools](https://www.bing.com/webmasters) con
    `msvalidate.01`. **Bing importa tanto como Google acá**: es el índice que
    alimenta las búsquedas de ChatGPT.
-3. En las dos consolas, enviá `https://sepiacoffee.cl/sitemap.xml`.
+3. En las dos consolas, envía `https://sepiacoffee.cl/sitemap.xml`.
 
 ---
 
-## 2 · Conectá tu catálogo — *parcial*
+## 2 · Conecta tu catálogo — *parcial*
 
 Hecho:
 - `catalogo.json` en la raíz: feed de los 12 productos con precio, formato,
@@ -36,27 +36,27 @@ Hecho:
   lo que leen los rastreadores sin pedir permiso.
 
 **(tuyo)**
-- Cuando la tienda esté en Shopify, activá el canal de **Google & YouTube**
+- Cuando la tienda esté en Shopify, activa el canal de **Google & YouTube**
   (sincroniza el catálogo a Google Merchant Center solo). OpenAI toma datos
   de productos de ahí y del schema.org de la página.
-- Revisá que los precios de `catalogo.json` sean los reales antes de
+- Revisa que los precios de `catalogo.json` sean los reales antes de
   publicar. Hoy son los que veníamos usando de ejemplo.
 
 ---
 
-## 3 · Revisá el acceso — *hecho*
+## 3 · Revisa el acceso — *hecho*
 
 `robots.txt` permite de forma explícita a **GPTBot**, **OAI-SearchBot**,
 **ChatGPT-User**, **PerplexityBot**, **ClaudeBot**, **Google-Extended**,
 **Applebot-Extended**, **Bingbot** y el resto.
 
-> Ojo con Shopify: el `robots.txt` lo genera el tema. Si pasás la tienda a
+> Ojo con Shopify: el `robots.txt` lo genera el tema. Si pasas la tienda a
 > Shopify, hay que replicar esto en `robots.txt.liquid`. Está explicado en
 > `shopify/README.md`.
 
 ---
 
-## 4 · Mejorá tu estructura — *hecho*
+## 4 · Mejora tu estructura — *hecho*
 
 - Un solo `<h1>`, jerarquía de `<h2>`/`<h3>` correcta por sección.
 - Categorías explícitas en el JSON-LD: Café en grano, Cold brew, Matcha,
@@ -70,23 +70,36 @@ Hecho:
 
 ---
 
-## 5 · Publicá contenido útil — *empezado*
+## 5 · Publica contenido útil — *hecho*
 
-Hecho: la sección **«Lo que más nos preguntan»** con 10 respuestas reales
-(preparación del matcha, elección de café, guardado, cafeína, envíos,
-suscripción, devoluciones).
+Hecho, dos secciones:
 
-**(tuyo)** Esto se gana con constancia. Lo que más rinde para una marca de
-café:
-- Una guía de preparación por método (V60, prensa, espresso).
-- Una nota por origen cuando entre un lote nuevo.
-- La receta de matcha latte helado.
+- **«Lo que más nos preguntan»**: 10 respuestas reales (preparación del matcha,
+  elección de café, guardado, cafeína, envíos, suscripción, devoluciones).
+- **«Cómo se prepara»**: 6 recetas con medidas exactas — matcha latte helado,
+  matcha caliente, V60, prensa francesa, cold brew en casa y cold brew tónica.
+  Cada una es un `schema.org/Recipe` con ingredientes y pasos numerados, y
+  enlaza con el producto que usa.
 
-Cada una es una página nueva, con su propio `FAQPage` o `HowTo`.
+Las recetas son lo que más rinde para esto. Cuando alguien le pregunta a
+ChatGPT «cómo preparo matcha para que no quede amargo», la respuesta ya está
+escrita, medida y atribuida a la marca.
+
+**(tuyo)** Lo que sigue se gana con constancia:
+- Una nota por origen cada vez que entre un lote nuevo.
+- Más recetas, sobre todo estacionales.
+
+Cada una puede ser una página propia con su `Recipe` o su `Article`.
 
 ---
 
-## 6 · Hablá como tu cliente — *hecho*
+## 6 · Habla como tu cliente — *hecho*
+
+> **Corregido:** todo el sitio estaba escrito en voseo rioplatense
+> («querés», «tenés», «sumate»). Eso es argentino, no chileno, y para un
+> cliente de Santiago suena a texto importado: es exactamente el tipo de
+> detalle que hace que una página «se note». Son 352 reemplazos en toda la
+> copia, incluyendo la sección de Shopify, el GPT y estos documentos.
 
 Las preguntas de la sección están escritas tal como las hace alguien real
 —«¿cuánto matcha uso por taza?», «¿qué café me conviene si recién
@@ -96,12 +109,12 @@ el usuario escribió y cite la respuesta.
 
 ---
 
-## 7 · Ampliá tu presencia digital — *(tuyo)*
+## 7 · Amplía tu presencia digital — *(tuyo)*
 
 Lo único que puedo hacer desde el código es dejar el enganche listo: el
 campo `sameAs` del JSON-LD está vacío, esperando tus perfiles.
 
-**(tuyo)** Pasame y los agrego:
+**(tuyo)** Pásame y los agrego:
 - el link de Instagram
 - el link de TikTok
 - el link de tu ficha de Google (Perfil de Empresa)
@@ -112,7 +125,7 @@ ficha de Google y la tienda son la misma marca, en vez de tres cosas sueltas.
 
 ---
 
-## 8 · Creá un GPT de tu marca — *listo para pegar*
+## 8 · Crea un GPT de tu marca — *listo para pegar*
 
 Está todo escrito en **`ia/gpt-sepia-coffee.md`**: nombre, descripción,
 instrucciones completas, arranques de conversación y qué archivos subir.
@@ -122,7 +135,7 @@ toma unos diez minutos.
 
 ---
 
-## 9 · Optimizá tus imágenes — *hecho en el código, falta el contenido*
+## 9 · Optimiza tus imágenes — *hecho en el código, falta el contenido*
 
 Hecho:
 - Texto alternativo descriptivo y con contexto en todas las imágenes. Antes
@@ -139,7 +152,7 @@ matcha, la botella de cold brew y el local.
 
 ---
 
-## 10 · Creá comparativas útiles — *hecho*
+## 10 · Crea comparativas útiles — *hecho*
 
 La sección **«¿Cuál me conviene?»** es una tabla real (`<table>`, no
 imágenes) que compara los seis productos principales por qué son, cómo se
@@ -175,5 +188,5 @@ esconde sola (las reseñas) o se dibuja la ilustración (las fotos).
 | Que los bots puedan entrar | `curl https://sepiacoffee.cl/robots.txt` |
 | Que ChatGPT te encuentre | preguntale «¿dónde compro matcha ceremonial en Chile?» una vez indexado |
 
-El indexado no es inmediato: entre que enviás el sitemap y que aparecés en
+El indexado no es inmediato: entre que envías el sitemap y que apareces en
 las respuestas suelen pasar varias semanas.
