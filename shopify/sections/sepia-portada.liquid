@@ -559,6 +559,34 @@
 .sepia2 .receta-tip{margin-top:auto;background:var(--papel);border-radius:var(--r-md);padding:.75rem .9rem;font-size:.86rem;color:var(--tinta-70);line-height:1.45}
 .sepia2 .receta-tip b{font-family:var(--display);color:var(--tinta)}
 
+
+/* ---------- Selector de matcha ---------- */
+.sepia2 .selector{display:grid;gap:clamp(.8rem,1.6vw,1.1rem);grid-template-columns:1fr}
+@media(min-width:760px){.sepia2 .selector{grid-template-columns:repeat(3,1fr)}}
+.sepia2 .sel-tarjeta{background:var(--blanco);border-radius:var(--r-xl);padding:clamp(1.3rem,2.4vw,1.7rem);display:flex;flex-direction:column;gap:.7rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.sepia2 .sel-tarjeta:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(47,65,86,.13)}
+.sepia2 .sel-etq{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)}
+.sepia2 .sel-arte{width:64px;height:88px;max-width:none;--acento:var(--navy);margin:.2rem 0}
+.sepia2 .sel-tarjeta h3{font-size:clamp(1.18rem,1.8vw,1.4rem)}
+.sepia2 .sel-tarjeta p{font-size:.93rem;color:var(--tinta-70);line-height:1.52}
+.sepia2 .sel-pie{margin-top:auto;padding-top:.5rem;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--display);font-weight:600;font-size:.92rem}
+.sepia2 .sel-pie .ic{width:15px;height:15px;transition:transform .25s var(--ease)}
+.sepia2 .sel-tarjeta:hover .sel-pie .ic{transform:translateX(4px)}
+
+/* ---------- Grupos de preguntas ---------- */
+.sepia2 .faq-grupo{max-width:62rem;margin-inline:auto}
+.sepia2 .faq-grupo+.faq-grupo{margin-top:clamp(1.6rem,3vw,2.6rem)}
+.sepia2 .faq-grupo-cab{margin-bottom:.9rem;padding-left:.2rem}
+.sepia2 .faq-grupo-cab h3{font-size:clamp(1.2rem,1.9vw,1.42rem)}
+.sepia2 .faq-grupo-cab p{font-size:.9rem;color:var(--tinta-60);margin-top:.2rem}
+.sepia2 .resp-cta{margin-top:.9rem}
+.sepia2 .resp-cta a{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--display);font-weight:600;font-size:.9rem;color:var(--navy);background:var(--celeste);padding:.5rem .9rem;border-radius:var(--r-pill);border-bottom:0}
+.sepia2 .resp-cta a:hover{background:var(--teal);color:var(--blanco)}
+.sepia2 .resp-cta .ic{width:14px;height:14px;transition:transform .25s var(--ease)}
+.sepia2 .resp-cta a:hover .ic{transform:translateX(3px)}
+.sepia2 .resp b{font-family:var(--display);color:var(--tinta)}
+
+.sepia2 .sel-foto{width:64px;height:88px;object-fit:contain;max-width:none;margin:.2rem 0}
 </style>
 
 
@@ -1390,6 +1418,88 @@
 </section>
 {%- endif -%}
 
+<!-- ===================== 06 · MATCHA =====================
+     El selector por uso resuelve la compra en un clic, y la comparativa
+     con el café responde la pregunta de entrada de casi todo el que llega
+     al matcha desde el café.
+
+     Las cifras de cafeína son rangos de referencia. Nada de afirmaciones
+     de salud sin respaldo: un asistente no las cita y a la marca le restan. -->
+{%- assign sel = section.blocks | where: 'type', 'selector' -%}
+{%- assign filas_m = section.blocks | where: 'type', 'fila_matcha' -%}
+{%- if section.settings.mat_titulo != blank and sel.size > 0 or filas_m.size > 0 -%}
+<section class="modulo" id="matcha" style="background:{{ section.settings.mat_fondo }}">
+  <div class="wrap">
+    {%- if section.settings.mat_titulo != blank -%}
+    <div class="mod-cab rev">
+      <div>
+        <h2 class="t-3xl">{{ section.settings.mat_titulo }}</h2>
+        {%- if section.settings.mat_copy != blank -%}<p class="copy">{{ section.settings.mat_copy }}</p>{%- endif -%}
+      </div>
+      {%- if section.settings.mat_cta != blank -%}
+        <a href="{{ section.settings.mat_url | default: '#preguntas' }}" class="enlace-sub">{{ section.settings.mat_cta }}</a>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+
+    {%- if sel.size > 0 -%}
+    <div class="selector rev">
+      {%- for b in sel -%}
+        {%- assign p = b.settings.producto -%}
+        <a class="sel-tarjeta" href="{%- if p != blank -%}{{ p.url }}{%- else -%}{{ b.settings.enlace | default: '#' }}{%- endif -%}" {{ b.shopify_attributes }}>
+          {%- if b.settings.etiqueta != blank -%}<span class="sel-etq">{{ b.settings.etiqueta }}</span>{%- endif -%}
+          {%- if b.settings.foto != blank -%}
+            {{ b.settings.foto | image_url: width: 240 | image_tag: loading: 'lazy', class: 'sel-foto', alt: b.settings.titulo }}
+          {%- else -%}
+            <svg class="sel-arte" viewBox="0 0 200 272" aria-hidden="true"><use href="#s2-i-{{ b.settings.arte | default: 'tarro' }}"/></svg>
+          {%- endif -%}
+          <h3>{%- if p != blank -%}{{ p.title }}{%- else -%}{{ b.settings.titulo }}{%- endif -%}</h3>
+          {%- if b.settings.texto != blank -%}<p>{{ b.settings.texto }}</p>{%- endif -%}
+          <span class="sel-pie">
+            {%- if p != blank -%}Desde {{ p.price | money }}{%- else -%}{{ b.settings.precio }}{%- endif -%}
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-der"/></svg>
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+    {%- endif -%}
+
+    {%- if filas_m.size > 0 and section.settings.mat_tabla_titulo != blank -%}
+    <div class="panel rev" style="padding:clamp(1.3rem,2.6vw,2rem);margin-top:clamp(1rem,2vw,1.5rem)">
+      <h3 class="t-2xl" style="margin-bottom:.4rem">{{ section.settings.mat_tabla_titulo }}</h3>
+      {%- if section.settings.mat_tabla_copy != blank -%}
+        <p class="copy" style="color:var(--tinta-60);margin-bottom:1.2rem">{{ section.settings.mat_tabla_copy }}</p>
+      {%- endif -%}
+      <div class="guia">
+        <table>
+          {%- if section.settings.mat_leyenda != blank -%}<caption>{{ section.settings.mat_leyenda }}</caption>{%- endif -%}
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col">{{ section.settings.mat_col_a }}</th>
+              <th scope="col">{{ section.settings.mat_col_b }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for b in filas_m -%}
+              <tr {{ b.shopify_attributes }}>
+                <th scope="row">{{ b.settings.concepto }}</th>
+                <td data-etq="{{ section.settings.mat_col_a | escape }}">{{ b.settings.lado_a }}</td>
+                <td data-etq="{{ section.settings.mat_col_b | escape }}">{{ b.settings.lado_b }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+      {%- if section.settings.mat_tabla_pie != blank -%}
+        <p class="guia-pie">{{ section.settings.mat_tabla_pie }}</p>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
 <!-- ===================== 07 · GUÍA COMPARATIVA =====================
      Punto 10 del plan de IA: una comparativa útil. Es el formato que
      ChatGPT cita casi textual cuando alguien pregunta "cuál me conviene".
@@ -1608,9 +1718,12 @@
 {%- endif -%}
 
 <!-- ===================== 09 · PREGUNTAS FRECUENTES =====================
-     Puntos 5 y 6 del plan de IA: contenido útil escrito con las palabras
-     con que pregunta un cliente. Abajo de la sección va el FAQPage en
-     JSON-LD, generado de estos mismos bloques. -->
+     Criterio: estas son las preguntas que la gente le hace a ChatGPT sobre
+     matcha y café, no las que una marca querría que le hicieran. Las que
+     dan pie a una compra cierran con una oferta.
+
+     Donde la respuesta honesta no favorece la venta, va la respuesta
+     honesta igual: un asistente no cita afirmaciones de salud sin respaldo. -->
 {%- assign preguntas = section.blocks | where: 'type', 'pregunta' -%}
 {%- if preguntas.size > 0 and section.settings.faq_titulo != blank -%}
 <section class="modulo" id="preguntas">
@@ -1623,26 +1736,51 @@
         {%- endif -%}
       </div>
     </div>
-    <div class="faq rev">
-      {%- for b in preguntas -%}
-        <details {{ b.shopify_attributes }}>
-          <summary>{{ b.settings.pregunta }}</summary>
-          <div class="resp">{{ b.settings.respuesta }}</div>
-        </details>
-      {%- endfor -%}
-    </div>
+
+    {%- comment -%} Agrupadas, en el orden en que aparecen los grupos. {%- endcomment -%}
+    {%- assign vistos = '' -%}
+    {%- for b in preguntas -%}
+      {%- assign g = b.settings.grupo | default: 'otras' -%}
+      {%- unless vistos contains g -%}
+        {%- assign vistos = vistos | append: g | append: ',' -%}
+        {%- assign delgrupo = preguntas | where: 'settings.grupo', g -%}
+        <div class="faq-grupo rev">
+          {%- if b.settings.grupo_titulo != blank -%}
+            <div class="faq-grupo-cab">
+              <h3 class="t-xl">{{ b.settings.grupo_titulo }}</h3>
+              {%- if b.settings.grupo_bajada != blank -%}<p>{{ b.settings.grupo_bajada }}</p>{%- endif -%}
+            </div>
+          {%- endif -%}
+          <div class="faq">
+            {%- for q in delgrupo -%}
+              <details {{ q.shopify_attributes }}>
+                <summary>{{ q.settings.pregunta }}</summary>
+                <div class="resp">
+                  {{ q.settings.respuesta }}
+                  {%- if q.settings.cta_texto != blank -%}
+                    <p class="resp-cta">
+                      <a href="{%- if q.settings.cta_producto != blank -%}{{ q.settings.cta_producto.url }}{%- else -%}{{ q.settings.cta_url | default: '#' }}{%- endif -%}">
+                        {{ q.settings.cta_texto }}
+                        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#s2-i-der"/></svg>
+                      </a>
+                    </p>
+                  {%- endif -%}
+                </div>
+              </details>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endunless -%}
+    {%- endfor -%}
   </div>
 </section>
 
-{%- comment -%}
-  El mismo texto, como datos estructurados. Esto es lo que permite que un
-  asistente responda citando la tienda en vez de inventar.
-{%- endcomment -%}
+{%- comment -%} El mismo texto, como datos estructurados. {%- endcomment -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "inLanguage": "{{ request.locale.iso_code | default: 'es-CL' }}",
+  "inLanguage": {{ request.locale.iso_code | default: 'es-CL' | json }},
   "mainEntity": [
     {%- for b in preguntas -%}
       {
@@ -1658,7 +1796,6 @@
 }
 </script>
 {%- endif -%}
-
 <!-- ===================== BOLETÍN ===================== -->
 {%- if section.settings.mostrar_boletin -%}
 <section class="modulo sin-top" id="boletin">
@@ -2474,6 +2611,79 @@
       "id": "rec_et_dato",
       "label": "Etiqueta del dato",
       "default": "Dato:"
+    },
+    {
+      "type": "header",
+      "content": "Bloque de matcha"
+    },
+    {
+      "type": "paragraph",
+      "content": "El selector resuelve la compra en un clic y la comparativa responde la pregunta de entrada de casi todo el que llega al matcha desde el café. Las tarjetas y las filas se agregan como bloques."
+    },
+    {
+      "type": "text",
+      "id": "mat_titulo",
+      "label": "Título",
+      "default": "¿Cuál matcha es para ti?"
+    },
+    {
+      "type": "text",
+      "id": "mat_copy",
+      "label": "Bajada",
+      "default": "Tres formas de tomarlo, tres puntos de partida."
+    },
+    {
+      "type": "text",
+      "id": "mat_cta",
+      "label": "Texto del enlace",
+      "default": "Dudas sobre el matcha"
+    },
+    {
+      "type": "url",
+      "id": "mat_url",
+      "label": "Enlace"
+    },
+    {
+      "type": "color",
+      "id": "mat_fondo",
+      "label": "Fondo de la sección",
+      "default": "#C8D9E6"
+    },
+    {
+      "type": "text",
+      "id": "mat_tabla_titulo",
+      "label": "Título de la comparativa",
+      "default": "Matcha o café"
+    },
+    {
+      "type": "text",
+      "id": "mat_tabla_copy",
+      "label": "Bajada de la comparativa",
+      "default": "No es que uno reemplace al otro: cambia cómo llega la energía."
+    },
+    {
+      "type": "text",
+      "id": "mat_col_a",
+      "label": "Columna izquierda",
+      "default": "Matcha ceremonial"
+    },
+    {
+      "type": "text",
+      "id": "mat_col_b",
+      "label": "Columna derecha",
+      "default": "Café de filtro"
+    },
+    {
+      "type": "text",
+      "id": "mat_leyenda",
+      "label": "Leyenda de la tabla",
+      "default": "Comparación entre una taza de matcha ceremonial y una de café, a modo de referencia."
+    },
+    {
+      "type": "text",
+      "id": "mat_tabla_pie",
+      "label": "Nota al pie",
+      "default": "Las cifras son de referencia: la cafeína del matcha varía con la cosecha."
     }
   ],
   "blocks": [
@@ -2790,8 +3000,27 @@
     {
       "type": "pregunta",
       "name": "Pregunta frecuente",
-      "limit": 20,
+      "limit": 24,
       "settings": [
+        {
+          "type": "text",
+          "id": "grupo",
+          "label": "Grupo",
+          "default": "matcha",
+          "info": "Las preguntas con el mismo grupo se muestran juntas. Usa la misma palabra en todas las del grupo."
+        },
+        {
+          "type": "text",
+          "id": "grupo_titulo",
+          "label": "Título del grupo",
+          "info": "Solo en la primera pregunta de cada grupo."
+        },
+        {
+          "type": "text",
+          "id": "grupo_bajada",
+          "label": "Bajada del grupo",
+          "info": "Solo en la primera pregunta de cada grupo."
+        },
         {
           "type": "text",
           "id": "pregunta",
@@ -2802,6 +3031,23 @@
           "type": "richtext",
           "id": "respuesta",
           "label": "La respuesta"
+        },
+        {
+          "type": "text",
+          "id": "cta_texto",
+          "label": "Texto de la oferta",
+          "info": "Opcional. Por ejemplo: Ver el Matcha Ceremonial."
+        },
+        {
+          "type": "product",
+          "id": "cta_producto",
+          "label": "Producto de la oferta"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Enlace de la oferta",
+          "info": "Si no elegiste producto."
         }
       ]
     },
@@ -2891,6 +3137,108 @@
           "type": "text",
           "id": "dato",
           "label": "Dato al pie"
+        }
+      ]
+    },
+    {
+      "type": "selector",
+      "name": "Tarjeta del selector",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "etiqueta",
+          "label": "Etiqueta de arriba",
+          "info": "Por ejemplo: Para tomarlo solo."
+        },
+        {
+          "type": "product",
+          "id": "producto",
+          "label": "Producto",
+          "info": "Toma su nombre, precio y enlace reales."
+        },
+        {
+          "type": "text",
+          "id": "titulo",
+          "label": "Título",
+          "info": "Solo si no elegiste un producto."
+        },
+        {
+          "type": "text",
+          "id": "precio",
+          "label": "Precio",
+          "info": "Solo si no elegiste un producto."
+        },
+        {
+          "type": "url",
+          "id": "enlace",
+          "label": "Enlace",
+          "info": "Solo si no elegiste un producto."
+        },
+        {
+          "type": "textarea",
+          "id": "texto",
+          "label": "Descripción"
+        },
+        {
+          "type": "image_picker",
+          "id": "foto",
+          "label": "Foto"
+        },
+        {
+          "type": "select",
+          "id": "arte",
+          "label": "Dibujo si no hay foto",
+          "default": "tarro",
+          "options": [
+            {
+              "value": "tarro",
+              "label": "Lata de matcha"
+            },
+            {
+              "value": "bolsa",
+              "label": "Bolsa de café"
+            },
+            {
+              "value": "botella",
+              "label": "Botella"
+            },
+            {
+              "value": "taza",
+              "label": "Taza"
+            },
+            {
+              "value": "batidor",
+              "label": "Batidor"
+            },
+            {
+              "value": "caja",
+              "label": "Caja"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fila_matcha",
+      "name": "Fila de matcha o café",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "concepto",
+          "label": "Concepto",
+          "info": "Por ejemplo: Cafeína por taza."
+        },
+        {
+          "type": "text",
+          "id": "lado_a",
+          "label": "Columna izquierda"
+        },
+        {
+          "type": "text",
+          "id": "lado_b",
+          "label": "Columna derecha"
         }
       ]
     }
@@ -3069,34 +3417,6 @@
           }
         },
         {
-          "type": "pregunta",
-          "settings": {
-            "pregunta": "¿Qué diferencia hay entre el matcha ceremonial y el culinario?",
-            "respuesta": "<p>El grado ceremonial se hace con las hojas más jóvenes de la primera cosecha: queda verde intenso, de textura sedosa y dulce, pensado para tomarlo solo con agua o con leche. El culinario viene de cosechas posteriores, es más amargo y más barato, y se usa para repostería.</p>"
-          }
-        },
-        {
-          "type": "pregunta",
-          "settings": {
-            "pregunta": "¿Cuánto matcha uso por taza y a qué temperatura va el agua?",
-            "respuesta": "<p>Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo. Lo bates en zigzag unos 15 segundos.</p>"
-          }
-        },
-        {
-          "type": "pregunta",
-          "settings": {
-            "pregunta": "¿Qué café me conviene si recién empiezo?",
-            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitas equipo especial.</p>"
-          }
-        },
-        {
-          "type": "pregunta",
-          "settings": {
-            "pregunta": "¿Cómo guardo el café para que no se pase?",
-            "respuesta": "<p>En un envase hermético, en un lugar fresco y oscuro, lejos del horno y del sol. No en el refrigerador: la humedad y los olores lo arruinan más rápido que el aire. Y en grano, moliendo justo antes de preparar.</p>"
-          }
-        },
-        {
           "type": "receta",
           "settings": {
             "titulo": "Matcha latte helado",
@@ -3172,6 +3492,244 @@
             "ingredientes": "100 ml de cold brew\n150 ml de agua tónica fría\nHielo\nUna rodaja de naranja",
             "pasos": "Llena el vaso con hielo hasta arriba.\nAgrega la tónica primero.\nVierte el cold brew encima, despacio y por el borde, para que quede en dos capas.\nNaranja, y a tomar antes de que se mezcle.",
             "dato": "Funciona porque el cold brew es menos denso que la tónica. Si lo echas al revés, se mezcla al tiro."
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para tomarlo solo",
+            "titulo": "Matcha Ceremonial",
+            "precio": "Desde $16.900",
+            "arte": "tarro",
+            "texto": "El grado más alto, de primera cosecha. Dulce y sedoso, sin amargor: está hecho para tomarlo con agua y nada más."
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para matcha latte",
+            "titulo": "Matcha Coco",
+            "precio": "Desde $17.900",
+            "arte": "tarro",
+            "texto": "Ceremonial con coco. Más dulce y cremoso, pensado para que aguante la leche sin perderse. Va mejor helado."
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para empezar de cero",
+            "titulo": "Pack Matcha",
+            "precio": "Desde $28.900",
+            "arte": "batidor",
+            "texto": "El ceremonial más el batidor de bambú. Si todavía no tienes chasen, este es el camino corto: con cuchara vas a tener grumos."
+          }
+        },
+        {
+          "type": "fila_matcha",
+          "settings": {
+            "concepto": "Cafeína por taza",
+            "lado_a": "Alrededor de 60 mg en 2 g de polvo",
+            "lado_b": "Alrededor de 95 mg en 240 ml"
+          }
+        },
+        {
+          "type": "fila_matcha",
+          "settings": {
+            "concepto": "Cómo llega",
+            "lado_a": "Más pareja. Se atribuye a la L-teanina, un aminoácido del té verde",
+            "lado_b": "Más rápida al principio, y suele venir con un bajón después"
+          }
+        },
+        {
+          "type": "fila_matcha",
+          "settings": {
+            "concepto": "Sabor",
+            "lado_a": "Vegetal y dulce, con umami. Nada de amargor si el agua va a 80 °C",
+            "lado_b": "Según el origen: desde floral y ácido hasta achocolatado"
+          }
+        },
+        {
+          "type": "fila_matcha",
+          "settings": {
+            "concepto": "Preparación",
+            "lado_a": "Tamizar y batir, 1 minuto. Necesitas batidor",
+            "lado_b": "Moler y filtrar, 3 minutos. Necesitas molinillo y filtro"
+          }
+        },
+        {
+          "type": "fila_matcha",
+          "settings": {
+            "concepto": "Cuándo conviene",
+            "lado_a": "Para la tarde, o para reemplazar el segundo café del día",
+            "lado_b": "Para partir la mañana"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "grupo_titulo": "Matcha",
+            "grupo_bajada": "Lo que más nos preguntan sobre el matcha.",
+            "pregunta": "¿El matcha tiene más cafeína que el café?",
+            "respuesta": "<p>No. Una taza de matcha de 2 gramos tiene alrededor de 60 mg de cafeína, y una taza de café de filtro de 240 ml anda en los 95 mg. El matcha está más cerca de un espresso que de un café largo.</p><p>Lo que cambia no es tanto la cantidad como la forma en que llega. El matcha trae L-teanina, un aminoácido del té verde al que se atribuye una subida más pareja y sin el bajón de media mañana. Por eso mucha gente lo usa para reemplazar el segundo café del día, no el primero.</p><p>La cifra exacta varía según la cosecha y cuánto polvo uses, así que tómala como referencia.</p>",
+            "cta_texto": "Ver el Matcha Ceremonial",
+            "cta_url": "#producto-matcha-ceremonial"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Por qué mi matcha sabe amargo o a pasto?",
+            "respuesta": "<p>Casi siempre es una de tres cosas, en este orden:</p><p><b>El agua estaba muy caliente.</b> Sobre 80 °C el polvo se quema y aparece el amargor. Si no tienes termómetro, hierve y deja reposar dos minutos fuera del fuego.</p><p><b>Es matcha culinario, no ceremonial.</b> El culinario viene de cosechas posteriores y es naturalmente más áspero. Sirve para repostería, donde el azúcar lo compensa, pero no para tomarlo solo.</p><p><b>Está viejo o mal guardado.</b> El matcha se oxida con la luz, el calor y el aire. Si el verde se fue apagando hacia un tono oliva, ya perdió.</p>",
+            "cta_texto": "Ver el Matcha Ceremonial",
+            "cta_url": "#producto-matcha-ceremonial"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Puedo tomar matcha todos los días?",
+            "respuesta": "<p>Sí. Una o dos tazas al día es lo habitual y equivale, en cafeína, a uno o dos espressos.</p><p>Si estás embarazada, amamantando, tomas medicamentos o tienes indicación médica de limitar la cafeína, conversa con tu médico antes. No somos quienes para dar ese consejo.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿El matcha sirve para bajar de peso?",
+            "respuesta": "<p>Por sí solo, no. No hay evidencia de que tomar matcha haga bajar de peso, y cualquier marca que te diga lo contrario te está vendiendo humo.</p><p>Lo que sí pasa, y no es menor: un matcha sin azúcar reemplaza bien a un café con leche azucarado o a una bebida. Ahí el cambio es real, pero es por lo que dejas de tomar, no por el matcha.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Qué leche va mejor con el matcha?",
+            "respuesta": "<p>La de avena, con diferencia. Es la que mejor espuma y la que menos tapa el sabor del matcha. Si la consigues en versión barista, mejor todavía.</p><p>La entera funciona bien y deja una textura más cremosa. La de almendra es la más liviana, pero también la que más opaca el matcha. La de soya tiende a cortarse si el matcha está muy caliente.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Necesito batidor de bambú o puedo usar otra cosa?",
+            "respuesta": "<p>El batidor de bambú (chasen) es lo que mejor funciona: las cañas finas deshacen los grumos y levantan espuma de una forma que una cuchara no logra.</p><p>Si todavía no tienes uno, la alternativa que mejor resulta es un frasco con tapa: pones el matcha tamizado y el agua, cierras y agitas fuerte quince segundos. Un mini espumador eléctrico también sirve.</p><p>Lo que no funciona es revolver con cuchara. Vas a tener grumos.</p>",
+            "cta_texto": "Ver el Pack Matcha, con batidor incluido",
+            "cta_url": "#producto-pack-matcha"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Cuánto dura el matcha una vez abierto?",
+            "respuesta": "<p>Entre cuatro y seis semanas en su mejor momento. No se echa a perder después, pero el color se apaga y el sabor pierde dulzor.</p><p>Guárdalo cerrado, en un lugar fresco y oscuro, lejos del horno. Si vives en una casa calurosa, el refrigerador sirve, pero sácalo y déjalo llegar a temperatura ambiente antes de abrirlo: si lo abres frío, se condensa humedad adentro y eso sí lo arruina.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "matcha",
+            "pregunta": "¿Cuál es la diferencia entre matcha ceremonial y culinario?",
+            "respuesta": "<p>El ceremonial se hace con las hojas más jóvenes de la primera cosecha. Queda verde intenso, de textura sedosa y con dulzor natural, pensado para tomarlo solo con agua o con leche.</p><p>El culinario viene de cosechas posteriores. Es más áspero y más barato, y está hecho para repostería o mezclas donde el sabor queda tapado.</p><p>Un detalle que conviene saber: «ceremonial» no es una categoría regulada, así que cualquiera puede escribirlo en una lata. Lo que sí se nota es el color, la finura del polvo y si el productor dice de dónde viene.</p>",
+            "cta_texto": "Ver el Matcha Ceremonial",
+            "cta_url": "#producto-matcha-ceremonial"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "grupo_titulo": "Café",
+            "grupo_bajada": "Grano, molienda, tueste y todo lo que viene después.",
+            "pregunta": "¿Qué diferencia hay entre café de especialidad y el del supermercado?",
+            "respuesta": "<p>Tres cosas, y ninguna tiene que ver con el precio en sí:</p><p><b>Trazabilidad.</b> En especialidad se sabe de qué finca viene el lote, quién lo produjo y cómo se procesó. En el café industrial eso se pierde en la mezcla.</p><p><b>Frescura.</b> El café muere lento desde que sale del tostador. Una bolsa de supermercado puede llevar meses envasada; nosotros tostamos en lotes chicos y despachamos recién tostado.</p><p><b>Tueste.</b> El café industrial se tuesta oscuro de forma pareja para que todos los lotes sepan igual. En especialidad el tueste se ajusta al grano para que se note de dónde viene.</p>",
+            "cta_texto": "Ver los cafés",
+            "cta_url": "#cafes"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Qué molienda uso para cada método?",
+            "respuesta": "<p>De más gruesa a más fina:</p><p><b>Prensa francesa:</b> gruesa, como sal de mar. <b>Filtro y V60:</b> media, como arena de playa. <b>Cafetera italiana:</b> media-fina. <b>Espresso:</b> fina, como azúcar flor.</p><p>Si el café sale aguado y rápido, muele más fino. Si sale amargo y demora demasiado, muele más grueso. Esa es toda la regla.</p>",
+            "cta_texto": "Ver los cafés",
+            "cta_url": "#cafes"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Me conviene comprarlo en grano o molido?",
+            "respuesta": "<p>En grano, si tienes molinillo. El café molido pierde la mayor parte del aroma en los primeros días, por mucho que lo guardes bien: la superficie expuesta al aire se multiplica apenas lo mueles.</p><p>Si no tienes molinillo, un molido para tu método rinde perfectamente bien durante una o dos semanas. No te compliques: es mejor tomar buen café molido que no tomarlo.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Cómo guardo el café para que no se pase?",
+            "respuesta": "<p>Envase hermético, lugar fresco y oscuro, lejos del horno y del sol.</p><p>En el refrigerador no. La humedad y los olores lo arruinan más rápido que el aire, y cada vez que lo sacas se condensa agua en el grano.</p><p>Un café tostado rinde bien unas cuatro semanas desde la fecha de tueste. Por eso la fecha que importa en la bolsa es esa, no la de vencimiento.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Tueste claro u oscuro?",
+            "respuesta": "<p>El tueste claro conserva más del carácter del origen: más acidez, más notas florales o frutales. El oscuro borra parte de eso y aporta cuerpo, chocolate y amargor.</p><p>Ninguno es mejor. Si vienes de tomar café de supermercado, el claro te va a parecer ácido al principio; vale la pena darle tres o cuatro tazas antes de decidir.</p>",
+            "cta_texto": "Comparar los cafés",
+            "cta_url": "#comparar"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Qué café me conviene si recién empiezo?",
+            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitas equipo especial.</p><p>Si quieres probar más de una cosa de una vez, el pack de inicio trae café, matcha y la taza.</p>",
+            "cta_texto": "Ver el Starter Pack",
+            "cta_url": "#producto-pack-descubrir"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "pedido",
+            "grupo_titulo": "Tu pedido",
+            "grupo_bajada": "Envíos, suscripción y devoluciones.",
+            "pregunta": "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",
+            "respuesta": "<p>Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre $30.000 pagas envío con descuento. El valor exacto depende de la comuna y lo ves antes de pagar.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "pedido",
+            "pregunta": "¿Cómo funciona la suscripción?",
+            "respuesta": "<p>Eliges el producto, marcas «Suscripción» en vez de «Una vez» y queda con 15% de descuento en cada entrega. La pausas o la cancelas cuando quieras desde tu cuenta, sin llamar a nadie.</p><p>Es la forma más barata de mantener café fresco en la casa, porque llega recién tostado en vez de quedarse semanas en la despensa.</p>",
+            "cta_texto": "Ver los packs",
+            "cta_url": "#packs"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "pedido",
+            "pregunta": "¿Puedo devolver un pedido?",
+            "respuesta": "<p>Si el pedido llegó dañado o no es lo que pediste, lo reponemos.</p><p>Por la ley del consumidor, en las compras a distancia tienes además 10 días corridos de derecho a retracto, siempre que el producto esté sin abrir.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "pedido",
+            "pregunta": "¿Tuestan ustedes el café?",
+            "respuesta": "<p>Sí. Compramos lotes chicos de fincas que podemos nombrar, los tostamos en Santiago y los despachamos recién tostados.</p><p>Por eso no tenemos stock de todo el año: cuando se termina un lote, entra otro. Es la contra de tostar en lotes chicos, y la asumimos.</p>"
           }
         }
       ]

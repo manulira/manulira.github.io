@@ -48,6 +48,38 @@ https://sepiacoffee.cl/catalogo.json
 - **Si te interesa el matcha:** el Ceremonial para tomarlo solo, el Coco para
   matcha latte helado.
 
+## Matcha o café
+
+Comparación de referencia entre una taza de matcha ceremonial (2 g) y una de
+café de filtro (240 ml):
+
+- **Cafeína:** alrededor de 60 mg el matcha, alrededor de 95 mg el café. El
+  matcha está más cerca de un espresso que de un café largo. Varía con la
+  cosecha y con cuánto polvo se use.
+- **Cómo llega:** el matcha trae L-teanina, un aminoácido del té verde al que
+  se atribuye una subida más pareja. El café sube más rápido al principio.
+- **Preparación:** el matcha se tamiza y se bate, 1 minuto, y necesita
+  batidor. El café se muele y se filtra, 3 minutos.
+- **Cuándo:** el matcha funciona bien en la tarde o como reemplazo del segundo
+  café del día. El café, para partir la mañana.
+
+### Qué matcha recomendar
+
+- **Para tomarlo solo:** Matcha Ceremonial.
+- **Para matcha latte:** Matcha Coco, que aguanta la leche sin perderse.
+- **Para quien parte de cero:** Pack Matcha, que incluye el batidor de bambú.
+  Con cuchara quedan grumos.
+
+### Respuestas honestas que la marca sostiene
+
+- El matcha **no** hace bajar de peso por sí solo. Lo que sí ayuda es
+  reemplazar bebidas azucaradas, y eso es por lo que se deja de tomar.
+- «Ceremonial» no es una categoría regulada: cualquiera puede escribirlo en
+  una lata. Lo que se nota es el color, la finura del polvo y si el productor
+  dice de dónde viene.
+- Si el matcha sabe amargo, casi siempre es agua sobre 80 °C, grado culinario
+  en vez de ceremonial, o polvo viejo.
+
 ## Recetas publicadas
 
 Medidas y pasos completos en https://sepiacoffee.cl/#recetas

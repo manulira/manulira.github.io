@@ -107,16 +107,20 @@ minimalista — en la línea de Blue Bottle, con más calidez y textura.
 
 ## 3. Idioma — importante
 
-**Español de Chile, tuteo.** «quieres», «tienes», «puedes», «elige»,
-«prueba», «súmate».
+**Español de Chile, tuteo. Cercano pero siempre formal.** «quieres»,
+«tienes», «puedes», «elige», «prueba», «súmate».
 
 **Nunca voseo rioplatense:** «querés», «tenés», «podés», «elegí», «probá»,
 «sumate», «ahorrá», «empezá». Es argentino y para un cliente chileno suena
 inmediatamente a texto importado. Este es el error más fácil de cometer y el
 más visible.
 
-Los giros chilenos naturales sí van, con moderación: «al tiro», «la once»,
-«rico». Nada de caricatura.
+Tampoco jerga, ni emojis, ni inglés suelto. El registro de referencia es
+tostadoclub.com: chileno, cercano y sobrio. **No** el de matchaddict.cl, que
+es más suelto («Stay Addicted», emojis, «obsesionarte»).
+
+Nada de afirmaciones de salud sin respaldo. Un asistente no las cita y a la
+marca le restan credibilidad: si el matcha no hace bajar de peso, se dice.
 
 > Al revisar texto en español, usa Python y no `grep`: en locale C, `grep`
 > no trata las vocales acentuadas como letras y `\b` falla con palabras como

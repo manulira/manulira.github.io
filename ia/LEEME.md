@@ -19,7 +19,19 @@ Después hay que pegar `ld-tienda.json` y `ld-faq.json` dentro de los dos
 bloques `<script type="application/ld+json">` del `<head>` de `index.html`,
 y copiar `catalogo.json` a la raíz.
 
-`recetas.py` hace lo mismo con las recetas:
+`preguntas.py` y `recetas.py` hacen lo mismo con las preguntas frecuentes y
+las recetas:
+
+```sh
+python3 genpreg.py      # escribe parte_preguntas.html y ld-faq.json
+```
+
+El criterio de `preguntas.py`: son las preguntas que la gente le hace a
+ChatGPT, no las que una marca querría que le hicieran. Las que dan pie a una
+compra cierran con una oferta; donde la respuesta honesta no favorece la
+venta, va la respuesta honesta igual.
+
+
 
 ```sh
 python3 genrecetas.py   # escribe parte_recetas.html y ld-recetas.json

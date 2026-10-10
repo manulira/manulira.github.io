@@ -86,5 +86,5 @@ RECETAS = [
    "Agrega la tónica primero.",
    "Vierte el cold brew encima, despacio y por el borde, para que quede en dos capas.",
    "Naranja, y a tomar antes de que se mezcle."],
-  "Funciona porque el cold brew es menos denso que la tónica. Si lo echas al revés, se mezcla al tiro."),
+  "Funciona porque el cold brew es menos denso que la tónica. Si lo haces al revés, se mezcla de inmediato."),
 ]
