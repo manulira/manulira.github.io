@@ -34,9 +34,11 @@ a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 6. Grilla de categorías
 7. Carrusel de packs
 8. Testimonios
-9. Bloque editorial
-10. Boletín
-11. Pie con columnas plegables
+9. Guía comparativa
+10. Bloque editorial
+11. Preguntas frecuentes
+12. Boletín
+13. Pie con columnas plegables
 
 Cada módulo se apaga dejando su título vacío o quitando sus bloques.
 
@@ -74,6 +76,63 @@ a `/cart/add` como siempre.
 
 ---
 
+## Que ChatGPT te encuentre
+
+Los puntos del plan que están resueltos en la sección. El plan completo, con
+lo que falta hacer fuera del código, está en `ia/PLAN-CHATGPT.md`.
+
+### Datos estructurados de la tienda
+Ajuste **«Datos estructurados de la tienda»**. Publica un `Organization` +
+`OnlineStore` armado con los datos reales de tu Shopify: nombre, dirección,
+correo, teléfono, moneda. No hay nada que escribir dos veces.
+
+Lo único que sí tenés que cargar es **«Perfiles de la marca»**: un enlace por
+línea, con tu Instagram, tu TikTok, tu ficha de Google y tu GPT. Ese campo
+(`sameAs`) es lo que le permite a un asistente entender que todo eso es la
+misma marca y no cuatro cosas sueltas.
+
+> Apagalo si tu tema ya publica un `Organization` propio. Dos se pisan.
+
+Shopify ya publica el `Product` de cada ficha, así que eso no hay que tocarlo.
+
+### Guía comparativa
+Bloques **«Fila de la comparativa»**. Es una tabla de «cuál me conviene»: qué
+es cada producto, cómo se prepara, para quién y cuánto cuesta.
+
+Si en la fila elegís un producto del catálogo, toma su nombre y su precio
+reales y se actualizan solos. Si no, escribís el nombre y el precio a mano.
+
+En el teléfono la tabla se apila en tarjetas, pero sigue siendo una `<table>`
+de verdad: eso es justo lo que leen los rastreadores.
+
+### Preguntas frecuentes
+Bloques **«Pregunta frecuente»**. Cada uno sale en la página y además en el
+`FAQPage` de los datos estructurados, que es el formato que un asistente cita.
+
+Escribí la pregunta **como la hace un cliente**: «¿cuánto matcha uso por
+taza?», no «Dosificación del matcha ceremonial». La idea es que coincida con
+lo que la persona efectivamente escribió en el chat.
+
+### robots.txt
+`templates/robots.txt.liquid`. En Shopify el `robots.txt` lo genera el tema, no
+es un archivo que puedas subir. Sin esta plantilla quedan las reglas por
+defecto y no hay garantía de que GPTBot y los demás puedan entrar.
+
+1. Templates → Agregar una plantilla nueva → **robots.txt**
+2. Borrar lo que venga, pegar el archivo entero
+3. Comprobar en `https://tu-tienda.cl/robots.txt`
+
+Mantiene las reglas por defecto de Shopify (que ya esconden carrito y checkout)
+y suma de forma explícita los rastreadores de IA.
+
+### Lo que no se puede hacer desde acá
+Registrar la tienda en [Google Search Console](https://search.google.com/search-console)
+y en [Bing Webmaster Tools](https://www.bing.com/webmasters), y enviar el
+sitemap que Shopify genera solo en `/sitemap.xml`. **Bing importa tanto como
+Google**: es el índice que alimenta las búsquedas de ChatGPT.
+
+---
+
 ## Antes de publicar, cambiá estos datos
 
 Vienen con valores de ejemplo:
@@ -83,6 +142,8 @@ Vienen con valores de ejemplo:
 - El «4,9 · 1.284 reseñas» de la cinta de ventajas
 - El monto del envío gratis del anuncio
 - Enlaces de redes sociales y páginas legales
+- Los textos de ejemplo de la comparativa y de las preguntas frecuentes
+- El campo «Perfiles de la marca», que viene vacío
 
 ---
 

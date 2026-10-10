@@ -490,7 +490,122 @@
 .sepia2 .rev.visto{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.sepia2 *,.sepia2 *::before,.sepia2 *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
 .sepia2 .rev{opacity:1;transform:none}}
+
+/* ---------- Guía comparativa (punto 10 del plan de IA) ---------- */
+.sepia2 .guia{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sepia2 .guia table{width:100%;min-width:720px;border-collapse:collapse;font-size:.95rem;text-align:left}
+.sepia2 .guia caption{text-align:left;color:var(--tinta-60);font-size:.9rem;padding:0 1rem .9rem}
+.sepia2 .guia th,.sepia2 .guia td{padding:.9rem 1rem;vertical-align:top;border-bottom:1px solid var(--tinta-14)}
+.sepia2 .guia thead th{font-family:var(--display);font-weight:600;font-size:.86rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-60);border-bottom:2px solid var(--tinta-14);white-space:nowrap}
+.sepia2 .guia tbody th{font-family:var(--display);font-weight:600;font-size:1.02rem;white-space:nowrap}
+.sepia2 .guia tbody tr:last-child th,.sepia2 .guia tbody tr:last-child td{border-bottom:0}
+.sepia2 .guia tbody tr:hover{background:var(--humo)}
+.sepia2 .guia .precio{font-family:var(--display);font-weight:600;white-space:nowrap}
+.sepia2 .guia .pildora{display:inline-block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.03em;text-transform:uppercase;padding:.26rem .6rem;border-radius:var(--r-pill);background:var(--celeste);color:var(--navy)}
+.sepia2 .guia-pie{margin-top:1.1rem;font-size:.9rem;color:var(--tinta-60)}
+
+/* ---------- Preguntas frecuentes (puntos 5 y 6) ---------- */
+.sepia2 .faq{display:grid;gap:.7rem;max-width:62rem;margin-inline:auto}
+.sepia2 .faq details{background:var(--blanco);border-radius:var(--r-lg);overflow:hidden;transition:background .25s var(--ease)}
+.sepia2 .faq summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;list-style:none;padding:clamp(1rem,2vw,1.3rem) clamp(1.1rem,2.4vw,1.6rem);font-family:var(--display);font-weight:600;font-size:clamp(1.02rem,1.5vw,1.14rem);line-height:1.3}
+.sepia2 .faq summary::-webkit-details-marker{display:none}
+.sepia2 .faq summary::after{content:"";flex:none;width:11px;height:11px;border-right:2.4px solid currentColor;border-bottom:2.4px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .25s var(--ease)}
+.sepia2 .faq details[open] summary::after{transform:rotate(225deg) translateY(-2px)}
+.sepia2 .faq details[open]{background:var(--blanco)}
+.sepia2 .faq .resp{padding:0 clamp(1.1rem,2.4vw,1.6rem) clamp(1.1rem,2.4vw,1.5rem);max-width:60ch}
+.sepia2 .faq .resp p+p{margin-top:.6rem}
+.sepia2 .faq .resp p{color:var(--tinta-70);line-height:1.6}
+.sepia2 .faq .resp a{border-bottom:2px solid var(--tinta-14);font-weight:500}
+.sepia2 .faq .resp a:hover{border-bottom-color:currentColor}
+
+@media(max-width:759px){
+.sepia2 .guia{overflow-x:visible}
+.sepia2 .guia table{min-width:0;display:block}
+.sepia2 .guia caption{display:block;width:100%;padding-inline:0}
+.sepia2 .guia thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.sepia2 .guia tbody,.sepia2 .guia tr{display:block}
+.sepia2 .guia tr{background:var(--papel);border-radius:var(--r-md);padding:.4rem .2rem .6rem;margin-bottom:.7rem}
+.sepia2 .guia tr:last-child{margin-bottom:0}
+.sepia2 .guia tbody th,.sepia2 .guia td{display:block;border-bottom:0;padding:.3rem .9rem}
+.sepia2 .guia tbody th{font-size:1.1rem;padding-top:.7rem;padding-bottom:.5rem;white-space:normal}
+.sepia2 .guia td{display:grid;grid-template-columns:7.4rem 1fr;gap:.2rem .8rem;align-items:baseline;font-size:.94rem}
+.sepia2 .guia td::before{content:attr(data-etq);font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-60)}
+.sepia2 .guia tbody tr:hover{background:var(--papel)}
+}
 </style>
+
+
+{%- comment -%}
+  ============================================================================
+  DATOS ESTRUCTURADOS DE LA TIENDA · puntos 1, 2 y 4 del plan de IA
+  ----------------------------------------------------------------------------
+  Se arma solo con los datos reales de la tienda, así no queda nada
+  inventado ni nada que haya que actualizar a mano. Shopify ya publica el
+  Product de cada ficha; esto es lo que falta: quién es la marca.
+
+  Activalo en "Datos estructurados de la tienda". Dejalo apagado si el tema
+  ya emite un Organization propio: dos iguales se pisan.
+
+  Los perfiles sociales (sameAs) se cargan en el ajuste "Perfiles de la
+  marca", uno por línea. Es el campo que le permite a un asistente entender
+  que el Instagram, la ficha de Google y la tienda son la misma marca.
+  ============================================================================
+{%- endcomment -%}
+{%- if section.settings.ld_tienda -%}
+  {%- comment -%} Un perfil por línea; limpio cada uno y descarto los vacíos. {%- endcomment -%}
+  {%- assign ld_lineas = section.settings.ld_sameas | newline_to_br | split: '<br />' -%}
+  {%- capture ld_perfiles -%}
+    [
+    {%- assign primero = true -%}
+    {%- for linea in ld_lineas -%}
+      {%- assign url = linea | strip_html | strip -%}
+      {%- if url != blank -%}
+        {%- unless primero -%},{%- endunless -%}{{ url | json }}
+        {%- assign primero = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+    ]
+  {%- endcapture -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["Organization", "OnlineStore"],
+    "@id": {{ shop.url | append: '/#tienda' | json }},
+    "name": {{ shop.name | default: "sepia coffee" | json }},
+    "url": {{ shop.url | append: '/' | json }},
+    {%- assign ld_desc = section.settings.ld_descripcion | default: shop.description | strip_html | strip_newlines -%}
+    {%- if ld_desc != blank %}
+    "description": {{ ld_desc | json }},
+    {%- endif %}
+    {%- if section.settings.ld_logo != blank %}
+    "logo": {
+      "@type": "ImageObject",
+      "url": {{ section.settings.ld_logo | image_url: width: 600 | prepend: 'https:' | json }}
+    },
+    {%- endif %}
+    {%- if shop.email != blank %}
+    "email": {{ shop.email | json }},
+    {%- endif %}
+    {%- if shop.phone != blank %}
+    "telephone": {{ shop.phone | json }},
+    {%- endif %}
+    {%- if shop.address.country != blank %}
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": {{ shop.address.street | json }},
+      "addressLocality": {{ shop.address.city | json }},
+      "addressRegion": {{ shop.address.province | json }},
+      "postalCode": {{ shop.address.zip | json }},
+      "addressCountry": {{ shop.address.country_upper | json }}
+    },
+    {%- endif %}
+    "areaServed": { "@type": "Country", "name": {{ section.settings.ld_pais | default: 'Chile' | json }} },
+    "currenciesAccepted": {{ shop.currency | default: "CLP" | json }},
+    "knowsLanguage": {{ request.locale.iso_code | default: 'es-CL' | json }},
+    "sameAs": {{ ld_perfiles | strip_newlines }}
+  }
+  </script>
+{%- endif -%}
 
 <div class="sepia2" data-sepia2="{{ section.id }}">
 
@@ -1248,6 +1363,65 @@
 </section>
 {%- endif -%}
 
+<!-- ===================== 07 · GUÍA COMPARATIVA =====================
+     Punto 10 del plan de IA: una comparativa útil. Es el formato que
+     ChatGPT cita casi textual cuando alguien pregunta "cuál me conviene".
+     Las filas son bloques "Fila de la comparativa". -->
+{%- assign filas = section.blocks | where: 'type', 'comparar' -%}
+{%- if filas.size > 0 and section.settings.comp_titulo != blank -%}
+<section class="modulo" id="comparar">
+  <div class="wrap">
+    <div class="mod-cab rev">
+      <div>
+        <h2 class="t-3xl">{{ section.settings.comp_titulo }}</h2>
+        {%- if section.settings.comp_copy != blank -%}<p class="copy">{{ section.settings.comp_copy }}</p>{%- endif -%}
+      </div>
+      {%- if section.settings.comp_cta != blank -%}
+        <a href="{{ section.settings.comp_url | default: '/collections/all' }}" class="enlace-sub">{{ section.settings.comp_cta }}</a>
+      {%- endif -%}
+    </div>
+    <div class="panel rev" style="padding:clamp(1.2rem,2.6vw,2rem)">
+      <div class="guia">
+        <table>
+          {%- if section.settings.comp_leyenda != blank -%}
+            <caption>{{ section.settings.comp_leyenda }}</caption>
+          {%- endif -%}
+          <thead>
+            <tr>
+              <th scope="col">{{ section.settings.comp_col1 }}</th>
+              <th scope="col">{{ section.settings.comp_col2 }}</th>
+              <th scope="col">{{ section.settings.comp_col3 }}</th>
+              <th scope="col">{{ section.settings.comp_col4 }}</th>
+              <th scope="col">{{ section.settings.comp_col5 }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for b in filas -%}
+              {%- assign p = b.settings.producto -%}
+              <tr {{ b.shopify_attributes }}>
+                <th scope="row">
+                  {%- if p != blank -%}{{ p.title }}{%- else -%}{{ b.settings.nombre }}{%- endif -%}
+                  {%- if b.settings.etiqueta != blank -%} <span class="pildora">{{ b.settings.etiqueta }}</span>{%- endif -%}
+                </th>
+                <td data-etq="{{ section.settings.comp_col2 | escape }}">{{ b.settings.que_es }}</td>
+                <td data-etq="{{ section.settings.comp_col3 | escape }}">{{ b.settings.preparacion }}</td>
+                <td data-etq="{{ section.settings.comp_col4 | escape }}">{{ b.settings.para_quien }}</td>
+                <td data-etq="{{ section.settings.comp_col5 | escape }}" class="precio">
+                  {%- if p != blank -%}{{ p.price | money }}{%- else -%}{{ b.settings.precio }}{%- endif -%}
+                </td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+      {%- if section.settings.comp_pie != blank -%}
+        <p class="guia-pie">{{ section.settings.comp_pie }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
 <!-- ===================== 08 · BLOQUE EDITORIAL ===================== -->
 {%- if section.settings.edi_titulo != blank -%}
 <section class="modulo" id="nosotros">
@@ -1281,6 +1455,58 @@
     </div>
   </div>
 </section>
+{%- endif -%}
+
+<!-- ===================== 09 · PREGUNTAS FRECUENTES =====================
+     Puntos 5 y 6 del plan de IA: contenido útil escrito con las palabras
+     con que pregunta un cliente. Abajo de la sección va el FAQPage en
+     JSON-LD, generado de estos mismos bloques. -->
+{%- assign preguntas = section.blocks | where: 'type', 'pregunta' -%}
+{%- if preguntas.size > 0 and section.settings.faq_titulo != blank -%}
+<section class="modulo" id="preguntas">
+  <div class="wrap">
+    <div class="mod-cab rev" style="justify-content:center;text-align:center">
+      <div>
+        <h2 class="t-3xl">{{ section.settings.faq_titulo }}</h2>
+        {%- if section.settings.faq_copy != blank -%}
+          <p class="copy" style="margin-inline:auto">{{ section.settings.faq_copy }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="faq rev">
+      {%- for b in preguntas -%}
+        <details {{ b.shopify_attributes }}>
+          <summary>{{ b.settings.pregunta }}</summary>
+          <div class="resp">{{ b.settings.respuesta }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- comment -%}
+  El mismo texto, como datos estructurados. Esto es lo que permite que un
+  asistente responda citando la tienda en vez de inventar.
+{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "{{ request.locale.iso_code | default: 'es-CL' }}",
+  "mainEntity": [
+    {%- for b in preguntas -%}
+      {
+        "@type": "Question",
+        "name": {{ b.settings.pregunta | strip_html | json }},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {{ b.settings.respuesta | strip_html | strip_newlines | json }}
+        }
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
 {%- endif -%}
 
 <!-- ===================== BOLETÍN ===================== -->
@@ -1918,6 +2144,137 @@
       "type": "url",
       "id": "wsp",
       "label": "WhatsApp"
+    },
+    {
+      "type": "header",
+      "content": "Datos estructurados de la tienda"
+    },
+    {
+      "type": "paragraph",
+      "content": "Es lo que leen Google, Bing y ChatGPT para saber quién es la marca. Apagalo solo si tu tema ya publica un Organization propio."
+    },
+    {
+      "type": "checkbox",
+      "id": "ld_tienda",
+      "label": "Publicar los datos de la tienda",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "ld_logo",
+      "label": "Logo para los datos estructurados"
+    },
+    {
+      "type": "textarea",
+      "id": "ld_descripcion",
+      "label": "Descripción de la marca",
+      "info": "Una o dos frases: qué vendés y dónde. Si lo dejás vacío usa la del panel de Shopify."
+    },
+    {
+      "type": "text",
+      "id": "ld_pais",
+      "label": "País al que despachás",
+      "default": "Chile"
+    },
+    {
+      "type": "textarea",
+      "id": "ld_sameas",
+      "label": "Perfiles de la marca",
+      "info": "Uno por línea: Instagram, TikTok, tu ficha de Google, tu GPT. Es lo que permite cruzar que todo eso es la misma marca."
+    },
+    {
+      "type": "header",
+      "content": "Guía comparativa"
+    },
+    {
+      "type": "paragraph",
+      "content": "Una tabla de «cuál me conviene». Es el formato que ChatGPT cita casi textual. Las filas se agregan como bloques."
+    },
+    {
+      "type": "text",
+      "id": "comp_titulo",
+      "label": "Título",
+      "default": "¿Cuál me conviene?"
+    },
+    {
+      "type": "text",
+      "id": "comp_copy",
+      "label": "Bajada",
+      "default": "La diferencia en una línea, para que no tengas que leer cinco fichas."
+    },
+    {
+      "type": "text",
+      "id": "comp_cta",
+      "label": "Texto del enlace",
+      "default": "Ver la carta"
+    },
+    {
+      "type": "url",
+      "id": "comp_url",
+      "label": "Enlace"
+    },
+    {
+      "type": "text",
+      "id": "comp_leyenda",
+      "label": "Leyenda de la tabla",
+      "default": "Comparativa de los productos de sepia coffee.",
+      "info": "La leen los rastreadores para entender de qué es la tabla."
+    },
+    {
+      "type": "text",
+      "id": "comp_col1",
+      "label": "Columna 1",
+      "default": "Producto"
+    },
+    {
+      "type": "text",
+      "id": "comp_col2",
+      "label": "Columna 2",
+      "default": "Qué es"
+    },
+    {
+      "type": "text",
+      "id": "comp_col3",
+      "label": "Columna 3",
+      "default": "Cómo se prepara"
+    },
+    {
+      "type": "text",
+      "id": "comp_col4",
+      "label": "Columna 4",
+      "default": "Elegilo si…"
+    },
+    {
+      "type": "text",
+      "id": "comp_col5",
+      "label": "Columna 5",
+      "default": "Precio"
+    },
+    {
+      "type": "text",
+      "id": "comp_pie",
+      "label": "Nota al pie",
+      "default": "Todos los productos tienen 15% de descuento por suscripción."
+    },
+    {
+      "type": "header",
+      "content": "Preguntas frecuentes"
+    },
+    {
+      "type": "paragraph",
+      "content": "Escribí cada pregunta como la hace un cliente, no como la escribiría la marca. Van también al FAQPage de los datos estructurados."
+    },
+    {
+      "type": "text",
+      "id": "faq_titulo",
+      "label": "Título",
+      "default": "Lo que más nos preguntan"
+    },
+    {
+      "type": "text",
+      "id": "faq_copy",
+      "label": "Bajada",
+      "default": "Sin vueltas. Si falta la tuya, escribinos."
     }
   ],
   "blocks": [
@@ -2184,6 +2541,70 @@
           "info": "Por ejemplo: hace 2 semanas"
         }
       ]
+    },
+    {
+      "type": "comparar",
+      "name": "Fila de la comparativa",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "product",
+          "id": "producto",
+          "label": "Producto",
+          "info": "Si elegís uno, toma su nombre y su precio reales."
+        },
+        {
+          "type": "text",
+          "id": "nombre",
+          "label": "Nombre",
+          "info": "Solo si no elegiste un producto."
+        },
+        {
+          "type": "text",
+          "id": "precio",
+          "label": "Precio",
+          "info": "Solo si no elegiste un producto."
+        },
+        {
+          "type": "text",
+          "id": "etiqueta",
+          "label": "Etiqueta",
+          "info": "Por ejemplo: Más vendido."
+        },
+        {
+          "type": "text",
+          "id": "que_es",
+          "label": "Qué es"
+        },
+        {
+          "type": "text",
+          "id": "preparacion",
+          "label": "Cómo se prepara"
+        },
+        {
+          "type": "text",
+          "id": "para_quien",
+          "label": "Elegilo si…"
+        }
+      ]
+    },
+    {
+      "type": "pregunta",
+      "name": "Pregunta frecuente",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "text",
+          "id": "pregunta",
+          "label": "La pregunta",
+          "info": "Con las palabras del cliente: «¿cuánto matcha uso por taza?»."
+        },
+        {
+          "type": "richtext",
+          "id": "respuesta",
+          "label": "La respuesta"
+        }
+      ]
     }
   ],
   "presets": [
@@ -2313,6 +2734,78 @@
           "settings": {
             "titulo": "Ayuda",
             "enlaces": "Contacto | /pages/contacto\nEnvíos y devoluciones | /pages/envios"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Cordillera",
+            "precio": "$9.900",
+            "etiqueta": "Más vendido",
+            "que_es": "Blend de casa en grano, 250 g",
+            "preparacion": "Filtro, prensa francesa o espresso",
+            "para_quien": "Es tu primera compra y querés algo dulce y parejo"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Yirgacheffe",
+            "precio": "$13.500",
+            "etiqueta": "",
+            "que_es": "Café de origen de Etiopía, lavado, 250 g",
+            "preparacion": "Métodos de filtro: V60, Chemex",
+            "para_quien": "Buscás la taza más floral y ácida de la carta"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Cold Brew Clásico",
+            "precio": "$7.900",
+            "etiqueta": "",
+            "que_es": "Café extraído en frío, botella de 1 L",
+            "preparacion": "No se prepara: lo servís con hielo",
+            "para_quien": "No tenés cafetera, o querés café frío sin pensarlo"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Matcha Ceremonial",
+            "precio": "$16.900",
+            "etiqueta": "Orgánico",
+            "que_es": "Matcha en polvo de grado ceremonial, 80 g",
+            "preparacion": "Batido con agua a 70–80 °C, solo o con leche",
+            "para_quien": "Querés el grado más alto, para tomarlo solo y sin amargor"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "pregunta": "¿Qué diferencia hay entre el matcha ceremonial y el culinario?",
+            "respuesta": "<p>El grado ceremonial se hace con las hojas más jóvenes de la primera cosecha: queda verde intenso, de textura sedosa y dulce, pensado para tomarlo solo con agua o con leche. El culinario viene de cosechas posteriores, es más amargo y más barato, y se usa para repostería.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "pregunta": "¿Cuánto matcha uso por taza y a qué temperatura va el agua?",
+            "respuesta": "<p>Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo. Lo batís en zigzag unos 15 segundos.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "pregunta": "¿Qué café me conviene si recién empiezo?",
+            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitás equipo especial.</p>"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "pregunta": "¿Cómo guardo el café para que no se pase?",
+            "respuesta": "<p>En un envase hermético, en un lugar fresco y oscuro, lejos del horno y del sol. No en el refrigerador: la humedad y los olores lo arruinan más rápido que el aire. Y en grano, moliendo justo antes de preparar.</p>"
           }
         }
       ]

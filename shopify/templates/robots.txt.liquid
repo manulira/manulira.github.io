@@ -1,0 +1,108 @@
+{%- comment -%}
+  ============================================================================
+  robots.txt para Shopify · punto 3 del plan de IA
+  ----------------------------------------------------------------------------
+  En Shopify el robots.txt lo genera el tema, no es un archivo suelto. Si no
+  ponés esto, quedan las reglas por defecto y no hay ninguna garantía de que
+  los rastreadores de IA puedan entrar.
+
+  Instalación
+    1. Tienda online → Temas → ··· → Editar código
+    2. Templates → Agregar una plantilla nueva → robots.txt
+    3. Borrar lo que venga, pegar este archivo entero y guardar
+    4. Comprobar en https://tu-tienda.cl/robots.txt
+
+  Qué hace
+    · Deja las reglas por defecto de Shopify, que ya esconden el carrito,
+      el checkout y las cuentas. No conviene tocarlas.
+    · Suma de forma explícita los rastreadores de IA, que por defecto quedan
+      sujetos a la regla general y pueden cambiar sin aviso.
+
+  Si algún día no querés que tu contenido entrene modelos, cambiá "Allow: /"
+  por "Disallow: /" solo en GPTBot, Google-Extended, Applebot-Extended,
+  ClaudeBot y CCBot. Dejá siempre abiertos los de búsqueda y los de
+  navegación en vivo (OAI-SearchBot, ChatGPT-User, Claude-User,
+  PerplexityBot): esos son los que te recomiendan cuando alguien pregunta.
+  ============================================================================
+{%- endcomment -%}
+{%- for group in robots.default_groups -%}
+{{- group.user_agent -}}
+{%- for rule in group.rules -%}
+{{ rule }}
+{%- endfor -%}
+{%- if group.sitemap != blank %}
+{{ group.sitemap }}
+{%- endif %}
+
+{% endfor -%}
+
+# ---------- Rastreadores de IA ----------
+# OpenAI
+User-agent: GPTBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+Disallow: /account
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+Disallow: /account
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+Disallow: /account
+
+# Otros asistentes
+User-agent: PerplexityBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Claude-User
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
+
+User-agent: CCBot
+Allow: /
+Disallow: /checkouts/
+Disallow: /cart
