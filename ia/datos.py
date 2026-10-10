@@ -1,67 +1,107 @@
 # -*- coding: utf-8 -*-
-"""Fuente unica de verdad de los productos.
-De aca salen el JSON-LD que va dentro de index.html y el archivo
-catalogo.json. Asi no se pueden desincronizar."""
+"""Catálogo real de sepia coffee. Fuente única de verdad.
+
+De acá salen el JSON-LD de index.html y catalogo.json. Si cambia un precio
+o entra un producto, se cambia acá y se vuelve a generar: así la página y
+los datos estructurados no se pueden desincronizar (y que no coincidan
+penaliza en Google).
+
+PRECIOS: mientras `precio` sea None, la tarjeta muestra «Precio por
+confirmar», no se puede agregar al carrito y el producto sale del JSON-LD
+sin Offer. Es a propósito: una Offer sin precio es inválida, y publicar un
+precio inventado es peor que no publicar ninguno.
+"""
 
 SITIO = "https://sepiacoffee.cl"
 
-# id, nombre, precio, antes, categoria, descripcion, tamano
+# ---------------------------------------------------------------------
+# Opciones de variante. El primer valor es el que viene elegido.
+# ---------------------------------------------------------------------
+TAMANO_CAFE   = ("Formato", ["250 g", "1 kg"])
+MOLIENDA      = ("Molienda", ["En grano", "Molido"])
+FORMATO_MATCHA = ("Formato", ["30 g en lata", "80 g en sobre"])
+
+# ---------------------------------------------------------------------
+# id, nombre, categoría, arte, bajada, descripción larga,
+# opciones, variantes {clave: precio}, etiqueta
+#
+# La clave de cada variante es la combinación de valores separada por ' · '
+# en el mismo orden que `opciones`. Sin opciones, la clave es "".
+# ---------------------------------------------------------------------
 PRODUCTOS = [
-    # ---- mas vendidos ----
-    ("cordillera", "Cordillera", 9900, None, "Café en grano",
-     "Nuestro blend de casa: la taza de todos los días. Dulce, de cuerpo medio y "
-     "equilibrada, funciona igual de bien en filtro, en prensa francesa y en espresso. "
-     "Tostada en Santiago en lotes chicos y despachada recién tostada.",
-     "250 g", "i-bolsa"),
-    ("cold-clasico", "Cold Brew Clásico", 7900, None, "Cold brew",
-     "Café de especialidad extraído en frío, sin azúcar y sin "
-     "endulzantes. Viene listo para tomar: lo sirves con hielo directo de la botella. "
-     "Botella de 1 litro, rinde unos cuatro vasos.",
-     "1 L", "i-botella"),
-    ("matcha-ceremonial", "Matcha Ceremonial", 16900, None, "Matcha",
-     "Matcha de grado ceremonial de primera cosecha. Es el grado más "
-     "alto: color verde intenso, textura sedosa y sabor dulce sin amargor, pensado para "
-     "tomarlo solo con agua o con leche. Orgánico.",
-     "80 g", "i-tarro"),
-    ("yirgacheffe", "Yirgacheffe", 13500, None, "Café en grano",
-     "Café de origen de Yirgacheffe, Etiopía, proceso lavado. Es el más floral y ácido "
-     "de la carta, ideal para métodos de filtro como V60 o Chemex si te gustan las tazas "
-     "limpias y perfumadas.",
-     "250 g", "i-bolsa"),
-    ("matcha-coco", "Matcha Coco", 17900, None, "Matcha",
-     "Matcha ceremonial mezclado con coco deshidratado. Edición de verano, más dulce y "
-     "cremoso que el ceremonial puro: pensado para matcha latte helado.",
-     "80 g", "i-tarro"),
-    ("taza-sepia", "Taza de cerámica", 14900, None, "Accesorios",
-     "Taza de cerámica esmaltada en mate con el caminante de sepia coffee.",
-     "300 ml", "i-taza"),
-    # ---- packs ----
-    ("pack-descubrir", "Starter Pack", 29900, 35700, "Packs",
-     "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de "
-     "cerámica, así pruebas las tres cosas antes de decidir cuál repites. Es la forma más "
-     "barata de conocer la marca.",
-     "Café + matcha + taza", "i-caja"),
-    ("pack-ritual", "Pack Ritual", 22900, 24800, "Packs",
-     "Cordillera 250 g más la taza de cerámica. Para regalar o para armar el ritual de "
-     "la mañana de una vez.",
-     "Café + taza", "i-taza"),
-    ("pack-matcha", "Pack Matcha", 28900, 31800, "Packs",
-     "Matcha ceremonial 80 g más el batidor de bambú (chasen). Todo lo que hace falta "
-     "para preparar matcha en casa como corresponde, sin grumos.",
-     "Matcha + batidor", "i-batidor"),
-    ("pack-coldbrew", "Pack Cold Brew", 28900, 31600, "Packs",
-     "Cuatro botellas de 1 litro de cold brew, y eliges los sabores. Rinde unos "
-     "dieciséis vasos: es el pack para tener la semana cubierta.",
-     "4 × 1 L", "i-botella"),
-    ("pack-oficina", "Pack Oficina", 54900, 62400, "Packs",
-     "Un kilo de café en grano más dos tazas. Pensado para equipos chicos o para quien "
-     "toma varias tazas al día y no quiere quedarse sin café.",
-     "1 kg + 2 tazas", "i-caja"),
-    ("pack-regalo", "Pack Regalo", 39900, None, "Packs",
-     "Surtido de café, matcha y accesorios en una caja de madera, listo para entregar "
-     "sin envolver nada.",
-     "Caja de madera", "i-caja"),
+ ("colombia", "Colombia", "Café en grano", "i-bolsa",
+  "Nuestro único origen",
+  "Café de especialidad de Colombia, tostado por nosotros en Santiago en "
+  "lotes chicos y despachado recién tostado. Es el único café de la carta: "
+  "preferimos hacer uno bien antes que cinco a medias. Lo eliges en grano o "
+  "molido para tu método.",
+  [TAMANO_CAFE, MOLIENDA],
+  {"250 g · En grano": None, "250 g · Molido": None,
+   "1 kg · En grano": None,  "1 kg · Molido": None},
+  "Más vendido"),
+
+ ("matcha", "Matcha", "Matcha", "i-tarro",
+  "En lata o en sobre de recarga",
+  "Matcha en polvo para batir en casa. La lata de 30 g es la de empezar y la "
+  "que se ve bien en la repisa; el sobre de 80 g es la recarga, que sale más "
+  "conveniente por gramo y genera menos envase.",
+  [FORMATO_MATCHA],
+  {"30 g en lata": None, "80 g en sobre": None},
+  None),
+
+ ("lata-edicion", "Lata edición limitada", "Café en grano", "i-lata-cafe",
+  "200 g · mientras dure",
+  "El mismo café de Colombia en lata de 200 g, con la gráfica de la edición. "
+  "La lata sirve después para guardar el café del sobre, que es justamente "
+  "para lo que está pensada. Cuando se acaba la tirada, no vuelve.",
+  [],
+  {"": None},
+  "Edición limitada"),
+
+ ("kit-matcha", "Kit matcha", "Kits", "i-batidor",
+  "Todo para partir",
+  "El kit para preparar matcha en casa como corresponde, sin grumos y sin "
+  "comprar las cosas por separado.",
+  [],
+  {"": None},
+  None),
+
+ ("kit-cafetero", "Kit cafetero", "Kits", "i-caja",
+  "Todo para partir",
+  "El kit para quien recién se mete en el café de especialidad y no sabe por "
+  "dónde empezar con el equipo.",
+  [],
+  {"": None},
+  None),
+
+ ("musette", "Musette", "Accesorios", "i-musette",
+  "Bolso de hombro",
+  "Musette de tela con el caminante de sepia coffee. Liviana, de un solo "
+  "bolsillo y correa larga: la de salir a comprar el pan y volver con el "
+  "café.",
+  [],
+  {"": None},
+  None),
+
+ ("polera", "Polera", "Accesorios", "i-polera",
+  "Algodón, con el caminante",
+  "Polera de algodón con el caminante de sepia coffee.",
+  [],
+  {"": None},
+  None),
+
+ ("vaso", "Vaso", "Accesorios", "i-taza",
+  "Reutilizable",
+  "Vaso reutilizable con el caminante de sepia coffee. Para el café de la "
+  "mañana o para el matcha helado de la tarde.",
+  [],
+  {"": None},
+  None),
 ]
+
+# Categorías en el orden en que se muestran
+CATEGORIAS = ["Café en grano", "Matcha", "Kits", "Accesorios"]
 
 ENVIO_REDUCIDO = 30000
 ENVIO_GRATIS = 65000
+SUSCRIPCION_DESC = 15

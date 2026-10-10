@@ -32,7 +32,7 @@ PREGUNTAS = [
    "usa para reemplazar el segundo café del día, no el primero.",
    "La cifra exacta varía según la cosecha y cuánto polvo uses, así que "
    "tómala como referencia."],
-  ("Ver el Matcha Ceremonial", "producto-matcha-ceremonial")),
+  ("Ver el matcha", "producto-matcha")),
 
  ("matcha", "¿Por qué mi matcha sabe amargo o a pasto?",
   ["Casi siempre es una de tres cosas, en este orden:",
@@ -44,7 +44,7 @@ PREGUNTAS = [
    "azúcar lo compensa, pero no para tomarlo solo.",
    "<b>Está viejo o mal guardado.</b> El matcha se oxida con la luz, el calor "
    "y el aire. Si el verde se fue apagando hacia un tono oliva, ya perdió."],
-  ("Ver el Matcha Ceremonial", "producto-matcha-ceremonial")),
+  ("Ver el matcha", "producto-matcha")),
 
  ("matcha", "¿Puedo tomar matcha todos los días?",
   ["Sí. Una o dos tazas al día es lo habitual y equivale, en cafeína, a uno o "
@@ -78,7 +78,7 @@ PREGUNTAS = [
    "con tapa: pones el matcha tamizado y el agua, cierras y agitas fuerte "
    "quince segundos. Un mini espumador eléctrico también sirve.",
    "Lo que no funciona es revolver con cuchara. Vas a tener grumos."],
-  ("Ver el Pack Matcha, con batidor incluido", "producto-pack-matcha")),
+  ("Ver el Kit matcha, con batidor incluido", "producto-kit-matcha")),
 
  ("matcha", "¿Cuánto dura el matcha una vez abierto?",
   ["Entre cuatro y seis semanas en su mejor momento. No se echa a perder "
@@ -98,7 +98,7 @@ PREGUNTAS = [
    "Un detalle que conviene saber: «ceremonial» no es una categoría regulada, "
    "así que cualquiera puede escribirlo en una lata. Lo que sí se nota es el "
    "color, la finura del polvo y si el productor dice de dónde viene."],
-  ("Ver el Matcha Ceremonial", "producto-matcha-ceremonial")),
+  ("Ver el matcha", "producto-matcha")),
 
  # ------------------------------------------------------------- CAFÉ
  ("cafe", "¿Qué diferencia hay entre café de especialidad y el del supermercado?",
@@ -150,13 +150,23 @@ PREGUNTAS = [
    "de decidir."],
   ("Comparar los cafés", "comparar")),
 
- ("cafe", "¿Qué café me conviene si recién empiezo?",
-  ["El blend de casa. Es dulce, de cuerpo medio y perdona los errores de "
-   "preparación: funciona igual de bien en filtro, en prensa francesa y en "
-   "espresso, así que no necesitas equipo especial.",
-   "Si quieres probar más de una cosa de una vez, el pack de inicio trae café, "
-   "matcha y la taza."],
-  ("Ver el Starter Pack", "producto-pack-descubrir")),
+ ("cafe", "¿Qué formato me conviene si recién empiezo?",
+  ["Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres "
+   "semanas, que es justo el tiempo en que el café está en su mejor momento, y "
+   "el molido te ahorra comprar molinillo mientras decides.",
+   "El kilo conviene cuando ya sabes que este café te gusta, o si en la casa se "
+   "toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a "
+   "ese volumen la diferencia de frescura se nota."],
+  ("Ver el Colombia", "producto-colombia")),
+
+ ("cafe", "¿Por qué tienen un solo café?",
+  ["Porque preferimos hacer uno bien antes que cinco a medias. Trabajamos un "
+   "origen de Colombia, lo tostamos nosotros y ajustamos el tueste a ese grano "
+   "en particular.",
+   "Tener una sola referencia también significa que el lote rota rápido: lo que "
+   "te llega es café recién tostado, no una bolsa que llevaba meses esperando "
+   "en una bodega."],
+  ("Ver el Colombia", "producto-colombia")),
 
  # ----------------------------------------------------------- PEDIDO
  ("pedido", "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",
@@ -171,7 +181,7 @@ PREGUNTAS = [
    "desde tu cuenta, sin llamar a nadie.",
    "Es la forma más barata de mantener café fresco en la casa, porque llega "
    "recién tostado en vez de quedarse semanas en la despensa."],
-  ("Ver los packs", "packs")),
+  ("Ver los kits", "packs")),
 
  ("pedido", "¿Puedo devolver un pedido?",
   ["Si el pedido llegó dañado o no es lo que pediste, lo reponemos.",

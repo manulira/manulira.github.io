@@ -1,100 +1,54 @@
-# Fotos del sitio
+# Fotos
 
-## Las seis que más cambian el sitio
+Van en esta carpeta con estos nombres exactos. Si falta una, la página dibuja
+la ilustración en su lugar, así que nada se rompe por no tenerla todavía.
 
-Si vas a sacar pocas, saca estas primero. Con estas seis la página deja de
-verse como una plantilla:
-
-**Ya cargadas** con la foto de los dos vasos que mandaste: `hero-1.jpg`,
-`nosotros-1.jpg`, `cat-cafe.jpg` y `cat-matcha.jpg`. Cuando tengas fotos
-propias para cada una, reemplazalas y listo.
-
-| Orden | Archivo | Qué es |
-|---|---|---|
-| 1 | `hero-1.jpg` | Portada. Va en el panel derecho, conviene vertical 3:4 |
-| 2 | `prod-cordillera.jpg` | El café principal |
-| 3 | `prod-matcha-ceremonial.jpg` | La lata de matcha |
-| 4 | `prod-cold-clasico.jpg` | La botella |
-| 5 | `cafeteria.jpg` | El local, para el bloque editorial |
-| 6 | `cat-cafe.jpg` | La ficha de categoría de café |
-
-El resto puede esperar. Cada archivo que falte sigue mostrando la ilustración,
-así que puedes ir subiéndolas de a una sin que nada se rompa.
-
----
-
-
-Deja los archivos acá con estos nombres exactos y la página los toma sola.
-**No hay que tocar código.** Si un archivo no está, esa posición muestra la
-ilustración vectorial, así que el sitio nunca se ve roto ni con imágenes rotas.
-
-## Portada
-
-| Archivo | Medida | Qué va |
-|---|---|---|
-| `hero-1.jpg` | 2400 × 1200 | Foto ancha del primer slide. El texto va sobre la mitad izquierda, deja esa zona despejada |
-| `hero-2.jpg` | 2400 × 1200 | Lo mismo para el segundo slide |
+Los nombres son descriptivos a propósito: es el punto 9 del plan de IA, y
+ayuda a que las fotos aparezcan en búsqueda de imágenes.
 
 ## Productos
 
-Dos fotos por producto. La segunda aparece al pasar el mouse por encima.
-El nombre va después de `prod-`, igual que el identificador de la ficha.
+- `prod-colombia.jpg` — Colombia (principal)
+- `prod-colombia-2.jpg` — Colombia (segunda vista, al pasar el mouse)
+- `prod-matcha.jpg` — Matcha (principal)
+- `prod-matcha-2.jpg` — Matcha (segunda vista, al pasar el mouse)
+- `prod-lata-edicion.jpg` — Lata edición limitada (principal)
+- `prod-lata-edicion-2.jpg` — Lata edición limitada (segunda vista, al pasar el mouse)
+- `prod-kit-matcha.jpg` — Kit matcha (principal)
+- `prod-kit-matcha-2.jpg` — Kit matcha (segunda vista, al pasar el mouse)
+- `prod-kit-cafetero.jpg` — Kit cafetero (principal)
+- `prod-kit-cafetero-2.jpg` — Kit cafetero (segunda vista, al pasar el mouse)
+- `prod-musette.jpg` — Musette (principal)
+- `prod-musette-2.jpg` — Musette (segunda vista, al pasar el mouse)
+- `prod-polera.jpg` — Polera (principal)
+- `prod-polera-2.jpg` — Polera (segunda vista, al pasar el mouse)
+- `prod-vaso.jpg` — Vaso (principal)
+- `prod-vaso-2.jpg` — Vaso (segunda vista, al pasar el mouse)
 
-| Producto | Archivos |
-|---|---|
-| Cordillera | `prod-cordillera.jpg` · `prod-cordillera-2.jpg` |
-| Cold Brew Clásico | `prod-cold-clasico.jpg` · `prod-cold-clasico-2.jpg` |
-| Matcha Ceremonial | `prod-matcha-ceremonial.jpg` · `prod-matcha-ceremonial-2.jpg` |
-| Yirgacheffe | `prod-yirgacheffe.jpg` · `prod-yirgacheffe-2.jpg` |
-| Matcha Coco | `prod-matcha-coco.jpg` · `prod-matcha-coco-2.jpg` |
-| Taza de cerámica | `prod-taza-sepia.jpg` · `prod-taza-sepia-2.jpg` |
-| Cold Brew Vainilla | `prod-cold-vainilla.jpg` · `prod-cold-vainilla-2.jpg` |
-| Pack Descubrir | `prod-pack-descubrir.jpg` · `prod-pack-descubrir-2.jpg` |
-| Pack Ritual | `prod-pack-ritual.jpg` · `prod-pack-ritual-2.jpg` |
-| Pack Matcha | `prod-pack-matcha.jpg` · `prod-pack-matcha-2.jpg` |
-| Pack Cold Brew | `prod-pack-coldbrew.jpg` · `prod-pack-coldbrew-2.jpg` |
-| Pack Oficina | `prod-pack-oficina.jpg` · `prod-pack-oficina-2.jpg` |
-| Pack Regalo | `prod-pack-regalo.jpg` · `prod-pack-regalo-2.jpg` |
+## Portada y secciones
 
-Todas **cuadradas, 1000 × 1000**, con el mismo encuadre y el mismo fondo.
-Si una se sale del patrón, la grilla se nota despareja enseguida.
+- `hero-1.jpg` — foto principal del carrusel (vertical, 1000×1344 o similar)
+- `hero-2.jpg` — segunda diapositiva
+- `cat-cafe.jpg` — categoría Café (cuadrada, 800×800)
+- `cat-matcha.jpg` — categoría Matcha (cuadrada)
+- `cat-accesorios.jpg` — categoría Kits y accesorios (cuadrada)
+- `nosotros-1.jpg` — bloque editorial, primera foto
+- `nosotros-2.jpg` — bloque editorial, segunda foto
+- `mega-lata.jpg` — tarjeta destacada del menú
 
-## Categorías
+## Las seis que más urgen
 
-Cuadradas, 800 × 800.
+1. `prod-colombia.jpg` — la bolsa de café
+2. `prod-matcha.jpg` — la lata de matcha
+3. `prod-lata-edicion.jpg` — la lata de edición limitada
+4. `prod-kit-matcha.jpg` — el kit completo
+5. `hero-1.jpg` — una foto de ambiente, con producto en uso
+6. `cat-matcha.jpg` — un matcha servido
 
-`cat-cafe.jpg` · `cat-coldbrew.jpg` · `cat-matcha.jpg` · `cat-packs.jpg` · `cat-accesorios.jpg`
+## Cómo tomarlas
 
-## Mega menú
+Fondo neutro (beige, celeste o concreto), luz lateral suave de ventana,
+sombras delicadas. Nada de fondo blanco puro ni de filtros fríos. La
+referencia es Blue Bottle, con algo más de calidez.
 
-Apaisadas, 800 × 500. Son las tarjetas que aparecen a la derecha al desplegar el menú.
-
-`mega-cafe.jpg` · `mega-coldbrew.jpg` · `mega-matcha.jpg` · `mega-packs.jpg`
-
-## Bloque "Hecho en Santiago"
-
-Verticales, 800 × 1060.
-
-`nosotros-1.jpg` · `nosotros-2.jpg`
-
----
-
-## Cómo sacarlas
-
-- Fondo de un solo color plano, en alguno de los tonos de la paleta. Es lo que hace
-  que las tarjetas se vean parejas.
-- Producto centrado, con aire alrededor. Nada pegado al borde.
-- Luz pareja, sombra corta debajo del producto. Sin sombras duras ni reflejos.
-- La segunda foto de cada producto conviene que sea otro ángulo o el producto en uso,
-  no la misma foto con otro recorte.
-
-## Formato
-
-- `.jpg` con calidad 80 a 85.
-- Que ninguna pase de 400 KB. Las del hero pueden llegar a 600 KB por el ancho.
-- También sirve `.webp`: cambia la extensión en el nombre y ajusta el `src` en `index.html`.
-
-## En Shopify es distinto
-
-Ahí no se usa esta carpeta. Las fotos de producto se cargan en cada producto,
-y las de portada, categorías y mega menú desde el panel de la sección.
+Formato: JPG, lado largo de 1600 px es suficiente. Que pesen menos de 300 KB.

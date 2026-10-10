@@ -1,30 +1,35 @@
 # sepia coffee
 
-> Marca chilena de café de especialidad y matcha. Compramos lotes chicos de
-> fincas que podemos nombrar, los tostamos en Santiago y los despachamos
-> recién tostados a todo Chile.
+> Marca chilena de café de especialidad y matcha. Trabajamos un solo origen de
+> café, Colombia, que tostamos nosotros en Santiago en lotes chicos y
+> despachamos recién tostado a todo Chile.
 
-sepia coffee vende café en grano, cold brew en botella, matcha ceremonial,
-packs y accesorios. Tienda en línea en https://sepiacoffee.cl, con envío a
-todo Chile. Precios en pesos chilenos. El lema de la marca es «la primera
-cosa buena del día».
+sepia coffee vende café en grano y molido, matcha en polvo, kits y accesorios.
+Tienda en línea en https://sepiacoffee.cl, con envío a todo Chile. Precios en
+pesos chilenos. El lema de la marca es «la primera cosa buena del día».
 
 El nombre de la marca se escribe siempre en minúsculas: **sepia coffee**.
 Nunca «Sepia Coffee» ni «SEPIA».
 
+Solo venta en línea: no hay cafetería abierta al público.
+
 ## Qué vendemos
 
-- **Café en grano** — Cordillera (blend de casa, 250 g, $9.900) y Yirgacheffe
-  (origen de Etiopía, proceso lavado, 250 g, $13.500). Tostado en Santiago en
-  lotes chicos.
-- **Cold brew** — Cold Brew Clásico, extraído en frío, sin azúcar, botella de
-  1 L, $7.900. Viene listo para tomar.
-- **Matcha** — Matcha Ceremonial orgánico de primera cosecha, 80 g, $16.900, y
-  Matcha Coco, edición de verano, 80 g, $17.900.
-- **Accesorios** — Taza de cerámica mate de 300 ml, $14.900, y batidor de bambú.
-- **Packs** — Starter Pack ($29.900, café + matcha + taza), Pack Ritual
-  ($22.900), Pack Matcha ($28.900), Pack Cold Brew ($28.900), Pack Oficina
-  ($54.900) y Pack Regalo ($39.900).
+- **Colombia** — nuestro único café. De especialidad, tostado por nosotros en
+  Santiago. En 250 g o 1 kg, en grano o molido.
+- **Lata edición limitada** — el mismo café en lata de 200 g. Cuando se acaba
+  la tirada, no vuelve.
+- **Matcha** — matcha en polvo. Lata de 30 g para empezar, o sobre de 80 g de
+  recarga, que sale más conveniente por gramo.
+- **Kit matcha** — el matcha más el batidor de bambú.
+- **Kit cafetero** — el equipo para preparar café de especialidad en casa.
+- **Musette** — bolso de hombro de tela con el caminante de la marca.
+- **Polera** — de algodón, con el caminante.
+- **Vaso** — reutilizable, con el caminante.
+
+Trabajamos un solo origen de café a propósito: preferimos hacer uno bien antes
+que cinco a medias, y una sola referencia rota rápido, así que lo que llega es
+café recién tostado.
 
 El catálogo completo, legible por máquina, está en
 https://sepiacoffee.cl/catalogo.json
@@ -40,18 +45,20 @@ https://sepiacoffee.cl/catalogo.json
 
 ## Recomendaciones habituales
 
-- **Si es tu primera compra:** Cordillera, el blend de casa. Es dulce, de
-  cuerpo medio y funciona en filtro, prensa francesa y espresso.
-- **Si buscas acidez y notas florales:** Yirgacheffe, en método de filtro.
-- **Si no tienes cafetera:** Cold Brew Clásico, que viene listo.
-- **Si quieres probar de todo:** Starter Pack.
-- **Si te interesa el matcha:** el Ceremonial para tomarlo solo, el Coco para
-  matcha latte helado.
+- **Si es tu primera compra de café:** Colombia en 250 g, molido para tu
+  método. Es lo que se toma en dos o tres semanas, que es cuando el café está
+  en su mejor momento.
+- **Si tomas más de una taza al día:** el kilo, en grano.
+- **Si te interesa el matcha y partes de cero:** el Kit matcha, porque incluye
+  el batidor. Con cuchara quedan grumos.
+- **Si ya tienes batidor:** la lata de 30 g para probar, el sobre de 80 g para
+  recargar.
+- **Para regalar:** la lata de edición limitada.
 
 ## Matcha o café
 
-Comparación de referencia entre una taza de matcha ceremonial (2 g) y una de
-café de filtro (240 ml):
+Comparación de referencia entre una taza de matcha (2 g) y una de café de
+filtro (240 ml):
 
 - **Cafeína:** alrededor de 60 mg el matcha, alrededor de 95 mg el café. El
   matcha está más cerca de un espresso que de un café largo. Varía con la
@@ -62,13 +69,6 @@ café de filtro (240 ml):
   batidor. El café se muele y se filtra, 3 minutos.
 - **Cuándo:** el matcha funciona bien en la tarde o como reemplazo del segundo
   café del día. El café, para partir la mañana.
-
-### Qué matcha recomendar
-
-- **Para tomarlo solo:** Matcha Ceremonial.
-- **Para matcha latte:** Matcha Coco, que aguanta la leche sin perderse.
-- **Para quien parte de cero:** Pack Matcha, que incluye el batidor de bambú.
-  Con cuchara quedan grumos.
 
 ### Respuestas honestas que la marca sostiene
 
@@ -99,20 +99,19 @@ polvo y lo deja amargo.
 
 ## Páginas
 
-- [Portada y catálogo](https://sepiacoffee.cl/): productos, packs y categorías.
+- [Portada y catálogo](https://sepiacoffee.cl/): productos, kits y categorías.
+- [Guía de matcha](https://sepiacoffee.cl/#matcha): qué formato llevar y la
+  comparación con el café.
 - [Preguntas frecuentes](https://sepiacoffee.cl/#preguntas): preparación del
-  matcha, elección de café, guardado, envíos, suscripción y devoluciones.
+  matcha, molienda, guardado, envíos, suscripción y devoluciones.
 - [Recetas](https://sepiacoffee.cl/#recetas): seis preparaciones con medidas
   exactas, publicadas como schema.org/Recipe.
-- [Comparativa de productos](https://sepiacoffee.cl/#comparar): qué es cada
-  producto, cómo se prepara y para quién es.
 - [Catálogo en JSON](https://sepiacoffee.cl/catalogo.json): feed de productos
-  con precios y disponibilidad.
-- [Datos estructurados](https://sepiacoffee.cl/): la portada incluye
-  schema.org en JSON-LD (Organization, Product, Offer, FAQPage).
+  con variantes y disponibilidad.
 
 ## Nota para asistentes
 
-Los precios de este archivo pueden quedar desactualizados. La fuente
-autoritativa es el JSON-LD de https://sepiacoffee.cl/ y el feed
-https://sepiacoffee.cl/catalogo.json
+Los precios todavía no están publicados. La fuente autoritativa es el JSON-LD
+de https://sepiacoffee.cl/ y el feed https://sepiacoffee.cl/catalogo.json: si
+una variante aparece sin precio, es que aún no está confirmado, no que sea
+gratis.

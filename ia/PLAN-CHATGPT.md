@@ -39,8 +39,11 @@ Hecho:
 - Cuando la tienda esté en Shopify, activa el canal de **Google & YouTube**
   (sincroniza el catálogo a Google Merchant Center solo). OpenAI toma datos
   de productos de ahí y del schema.org de la página.
-- Revisa que los precios de `catalogo.json` sean los reales antes de
-  publicar. Hoy son los que veníamos usando de ejemplo.
+- El catálogo ya es el real: café Colombia (250 g y 1 kg, en grano o
+  molido), matcha (lata de 30 g y sobre de 80 g), lata de edición
+  limitada, kit matcha, kit cafetero, musette, polera y vaso.
+  **Faltan los precios**: mientras no estén, las variantes salen del
+  JSON-LD sin Offer, que es lo correcto.
 
 ---
 
@@ -170,7 +173,8 @@ Es el formato que un asistente cita casi textual, porque la respuesta a
 | Códigos de Search Console y Bing | `<head>` de `index.html` |
 | Links de Instagram, TikTok y ficha de Google | `sameAs` del JSON-LD y el pie |
 | Puntaje, cantidad y texto de las reseñas de Google | constante `GOOGLE` del script |
-| Precios reales de los 12 productos | `ia/datos.py` y las tarjetas |
+| Precios de las 12 variantes | `ia/datos.py`, y regenerar |
+
 | Fotos de producto y del local | `assets/fotos/` |
 | Confirmar la política de devoluciones | FAQ y `MerchantReturnPolicy` |
 

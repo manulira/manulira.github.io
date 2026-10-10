@@ -587,6 +587,7 @@
 .sepia2 .resp b{font-family:var(--display);color:var(--tinta)}
 
 .sepia2 .sel-foto{width:64px;height:88px;object-fit:contain;max-width:none;margin:.2rem 0}
+.sepia2 .prod-precio.pendiente{font-size:.95rem;color:var(--tinta-60);font-family:var(--sans);font-weight:400}
 </style>
 
 
@@ -1115,69 +1116,39 @@
             </article>
           {%- endfor -%}
         {%- else -%}
-          <article class="prod" data-id="cordillera" data-nombre="Cordillera" data-precio="9900"
+          <article class="prod" data-id="colombia" data-nombre="Colombia" data-precio=""
                    data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-bolsa">
             <div class="prod-media" style="--tono:#C8D9E6">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cordillera"><use href="#s2-i-bolsa"/></svg>
-              <span class="prod-etq">Más vendido</span>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Colombia"><use href="#s2-i-bolsa"/></svg>
+            <span class="prod-etq">Más vendido</span>
             </div>
-            <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button></div>
             <div class="prod-info">
-              <h3>Cordillera</h3>
-              <p class="prod-sub">Blend de casa · 250 g</p>
-              <p class="prod-precio">$9.900</p>
+              <h3>Colombia</h3>
+              <p class="prod-sub">Nuestro único origen</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
-          <article class="prod" data-id="cold-clasico" data-nombre="Cold Brew Clásico" data-precio="7900"
-                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-botella">
+          <article class="prod" data-id="matcha" data-nombre="Matcha" data-precio=""
+                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-tarro">
             <div class="prod-media" style="--tono:#FFFFFF">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Cold Brew Clásico"><use href="#s2-i-botella"/></svg>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Matcha"><use href="#s2-i-tarro"/></svg>
             </div>
-            <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
             <div class="prod-info">
-              <h3>Cold Brew Clásico</h3>
-              <p class="prod-sub">Botella 1 L · sin azúcar</p>
-              <p class="prod-precio">$7.900</p>
+              <h3>Matcha</h3>
+              <p class="prod-sub">En lata o en sobre de recarga</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
-          <article class="prod" data-id="matcha-ceremonial" data-nombre="Matcha Ceremonial" data-precio="16900"
-                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-tarro">
+          <article class="prod" data-id="lata-edicion" data-nombre="Lata edición limitada" data-precio=""
+                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-lata-cafe">
             <div class="prod-media" style="--tono:#C8D9E6">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Ceremonial"><use href="#s2-i-tarro"/></svg>
-              <span class="prod-etq lima">Orgánico</span>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Lata edición limitada"><use href="#s2-i-lata-cafe"/></svg>
+            <span class="prod-etq">Edición limitada</span>
             </div>
             <div class="prod-info">
-              <h3>Matcha Ceremonial</h3>
-              <p class="prod-sub">80 g · primera cosecha</p>
-              <p class="prod-precio">$16.900</p>
-            </div>
-          </article>
-          <article class="prod" data-id="yirgacheffe" data-nombre="Yirgacheffe" data-precio="13500"
-                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-bolsa">
-            <div class="prod-media" style="--tono:#FFFFFF">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Yirgacheffe"><use href="#s2-i-bolsa"/></svg>
-              <span class="prod-rapido">Ver producto</span>
-            </div>
-            <div class="prod-info">
-              <h3>Yirgacheffe</h3>
-              <p class="prod-sub">Etiopía · lavado · 250 g</p>
-              <p class="prod-precio">$13.500</p>
-            </div>
-          </article>
-          <article class="prod" data-id="taza-sepia" data-nombre="Taza de cerámica" data-precio="14900"
-                   data-tono="#567C8D" data-acento="#C8D9E6" data-arte="s2-i-taza">
-            <div class="prod-media" style="--tono:#567C8D">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#C8D9E6" role="img" aria-label="Taza de cerámica"><use href="#s2-i-taza"/></svg>
-              <span class="prod-rapido">Ver producto</span>
-            </div>
-            <div class="muestras"><button class="muestra" type="button" style="--c:#2F4156" aria-pressed="true" aria-label="Color 1"></button><button class="muestra" type="button" style="--c:#567C8D" aria-pressed="false" aria-label="Color 2"></button><button class="muestra" type="button" style="--c:#C8D9E6" aria-pressed="false" aria-label="Color 3"></button><button class="muestra" type="button" style="--c:#F5EFEB" aria-pressed="false" aria-label="Color 4"></button></div>
-            <div class="prod-info">
-              <h3>Taza de cerámica</h3>
-              <p class="prod-sub">Cerámica mate · 300 ml</p>
-              <p class="prod-precio">$14.900</p>
+              <h3>Lata edición limitada</h3>
+              <p class="prod-sub">200 g · mientras dure</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
         {%- endif -%}
@@ -1302,66 +1273,59 @@
             </article>
           {%- endfor -%}
         {%- else -%}
-          <article class="prod" data-id="pack-descubrir" data-nombre="Pack Descubrir" data-precio="29900"
-                   data-tono="#FFFFFF" data-acento="#2F4156" data-arte="s2-i-caja">
-            <div class="prod-media" style="--tono:#FFFFFF">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Descubrir"><use href="#s2-i-caja"/></svg>
-              <span class="prod-etq rojo">Ahorras 16%</span>
-              <span class="prod-rapido">Ver producto</span>
-            </div>
-            <div class="prod-info">
-              <h3>Pack Descubrir</h3>
-              <p class="prod-sub">3 × 250 g</p>
-              <p class="prod-precio">$29.900 <span class="antes">$35.700</span></p>
-            </div>
-          </article>
-          <article class="prod" data-id="pack-ritual" data-nombre="Pack Ritual" data-precio="22900"
-                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-taza">
+          <article class="prod" data-id="kit-matcha" data-nombre="Kit matcha" data-precio=""
+                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-batidor">
             <div class="prod-media" style="--tono:#C8D9E6">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Ritual"><use href="#s2-i-taza"/></svg>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Kit matcha"><use href="#s2-i-batidor"/></svg>
             </div>
             <div class="prod-info">
-              <h3>Pack Ritual</h3>
-              <p class="prod-sub">Café + taza de cerámica</p>
-              <p class="prod-precio">$22.900 <span class="antes">$24.800</span></p>
+              <h3>Kit matcha</h3>
+              <p class="prod-sub">Todo para partir</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
-          <article class="prod" data-id="pack-matcha" data-nombre="Pack Matcha" data-precio="28900"
-                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-batidor">
+          <article class="prod" data-id="kit-cafetero" data-nombre="Kit cafetero" data-precio=""
+                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-caja">
             <div class="prod-media" style="--tono:#FFFFFF">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Pack Matcha"><use href="#s2-i-batidor"/></svg>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Kit cafetero"><use href="#s2-i-caja"/></svg>
             </div>
             <div class="prod-info">
-              <h3>Pack Matcha</h3>
-              <p class="prod-sub">Matcha + batidor de bambú</p>
-              <p class="prod-precio">$28.900 <span class="antes">$31.800</span></p>
+              <h3>Kit cafetero</h3>
+              <p class="prod-sub">Todo para partir</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
-          <article class="prod" data-id="pack-oficina" data-nombre="Pack Oficina" data-precio="54900"
-                   data-tono="#567C8D" data-acento="#F5EFEB" data-arte="s2-i-caja">
+          <article class="prod" data-id="musette" data-nombre="Musette" data-precio=""
+                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-musette">
+            <div class="prod-media" style="--tono:#C8D9E6">
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Musette"><use href="#s2-i-musette"/></svg>
+            </div>
+            <div class="prod-info">
+              <h3>Musette</h3>
+              <p class="prod-sub">Bolso de hombro</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
+            </div>
+          </article>
+          <article class="prod" data-id="polera" data-nombre="Polera" data-precio=""
+                   data-tono="#FFFFFF" data-acento="#567C8D" data-arte="s2-i-polera">
+            <div class="prod-media" style="--tono:#FFFFFF">
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Polera"><use href="#s2-i-polera"/></svg>
+            </div>
+            <div class="prod-info">
+              <h3>Polera</h3>
+              <p class="prod-sub">Algodón, con el caminante</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
+            </div>
+          </article>
+          <article class="prod" data-id="vaso" data-nombre="Vaso" data-precio=""
+                   data-tono="#567C8D" data-acento="#F5EFEB" data-arte="s2-i-taza">
             <div class="prod-media" style="--tono:#567C8D">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Pack Oficina"><use href="#s2-i-caja"/></svg>
-              <span class="prod-rapido">Ver producto</span>
+              <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Vaso"><use href="#s2-i-taza"/></svg>
             </div>
             <div class="prod-info">
-              <h3>Pack Oficina</h3>
-              <p class="prod-sub">1 kg + 2 tazas</p>
-              <p class="prod-precio">$54.900 <span class="antes">$62.400</span></p>
-            </div>
-          </article>
-          <article class="prod" data-id="pack-regalo" data-nombre="Pack Regalo" data-precio="39900"
-                   data-tono="#C8D9E6" data-acento="#2F4156" data-arte="s2-i-caja">
-            <div class="prod-media" style="--tono:#C8D9E6">
-              <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Regalo"><use href="#s2-i-caja"/></svg>
-              <span class="prod-etq">Para regalar</span>
-              <span class="prod-rapido">Ver producto</span>
-            </div>
-            <div class="prod-info">
-              <h3>Pack Regalo</h3>
-              <p class="prod-sub">Surtido en caja de madera</p>
-              <p class="prod-precio">$39.900</p>
+              <h3>Vaso</h3>
+              <p class="prod-sub">Reutilizable</p>
+              <p class="prod-precio pendiente">Precio por confirmar</p>
             </div>
           </article>
         {%- endif -%}
@@ -2624,13 +2588,13 @@
       "type": "text",
       "id": "mat_titulo",
       "label": "Título",
-      "default": "¿Cuál matcha es para ti?"
+      "default": "¿En qué formato lo llevas?"
     },
     {
       "type": "text",
       "id": "mat_copy",
       "label": "Bajada",
-      "default": "Tres formas de tomarlo, tres puntos de partida."
+      "default": "Lata, recarga o el kit completo."
     },
     {
       "type": "text",
@@ -2665,7 +2629,7 @@
       "type": "text",
       "id": "mat_col_a",
       "label": "Columna izquierda",
-      "default": "Matcha ceremonial"
+      "default": "Matcha"
     },
     {
       "type": "text",
@@ -3286,7 +3250,7 @@
         {
           "type": "menu",
           "settings": {
-            "titulo": "Cold Brew",
+            "titulo": "Matcha",
             "enlaces": "Clásico | /collections/cold-brew\nVainilla | /collections/cold-brew\nPack de 4 | /collections/packs",
             "destacado_texto": "Pack de 4 · 15% menos",
             "destacado_color": "#C8D9E6"
@@ -3304,7 +3268,7 @@
         {
           "type": "menu",
           "settings": {
-            "titulo": "Packs",
+            "titulo": "Kits",
             "url": "/collections/packs",
             "enlaces": ""
           }
@@ -3373,158 +3337,6 @@
           }
         },
         {
-          "type": "comparar",
-          "settings": {
-            "nombre": "Cordillera",
-            "precio": "$9.900",
-            "etiqueta": "Más vendido",
-            "que_es": "Blend de casa en grano, 250 g",
-            "preparacion": "Filtro, prensa francesa o espresso",
-            "para_quien": "Es tu primera compra y quieres algo dulce y parejo"
-          }
-        },
-        {
-          "type": "comparar",
-          "settings": {
-            "nombre": "Yirgacheffe",
-            "precio": "$13.500",
-            "etiqueta": "",
-            "que_es": "Café de origen de Etiopía, lavado, 250 g",
-            "preparacion": "Métodos de filtro: V60, Chemex",
-            "para_quien": "Buscas la taza más floral y ácida de la carta"
-          }
-        },
-        {
-          "type": "comparar",
-          "settings": {
-            "nombre": "Cold Brew Clásico",
-            "precio": "$7.900",
-            "etiqueta": "",
-            "que_es": "Café extraído en frío, botella de 1 L",
-            "preparacion": "No se prepara: lo sirves con hielo",
-            "para_quien": "No tienes cafetera, o quieres café frío sin pensarlo"
-          }
-        },
-        {
-          "type": "comparar",
-          "settings": {
-            "nombre": "Matcha Ceremonial",
-            "precio": "$16.900",
-            "etiqueta": "Orgánico",
-            "que_es": "Matcha en polvo de grado ceremonial, 80 g",
-            "preparacion": "Batido con agua a 70–80 °C, solo o con leche",
-            "para_quien": "Quieres el grado más alto, para tomarlo solo y sin amargor"
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Matcha latte helado",
-            "bajada": "El que más nos preguntan. Si el matcha te queda con grumos, es por el orden: primero el agua, después la leche.",
-            "minutos": 5,
-            "rinde": "1 vaso de 350 ml",
-            "arte": "tarro",
-            "ingredientes": "2 g de matcha ceremonial (1 cucharadita rasa)\n60 ml de agua a 80 °C\n200 ml de leche fría, o bebida vegetal\nHielo\nOpcional: 1 cucharadita de miel",
-            "pasos": "Tamiza el matcha sobre un bowl. Este paso es el que evita los grumos, no el batidor.\nAgrega los 60 ml de agua a 80 °C. Nunca hirviendo: el agua muy caliente quema el polvo y lo deja amargo.\nBate en zigzag con el batidor de bambú, rápido y desde la muñeca, unos 20 segundos, hasta que se forme una espuma pareja.\nLlena un vaso alto con hielo y agrega la leche.\nVierte el matcha por encima, despacio, para que quede en capas.\nRevuelve antes de tomar.",
-            "dato": "Si lo quieres dulce, la miel va disuelta en el matcha caliente, no sobre la leche fría."
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Matcha caliente",
-            "bajada": "La preparación tradicional, usucha. Tres minutos y nada más que matcha y agua.",
-            "minutos": 3,
-            "rinde": "1 taza de 100 ml",
-            "arte": "tarro",
-            "ingredientes": "2 g de matcha ceremonial (1 cucharadita rasa)\n70 ml de agua a 80 °C",
-            "pasos": "Entibia el bowl con agua caliente y sécalo. Un bowl frío baja la temperatura y corta la espuma.\nTamiza el matcha.\nAgrega los 70 ml de agua a 80 °C.\nBate en zigzag, sin tocar el fondo, unos 20 segundos. Termina con un movimiento lento en espiral para romper las burbujas grandes.\nTómalo de inmediato: el matcha se asienta en un par de minutos.",
-            "dato": "Si no tienes termómetro: hierve el agua y déjala reposar dos minutos fuera del fuego."
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Café en V60",
-            "bajada": "El método que mejor le queda al Yirgacheffe. Limpio, aromático, con la acidez arriba.",
-            "minutos": 4,
-            "rinde": "1 taza de 250 ml",
-            "arte": "bolsa",
-            "ingredientes": "15 g de café molido medio-fino\n250 ml de agua a 93 °C\nFiltro de papel",
-            "pasos": "Enjuaga el filtro con agua caliente y bota esa agua. Saca el gusto a papel y entibia la taza.\nAgrega el café y empareja la cama con un golpe suave.\nBloom: moja con 45 ml de agua y espera 40 segundos. El café se infla; eso es el gas saliendo.\nVierte en círculos desde el centro hasta llegar a 150 ml.\nCompleta hasta 250 ml en un segundo vertido.\nDebería terminar de filtrar entre 2:30 y 3:00. Si demora más, muele un poco más grueso.",
-            "dato": "La proporción es 1 de café por 16 de agua. Con eso puedes escalar a cualquier tamaño."
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Prensa francesa",
-            "bajada": "El método más indulgente y el mejor para el blend de casa. No necesita pulso ni cronómetro fino.",
-            "minutos": 5,
-            "rinde": "2 tazas",
-            "arte": "bolsa",
-            "ingredientes": "30 g de café molido grueso\n450 ml de agua a 93 °C",
-            "pasos": "Muele grueso, como sal de mar. Si lo mueles fino, se cuela por el filtro y la taza queda barrosa.\nAgrega el café y el agua de una vez, y revuelve una sola vez.\nEspera 4 minutos con la tapa puesta, sin bajar el émbolo.\nRompe la costra que se formó arriba y retira la espuma con una cuchara.\nBaja el émbolo lento, sin forzar.\nSirve todo de inmediato en otro recipiente: si lo dejas en la prensa, sigue extrayendo y se pone amargo.",
-            "dato": "Este es el método para hacer café para varias personas sin complicarse."
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Cold brew en casa",
-            "bajada": "Cero equipo, pero hay que planificarlo: se hace solo mientras duermes.",
-            "minutos": 10,
-            "rinde": "1 litro",
-            "arte": "botella",
-            "ingredientes": "100 g de café molido grueso\n1 litro de agua fría\nUn frasco grande y un filtro de papel",
-            "pasos": "Mezcla el café y el agua en el frasco. Revuelve para que no quede polvo seco flotando.\nTápalo y déjalo en el refrigerador entre 14 y 18 horas.\nFiltra con filtro de papel. Va a demorar: no lo apures apretando.\nGuárdalo tapado en el refrigerador. Dura entre 7 y 10 días.",
-            "dato": "A diferencia del café caliente enfriado, el cold brew no tiene acidez: por eso es más dulce y menos ácido al estómago."
-          }
-        },
-        {
-          "type": "receta",
-          "settings": {
-            "titulo": "Cold brew tónica",
-            "bajada": "El trago de verano. Se ve mejor de lo que cuesta hacerlo.",
-            "minutos": 2,
-            "rinde": "1 vaso alto",
-            "arte": "botella",
-            "ingredientes": "100 ml de cold brew\n150 ml de agua tónica fría\nHielo\nUna rodaja de naranja",
-            "pasos": "Llena el vaso con hielo hasta arriba.\nAgrega la tónica primero.\nVierte el cold brew encima, despacio y por el borde, para que quede en dos capas.\nNaranja, y a tomar antes de que se mezcle.",
-            "dato": "Funciona porque el cold brew es menos denso que la tónica. Si lo echas al revés, se mezcla al tiro."
-          }
-        },
-        {
-          "type": "selector",
-          "settings": {
-            "etiqueta": "Para tomarlo solo",
-            "titulo": "Matcha Ceremonial",
-            "precio": "Desde $16.900",
-            "arte": "tarro",
-            "texto": "El grado más alto, de primera cosecha. Dulce y sedoso, sin amargor: está hecho para tomarlo con agua y nada más."
-          }
-        },
-        {
-          "type": "selector",
-          "settings": {
-            "etiqueta": "Para matcha latte",
-            "titulo": "Matcha Coco",
-            "precio": "Desde $17.900",
-            "arte": "tarro",
-            "texto": "Ceremonial con coco. Más dulce y cremoso, pensado para que aguante la leche sin perderse. Va mejor helado."
-          }
-        },
-        {
-          "type": "selector",
-          "settings": {
-            "etiqueta": "Para empezar de cero",
-            "titulo": "Pack Matcha",
-            "precio": "Desde $28.900",
-            "arte": "batidor",
-            "texto": "El ceremonial más el batidor de bambú. Si todavía no tienes chasen, este es el camino corto: con cuchara vas a tener grumos."
-          }
-        },
-        {
           "type": "fila_matcha",
           "settings": {
             "concepto": "Cafeína por taza",
@@ -3565,6 +3377,158 @@
           }
         },
         {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Colombia",
+            "precio": "",
+            "etiqueta": "Más vendido",
+            "que_es": "Café de especialidad en grano o molido, 250 g o 1 kg",
+            "preparacion": "Filtro, prensa francesa, italiana o espresso",
+            "para_quien": "Quieres café recién tostado y eliges tú el método"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Lata edición limitada",
+            "precio": "",
+            "etiqueta": "Edición limitada",
+            "que_es": "El mismo café en lata de 200 g",
+            "preparacion": "Igual que el Colombia",
+            "para_quien": "Lo quieres de regalo, o quieres la lata"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Matcha",
+            "precio": "",
+            "etiqueta": "",
+            "que_es": "Matcha en polvo, lata de 30 g o sobre de 80 g",
+            "preparacion": "Tamizar y batir con agua a 80 °C",
+            "para_quien": "Buscas energía más pareja, o reemplazar el segundo café del día"
+          }
+        },
+        {
+          "type": "comparar",
+          "settings": {
+            "nombre": "Kit matcha",
+            "precio": "",
+            "etiqueta": "",
+            "que_es": "El matcha más el batidor de bambú",
+            "preparacion": "Trae todo lo necesario",
+            "para_quien": "Partes de cero con el matcha"
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para empezar",
+            "titulo": "Lata de 30 g",
+            "precio": "",
+            "arte": "tarro",
+            "texto": "El formato de entrada, y el que se ve bien en la repisa. Rinde unas quince tazas, que es lo justo para saber si el matcha es lo tuyo."
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para recargar",
+            "titulo": "Sobre de 80 g",
+            "precio": "",
+            "arte": "bolsa",
+            "texto": "La recarga. Sale más conveniente por gramo y genera menos envase: lo pasas a la lata que ya tienes y listo."
+          }
+        },
+        {
+          "type": "selector",
+          "settings": {
+            "etiqueta": "Para partir de cero",
+            "titulo": "Kit matcha",
+            "precio": "",
+            "arte": "batidor",
+            "texto": "Con el batidor de bambú incluido. Si todavía no tienes chasen, este es el camino corto: con cuchara vas a tener grumos."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Matcha latte helado",
+            "bajada": "El que más nos preguntan. Si el matcha te queda con grumos, es por el orden: primero el agua, después la leche.",
+            "minutos": 5,
+            "rinde": "1 vaso de 350 ml",
+            "arte": "tarro",
+            "ingredientes": "2 g de matcha (1 cucharadita rasa)\n60 ml de agua a 80 °C\n200 ml de leche fría, o bebida vegetal\nHielo\nOpcional: 1 cucharadita de miel",
+            "pasos": "Tamiza el matcha sobre un bowl. Este paso es el que evita los grumos, no el batidor.\nAgrega los 60 ml de agua a 80 °C. Nunca hirviendo: el agua muy caliente quema el polvo y lo deja amargo.\nBate en zigzag con el batidor de bambú, rápido y desde la muñeca, unos 20 segundos, hasta que se forme una espuma pareja.\nLlena un vaso alto con hielo y agrega la leche.\nVierte el matcha por encima, despacio, para que quede en capas.\nRevuelve antes de tomar.",
+            "dato": "Si lo quieres dulce, la miel va disuelta en el matcha caliente, no sobre la leche fría."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Matcha caliente",
+            "bajada": "La preparación tradicional, usucha. Tres minutos y nada más que matcha y agua.",
+            "minutos": 3,
+            "rinde": "1 taza de 100 ml",
+            "arte": "tarro",
+            "ingredientes": "2 g de matcha (1 cucharadita rasa)\n70 ml de agua a 80 °C",
+            "pasos": "Entibia el bowl con agua caliente y sécalo. Un bowl frío baja la temperatura y corta la espuma.\nTamiza el matcha.\nAgrega los 70 ml de agua a 80 °C.\nBate en zigzag, sin tocar el fondo, unos 20 segundos. Termina con un movimiento lento en espiral para romper las burbujas grandes.\nTómalo de inmediato: el matcha se asienta en un par de minutos.",
+            "dato": "Si no tienes termómetro: hierve el agua y déjala reposar dos minutos fuera del fuego."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Café en V60",
+            "bajada": "El método que mejor le saca el jugo al Colombia. Limpio, aromático y dulce.",
+            "minutos": 4,
+            "rinde": "1 taza de 250 ml",
+            "arte": "bolsa",
+            "ingredientes": "15 g de café molido medio-fino\n250 ml de agua a 93 °C\nFiltro de papel",
+            "pasos": "Enjuaga el filtro con agua caliente y bota esa agua. Saca el gusto a papel y entibia la taza.\nAgrega el café y empareja la cama con un golpe suave.\nBloom: moja con 45 ml de agua y espera 40 segundos. El café se infla; eso es el gas saliendo.\nVierte en círculos desde el centro hasta llegar a 150 ml.\nCompleta hasta 250 ml en un segundo vertido.\nDebería terminar de filtrar entre 2:30 y 3:00. Si demora más, muele un poco más grueso.",
+            "dato": "La proporción es 1 de café por 16 de agua. Con eso puedes escalar a cualquier tamaño."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Prensa francesa",
+            "bajada": "El método más indulgente. No necesita pulso ni cronómetro fino, y rinde para dos.",
+            "minutos": 5,
+            "rinde": "2 tazas",
+            "arte": "bolsa",
+            "ingredientes": "30 g de café molido grueso\n450 ml de agua a 93 °C",
+            "pasos": "Muele grueso, como sal de mar. Si lo mueles fino, se cuela por el filtro y la taza queda barrosa.\nAgrega el café y el agua de una vez, y revuelve una sola vez.\nEspera 4 minutos con la tapa puesta, sin bajar el émbolo.\nRompe la costra que se formó arriba y retira la espuma con una cuchara.\nBaja el émbolo lento, sin forzar.\nSirve todo de inmediato en otro recipiente: si lo dejas en la prensa, sigue extrayendo y se pone amargo.",
+            "dato": "Este es el método para hacer café para varias personas sin complicarse."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Cold brew en casa",
+            "bajada": "Cero equipo, pero hay que planificarlo: se hace solo mientras duermes.",
+            "minutos": 10,
+            "rinde": "1 litro",
+            "arte": "botella",
+            "ingredientes": "100 g de café molido grueso\n1 litro de agua fría\nUn frasco grande y un filtro de papel",
+            "pasos": "Mezcla el café y el agua en el frasco. Revuelve para que no quede polvo seco flotando.\nTápalo y déjalo en el refrigerador entre 14 y 18 horas.\nFiltra con filtro de papel. Va a demorar: no lo apures apretando.\nGuárdalo tapado en el refrigerador. Dura entre 7 y 10 días.",
+            "dato": "A diferencia del café caliente enfriado, el cold brew no tiene acidez: por eso es más dulce y menos ácido al estómago."
+          }
+        },
+        {
+          "type": "receta",
+          "settings": {
+            "titulo": "Cold brew tónica",
+            "bajada": "El trago de verano. Se ve mejor de lo que cuesta hacerlo, y usa el cold brew de la receta anterior.",
+            "minutos": 2,
+            "rinde": "1 vaso alto",
+            "arte": "botella",
+            "ingredientes": "100 ml de cold brew (el de la receta anterior)\n150 ml de agua tónica fría\nHielo\nUna rodaja de naranja",
+            "pasos": "Llena el vaso con hielo hasta arriba.\nAgrega la tónica primero.\nVierte el cold brew encima, despacio y por el borde, para que quede en dos capas.\nNaranja, y a tomar antes de que se mezcle.",
+            "dato": "Funciona porque el cold brew es menos denso que la tónica. Si lo haces al revés, se mezcla de inmediato."
+          }
+        },
+        {
           "type": "pregunta",
           "settings": {
             "grupo": "matcha",
@@ -3572,8 +3536,8 @@
             "grupo_bajada": "Lo que más nos preguntan sobre el matcha.",
             "pregunta": "¿El matcha tiene más cafeína que el café?",
             "respuesta": "<p>No. Una taza de matcha de 2 gramos tiene alrededor de 60 mg de cafeína, y una taza de café de filtro de 240 ml anda en los 95 mg. El matcha está más cerca de un espresso que de un café largo.</p><p>Lo que cambia no es tanto la cantidad como la forma en que llega. El matcha trae L-teanina, un aminoácido del té verde al que se atribuye una subida más pareja y sin el bajón de media mañana. Por eso mucha gente lo usa para reemplazar el segundo café del día, no el primero.</p><p>La cifra exacta varía según la cosecha y cuánto polvo uses, así que tómala como referencia.</p>",
-            "cta_texto": "Ver el Matcha Ceremonial",
-            "cta_url": "#producto-matcha-ceremonial"
+            "cta_texto": "Ver el matcha",
+            "cta_url": "#producto-matcha"
           }
         },
         {
@@ -3582,8 +3546,8 @@
             "grupo": "matcha",
             "pregunta": "¿Por qué mi matcha sabe amargo o a pasto?",
             "respuesta": "<p>Casi siempre es una de tres cosas, en este orden:</p><p><b>El agua estaba muy caliente.</b> Sobre 80 °C el polvo se quema y aparece el amargor. Si no tienes termómetro, hierve y deja reposar dos minutos fuera del fuego.</p><p><b>Es matcha culinario, no ceremonial.</b> El culinario viene de cosechas posteriores y es naturalmente más áspero. Sirve para repostería, donde el azúcar lo compensa, pero no para tomarlo solo.</p><p><b>Está viejo o mal guardado.</b> El matcha se oxida con la luz, el calor y el aire. Si el verde se fue apagando hacia un tono oliva, ya perdió.</p>",
-            "cta_texto": "Ver el Matcha Ceremonial",
-            "cta_url": "#producto-matcha-ceremonial"
+            "cta_texto": "Ver el matcha",
+            "cta_url": "#producto-matcha"
           }
         },
         {
@@ -3616,8 +3580,8 @@
             "grupo": "matcha",
             "pregunta": "¿Necesito batidor de bambú o puedo usar otra cosa?",
             "respuesta": "<p>El batidor de bambú (chasen) es lo que mejor funciona: las cañas finas deshacen los grumos y levantan espuma de una forma que una cuchara no logra.</p><p>Si todavía no tienes uno, la alternativa que mejor resulta es un frasco con tapa: pones el matcha tamizado y el agua, cierras y agitas fuerte quince segundos. Un mini espumador eléctrico también sirve.</p><p>Lo que no funciona es revolver con cuchara. Vas a tener grumos.</p>",
-            "cta_texto": "Ver el Pack Matcha, con batidor incluido",
-            "cta_url": "#producto-pack-matcha"
+            "cta_texto": "Ver el Kit matcha, con batidor incluido",
+            "cta_url": "#producto-kit-matcha"
           }
         },
         {
@@ -3634,8 +3598,8 @@
             "grupo": "matcha",
             "pregunta": "¿Cuál es la diferencia entre matcha ceremonial y culinario?",
             "respuesta": "<p>El ceremonial se hace con las hojas más jóvenes de la primera cosecha. Queda verde intenso, de textura sedosa y con dulzor natural, pensado para tomarlo solo con agua o con leche.</p><p>El culinario viene de cosechas posteriores. Es más áspero y más barato, y está hecho para repostería o mezclas donde el sabor queda tapado.</p><p>Un detalle que conviene saber: «ceremonial» no es una categoría regulada, así que cualquiera puede escribirlo en una lata. Lo que sí se nota es el color, la finura del polvo y si el productor dice de dónde viene.</p>",
-            "cta_texto": "Ver el Matcha Ceremonial",
-            "cta_url": "#producto-matcha-ceremonial"
+            "cta_texto": "Ver el matcha",
+            "cta_url": "#producto-matcha"
           }
         },
         {
@@ -3690,10 +3654,20 @@
           "type": "pregunta",
           "settings": {
             "grupo": "cafe",
-            "pregunta": "¿Qué café me conviene si recién empiezo?",
-            "respuesta": "<p>El blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitas equipo especial.</p><p>Si quieres probar más de una cosa de una vez, el pack de inicio trae café, matcha y la taza.</p>",
-            "cta_texto": "Ver el Starter Pack",
-            "cta_url": "#producto-pack-descubrir"
+            "pregunta": "¿Qué formato me conviene si recién empiezo?",
+            "respuesta": "<p>Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres semanas, que es justo el tiempo en que el café está en su mejor momento, y el molido te ahorra comprar molinillo mientras decides.</p><p>El kilo conviene cuando ya sabes que este café te gusta, o si en la casa se toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a ese volumen la diferencia de frescura se nota.</p>",
+            "cta_texto": "Ver el Colombia",
+            "cta_url": "#producto-colombia"
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "grupo": "cafe",
+            "pregunta": "¿Por qué tienen un solo café?",
+            "respuesta": "<p>Porque preferimos hacer uno bien antes que cinco a medias. Trabajamos un origen de Colombia, lo tostamos nosotros y ajustamos el tueste a ese grano en particular.</p><p>Tener una sola referencia también significa que el lote rota rápido: lo que te llega es café recién tostado, no una bolsa que llevaba meses esperando en una bodega.</p>",
+            "cta_texto": "Ver el Colombia",
+            "cta_url": "#producto-colombia"
           }
         },
         {
@@ -3712,7 +3686,7 @@
             "grupo": "pedido",
             "pregunta": "¿Cómo funciona la suscripción?",
             "respuesta": "<p>Eliges el producto, marcas «Suscripción» en vez de «Una vez» y queda con 15% de descuento en cada entrega. La pausas o la cancelas cuando quieras desde tu cuenta, sin llamar a nadie.</p><p>Es la forma más barata de mantener café fresco en la casa, porque llega recién tostado en vez de quedarse semanas en la despensa.</p>",
-            "cta_texto": "Ver los packs",
+            "cta_texto": "Ver los kits",
             "cta_url": "#packs"
           }
         },
