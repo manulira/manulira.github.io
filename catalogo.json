@@ -1,0 +1,162 @@
+{
+  "marca": "sepia coffee",
+  "sitio": "https://sepiacoffee.cl/",
+  "moneda": "CLP",
+  "pais": "CL",
+  "actualizado": "2026-10-10",
+  "envio": {
+    "gratis_sobre": 65000,
+    "con_descuento_sobre": 30000,
+    "cobertura": "todo Chile"
+  },
+  "suscripcion": {
+    "descuento_porcentaje": 15,
+    "nota": "aplica a todos los productos"
+  },
+  "productos": [
+    {
+      "id": "sepia-cordillera",
+      "nombre": "Cordillera",
+      "categoria": "Café en grano",
+      "precio": 9900,
+      "precio_antes": null,
+      "formato": "250 g",
+      "descripcion": "Nuestro blend de casa: la taza de todos los días. Dulce, de cuerpo medio y equilibrada, funciona igual de bien en filtro, en prensa francesa y en espresso. Tostada en Santiago en lotes chicos y despachada recién tostada.",
+      "url": "https://sepiacoffee.cl/#producto-cordillera",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-cordillera.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-cold-clasico",
+      "nombre": "Cold Brew Clásico",
+      "categoria": "Cold brew",
+      "precio": 7900,
+      "precio_antes": null,
+      "formato": "1 L",
+      "descripcion": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes. Viene listo para tomar: lo servís con hielo directo de la botella. Botella de 1 litro, rinde unos cuatro vasos.",
+      "url": "https://sepiacoffee.cl/#producto-cold-clasico",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-cold-clasico.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-matcha-ceremonial",
+      "nombre": "Matcha Ceremonial",
+      "categoria": "Matcha",
+      "precio": 16900,
+      "precio_antes": null,
+      "formato": "80 g",
+      "descripcion": "Matcha de grado ceremonial de primera cosecha. Es el grado más alto: color verde intenso, textura sedosa y sabor dulce sin amargor, pensado para tomarlo solo con agua o con leche. Orgánico.",
+      "url": "https://sepiacoffee.cl/#producto-matcha-ceremonial",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-matcha-ceremonial.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-yirgacheffe",
+      "nombre": "Yirgacheffe",
+      "categoria": "Café en grano",
+      "precio": 13500,
+      "precio_antes": null,
+      "formato": "250 g",
+      "descripcion": "Café de origen de Yirgacheffe, Etiopía, proceso lavado. Es el más floral y ácido de la carta, ideal para métodos de filtro como V60 o Chemex si te gustan las tazas limpias y perfumadas.",
+      "url": "https://sepiacoffee.cl/#producto-yirgacheffe",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-yirgacheffe.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-matcha-coco",
+      "nombre": "Matcha Coco",
+      "categoria": "Matcha",
+      "precio": 17900,
+      "precio_antes": null,
+      "formato": "80 g",
+      "descripcion": "Matcha ceremonial mezclado con coco deshidratado. Edición de verano, más dulce y cremoso que el ceremonial puro: pensado para matcha latte helado.",
+      "url": "https://sepiacoffee.cl/#producto-matcha-coco",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-matcha-coco.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-taza-sepia",
+      "nombre": "Taza de cerámica",
+      "categoria": "Accesorios",
+      "precio": 14900,
+      "precio_antes": null,
+      "formato": "300 ml",
+      "descripcion": "Taza de cerámica esmaltada en mate con el caminante de sepia coffee.",
+      "url": "https://sepiacoffee.cl/#producto-taza-sepia",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-taza-sepia.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-descubrir",
+      "nombre": "Starter Pack",
+      "categoria": "Packs",
+      "precio": 29900,
+      "precio_antes": 35700,
+      "formato": "Café + matcha + taza",
+      "descripcion": "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de cerámica, así probás las tres cosas antes de decidir cuál repetís. Es la forma más barata de conocer la marca.",
+      "url": "https://sepiacoffee.cl/#producto-pack-descubrir",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-descubrir.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-ritual",
+      "nombre": "Pack Ritual",
+      "categoria": "Packs",
+      "precio": 22900,
+      "precio_antes": 24800,
+      "formato": "Café + taza",
+      "descripcion": "Cordillera 250 g más la taza de cerámica. Para regalar o para armar el ritual de la mañana de una vez.",
+      "url": "https://sepiacoffee.cl/#producto-pack-ritual",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-ritual.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-matcha",
+      "nombre": "Pack Matcha",
+      "categoria": "Packs",
+      "precio": 28900,
+      "precio_antes": 31800,
+      "formato": "Matcha + batidor",
+      "descripcion": "Matcha ceremonial 80 g más el batidor de bambú (chasen). Todo lo que hace falta para preparar matcha en casa como corresponde, sin grumos.",
+      "url": "https://sepiacoffee.cl/#producto-pack-matcha",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-matcha.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-coldbrew",
+      "nombre": "Pack Cold Brew",
+      "categoria": "Packs",
+      "precio": 28900,
+      "precio_antes": 31600,
+      "formato": "4 × 1 L",
+      "descripcion": "Cuatro botellas de 1 litro de cold brew, y elegís los sabores. Rinde unos dieciséis vasos: es el pack para tener la semana cubierta.",
+      "url": "https://sepiacoffee.cl/#producto-pack-coldbrew",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-coldbrew.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-oficina",
+      "nombre": "Pack Oficina",
+      "categoria": "Packs",
+      "precio": 54900,
+      "precio_antes": 62400,
+      "formato": "1 kg + 2 tazas",
+      "descripcion": "Un kilo de café en grano más dos tazas. Pensado para equipos chicos o para quien toma varias tazas al día y no quiere quedarse sin café.",
+      "url": "https://sepiacoffee.cl/#producto-pack-oficina",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-oficina.jpg",
+      "disponible": true
+    },
+    {
+      "id": "sepia-pack-regalo",
+      "nombre": "Pack Regalo",
+      "categoria": "Packs",
+      "precio": 39900,
+      "precio_antes": null,
+      "formato": "Caja de madera",
+      "descripcion": "Surtido de café, matcha y accesorios en una caja de madera, listo para entregar sin envolver nada.",
+      "url": "https://sepiacoffee.cl/#producto-pack-regalo",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-pack-regalo.jpg",
+      "disponible": true
+    }
+  ]
+}

@@ -12,9 +12,686 @@
 <meta property="og:locale" content="es_CL" />
 <meta property="og:title" content="sepia coffee — Café de especialidad y matcha" />
 <meta property="og:description" content="Tostado en Santiago. Hecho para tu ritual diario." />
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
+<meta name="author" content="sepia coffee" />
+<link rel="alternate" hreflang="es-cl" href="https://sepiacoffee.cl/" />
+<link rel="alternate" hreflang="x-default" href="https://sepiacoffee.cl/" />
+
+<!-- ============================================================
+     PUNTO 1 DEL PLAN · REGISTRAR LA WEB
+     Pegá acá los códigos que te dan las dos consolas. Bing importa
+     tanto como Google: es el índice que alimenta a ChatGPT.
+       · Google Search Console   search.google.com/search-console
+       · Bing Webmaster Tools    bing.com/webmasters
+     Mientras el content esté vacío la etiqueta no hace nada ni molesta.
+     ============================================================ -->
+<meta name="google-site-verification" content="" />
+<meta name="msvalidate.01" content="" />
+
+<meta property="og:url" content="https://sepiacoffee.cl/" />
+<meta property="og:image" content="https://sepiacoffee.cl/assets/fotos/hero-1.jpg" />
+<meta property="og:image:alt" content="Dos manos sosteniendo un matcha helado y un café de sepia coffee" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="sepia coffee — Café de especialidad y matcha" />
+<meta name="twitter:description" content="Tostado en Santiago. Hecho para tu ritual diario." />
+<meta name="twitter:image" content="https://sepiacoffee.cl/assets/fotos/hero-1.jpg" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+
+<!-- ============================================================
+     DATOS ESTRUCTURADOS · schema.org en JSON-LD
+     Puntos 1, 2 y 4 del plan. Esto es lo que leen Google, Bing y
+     ChatGPT para saber qué vendés, a cuánto y con qué envío.
+     Se genera de catalogo.json: si cambiás un precio, cambialo en
+     los dos lados o quedan en desacuerdo (y eso penaliza).
+     Probalo en search.google.com/test/rich-results
+     ============================================================ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": [
+        "Organization",
+        "OnlineStore"
+      ],
+      "@id": "https://sepiacoffee.cl/#tienda",
+      "name": "sepia coffee",
+      "alternateName": "sepiacoffee.cl",
+      "url": "https://sepiacoffee.cl/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://sepiacoffee.cl/assets/sepia/logo-principal.png"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/hero-1.jpg",
+      "description": "sepia coffee es una marca chilena de café de especialidad y matcha. Compramos lotes chicos de fincas que podemos nombrar, los tostamos en Santiago y los despachamos recién tostados a todo Chile. Vendemos café en grano, cold brew en botella, matcha ceremonial, packs y accesorios.",
+      "slogan": "La primera cosa buena del día.",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Chile"
+      },
+      "currenciesAccepted": "CLP",
+      "paymentAccepted": "Webpay, Mercado Pago, Visa, Mastercard",
+      "knowsLanguage": "es-CL",
+      "sameAs": [],
+      "hasOfferCatalog": {
+        "@id": "https://sepiacoffee.cl/#catalogo"
+      }
+    },
+    {
+      "@type": "Brand",
+      "@id": "https://sepiacoffee.cl/#marca",
+      "name": "sepia coffee",
+      "url": "https://sepiacoffee.cl/",
+      "logo": "https://sepiacoffee.cl/assets/sepia/logo-principal.png",
+      "slogan": "La primera cosa buena del día."
+    },
+    {
+      "@type": "OfferCatalog",
+      "@id": "https://sepiacoffee.cl/#catalogo",
+      "name": "Catálogo sepia coffee",
+      "numberOfItems": 12,
+      "itemListElement": [
+        {
+          "@type": "OfferCatalog",
+          "name": "Café en grano",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-cordillera"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-yirgacheffe"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Cold brew",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-cold-clasico"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Matcha",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-matcha-ceremonial"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-matcha-coco"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Packs",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-descubrir"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-ritual"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-matcha"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-coldbrew"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-oficina"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-pack-regalo"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Accesorios",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-taza-sepia"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@type": "OfferShippingDetails",
+      "@id": "https://sepiacoffee.cl/#envio-gratis",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "0",
+        "currency": "CLP"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "CL"
+      },
+      "description": "Envío gratis a todo Chile en compras sobre $65.000. Envío con descuento sobre $30.000."
+    },
+    {
+      "@type": "MerchantReturnPolicy",
+      "@id": "https://sepiacoffee.cl/#devoluciones",
+      "applicableCountry": "CL",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 10,
+      "returnMethod": "https://schema.org/ReturnByMail",
+      "returnFees": "https://schema.org/FreeReturn",
+      "description": "Derecho a retracto de 10 días corridos según la ley chilena del consumidor para compras a distancia."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://sepiacoffee.cl/#sitio",
+      "url": "https://sepiacoffee.cl/",
+      "name": "sepia coffee",
+      "inLanguage": "es-CL",
+      "publisher": {
+        "@id": "https://sepiacoffee.cl/#tienda"
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-cordillera",
+      "name": "Cordillera",
+      "sku": "sepia-cordillera",
+      "description": "Nuestro blend de casa: la taza de todos los días. Dulce, de cuerpo medio y equilibrada, funciona igual de bien en filtro, en prensa francesa y en espresso. Tostada en Santiago en lotes chicos y despachada recién tostada.",
+      "category": "Café en grano",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-cordillera.jpg",
+      "size": "250 g",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-cordillera",
+        "priceCurrency": "CLP",
+        "price": "9900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-cold-clasico",
+      "name": "Cold Brew Clásico",
+      "sku": "sepia-cold-clasico",
+      "description": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes. Viene listo para tomar: lo servís con hielo directo de la botella. Botella de 1 litro, rinde unos cuatro vasos.",
+      "category": "Cold brew",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-cold-clasico.jpg",
+      "size": "1 L",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-cold-clasico",
+        "priceCurrency": "CLP",
+        "price": "7900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-matcha-ceremonial",
+      "name": "Matcha Ceremonial",
+      "sku": "sepia-matcha-ceremonial",
+      "description": "Matcha de grado ceremonial de primera cosecha. Es el grado más alto: color verde intenso, textura sedosa y sabor dulce sin amargor, pensado para tomarlo solo con agua o con leche. Orgánico.",
+      "category": "Matcha",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-matcha-ceremonial.jpg",
+      "size": "80 g",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-matcha-ceremonial",
+        "priceCurrency": "CLP",
+        "price": "16900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-yirgacheffe",
+      "name": "Yirgacheffe",
+      "sku": "sepia-yirgacheffe",
+      "description": "Café de origen de Yirgacheffe, Etiopía, proceso lavado. Es el más floral y ácido de la carta, ideal para métodos de filtro como V60 o Chemex si te gustan las tazas limpias y perfumadas.",
+      "category": "Café en grano",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-yirgacheffe.jpg",
+      "size": "250 g",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-yirgacheffe",
+        "priceCurrency": "CLP",
+        "price": "13500",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-matcha-coco",
+      "name": "Matcha Coco",
+      "sku": "sepia-matcha-coco",
+      "description": "Matcha ceremonial mezclado con coco deshidratado. Edición de verano, más dulce y cremoso que el ceremonial puro: pensado para matcha latte helado.",
+      "category": "Matcha",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-matcha-coco.jpg",
+      "size": "80 g",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-matcha-coco",
+        "priceCurrency": "CLP",
+        "price": "17900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-taza-sepia",
+      "name": "Taza de cerámica",
+      "sku": "sepia-taza-sepia",
+      "description": "Taza de cerámica esmaltada en mate con el caminante de sepia coffee.",
+      "category": "Accesorios",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-taza-sepia.jpg",
+      "size": "300 ml",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-taza-sepia",
+        "priceCurrency": "CLP",
+        "price": "14900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-descubrir",
+      "name": "Starter Pack",
+      "sku": "sepia-pack-descubrir",
+      "description": "El pack para empezar: un poco de todo. Lleva café en grano, matcha y la taza de cerámica, así probás las tres cosas antes de decidir cuál repetís. Es la forma más barata de conocer la marca.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-descubrir.jpg",
+      "size": "Café + matcha + taza",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-descubrir",
+        "priceCurrency": "CLP",
+        "price": "29900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-ritual",
+      "name": "Pack Ritual",
+      "sku": "sepia-pack-ritual",
+      "description": "Cordillera 250 g más la taza de cerámica. Para regalar o para armar el ritual de la mañana de una vez.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-ritual.jpg",
+      "size": "Café + taza",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-ritual",
+        "priceCurrency": "CLP",
+        "price": "22900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-matcha",
+      "name": "Pack Matcha",
+      "sku": "sepia-pack-matcha",
+      "description": "Matcha ceremonial 80 g más el batidor de bambú (chasen). Todo lo que hace falta para preparar matcha en casa como corresponde, sin grumos.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-matcha.jpg",
+      "size": "Matcha + batidor",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-matcha",
+        "priceCurrency": "CLP",
+        "price": "28900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-coldbrew",
+      "name": "Pack Cold Brew",
+      "sku": "sepia-pack-coldbrew",
+      "description": "Cuatro botellas de 1 litro de cold brew, y elegís los sabores. Rinde unos dieciséis vasos: es el pack para tener la semana cubierta.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-coldbrew.jpg",
+      "size": "4 × 1 L",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-coldbrew",
+        "priceCurrency": "CLP",
+        "price": "28900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-oficina",
+      "name": "Pack Oficina",
+      "sku": "sepia-pack-oficina",
+      "description": "Un kilo de café en grano más dos tazas. Pensado para equipos chicos o para quien toma varias tazas al día y no quiere quedarse sin café.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-oficina.jpg",
+      "size": "1 kg + 2 tazas",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-oficina",
+        "priceCurrency": "CLP",
+        "price": "54900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://sepiacoffee.cl/#producto-pack-regalo",
+      "name": "Pack Regalo",
+      "sku": "sepia-pack-regalo",
+      "description": "Surtido de café, matcha y accesorios en una caja de madera, listo para entregar sin envolver nada.",
+      "category": "Packs",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-pack-regalo.jpg",
+      "size": "Caja de madera",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://sepiacoffee.cl/#producto-pack-regalo",
+        "priceCurrency": "CLP",
+        "price": "39900",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://sepiacoffee.cl/#tienda"
+        },
+        "shippingDetails": {
+          "@id": "https://sepiacoffee.cl/#envio-gratis"
+        },
+        "hasMerchantReturnPolicy": {
+          "@id": "https://sepiacoffee.cl/#devoluciones"
+        }
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Preguntas frecuentes. Mismo texto que la sección #preguntas. -->
+<script type="application/ld+json">
+{
+  "@type": "FAQPage",
+  "@id": "https://sepiacoffee.cl/#preguntas",
+  "inLanguage": "es-CL",
+  "about": {
+    "@id": "https://sepiacoffee.cl/#tienda"
+  },
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué diferencia hay entre el matcha ceremonial y el culinario?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El grado ceremonial se hace con las hojas más jóvenes de la primera cosecha: queda verde intenso, de textura sedosa y dulce, pensado para tomarlo solo con agua o con leche. El culinario viene de cosechas posteriores, es más amargo y más barato, y se usa para repostería o para mezclas donde el sabor queda tapado. En sepia coffee vendemos solo ceremonial, también en la versión con coco."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuánto matcha uso por taza y a qué temperatura va el agua?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo. Lo batís en zigzag con un batidor de bambú hasta que se forme espuma, unos 15 segundos. Para un matcha latte, preparás esa base y recién ahí sumás la leche, fría o caliente."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué café me conviene si recién empiezo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cordillera, nuestro blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitás equipo especial. Si querés probar más de una cosa de una vez, el Starter Pack trae café, matcha y la taza."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuál es el café más suave y cuál el más ácido?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cordillera es el más parejo y dulce. Yirgacheffe es el otro extremo: es un café de origen de Etiopía de proceso lavado, con acidez marcada y notas florales, y se luce en métodos de filtro como V60 o Chemex. Si venís de tomar café de supermercado, empezá por Cordillera."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿El matcha tiene cafeína?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí, tiene. Menos que un espresso, y la sensación es más pareja: la L-teanina del té verde suaviza la subida, así que no da el bajón de media mañana. Por eso mucha gente lo usa para reemplazar el segundo café del día."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo guardo el café para que no se pase?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "En un envase hermético, en un lugar fresco y oscuro, lejos del horno y del sol. No en el refrigerador: la humedad y los olores lo arruinan más rápido que el aire. Y en grano, moliendo justo antes de preparar. El café molido pierde la mayor parte del aroma en los primeros días, por eso lo despachamos recién tostado y en grano."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre $30.000 pagás envío con descuento. El valor exacto depende de la comuna y lo ves antes de pagar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo funciona la suscripción?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Elegís el producto, marcás «Suscripción» en vez de «Una vez» y te queda con 15% de descuento en cada entrega. Lo podés pausar o cancelar cuando quieras desde tu cuenta, sin llamar a nadie."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puedo devolver un pedido?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Si el pedido llegó dañado o no es lo que pediste, lo reponemos. Por la ley del consumidor, en las compras a distancia tenés además 10 días corridos de derecho a retracto, siempre que el producto esté sin abrir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Tostan ustedes el café?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Compramos lotes chicos de fincas que podemos nombrar, los tostamos en Santiago y los despachamos recién tostados. Por eso no tenemos stock de todo todo el año: cuando se termina un lote, entra otro."
+      }
+    }
+  ]
+}
+</script>
 
 <style>
 /* ============================================================
@@ -575,6 +1252,47 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
   .rev{opacity:1;transform:none}
 }
+/* ---------- Guía comparativa (punto 10 del plan de IA) ---------- */
+.guia{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.guia table{width:100%;min-width:720px;border-collapse:collapse;font-size:.95rem;text-align:left}
+.guia caption{text-align:left;color:var(--tinta-60);font-size:.9rem;padding:0 1rem .9rem}
+.guia th,.guia td{padding:.9rem 1rem;vertical-align:top;border-bottom:1px solid var(--tinta-14)}
+.guia thead th{font-family:var(--display);font-weight:600;font-size:.86rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-60);border-bottom:2px solid var(--tinta-14);white-space:nowrap}
+.guia tbody th{font-family:var(--display);font-weight:600;font-size:1.02rem;white-space:nowrap}
+.guia tbody tr:last-child th,.guia tbody tr:last-child td{border-bottom:0}
+.guia tbody tr:hover{background:var(--humo)}
+.guia .precio{font-family:var(--display);font-weight:600;white-space:nowrap}
+.guia .pildora{display:inline-block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.03em;text-transform:uppercase;padding:.26rem .6rem;border-radius:var(--r-pill);background:var(--celeste);color:var(--navy)}
+.guia-pie{margin-top:1.1rem;font-size:.9rem;color:var(--tinta-60)}
+
+@media(max-width:759px){
+  .guia{overflow-x:visible}
+  .guia table{min-width:0;display:block}
+  .guia caption{display:block;width:100%;padding-inline:0}
+  .guia thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .guia tbody,.guia tr{display:block}
+  .guia tr{background:var(--papel);border-radius:var(--r-md);padding:.4rem .2rem .6rem;margin-bottom:.7rem}
+  .guia tr:last-child{margin-bottom:0}
+  .guia tbody th,.guia td{display:block;border-bottom:0;padding:.3rem .9rem}
+  .guia tbody th{font-size:1.1rem;padding-top:.7rem;padding-bottom:.5rem;white-space:normal}
+  .guia td{display:grid;grid-template-columns:7.4rem 1fr;gap:.2rem .8rem;align-items:baseline;font-size:.94rem}
+  .guia td::before{content:attr(data-etq);font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-60)}
+  .guia tbody tr:hover{background:var(--papel)}
+}
+
+/* ---------- Preguntas frecuentes (puntos 5 y 6) ---------- */
+.faq{display:grid;gap:.7rem;max-width:62rem;margin-inline:auto}
+.faq details{background:var(--blanco);border-radius:var(--r-lg);overflow:hidden;transition:background .25s var(--ease)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;list-style:none;padding:clamp(1rem,2vw,1.3rem) clamp(1.1rem,2.4vw,1.6rem);font-family:var(--display);font-weight:600;font-size:clamp(1.02rem,1.5vw,1.14rem);line-height:1.3}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";flex:none;width:11px;height:11px;border-right:2.4px solid currentColor;border-bottom:2.4px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .25s var(--ease)}
+.faq details[open] summary::after{transform:rotate(225deg) translateY(-2px)}
+.faq details[open]{background:var(--blanco)}
+.faq .resp{padding:0 clamp(1.1rem,2.4vw,1.6rem) clamp(1.1rem,2.4vw,1.5rem);max-width:60ch}
+.faq .resp p+p{margin-top:.6rem}
+.faq .resp p{color:var(--tinta-70);line-height:1.6}
+.faq .resp a{border-bottom:2px solid var(--tinta-14);font-weight:500}
+.faq .resp a:hover{border-bottom-color:currentColor}
 </style>
 </head>
 <body>
@@ -588,8 +1306,16 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
      · Montos de envío: $30.000 y $65.000 aparecen en la barra de
        anuncio y en TRAMO_1 / TRAMO_2 dentro del script
      · Enlaces de redes sociales y páginas legales del pie
+     · Los códigos de Search Console y de Bing, en el <head>
+     · El campo "sameAs" del JSON-LD: Instagram, TikTok y la ficha
+       de Google. Hoy está vacío.
      Las fotos van en assets/fotos/ con los nombres que lista
      assets/fotos/LEEME.md. Si falta una, se dibuja la ilustración.
+     Si cambiás un precio, cambialo también en ia/datos.py y volvé
+     a generar el JSON-LD y catalogo.json (ver ia/LEEME.md): si no
+     coinciden, Google lo penaliza.
+     El plan completo de optimización para ChatGPT y lo que falta
+     está en ia/PLAN-CHATGPT.md
      ============================================================ -->
 
 <!-- ===================== BIBLIOTECA SVG ===================== -->
@@ -949,7 +1675,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="2 de 2">
       <div class="hero-caja" style="background:linear-gradient(120deg,#567C8D,#C8D9E6)">
         <div class="hero-fondo">
-          <img src="assets/fotos/hero-2.jpg" alt="" onerror="this.remove()">
+          <img src="assets/fotos/hero-2.jpg" alt="Matcha ceremonial de sepia coffee batido en su bowl, junto a la lata celeste" onerror="this.remove()">
           <div class="hero-arte" aria-hidden="true">
             <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
             <svg class="pieza p1" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
@@ -994,12 +1720,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </div>
     <div class="car">
       <div class="car-pista rev" data-pista="cafes">
-        <article class="prod" data-id="cordillera" data-nombre="Cordillera" data-precio="9900"
+        <article class="prod" id="producto-cordillera" data-id="cordillera" data-nombre="Cordillera" data-precio="9900"
                  data-precio-txt="$9.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-bolsa" data-cat="cafe">
           <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-cordillera.jpg" alt="Cordillera" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-cordillera-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-cordillera.jpg" alt="Bolsa de 250 g de café en grano Cordillera, el blend de casa de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-cordillera-2.jpg" alt="Granos de café tostado del blend Cordillera, molidos y en grano" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Cordillera"><use href="#i-bolsa"/></svg>
             <span class="prod-etq">Más vendido</span>
             <button class="prod-rapido" type="button" data-agregar>
@@ -1018,12 +1744,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="cold-clasico" data-nombre="Cold Brew Clásico" data-precio="7900"
+        <article class="prod" id="producto-cold-clasico" data-id="cold-clasico" data-nombre="Cold Brew Clásico" data-precio="7900"
                  data-precio-txt="$7.900" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-botella" data-cat="cold">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-cold-clasico.jpg" alt="Cold Brew Clásico" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-cold-clasico-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-cold-clasico.jpg" alt="Botella de 1 litro de cold brew clásico de sepia coffee, sin azúcar" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-cold-clasico-2.jpg" alt="Vaso de cold brew de sepia coffee servido con hielo" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Cold Brew Clásico"><use href="#i-botella"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1041,12 +1767,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="matcha-ceremonial" data-nombre="Matcha Ceremonial" data-precio="16900"
+        <article class="prod" id="producto-matcha-ceremonial" data-id="matcha-ceremonial" data-nombre="Matcha Ceremonial" data-precio="16900"
                  data-precio-txt="$16.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-tarro" data-cat="matcha">
           <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-matcha-ceremonial.jpg" alt="Matcha Ceremonial" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-matcha-ceremonial-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-matcha-ceremonial.jpg" alt="Lata celeste de 80 g de matcha ceremonial orgánico de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-matcha-ceremonial-2.jpg" alt="Matcha ceremonial batido en un bowl, con la espuma formada" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Ceremonial"><use href="#i-tarro"/></svg>
             <span class="prod-etq celeste">Orgánico</span>
             <button class="prod-rapido" type="button" data-agregar>
@@ -1064,12 +1790,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="yirgacheffe" data-nombre="Yirgacheffe" data-precio="13500"
+        <article class="prod" id="producto-yirgacheffe" data-id="yirgacheffe" data-nombre="Yirgacheffe" data-precio="13500"
                  data-precio-txt="$13.500" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-bolsa" data-cat="cafe">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-yirgacheffe.jpg" alt="Yirgacheffe" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-yirgacheffe-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-yirgacheffe.jpg" alt="Bolsa de 250 g de café en grano Yirgacheffe de Etiopía, proceso lavado" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-yirgacheffe-2.jpg" alt="Taza de filtro preparada con café Yirgacheffe" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Yirgacheffe"><use href="#i-bolsa"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1086,12 +1812,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="matcha-coco" data-nombre="Matcha Coco" data-precio="17900"
+        <article class="prod" id="producto-matcha-coco" data-id="matcha-coco" data-nombre="Matcha Coco" data-precio="17900"
                  data-precio-txt="$17.900" data-tono="#567C8D" data-acento="#2F4156"
                  data-arte="i-tarro" data-cat="matcha">
           <div class="prod-media" style="--tono:#567C8D">
-            <img class="foto" src="assets/fotos/prod-matcha-coco.jpg" alt="Matcha Coco" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-matcha-coco-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-matcha-coco.jpg" alt="Lata de 80 g de matcha coco de sepia coffee, edición de verano" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-matcha-coco-2.jpg" alt="Matcha latte helado preparado con matcha coco" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Matcha Coco"><use href="#i-tarro"/></svg>
             <span class="prod-etq teal">Nuevo</span>
             <button class="prod-rapido" type="button" data-agregar>
@@ -1109,12 +1835,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="taza-sepia" data-nombre="Taza de cerámica" data-precio="14900"
+        <article class="prod" id="producto-taza-sepia" data-id="taza-sepia" data-nombre="Taza de cerámica" data-precio="14900"
                  data-precio-txt="$14.900" data-tono="#FFFFFF" data-acento="#C8D9E6"
                  data-arte="i-taza" data-cat="accesorios">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-taza-sepia.jpg" alt="Taza de cerámica" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-taza-sepia-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-taza-sepia.jpg" alt="Taza de cerámica mate de 300 ml con el caminante de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-taza-sepia-2.jpg" alt="La taza de sepia coffee servida con café, vista desde arriba" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#C8D9E6" role="img" aria-label="Taza de cerámica"><use href="#i-taza"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1148,7 +1874,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <div class="cats de-3 rev">
         <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
-            <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="Bolsas de café de especialidad en grano de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
             <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <h3>Café</h3>
@@ -1156,7 +1882,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         </a>
         <a class="cat" href="#cafes" style="--tono:#FFFFFF">
           <div class="cat-media">
-            <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="Matcha helado de sepia coffee servido en un vaso alto" loading="lazy" decoding="async" onerror="this.remove()">
             <svg viewBox="0 0 120 120" style="--acento:#567C8D" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
           </div>
           <h3>Matcha</h3>
@@ -1164,7 +1890,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         </a>
         <a class="cat" href="#cafes" style="--tono:#C8D9E6">
           <div class="cat-media">
-            <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="Tazas, batidor de bambú y accesorios de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
             <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-taza"/></svg>
           </div>
           <h3>Accesorios</h3>
@@ -1190,12 +1916,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     </div>
     <div class="car">
       <div class="car-pista rev" data-pista="packs">
-        <article class="prod" data-id="pack-descubrir" data-nombre="Starter Pack" data-precio="29900"
+        <article class="prod" id="producto-pack-descubrir" data-id="pack-descubrir" data-nombre="Starter Pack" data-precio="29900"
                  data-precio-txt="$29.900" data-tono="#FFFFFF" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Starter Pack" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-descubrir-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-descubrir.jpg" alt="Starter pack de sepia coffee con café en grano, matcha y taza de cerámica" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-descubrir-2.jpg" alt="Contenido del starter pack dispuesto sobre una mesa" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Starter Pack"><use href="#i-caja"/></svg>
             <span class="prod-etq teal">Ahorrás 16%</span>
             <button class="prod-rapido" type="button" data-agregar>
@@ -1213,12 +1939,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="pack-ritual" data-nombre="Pack Ritual" data-precio="22900"
+        <article class="prod" id="producto-pack-ritual" data-id="pack-ritual" data-nombre="Pack Ritual" data-precio="22900"
                  data-precio-txt="$22.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-taza" data-cat="packs">
           <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-pack-ritual.jpg" alt="Pack Ritual" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-ritual-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-ritual.jpg" alt="Pack Ritual: café Cordillera de 250 g junto a la taza de cerámica de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-ritual-2.jpg" alt="El Pack Ritual listo para regalar" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Ritual"><use href="#i-taza"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1235,12 +1961,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="pack-matcha" data-nombre="Pack Matcha" data-precio="28900"
+        <article class="prod" id="producto-pack-matcha" data-id="pack-matcha" data-nombre="Pack Matcha" data-precio="28900"
                  data-precio-txt="$28.900" data-tono="#FFFFFF" data-acento="#567C8D"
                  data-arte="i-batidor" data-cat="packs">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-pack-matcha.jpg" alt="Pack Matcha" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-matcha-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-matcha.jpg" alt="Pack Matcha: lata de matcha ceremonial con batidor de bambú" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-matcha-2.jpg" alt="Batidor de bambú y matcha ceremonial en pleno uso" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Pack Matcha"><use href="#i-batidor"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1257,12 +1983,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="pack-coldbrew" data-nombre="Pack Cold Brew" data-precio="28900"
+        <article class="prod" id="producto-pack-coldbrew" data-id="pack-coldbrew" data-nombre="Pack Cold Brew" data-precio="28900"
                  data-precio-txt="$28.900" data-tono="#567C8D" data-acento="#F5EFEB"
                  data-arte="i-botella" data-cat="packs">
           <div class="prod-media" style="--tono:#567C8D">
-            <img class="foto" src="assets/fotos/prod-pack-coldbrew.jpg" alt="Pack Cold Brew" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-coldbrew-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-coldbrew.jpg" alt="Pack de cuatro botellas de un litro de cold brew de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-coldbrew-2.jpg" alt="Las cuatro botellas del pack de cold brew alineadas" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Pack Cold Brew"><use href="#i-botella"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1280,12 +2006,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="pack-oficina" data-nombre="Pack Oficina" data-precio="54900"
+        <article class="prod" id="producto-pack-oficina" data-id="pack-oficina" data-nombre="Pack Oficina" data-precio="54900"
                  data-precio-txt="$54.900" data-tono="#C8D9E6" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
           <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-pack-oficina.jpg" alt="Pack Oficina" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-oficina-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-oficina.jpg" alt="Pack Oficina: un kilo de café en grano y dos tazas de cerámica" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-oficina-2.jpg" alt="El kilo de café en grano y las dos tazas del Pack Oficina" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Oficina"><use href="#i-caja"/></svg>
             <button class="prod-rapido" type="button" data-agregar>
               <svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg>
@@ -1302,12 +2028,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-        <article class="prod" data-id="pack-regalo" data-nombre="Pack Regalo" data-precio="39900"
+        <article class="prod" id="producto-pack-regalo" data-id="pack-regalo" data-nombre="Pack Regalo" data-precio="39900"
                  data-precio-txt="$39.900" data-tono="#FFFFFF" data-acento="#2F4156"
                  data-arte="i-caja" data-cat="packs">
           <div class="prod-media" style="--tono:#FFFFFF">
-            <img class="foto" src="assets/fotos/prod-pack-regalo.jpg" alt="Pack Regalo" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-pack-regalo-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/prod-pack-regalo.jpg" alt="Pack Regalo de sepia coffee: surtido de café, matcha y accesorios en caja de madera" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-pack-regalo-2.jpg" alt="La caja de madera del Pack Regalo abierta, con los productos dentro" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Pack Regalo"><use href="#i-caja"/></svg>
             <span class="prod-etq">Para regalar</span>
             <button class="prod-rapido" type="button" data-agregar>
@@ -1356,6 +2082,83 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   </div>
 </section>
 
+<!-- ===================== 07 · GUÍA COMPARATIVA =====================
+     Punto 10 del plan: una comparativa útil. Es el formato que ChatGPT
+     cita casi textual cuando alguien pregunta "cuál me conviene", porque
+     la respuesta ya está resuelta en una fila de tabla. -->
+<section class="modulo" id="comparar">
+  <div class="wrap">
+    <div class="mod-cab rev">
+      <div>
+        <h2 class="t-3xl">¿Cuál me conviene?</h2>
+        <p class="copy">La diferencia en una línea, para que no tengas que leer cinco fichas.</p>
+      </div>
+      <a href="#cafes" class="enlace-sub">Ver la carta</a>
+    </div>
+    <div class="panel rev" style="padding:clamp(1.2rem,2.6vw,2rem)">
+      <div class="guia">
+        <table>
+          <caption>Comparativa de los productos de sepia coffee. Precios en pesos chilenos.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Producto</th>
+              <th scope="col">Qué es</th>
+              <th scope="col">Cómo se prepara</th>
+              <th scope="col">Elegilo si…</th>
+              <th scope="col">Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Cordillera <span class="pildora">Más vendido</span></th>
+              <td data-etq="Qué es">Blend de casa en grano, 250 g</td>
+              <td data-etq="Cómo se prepara">Filtro, prensa francesa o espresso</td>
+              <td data-etq="Elegilo si…">Es tu primera compra y querés algo dulce y parejo que funcione en cualquier método</td>
+              <td data-etq="Precio" class="precio">$9.900</td>
+            </tr>
+            <tr>
+              <th scope="row">Yirgacheffe</th>
+              <td data-etq="Qué es">Café de origen de Etiopía, lavado, 250 g</td>
+              <td data-etq="Cómo se prepara">Métodos de filtro: V60, Chemex</td>
+              <td data-etq="Elegilo si…">Buscás la taza más floral y ácida de la carta</td>
+              <td data-etq="Precio" class="precio">$13.500</td>
+            </tr>
+            <tr>
+              <th scope="row">Cold Brew Clásico</th>
+              <td data-etq="Qué es">Café extraído en frío, botella de 1 L</td>
+              <td data-etq="Cómo se prepara">No se prepara: lo servís con hielo</td>
+              <td data-etq="Elegilo si…">No tenés cafetera, o querés café frío sin pensarlo</td>
+              <td data-etq="Precio" class="precio">$7.900</td>
+            </tr>
+            <tr>
+              <th scope="row">Matcha Ceremonial <span class="pildora">Orgánico</span></th>
+              <td data-etq="Qué es">Matcha en polvo de grado ceremonial, 80 g</td>
+              <td data-etq="Cómo se prepara">Batido con agua a 70–80 °C, solo o con leche</td>
+              <td data-etq="Elegilo si…">Querés el grado más alto, para tomarlo solo y sin amargor</td>
+              <td data-etq="Precio" class="precio">$16.900</td>
+            </tr>
+            <tr>
+              <th scope="row">Matcha Coco</th>
+              <td data-etq="Qué es">Matcha ceremonial con coco, 80 g</td>
+              <td data-etq="Cómo se prepara">Batido, va mejor helado con leche</td>
+              <td data-etq="Elegilo si…">Te gusta el matcha latte dulce y cremoso</td>
+              <td data-etq="Precio" class="precio">$17.900</td>
+            </tr>
+            <tr>
+              <th scope="row">Starter Pack</th>
+              <td data-etq="Qué es">Café, matcha y la taza de cerámica</td>
+              <td data-etq="Cómo se prepara">Trae las tres cosas listas</td>
+              <td data-etq="Elegilo si…">Querés probar todo antes de decidir qué repetís</td>
+              <td data-etq="Precio" class="precio">$29.900</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="guia-pie">Todos los productos tienen 15% de descuento si los pedís por suscripción, y el envío es gratis a todo Chile sobre $65.000.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== 08 · MULTICOLUMNA EDITORIAL ===================== -->
 <section class="modulo" id="nosotros">
   <div class="wrap">
@@ -1371,15 +2174,97 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         </div>
         <div class="editorial-fotos">
           <div>
-            <img class="foto" src="assets/fotos/nosotros-1.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/nosotros-1.jpg" alt="Café de sepia coffee recién tostado en Santiago" loading="lazy" decoding="async" onerror="this.remove()">
             <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <div>
-            <img class="foto" src="assets/fotos/nosotros-2.jpg" alt="" onerror="this.remove()">
+            <img class="foto" src="assets/fotos/nosotros-2.jpg" alt="Matcha ceremonial de sepia coffee en su lata celeste" loading="lazy" decoding="async" onerror="this.remove()">
             <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-tarro"/></svg>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 09 · PREGUNTAS FRECUENTES =====================
+     Puntos 5 y 6 del plan: contenido útil, escrito con las palabras
+     exactas con las que un cliente pregunta. Cada pregunta está también
+     en el FAQPage del JSON-LD del <head>, así un asistente la puede
+     responder citando la tienda. -->
+<section class="modulo" id="preguntas">
+  <div class="wrap">
+    <div class="mod-cab rev" style="justify-content:center;text-align:center">
+      <div>
+        <h2 class="t-3xl">Lo que más nos preguntan</h2>
+        <p class="copy" style="margin-inline:auto">Sin vueltas. Si falta la tuya, escribinos.</p>
+      </div>
+    </div>
+    <div class="faq rev">
+      <details>
+        <summary>¿Qué diferencia hay entre el matcha ceremonial y el culinario?</summary>
+        <div class="resp">
+          <p>El grado ceremonial se hace con las hojas más jóvenes de la primera cosecha: queda verde intenso, de textura sedosa y dulce, pensado para tomarlo solo con agua o con leche. El culinario viene de cosechas posteriores, es más amargo y más barato, y se usa para repostería o para mezclas donde el sabor queda tapado.</p>
+          <p>En sepia coffee vendemos solo ceremonial, también en la versión con coco.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Cuánto matcha uso por taza y a qué temperatura va el agua?</summary>
+        <div class="resp">
+          <p>Entre 1 y 2 gramos, o sea media a una cucharadita colmada, con 60 a 70 ml de agua a 70–80 °C. El agua hirviendo es el error más común: quema el polvo y lo deja amargo.</p>
+          <p>Lo batís en zigzag con un batidor de bambú hasta que se forme espuma, unos 15 segundos. Para un matcha latte, preparás esa base y recién ahí sumás la leche, fría o caliente.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Qué café me conviene si recién empiezo?</summary>
+        <div class="resp">
+          <p>Cordillera, nuestro blend de casa. Es dulce, de cuerpo medio y perdona los errores de preparación: funciona igual de bien en filtro, en prensa francesa y en espresso, así que no necesitás equipo especial.</p>
+          <p>Si querés probar más de una cosa de una vez, el Starter Pack trae café, matcha y la taza.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Cuál es el café más suave y cuál el más ácido?</summary>
+        <div class="resp">
+          <p>Cordillera es el más parejo y dulce. Yirgacheffe es el otro extremo: es un café de origen de Etiopía de proceso lavado, con acidez marcada y notas florales, y se luce en métodos de filtro como V60 o Chemex. Si venís de tomar café de supermercado, empezá por Cordillera.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿El matcha tiene cafeína?</summary>
+        <div class="resp">
+          <p>Sí, tiene. Menos que un espresso, y la sensación es más pareja: la L-teanina del té verde suaviza la subida, así que no da el bajón de media mañana. Por eso mucha gente lo usa para reemplazar el segundo café del día.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Cómo guardo el café para que no se pase?</summary>
+        <div class="resp">
+          <p>En un envase hermético, en un lugar fresco y oscuro, lejos del horno y del sol. No en el refrigerador: la humedad y los olores lo arruinan más rápido que el aire.</p>
+          <p>Y en grano, moliendo justo antes de preparar. El café molido pierde la mayor parte del aroma en los primeros días, por eso lo despachamos recién tostado y en grano.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Hacen envíos a todo Chile? ¿Cuánto cuesta?</summary>
+        <div class="resp">
+          <p>Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre $30.000 pagás envío con descuento. El valor exacto depende de la comuna y lo ves antes de pagar.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Cómo funciona la suscripción?</summary>
+        <div class="resp">
+          <p>Elegís el producto, marcás «Suscripción» en vez de «Una vez» y te queda con 15% de descuento en cada entrega. Lo podés pausar o cancelar cuando quieras desde tu cuenta, sin llamar a nadie.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Puedo devolver un pedido?</summary>
+        <div class="resp">
+          <p>Si el pedido llegó dañado o no es lo que pediste, lo reponemos. Por la ley del consumidor, en las compras a distancia tenés además 10 días corridos de derecho a retracto, siempre que el producto esté sin abrir.</p>
+        </div>
+      </details>
+      <details>
+        <summary>¿Tostan ustedes el café?</summary>
+        <div class="resp">
+          <p>Sí. Compramos lotes chicos de fincas que podemos nombrar, los tostamos en Santiago y los despachamos recién tostados. Por eso no tenemos stock de todo todo el año: cuando se termina un lote, entra otro.</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -1423,7 +2308,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       </div>
       <div class="pie-col" data-acordeon>
         <button type="button" aria-expanded="false">Sepia <svg class="ic caret" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-caret"/></svg></button>
-        <ul><li><a href="#nosotros">Nosotros</a></li><li><a href="#">Preguntas frecuentes</a></li>
+        <ul><li><a href="#nosotros">Nosotros</a></li><li><a href="#preguntas">Preguntas frecuentes</a></li>
             <li><a href="#">Nuestra cafetería</a></li><li><a href="#">Trabajá con nosotros</a></li></ul>
       </div>
       <div class="pie-col" data-acordeon>
@@ -1539,6 +2424,40 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     if(GOOGLE.enlace) enl.href = GOOGLE.enlace; else enl.remove();
 
     var tonos = ["#FFFFFF", "#F5EFEB", "#FFFFFF", "#F5EFEB"];  // sobre el celeste de la sección
+    /* Punto 1 del plan: las reseñas también van en los datos
+       estructurados, para que Google y ChatGPT las puedan citar.
+       Se inyecta solo si hay datos reales, nunca inventados. */
+    (function(){
+      var puntaje = parseFloat(String(GOOGLE.puntaje).replace(",", "."));
+      var conteo  = parseInt(String(GOOGLE.conteo).replace(/[^0-9]/g, ""), 10);
+      if(!puntaje || !conteo) return;
+      var ld = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://sepiacoffee.cl/#tienda",
+        "name": "sepia coffee",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": puntaje,
+          "reviewCount": conteo,
+          "bestRating": 5,
+          "worstRating": 1
+        },
+        "review": GOOGLE.resenas.map(function(r){
+          return {
+            "@type": "Review",
+            "reviewBody": r.texto,
+            "author": { "@type": "Person", "name": r.nombre || "Cliente" },
+            "publisher": { "@type": "Organization", "name": "Google" }
+          };
+        })
+      };
+      var et = document.createElement("script");
+      et.type = "application/ld+json";
+      et.textContent = JSON.stringify(ld);
+      document.head.appendChild(et);
+    })();
+
     $("[data-g-lista]").innerHTML = GOOGLE.resenas.map(function(r, i){
       var inicial = (r.nombre || "?").trim().charAt(0).toUpperCase();
       return '<div class="testi" style="--tono:' + tonos[i % tonos.length] + '">' +
@@ -1732,7 +2651,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 
     elItems.innerHTML = carro.map(function(i){
       var visual = i.foto
-        ? '<img src="' + i.foto + '" alt="">'
+        ? '<img src="' + i.foto + '" alt="' + i.nombre + '">'
         : '<svg viewBox="0 0 200 272" style="--acento:' + i.acento + '" aria-hidden="true"><use href="#' + i.arte + '"/></svg>';
       return '<div class="linea-carro">' +
         '<div class="linea-media" style="--tono:' + i.tono + '">' + visual + '</div>' +

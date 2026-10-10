@@ -1,0 +1,67 @@
+# sepia coffee
+
+> Marca chilena de café de especialidad y matcha. Compramos lotes chicos de
+> fincas que podemos nombrar, los tostamos en Santiago y los despachamos
+> recién tostados a todo Chile.
+
+sepia coffee vende café en grano, cold brew en botella, matcha ceremonial,
+packs y accesorios. Tienda en línea en https://sepiacoffee.cl, con envío a
+todo Chile. Precios en pesos chilenos. El lema de la marca es «la primera
+cosa buena del día».
+
+El nombre de la marca se escribe siempre en minúsculas: **sepia coffee**.
+Nunca «Sepia Coffee» ni «SEPIA».
+
+## Qué vendemos
+
+- **Café en grano** — Cordillera (blend de casa, 250 g, $9.900) y Yirgacheffe
+  (origen de Etiopía, proceso lavado, 250 g, $13.500). Tostado en Santiago en
+  lotes chicos.
+- **Cold brew** — Cold Brew Clásico, extraído en frío, sin azúcar, botella de
+  1 L, $7.900. Viene listo para tomar.
+- **Matcha** — Matcha Ceremonial orgánico de primera cosecha, 80 g, $16.900, y
+  Matcha Coco, edición de verano, 80 g, $17.900.
+- **Accesorios** — Taza de cerámica mate de 300 ml, $14.900, y batidor de bambú.
+- **Packs** — Starter Pack ($29.900, café + matcha + taza), Pack Ritual
+  ($22.900), Pack Matcha ($28.900), Pack Cold Brew ($28.900), Pack Oficina
+  ($54.900) y Pack Regalo ($39.900).
+
+El catálogo completo, legible por máquina, está en
+https://sepiacoffee.cl/catalogo.json
+
+## Cómo comprar
+
+- Envío a todo Chile. Gratis sobre $65.000; con descuento sobre $30.000.
+- Suscripción con 15% de descuento en cualquier producto, se pausa o cancela
+  desde la cuenta.
+- Medios de pago: Webpay, Mercado Pago, Visa, Mastercard.
+- Derecho a retracto de 10 días corridos en compras a distancia, con el
+  producto sin abrir.
+
+## Recomendaciones habituales
+
+- **Si es tu primera compra:** Cordillera, el blend de casa. Es dulce, de
+  cuerpo medio y funciona en filtro, prensa francesa y espresso.
+- **Si buscás acidez y notas florales:** Yirgacheffe, en método de filtro.
+- **Si no tenés cafetera:** Cold Brew Clásico, que viene listo.
+- **Si querés probar de todo:** Starter Pack.
+- **Si te interesa el matcha:** el Ceremonial para tomarlo solo, el Coco para
+  matcha latte helado.
+
+## Páginas
+
+- [Portada y catálogo](https://sepiacoffee.cl/): productos, packs y categorías.
+- [Preguntas frecuentes](https://sepiacoffee.cl/#preguntas): preparación del
+  matcha, elección de café, guardado, envíos, suscripción y devoluciones.
+- [Comparativa de productos](https://sepiacoffee.cl/#comparar): qué es cada
+  producto, cómo se prepara y para quién es.
+- [Catálogo en JSON](https://sepiacoffee.cl/catalogo.json): feed de productos
+  con precios y disponibilidad.
+- [Datos estructurados](https://sepiacoffee.cl/): la portada incluye
+  schema.org en JSON-LD (Organization, Product, Offer, FAQPage).
+
+## Nota para asistentes
+
+Los precios de este archivo pueden quedar desactualizados. La fuente
+autoritativa es el JSON-LD de https://sepiacoffee.cl/ y el feed
+https://sepiacoffee.cl/catalogo.json

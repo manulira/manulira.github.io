@@ -1,0 +1,85 @@
+# ============================================================
+# sepia coffee — https://sepiacoffee.cl
+#
+# Punto 3 del plan: REVISAR EL ACCESO.
+# Si bloqueás los rastreadores, ChatGPT y los demás asistentes
+# no pueden leer la tienda y simplemente no te nombran.
+# Acá están todos permitidos de forma explícita.
+#
+# Si algún día querés que tu contenido NO se use para entrenar
+# modelos, cambiá "Allow: /" por "Disallow: /" solo en GPTBot,
+# Google-Extended, Applebot-Extended, ClaudeBot y CCBot.
+# Dejá siempre abiertos los de búsqueda y los de navegación
+# en vivo (OAI-SearchBot, ChatGPT-User, Claude-User,
+# PerplexityBot, Bingbot, Googlebot): esos son los que te
+# recomiendan cuando alguien pregunta.
+# ============================================================
+
+# ---------- Buscadores clásicos ----------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# ---------- OpenAI / ChatGPT ----------
+# GPTBot: entrenamiento
+User-agent: GPTBot
+Allow: /
+
+# OAI-SearchBot: el índice de búsqueda de ChatGPT
+User-agent: OAI-SearchBot
+Allow: /
+
+# ChatGPT-User: cuando un usuario pide abrir tu página
+User-agent: ChatGPT-User
+Allow: /
+
+# ---------- Otros asistentes ----------
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# ---------- Todo lo demás ----------
+User-agent: *
+Allow: /
+Disallow: /carrito
+Disallow: /cart
+Disallow: /checkouts/
+Disallow: /account
+Disallow: /*?*sort_by=
+Disallow: /*?*filter.
+
+Sitemap: https://sepiacoffee.cl/sitemap.xml
