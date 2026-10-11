@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Genera, desde datos.py:
+"""Genera, desde py:
    · parte_productos.html  — las tarjetas de producto
    · ld-tienda.json        — el JSON-LD del <head>
    · ../catalogo.json      — el feed legible por máquina
 """
 import io, json, os, html, datetime
 from datos import (PRODUCTOS as TODOS, CATEGORIAS, SITIO, ENVIO_GRATIS,
-                   ENVIO_REDUCIDO, SUSCRIPCION_DESC)
+                   ENVIO_REDUCIDO, SUSCRIPCION_DESC,
+                   MESA_CAFETERO, MESA_MARTINI, BARISTAS_POR_MESA_MARTINI,
+                   EVENTO_MIN_PERSONAS, EVENTO_MAX_PERSONAS,
+                   EVENTO_DESCUENTO, EVENTO_ABONO)
 
 # Solo los activos salen a la página y al JSON-LD. Los inactivos se
-# quedan en datos.py y aparecen en catalogo.json marcados como tales.
+# quedan en py y aparecen en catalogo.json marcados como tales.
 PRODUCTOS = [p for p in TODOS if p[9]]
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -244,40 +247,89 @@ def main():
              "name": "sepia coffee", "inLanguage": "es-CL",
              "publisher": {"@id": SITIO + "/#tienda"}}
 
-    # El servicio de eventos. «Barra de café para eventos en Santiago» es
+    # El servicio de eventos. «Barra de café para eventos en Santiago» o
+    # «cuánto cuesta una barra de espresso martini para un matrimonio» son
     # justo el tipo de consulta que llega a un asistente, así que conviene
-    # que haya algo que citar.
+    # que haya precios reales que citar, no una invitación a escribir.
+    #
+    # Son dos mesas distintas, con tablas distintas, y así van acá: una
+    # mesa cafetero que cambia según qué sirve, y una mesa martini que
+    # cambia según cuántas mesas se montan.
+    def oferta(nombre, descripcion, tabla):
+        horas = sorted(tabla)
+        return {
+            "@type": "Offer",
+            "itemOffered": {"@type": "Service", "name": nombre,
+                            "description": descripcion},
+            "priceSpecification": [
+                {"@type": "UnitPriceSpecification",
+                 "price": tabla[h], "priceCurrency": "CLP",
+                 "valueAddedTaxIncluded": True,
+                 "referenceQuantity": {"@type": "QuantitativeValue",
+                                       "value": h, "unitCode": "HUR"},
+                 "name": "%d horas de servicio" % h}
+                for h in horas],
+            "eligibleQuantity": {"@type": "QuantitativeValue",
+                                 "minValue": EVENTO_MIN_PERSONAS,
+                                 "maxValue": EVENTO_MAX_PERSONAS,
+                                 "unitText": "personas"},
+            "areaServed": {"@type": "City", "name": "Santiago"},
+        }
+
+    ofertas = [
+        oferta("Mesa cafetero · " + nom,
+               "Mesa con máquina espresso a la vista, con %d %s. %s"
+               % (bar, "barista" if bar == 1 else "baristas", det), tabla)
+        for nom, bar, tabla, det in [
+            (MESA_CAFETERO["cafe"][0], MESA_CAFETERO["cafe"][1],
+             MESA_CAFETERO["cafe"][2],
+             "Espresso, americano, capuccino y latte preparados al momento."),
+            (MESA_CAFETERO["cocteles"][0], MESA_CAFETERO["cocteles"][1],
+             MESA_CAFETERO["cocteles"][2],
+             "Espresso martini y carajillo, con espresso recién extraído."),
+            (MESA_CAFETERO["ambos"][0], MESA_CAFETERO["ambos"][1],
+             MESA_CAFETERO["ambos"][2],
+             "Café de especialidad, espresso martini y carajillo desde la misma barra."),
+        ]]
+    ofertas += [
+        oferta("Mesa martini · %d %s" % (n, "mesa" if n == 1 else "mesas"),
+               "Barra de alto flujo, sin máquina espresso. Sirve espresso "
+               "martini y carajillo, siempre los dos. Van %d baristas."
+               % (n * BARISTAS_POR_MESA_MARTINI),
+               MESA_MARTINI[n])
+        for n in sorted(MESA_MARTINI)]
+
     servicio = {
         "@type": "Service",
         "@id": SITIO + "/#eventos",
         "name": "Barra de café y coctelería con espresso para eventos",
         "serviceType": "Barra de café para eventos",
         "description": (
-            "Servicio de barra de café para eventos en Santiago: espresso, "
-            "americano, capuccino y latte preparados al momento, con opción de "
-            "iced coffee y de cold brew con cold foam. También barra de "
-            "coctelería con espresso: espresso martini y carajillo. Se cotiza "
-            "por número de invitados y horas de servicio."),
+            "Barras de café y de coctelería con espresso para matrimonios, "
+            "eventos corporativos y celebraciones privadas en Santiago. Hay "
+            "dos mesas, con precios distintos. La mesa cafetero lleva máquina "
+            "espresso y se cobra según qué sirva: solo café, solo espresso "
+            "martini y carajillo, o las dos cartas. La mesa martini es una "
+            "barra de alto flujo sin máquina espresso, sirve siempre espresso "
+            "martini y carajillo juntos, y se cobra según cuántas mesas se "
+            "monten. Mínimo 2 horas. Los valores incluyen IVA y no incluyen "
+            "copas. Bajo %d personas se aplica %d%% de descuento. El viático "
+            "depende de la comuna y va aparte."
+            % (EVENTO_MIN_PERSONAS, EVENTO_DESCUENTO)),
         "provider": {"@id": SITIO + "/#tienda"},
         "areaServed": {"@type": "City", "name": "Santiago",
                        "containedInPlace": {"@type": "Country", "name": "Chile"}},
+        "termsOfService": (
+            "Mínimo 2 horas de servicio. Se pueden sumar horas hasta 48 horas "
+            "antes del evento. Para reservar la fecha se paga el %d%% y el "
+            "resto la semana del evento. Necesitamos corriente a menos de 10 "
+            "metros del stand." % EVENTO_ABONO),
         "availableChannel": {"@type": "ServiceChannel",
                              "serviceUrl": SITIO + "/#eventos",
                              "name": "Cotizador en línea"},
         "hasOfferCatalog": {
-            "@type": "OfferCatalog", "name": "Servicios para eventos",
-            "itemListElement": [
-                {"@type": "Offer", "itemOffered":
-                 {"@type": "Service", "name": nom, "description": des}}
-                for nom, des in [
-                    ("Barra de café", "Espresso, americano, capuccino y latte "
-                     "preparados al momento por nuestros baristas."),
-                    ("Agregado: iced coffee", "Café helado servido en vaso alto."),
-                    ("Agregado: cold brew con cold foam",
-                     "Café extraído en frío, con espuma fría encima."),
-                    ("Espresso martini y carajillo",
-                     "Coctelería con espresso recién extraído."),
-                ]]},
+            "@type": "OfferCatalog", "name": "Mesas para eventos",
+            "itemListElement": ofertas},
     }
 
     grafo = {"@context": "https://schema.org",

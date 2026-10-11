@@ -118,3 +118,48 @@ CATEGORIAS = ["Café en grano", "Matcha", "Cold brew", "Kits", "Accesorios"]
 ENVIO_REDUCIDO = 0   # ya no hay tramo intermedio
 ENVIO_GRATIS = 50000
 SUSCRIPCION_DESC = 15
+
+# ---------------------------------------------------------------- EVENTOS
+# Las dos tablas del catálogo, en pesos y con IVA incluido. Son dos mesas
+# distintas y no se mezclan:
+#
+#  · MESA CAFETERO: la negra, con máquina espresso. Es una sola mesa, y lo
+#    que cambia es qué sirve. Con la carta cambia el equipo.
+#  · MESA MARTINI: la barra clara, sin máquina. Siempre sirve espresso
+#    martini y carajillo juntos, nunca uno solo. Lo que cambia es cuántas
+#    mesas se montan, y el precio de dos no es el doble de una.
+#
+# Las llaves son las horas de servicio. Mínimo 2 horas.
+
+HORAS_EVENTO = [2, 3, 4, 5]
+
+# carta -> (nombre, baristas, {horas: precio})
+MESA_CAFETERO = {
+ "cafe":     ("Solo café", 1,
+              {2: 450000, 3: 600000, 4: 750000, 5: 890000}),
+ "cocteles": ("Martini y carajillo", 2,
+              {2: 660000, 3: 900000, 4: 1120000, 5: 1310000}),
+ "ambos":    ("Las dos cartas", 3,
+              {2: 850000, 3: 1150000, 4: 1430000, 5: 1690000}),
+}
+
+# número de mesas -> {horas: precio}
+MESA_MARTINI = {
+ 1: {2: 590000,  3: 810000,  4: 1010000, 5: 1180000},
+ 2: {2: 950000,  3: 1290000, 4: 1610000, 5: 1890000},
+ 3: {2: 1240000, 3: 1690000, 4: 2110000, 5: 2480000},
+}
+BARISTAS_POR_MESA_MARTINI = 2
+
+# Viáticos por zona, que van aparte del valor del servicio.
+VIATICOS = [
+ ("Lo Barnechea, Vitacura, Las Condes o Providencia", 30000),
+ ("Otra comuna de Santiago", 60000),
+ ("Buin o Pirque", 70000),
+ ("Valparaíso o Rancagua", 120000),
+]
+
+EVENTO_MIN_PERSONAS = 80      # bajo esto se aplica el descuento
+EVENTO_MAX_PERSONAS = 500     # sobre esto se cotiza aparte
+EVENTO_DESCUENTO = 40         # % bajo 80 personas
+EVENTO_ABONO = 50             # % para reservar la fecha

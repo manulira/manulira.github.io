@@ -210,7 +210,7 @@
       "@id": "https://sepiacoffee.cl/#eventos",
       "name": "Barra de café y coctelería con espresso para eventos",
       "serviceType": "Barra de café para eventos",
-      "description": "Servicio de barra de café para eventos en Santiago: espresso, americano, capuccino y latte preparados al momento, con opción de iced coffee y de cold brew con cold foam. También barra de coctelería con espresso: espresso martini y carajillo. Se cotiza por número de invitados y horas de servicio.",
+      "description": "Barras de café y de coctelería con espresso para matrimonios, eventos corporativos y celebraciones privadas en Santiago. Hay dos mesas, con precios distintos. La mesa cafetero lleva máquina espresso y se cobra según qué sirva: solo café, solo espresso martini y carajillo, o las dos cartas. La mesa martini es una barra de alto flujo sin máquina espresso, sirve siempre espresso martini y carajillo juntos, y se cobra según cuántas mesas se monten. Mínimo 2 horas. Los valores incluyen IVA y no incluyen copas. Bajo 80 personas se aplica 40% de descuento. El viático depende de la comuna y va aparte.",
       "provider": {
         "@id": "https://sepiacoffee.cl/#tienda"
       },
@@ -222,6 +222,7 @@
           "name": "Chile"
         }
       },
+      "termsOfService": "Mínimo 2 horas de servicio. Se pueden sumar horas hasta 48 horas antes del evento. Para reservar la fecha se paga el 50% y el resto la semana del evento. Necesitamos corriente a menos de 10 metros del stand.",
       "availableChannel": {
         "@type": "ServiceChannel",
         "serviceUrl": "https://sepiacoffee.cl/#eventos",
@@ -229,38 +230,414 @@
       },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "Servicios para eventos",
+        "name": "Mesas para eventos",
         "itemListElement": [
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Barra de café",
-              "description": "Espresso, americano, capuccino y latte preparados al momento por nuestros baristas."
+              "name": "Mesa cafetero · Solo café",
+              "description": "Mesa con máquina espresso a la vista, con 1 barista. Espresso, americano, capuccino y latte preparados al momento."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 450000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 600000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 750000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 890000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Agregado: iced coffee",
-              "description": "Café helado servido en vaso alto."
+              "name": "Mesa cafetero · Martini y carajillo",
+              "description": "Mesa con máquina espresso a la vista, con 2 baristas. Espresso martini y carajillo, con espresso recién extraído."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 660000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 900000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1120000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1310000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Agregado: cold brew con cold foam",
-              "description": "Café extraído en frío, con espuma fría encima."
+              "name": "Mesa cafetero · Las dos cartas",
+              "description": "Mesa con máquina espresso a la vista, con 3 baristas. Café de especialidad, espresso martini y carajillo desde la misma barra."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 850000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1150000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1430000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1690000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Espresso martini y carajillo",
-              "description": "Coctelería con espresso recién extraído."
+              "name": "Mesa martini · 1 mesa",
+              "description": "Barra de alto flujo, sin máquina espresso. Sirve espresso martini y carajillo, siempre los dos. Van 2 baristas."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 590000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 810000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1010000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1180000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Mesa martini · 2 mesas",
+              "description": "Barra de alto flujo, sin máquina espresso. Sirve espresso martini y carajillo, siempre los dos. Van 4 baristas."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 950000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1290000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1610000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1890000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Mesa martini · 3 mesas",
+              "description": "Barra de alto flujo, sin máquina espresso. Sirve espresso martini y carajillo, siempre los dos. Van 6 baristas."
+            },
+            "priceSpecification": [
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1240000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 2,
+                  "unitCode": "HUR"
+                },
+                "name": "2 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 1690000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 3,
+                  "unitCode": "HUR"
+                },
+                "name": "3 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 2110000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 4,
+                  "unitCode": "HUR"
+                },
+                "name": "4 horas de servicio"
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                "price": 2480000,
+                "priceCurrency": "CLP",
+                "valueAddedTaxIncluded": true,
+                "referenceQuantity": {
+                  "@type": "QuantitativeValue",
+                  "value": 5,
+                  "unitCode": "HUR"
+                },
+                "name": "5 horas de servicio"
+              }
+            ],
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "minValue": 80,
+              "maxValue": 500,
+              "unitText": "personas"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Santiago"
             }
           }
         ]
@@ -1596,6 +1973,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .cot-numero input[type="number"]{width:5.5rem;padding:.5rem .7rem;border-radius:var(--r-md);border:0;background:var(--papel);color:var(--navy);font-family:var(--display);font-weight:600;font-size:1.05rem;text-align:center}
 .cot-numero input[type="range"]{flex:1 1 11rem;min-width:9rem;accent-color:var(--celeste);background:transparent}
 .cot-unidad{font-size:.88rem;color:var(--claro-64)}
+/* Reservado para los agregados de la barra (iced coffee, cold brew con
+   cold foam). Están fuera del cotizador hasta que tengan precio. */
 .cot-casillas{display:grid;gap:.5rem}
 .cot-casillas label{display:flex;gap:.65rem;align-items:flex-start;cursor:pointer;background:rgba(255,255,255,.06);border-radius:var(--r-md);padding:.7rem .85rem;transition:background .2s var(--ease)}
 .cot-casillas label:hover{background:rgba(255,255,255,.12)}
@@ -1622,6 +2001,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .cot-alerta{border-radius:var(--r-md);padding:.7rem .85rem;font-size:.86rem;line-height:1.45;margin-top:.1rem}
 .cot-alerta.mal{background:#F3DADA;color:#7A2E2E}
 .cot-alerta.bien{background:var(--celeste);color:var(--navy)}
+/* .cot-campo y .cot-cifras>div traen display propio, que le gana al
+   atributo hidden del navegador. Sin esta regla, lo oculto se ve. */
+#eventos [hidden]{display:none}
+.cot-select{font-family:var(--display);font-weight:600;font-size:.95rem;padding:.55rem .7rem;border:0;border-radius:var(--r-md);background:var(--papel);color:var(--navy);width:100%;max-width:24rem}
 
 /* ---------- Opciones de variante ---------- */
 .opciones{display:grid;gap:.6rem;margin-top:.1rem}
@@ -2392,18 +2775,23 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   </div>
 </section>
 <!-- ===================== 05 · COTIZADOR DE EVENTOS =====================
-     Calcula en vivo las cantidades (tragos, baristas, café, leche) a partir
-     de invitados y horas. Esas cuentas son reales y no dependen de nadie.
+     Dos mesas distintas, con tablas de precio distintas. No se mezclan.
 
-     El precio sale de la tabla TARIFAS del script del final. Mientras esté
-     en null, muestra el desglose de cantidades y ofrece pedir el valor, en
-     vez de inventar una cifra. -->
+     · MESA CAFETERO: la negra, con máquina espresso. Cambia según QUÉ
+       SIRVE (solo café / martini y carajillo / las dos cartas) y cuántas
+       horas. Con la carta cambia el equipo: 1, 2 o 3 baristas.
+     · MESA MARTINI: la barra clara, sin máquina. Siempre sirve espresso
+       martini y carajillo juntos, nunca uno solo. Cambia según CUÁNTAS
+       MESAS (1, 2 o 3) y cuántas horas. Van 2 baristas por mesa.
+
+     Los valores salen del catálogo, con IVA incluido, y están en las
+     tablas CAFETERO y MARTINI del script del final. -->
 <section class="modulo" id="eventos" style="background:var(--navy);color:var(--papel)">
   <div class="wrap">
     <div class="mod-cab rev">
       <div>
         <h2 class="t-3xl">Cotiza tu evento</h2>
-        <p class="copy" style="color:var(--claro-64)">Barra de café o coctelería con espresso. Mueve los números y mira cómo cambia.</p>
+        <p class="copy" style="color:var(--claro-64)">Son dos mesas distintas y tienen precios distintos. Elige la tuya y mira cómo cambia el valor.</p>
       </div>
     </div>
 
@@ -2411,76 +2799,92 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <!-- ---------- Controles ---------- -->
       <div class="cot-form">
         <fieldset class="cot-campo">
-          <legend>Qué servicio</legend>
-          <div class="cot-chips" role="group" data-cot="servicio">
-            <button type="button" data-val="barra" aria-pressed="true">Barra de café</button>
-            <button type="button" data-val="cocteles" aria-pressed="false">Espresso martini y carajillo</button>
-            <button type="button" data-val="ambos" aria-pressed="false">Las dos</button>
+          <legend>Qué mesa</legend>
+          <div class="cot-chips" role="group" data-cot="mesa">
+            <button type="button" data-val="cafetero" aria-pressed="true">Mesa cafetero</button>
+            <button type="button" data-val="martini" aria-pressed="false">Mesa martini</button>
           </div>
           <p class="cot-ficha" data-cot-ficha></p>
         </fieldset>
 
-        <fieldset class="cot-campo">
-          <legend><label for="cot-mesas">Cuántas mesas</label></legend>
-          <div class="cot-numero">
-            <input type="range" id="cot-mesas-r" min="1" max="6" step="1" value="1" aria-hidden="true" tabindex="-1">
-            <input type="number" id="cot-mesas" min="1" max="12" step="1" value="1" inputmode="numeric">
-            <span class="cot-unidad">mesas</span>
+        <fieldset class="cot-campo" data-solo="cafetero">
+          <legend>Qué sirve la mesa</legend>
+          <div class="cot-chips" role="group" data-cot="carta">
+            <button type="button" data-val="cafe" aria-pressed="true">Solo café</button>
+            <button type="button" data-val="cocteles" aria-pressed="false">Martini y carajillo</button>
+            <button type="button" data-val="ambos" aria-pressed="false">Las dos cartas</button>
           </div>
-          <p class="cot-ficha">Cada mesa suma capacidad y su propio equipo. Se pueden agregar mesas sin importar cuánta gente haya.</p>
+          <p class="cot-ficha">Solo café va con 1 barista. Martini y carajillo, con 2. Las dos cartas, con 3.</p>
+        </fieldset>
+
+        <fieldset class="cot-campo" data-solo="martini" hidden>
+          <legend>Cuántas mesas</legend>
+          <div class="cot-chips" role="group" data-cot="mesas">
+            <button type="button" data-val="1" aria-pressed="true">1 mesa</button>
+            <button type="button" data-val="2" aria-pressed="false">2 mesas</button>
+            <button type="button" data-val="3" aria-pressed="false">3 mesas</button>
+          </div>
+          <p class="cot-ficha">Van 2 baristas por mesa. Si necesitas más de tres, pídenos el valor.</p>
         </fieldset>
 
         <fieldset class="cot-campo">
-          <legend><label for="cot-personas">Cuántos invitados</label></legend>
-          <div class="cot-numero">
-            <input type="range" id="cot-personas-r" min="20" max="400" step="10" value="80" aria-hidden="true" tabindex="-1">
-            <input type="number" id="cot-personas" min="1" max="2000" step="1" value="80" inputmode="numeric">
-            <span class="cot-unidad">personas</span>
-          </div>
-        </fieldset>
-
-        <fieldset class="cot-campo">
-          <legend><label for="cot-horas">Cuántas horas de servicio</label></legend>
+          <legend>Cuántas horas de servicio</legend>
           <div class="cot-chips" role="group" data-cot="horas">
             <button type="button" data-val="2" aria-pressed="false">2 h</button>
             <button type="button" data-val="3" aria-pressed="true">3 h</button>
             <button type="button" data-val="4" aria-pressed="false">4 h</button>
             <button type="button" data-val="5" aria-pressed="false">5 h</button>
           </div>
+          <p class="cot-ficha">Mínimo 2 horas. Se pueden sumar horas hasta 48 horas antes del evento.</p>
         </fieldset>
 
-        <fieldset class="cot-campo" data-solo-barra>
-          <legend>Agregados a la barra</legend>
-          <div class="cot-casillas">
-            <label><input type="checkbox" data-agregado="iced"> <span><b>Iced coffee</b><em>Café helado, en vaso alto</em></span></label>
-            <label><input type="checkbox" data-agregado="coldfoam"> <span><b>Cold brew con cold foam</b><em>Extraído en frío, con espuma fría encima</em></span></label>
+        <fieldset class="cot-campo">
+          <legend><label for="cot-personas">Cuántos invitados</label></legend>
+          <div class="cot-numero">
+            <input type="range" id="cot-personas-r" min="20" max="600" step="10" value="120" aria-hidden="true" tabindex="-1">
+            <input type="number" id="cot-personas" min="1" max="2000" step="1" value="120" inputmode="numeric">
+            <span class="cot-unidad">personas</span>
           </div>
+          <p class="cot-ficha">Los valores están pensados para eventos de 80 a 500 personas. Bajo 80 se aplica 40% de descuento.</p>
         </fieldset>
 
-        <p class="cot-carta" data-solo-barra>La barra incluye <b>espresso, americano, capuccino y latte</b>, preparados al momento.</p>
-        <p class="cot-carta" data-solo-cocteles hidden>La barra incluye <b>espresso martini y carajillo</b>, los dos con espresso recién extraído.</p>
+        <fieldset class="cot-campo">
+          <legend><label for="cot-comuna">Dónde es el evento</label></legend>
+          <select id="cot-comuna" class="cot-select">
+            <option value="30000">Lo Barnechea, Vitacura, Las Condes o Providencia</option>
+            <option value="60000">Otra comuna de Santiago</option>
+            <option value="70000">Buin o Pirque</option>
+            <option value="120000">Valparaíso o Rancagua</option>
+            <option value="-1">Otro lugar</option>
+          </select>
+          <p class="cot-ficha">El viático cubre el traslado del equipo y del personal, y va aparte.</p>
+        </fieldset>
+
+        <p class="cot-carta" data-cot-detalle></p>
       </div>
 
       <!-- ---------- Resultado en vivo ---------- -->
       <div class="cot-salida" aria-live="polite">
         <h3>Tu evento</h3>
         <dl class="cot-cifras">
-          <div><dt>Capacidad de las mesas</dt><dd data-cot-capacidad>—</dd></div>
-          <div><dt>Demanda estimada</dt><dd data-cot-demanda>—</dd></div>
+          <div><dt>Mesa</dt><dd data-cot-mesa>—</dd></div>
+          <div><dt>Qué se sirve</dt><dd data-cot-carta>—</dd></div>
           <div><dt>Equipo</dt><dd data-cot-equipo>—</dd></div>
-          <div><dt>Café</dt><dd data-cot-cafe>—</dd></div>
-          <div data-cot-fila-leche><dt>Leche</dt><dd data-cot-leche>—</dd></div>
+          <div><dt>Servicio</dt><dd data-cot-base>—</dd></div>
+          <div data-cot-fila-desc hidden><dt>Descuento bajo 80 personas</dt><dd data-cot-desc>—</dd></div>
+          <div><dt>Viático</dt><dd data-cot-viatico>—</dd></div>
         </dl>
-        <p class="cot-alerta" data-cot-alerta></p>
 
         <div class="cot-total">
           <span class="cot-total-et">Total estimado</span>
-          <span class="cot-total-val" data-cot-total>Te lo confirmamos</span>
-          <p class="cot-nota" data-cot-nota>Todavía no publicamos las tarifas. Pídenos el valor y te respondemos con la cotización firme.</p>
+          <span class="cot-total-val" data-cot-total>—</span>
+          <p class="cot-nota" data-cot-nota></p>
         </div>
 
+        <p class="cot-alerta bien" data-cot-sugerencia hidden></p>
+
         <a class="btn bloque" href="#" data-cot-pedir>Pedir la cotización</a>
-        <p class="cot-letra">Las cantidades son estimadas, calculadas sobre un consumo habitual. La cotización firme va por escrito.</p>
+        <p class="cot-letra">Valores del catálogo, con IVA incluido y sin copas. La cotización firme va por escrito.</p>
       </div>
     </div>
   </div>
@@ -3493,128 +3897,119 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   /* ============================================================
      COTIZADOR DE EVENTOS
 
-     Las cantidades (tragos, baristas, café, leche) se calculan con los
-     supuestos de abajo. Son cifras de operación habituales; si tu barra
-     rinde distinto, cambia SUPUESTOS y listo.
+     Dos tablas del catálogo, en pesos y con IVA incluido. No son
+     intercambiables y no se multiplican entre sí:
 
-     Los precios salen de TARIFAS. Mientras estén en null, el cotizador
-     muestra el desglose de cantidades y ofrece pedir el valor, en vez de
-     inventar una cifra.
+     · CAFETERO se cobra por lo que sirve la mesa y por las horas. Es una
+       sola mesa; lo que cambia con la carta es el equipo.
+     · MARTINI se cobra por cuántas mesas y por las horas. Siempre sirve
+       espresso martini y carajillo juntos. Van 2 baristas por mesa.
+
+     El precio de dos mesas no es el doble de una: la tabla ya lo trae.
      ============================================================ */
-  var SERVICIOS = {
-    barra:    { porHora: 60,  porMesa: 1, nombre: "barra de café" },
-    cocteles: { porHora: 100, porMesa: 2, nombre: "espresso martini y carajillo" },
-    ambos:    { porHora: 90,  porMesa: 3, nombre: "barra de café y coctelería" }
+  var CAFETERO = {
+    cafe:     { 2:450000, 3:600000,  4:750000,   5:890000  },
+    cocteles: { 2:660000, 3:900000,  4:1120000,  5:1310000 },
+    ambos:    { 2:850000, 3:1150000, 4:1430000,  5:1690000 }
+  };
+  var MARTINI = {
+    1: { 2:590000,  3:810000,  4:1010000, 5:1180000 },
+    2: { 2:950000,  3:1290000, 4:1610000, 5:1890000 },
+    3: { 2:1240000, 3:1690000, 4:2110000, 5:2480000 }
   };
 
-  // Cuánto pide una persona: la primera hora más que las siguientes.
-  var CONSUMO = { primera: 0.9, siguiente: 0.45 };
-  // Gramos de café por preparación, y la leche de la barra.
-  var INSUMO = { gramos: 18, conLeche: 0.6, mlLeche: 180 };
-
-  // Tarifas en pesos. En null, el cotizador muestra las cantidades y ofrece
-  // pedir el valor, en vez de inventar una cifra.
-  var TARIFAS = { porMesaHora: null, iced: null, coldfoam: null, traslado: null };
+  // Qué puede servir la mesa cafetero, y con cuánta gente.
+  var CARTA = {
+    cafe:     { baristas:1, nombre:"Solo café",
+                detalle:"Espresso, americano, capuccino y latte, preparados al momento." },
+    cocteles: { baristas:2, nombre:"Martini y carajillo",
+                detalle:"Espresso martini y carajillo, los dos con espresso recién extraído." },
+    ambos:    { baristas:3, nombre:"Las dos cartas",
+                detalle:"Café de especialidad, espresso martini y carajillo, desde la misma barra." }
+  };
+  var BARISTAS_POR_MESA_MARTINI = 2;
+  var DESCUENTO_BAJO_80 = 0.40;
+  // Única sugerencia del cotizador: sobre estos invitados conviene otra mesa.
+  var SUGERIR_DESDE = 450;
 
   // Para pedir la cotización. Carga uno de los dos y el botón lo usa.
-  var CONTACTO = { whatsapp: "", correo: "" };
+  var CONTACTO = { whatsapp: "+56 9 7928 4400", correo: "" };
 
   (function(){
     var sec = $("#eventos");
     if(!sec) return;
 
-    var estado = { servicio:"barra", mesas:1, personas:80, horas:3, iced:false, coldfoam:false };
-
-    function grupo(nombre){ return $('[data-cot="' + nombre + '"]', sec); }
-    function elegido(nombre){
-      var b = $('button[aria-pressed="true"]', grupo(nombre));
-      return b ? b.dataset.val : null;
-    }
+    var estado = { mesa:"cafetero", carta:"cafe", mesas:1, personas:120, horas:3, viatico:30000 };
 
     function calcular(){
-      var cfg = SERVICIOS[estado.servicio];
-      var capacidad = estado.mesas * cfg.porHora * estado.horas;
-      var demanda = Math.round(estado.personas *
-        (CONSUMO.primera + CONSUMO.siguiente * (estado.horas - 1)));
-      var equipo = estado.mesas * cfg.porMesa;
-      var servidas = Math.min(demanda, capacidad);
-      var hayBarra = (estado.servicio !== "cocteles");
-      var sugeridas = Math.max(1, Math.ceil(demanda / (cfg.porHora * estado.horas)));
-
-      var total = 0, completo = false;
-      if(TARIFAS.porMesaHora !== null){
-        total = TARIFAS.porMesaHora * estado.mesas * estado.horas;
-        completo = true;
-        if(hayBarra && estado.iced){
-          if(TARIFAS.iced !== null) total += TARIFAS.iced * estado.personas; else completo = false;
-        }
-        if(hayBarra && estado.coldfoam){
-          if(TARIFAS.coldfoam !== null) total += TARIFAS.coldfoam * estado.personas; else completo = false;
-        }
-        if(TARIFAS.traslado !== null) total += TARIFAS.traslado;
-      }
-
-      return { cfg:cfg, capacidad:capacidad, demanda:demanda, equipo:equipo,
-               servidas:servidas, hayBarra:hayBarra, sugeridas:sugeridas,
-               cafeKg:(servidas * INSUMO.gramos) / 1000,
-               lecheL: hayBarra ? (servidas * INSUMO.conLeche * INSUMO.mlLeche) / 1000 : 0,
-               total:total, completo:completo,
-               mesas:estado.mesas, personas:estado.personas, horas:estado.horas };
+      var esCafetero = estado.mesa === "cafetero";
+      var base = esCafetero ? CAFETERO[estado.carta][estado.horas]
+                            : MARTINI[estado.mesas][estado.horas];
+      var equipo = esCafetero ? CARTA[estado.carta].baristas
+                              : estado.mesas * BARISTAS_POR_MESA_MARTINI;
+      var hayDesc = estado.personas < 80;
+      var desc = hayDesc ? base * DESCUENTO_BAJO_80 : 0;
+      var porDefinir = estado.viatico < 0;
+      var viatico = porDefinir ? 0 : estado.viatico;
+      return {
+        esCafetero: esCafetero,
+        mesa: esCafetero ? "Mesa cafetero"
+                         : (estado.mesas === 1 ? "1 mesa martini" : estado.mesas + " mesas martini"),
+        carta: esCafetero ? CARTA[estado.carta].nombre : "Espresso martini y carajillo",
+        detalle: esCafetero ? CARTA[estado.carta].detalle
+                            : "La mesa martini siempre sirve espresso martini y carajillo, nunca uno solo.",
+        base: base, equipo: equipo, hayDesc: hayDesc, desc: desc,
+        viatico: viatico, porDefinir: porDefinir,
+        total: base - desc + viatico
+      };
     }
 
     function pintarCot(){
       var c = calcular();
-      $("[data-cot-ficha]", sec).textContent = c.cfg.porHora +
-        " preparaciones por hora y " + c.cfg.porMesa +
-        (c.cfg.porMesa === 1 ? " persona" : " personas") + " por mesa.";
-      $("[data-cot-capacidad]", sec).textContent = c.capacidad.toLocaleString("es-CL") + " preparaciones";
-      $("[data-cot-demanda]", sec).textContent = c.demanda.toLocaleString("es-CL") + " preparaciones";
-      $("[data-cot-equipo]", sec).textContent = c.equipo + (c.equipo === 1 ? " persona" : " personas");
-      $("[data-cot-cafe]", sec).textContent = (c.cafeKg < 1
-        ? Math.round(c.cafeKg * 1000) + " g" : c.cafeKg.toFixed(1).replace(".", ",") + " kg");
-      var filaLeche = $("[data-cot-fila-leche]", sec);
-      filaLeche.hidden = !c.hayBarra;
-      if(c.hayBarra) $("[data-cot-leche]", sec).textContent =
-        Math.round(c.lecheL).toLocaleString("es-CL") + " L";
 
-      var al = $("[data-cot-alerta]", sec);
-      if(c.capacidad < c.demanda){
-        al.className = "cot-alerta mal";
-        al.textContent = "Con " + c.mesas + (c.mesas === 1 ? " mesa" : " mesas") +
-          " no alcanza: se quedarían " + (c.demanda - c.capacidad) +
-          " preparaciones cortas. Te sugerimos " + c.sugeridas +
-          (c.sugeridas === 1 ? " mesa" : " mesas") + ".";
+      $$("[data-solo]", sec).forEach(function(f){ f.hidden = f.dataset.solo !== estado.mesa; });
+
+      $("[data-cot-ficha]", sec).textContent = c.esCafetero
+        ? "La negra, con máquina espresso a la vista. Es la más lenta y la más romántica."
+        : "La barra clara, sin máquina espresso. Está armada para alto flujo.";
+      $("[data-cot-detalle]", sec).textContent = c.detalle;
+
+      $("[data-cot-mesa]", sec).textContent = c.mesa;
+      $("[data-cot-carta]", sec).textContent = c.carta;
+      $("[data-cot-equipo]", sec).textContent = c.equipo + (c.equipo === 1 ? " barista" : " baristas");
+      $("[data-cot-base]", sec).textContent = clp(c.base);
+      $("[data-cot-fila-desc]", sec).hidden = !c.hayDesc;
+      if(c.hayDesc) $("[data-cot-desc]", sec).textContent = "−" + clp(c.desc);
+      $("[data-cot-viatico]", sec).textContent = c.porDefinir ? "Por definir" : clp(c.viatico);
+      $("[data-cot-total]", sec).textContent = clp(c.total) + (c.porDefinir ? " + viático" : "");
+      $("[data-cot-nota]", sec).textContent = "IVA incluido. No incluye copas. Para reservar " +
+        "se paga el 50% y el resto la semana del evento.";
+
+      var sug = $("[data-cot-sugerencia]", sec);
+      if(estado.personas >= SUGERIR_DESDE && (c.esCafetero || estado.mesas === 1)){
+        sug.hidden = false;
+        sug.textContent = c.esCafetero
+          ? "Con " + estado.personas + " invitados, la mesa cafetero sola se queda corta en " +
+            "los peaks. Te sugerimos sumar una mesa martini: pídenos el combinado y te lo cotizamos."
+          : "Con " + estado.personas + " invitados y una sola mesa se arma cola en los peaks. " +
+            "Con dos, la fila no se nota.";
       } else {
-        al.className = "cot-alerta bien";
-        al.textContent = "Alcanza con holgura: te sobran " + (c.capacidad - c.demanda) + " preparaciones.";
+        sug.hidden = true;
       }
 
-      var val = $("[data-cot-total]", sec), nota = $("[data-cot-nota]", sec);
-      if(c.completo){
-        val.textContent = clp(c.total);
-        nota.textContent = "Estimado para " + c.mesas + (c.mesas === 1 ? " mesa" : " mesas") +
-          " y " + c.horas + " horas. La cotización firme va por escrito.";
-      } else {
-        val.textContent = "Te lo confirmamos";
-        nota.textContent = "Todavía no publicamos las tarifas. Pídenos el valor y " +
-                           "te respondemos con la cotización firme.";
-      }
-
-      $$("[data-solo-barra]", sec).forEach(function(e){ e.hidden = !c.hayBarra; });
-      var soloCoct = $("[data-solo-cocteles]", sec);
-      if(soloCoct) soloCoct.hidden = c.hayBarra;
-
-      var agregados = [];
-      if(c.hayBarra && estado.iced) agregados.push("iced coffee");
-      if(c.hayBarra && estado.coldfoam) agregados.push("cold brew con cold foam");
       var msg = "Hola, quiero cotizar un evento con sepia coffee.\n\n" +
-        "Servicio: " + c.cfg.nombre + "\n" +
-        "Mesas: " + c.mesas + "\n" +
-        "Invitados: " + c.personas + "\n" +
-        "Horas: " + c.horas + "\n" +
-        (agregados.length ? "Agregados: " + agregados.join(", ") + "\n" : "") +
-        "\nEstimación del sitio: capacidad " + c.capacidad + ", demanda " + c.demanda +
-        ", equipo de " + c.equipo + (c.equipo === 1 ? " persona" : " personas") + ".";
+        "Mesa: " + c.mesa + "\n" +
+        "Qué se sirve: " + c.carta + "\n" +
+        "Horas: " + estado.horas + "\n" +
+        "Invitados: " + estado.personas + "\n\n" +
+        "Valor del sitio:\n" +
+        "- Servicio: " + clp(c.base) + "\n" +
+        (c.hayDesc ? "- Descuento bajo 80 personas: -" + clp(c.desc) + "\n" : "") +
+        (c.porDefinir ? "- Viático: por definir según el lugar\n"
+                      : "- Viático: " + clp(c.viatico) + "\n") +
+        "- TOTAL: " + clp(c.total) + (c.porDefinir ? " más viático" : "") + "\n" +
+        "- Equipo: " + c.equipo + (c.equipo === 1 ? " barista" : " baristas");
+
       var btn = $("[data-cot-pedir]", sec);
       if(CONTACTO.whatsapp){
         btn.href = "https://wa.me/" + CONTACTO.whatsapp.replace(/[^0-9]/g, "") +
@@ -3631,38 +4026,30 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     }
 
     // ---- controles ----
-    ["servicio", "horas"].forEach(function(nombre){
-      var g = grupo(nombre);
+    ["mesa", "carta", "mesas", "horas"].forEach(function(nombre){
+      var g = $('[data-cot="' + nombre + '"]', sec);
       if(!g) return;
       $$("button", g).forEach(function(b){
         b.addEventListener("click", function(){
           $$("button", g).forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
-          estado[nombre] = (nombre === "horas") ? parseInt(b.dataset.val, 10) : b.dataset.val;
+          estado[nombre] = (nombre === "horas" || nombre === "mesas")
+            ? parseInt(b.dataset.val, 10) : b.dataset.val;
           pintarCot();
         });
       });
     });
 
-    function parNumerico(idNum, idRango, clave, min, max){
-      var n = $(idNum, sec), r = $(idRango, sec);
-      if(!n || !r) return;
-      n.addEventListener("input", function(){
-        estado[clave] = Math.max(min, Math.min(max, parseInt(n.value, 10) || min));
-        r.value = Math.max(parseInt(r.min, 10), Math.min(parseInt(r.max, 10), estado[clave]));
-        pintarCot();
-      });
-      r.addEventListener("input", function(){
-        estado[clave] = parseInt(r.value, 10); n.value = estado[clave]; pintarCot();
-      });
-    }
-    parNumerico("#cot-mesas", "#cot-mesas-r", "mesas", 1, 12);
-    parNumerico("#cot-personas", "#cot-personas-r", "personas", 1, 2000);
-
-    $$("[data-agregado]", sec).forEach(function(c){
-      c.addEventListener("change", function(){
-        estado[c.dataset.agregado] = c.checked;
-        pintarCot();
-      });
+    var np = $("#cot-personas", sec), rp = $("#cot-personas-r", sec);
+    np.addEventListener("input", function(){
+      estado.personas = Math.max(1, Math.min(2000, parseInt(np.value, 10) || 1));
+      rp.value = Math.max(parseInt(rp.min, 10), Math.min(parseInt(rp.max, 10), estado.personas));
+      pintarCot();
+    });
+    rp.addEventListener("input", function(){
+      estado.personas = parseInt(rp.value, 10); np.value = estado.personas; pintarCot();
+    });
+    $("#cot-comuna", sec).addEventListener("change", function(e){
+      estado.viatico = parseInt(e.target.value, 10); pintarCot();
     });
 
     pintarCot();

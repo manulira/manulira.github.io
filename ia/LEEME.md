@@ -11,13 +11,15 @@ Google y confunden a los asistentes).
 
 ```sh
 cd ia
-python3 genld.py      # escribe ld-tienda.json y catalogo.json
-python3 genfaq.py     # escribe ld-faq.json a partir de la sección #preguntas
+python3 gencatalogo.py  # escribe ld-tienda.json, catalogo.json y las tarjetas
+python3 genpreg.py      # escribe parte_preguntas.html y ld-faq.json
+python3 genrecetas.py   # escribe parte_recetas.html y ld-recetas.json
+python3 inyecta.py      # pega los tres JSON-LD en el <head> de index.html
 ```
 
-Después hay que pegar `ld-tienda.json` y `ld-faq.json` dentro de los dos
-bloques `<script type="application/ld+json">` del `<head>` de `index.html`,
-y copiar `catalogo.json` a la raíz.
+`inyecta.py` es el paso que antes se hacía a mano. Hazlo siempre: un precio
+cambiado en `datos.py` que nunca llegó al `<head>` deja la página diciendo
+una cosa y el JSON-LD otra.
 
 `preguntas.py` y `recetas.py` hacen lo mismo con las preguntas frecuentes y
 las recetas:
