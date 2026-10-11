@@ -62,3 +62,11 @@ vigente siempre es la que entrega el propio cliente en su kit de marca.
   fondo azul queda transparente.
 
 Los dos se armaron con ia/marcas/a_tinta.py, que está en el repo.
+
+## specialized.png
+- Origen: logo que mandó el cliente (negro sobre fondo blanco).
+- Como el anterior de Watts, la tinta es lo oscuro, así que el blanco del
+  fondo se va a transparente. Era un JPG: el umbral se sacó del histograma,
+  que separa limpio las letras en 0.0 del fondo en 1.0.
+
+Con este, el muro queda completo: las diez marcas con logo.
