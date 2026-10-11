@@ -45,11 +45,11 @@
      ========================================================== -->
 <style>
 .sc-marcas{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin:1.4rem 0 1.8rem;padding:0;list-style:none}
-.sc-marcas figure{flex:1 1 130px;max-width:190px;margin:0;aspect-ratio:3/2;display:grid;place-items:center;text-align:center;padding:.9rem;border:1px solid #CFC4B2;border-radius:14px;background:#fff}
+.sc-marcas figure{box-sizing:border-box;flex:0 1 160px;max-width:190px;margin:0;aspect-ratio:3/2;display:grid;place-items:center;text-align:center;padding:.9rem;border:1px solid #CFC4B2;border-radius:14px;background:#fff}
 /* Cualquier logo queda en negro plano: brightness(0) lleva a cero todos los
    canales de color y respeta el alfa, así que el fondo transparente sigue
    transparente. Por eso da lo mismo de qué color venga el archivo. */
-.sc-marcas img{max-width:82%;max-height:56%;object-fit:contain;filter:brightness(0);opacity:.62;transition:opacity .2s}
+.sc-marcas img{width:auto;height:auto;max-width:82%;max-height:56%;object-fit:contain;filter:brightness(0);opacity:.62;transition:opacity .2s}
 .sc-marcas figure:hover img{opacity:1}
 .sc-marcas span{font-size:.84rem;line-height:1.3;color:#252A2C;letter-spacing:.01em}
 </style>
