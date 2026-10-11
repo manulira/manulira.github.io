@@ -29,12 +29,18 @@
      solo, con filter: brightness(0). Sube el logo oficial en el color que
      venga y queda uniforme con el resto.
 
+     Los logos van sueltos sobre el fondo de la página, sin tarjeta ni
+     borde, en un bloque de tres por fila. Para agregar o quitar una
+     marca, copia o borra un <figure> entero: la grilla se reacomoda sola
+     y la última fila queda centrada.
+
+     Si el logo es redondo o más alto que ancho, ponle class="alto" al
+     <figure>. Un logo así se ve más chico que un wordmark a la misma
+     altura, y esa clase le da un poco más para que pese parecido.
+
      LO ÚNICO QUE SÍ IMPORTA: que el fondo sea transparente. PNG o SVG con
      transparencia. Si subes un JPG, o un PNG con fondo blanco, el filtro
      pinta también ese fondo y te queda un rectángulo negro.
-
-     Para agregar o quitar marcas, copia o borra un <figure> entero: la
-     fila se reacomoda y la última queda centrada.
 
      YA TIENEN LOGO (9): M·A·C Cosmetics, UGG, Gap, Banana Republic,
      Škoda, Seguros SURA, Cencomalls, Watts Co. y Saga Gravel Race.
@@ -48,14 +54,33 @@
      filtro lo pinta negro igual que el resto y queda un círculo macizo.
      ========================================================== -->
 <style>
-.sc-marcas{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin:1.4rem 0 1.8rem;padding:0;list-style:none}
-.sc-marcas figure{box-sizing:border-box;flex:0 1 160px;max-width:190px;margin:0;aspect-ratio:3/2;display:grid;place-items:center;text-align:center;padding:.9rem;border:1px solid #CFC4B2;border-radius:14px;background:#fff}
-/* Cualquier logo queda en negro plano: brightness(0) lleva a cero todos los
-   canales de color y respeta el alfa, así que el fondo transparente sigue
-   transparente. Por eso da lo mismo de qué color venga el archivo. */
-.sc-marcas img{width:auto;height:auto;max-width:82%;max-height:58px;object-fit:contain;filter:brightness(0);opacity:.62;transition:opacity .2s}
+/* Muro de marcas: los logos van sueltos sobre el fondo de la página, sin
+   tarjeta ni borde, agrupados en un bloque angosto de tres por fila. El
+   ancho máximo del contenedor es lo que fuerza esas tres por fila; si se
+   deja libre, en escritorio entrarían seis y se desarma el bloque. */
+.sc-marcas{max-width:620px;margin:1.6rem auto 2.4rem;padding:0;list-style:none;
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;row-gap:1.7rem}
+.sc-marcas figure{box-sizing:border-box;flex:0 0 33.333%;min-width:0;min-height:50px;margin:0;padding:0 1.1rem;
+  display:flex;align-items:center;justify-content:center}
+/* brightness(0) lleva el color a cero y respeta el alfa: cualquier logo con
+   fondo transparente queda negro plano, venga del color que venga.
+   El alto va en píxeles, no en porcentaje: un porcentaje se mide contra el
+   alto de la celda, que acá lo define el propio logo, y el navegador no
+   resuelve esa vuelta. Con logos anchos no se nota; con uno redondo como el
+   de Watts Co. o uno vertical como el de Saga, sí. */
+.sc-marcas img{width:auto;height:auto;max-width:100%;max-height:46px;
+  object-fit:contain;filter:brightness(0);opacity:.8;transition:opacity .2s}
+/* Los logos redondos o verticales se ven más chicos que un wordmark a la
+   misma altura. Se les da un poco más para que pesen parecido. */
+.sc-marcas .alto img{max-height:62px}
 .sc-marcas figure:hover img{opacity:1}
-.sc-marcas span{font-size:.84rem;line-height:1.3;color:#252A2C;letter-spacing:.01em}
+.sc-marcas span{font-size:.88rem;line-height:1.3;color:#252A2C;letter-spacing:.02em}
+@media (max-width:540px){
+  .sc-marcas{max-width:420px;row-gap:1.4rem}
+  .sc-marcas figure{flex-basis:50%}
+  .sc-marcas img{max-height:38px}
+  .sc-marcas .alto img{max-height:52px}
+}
 </style>
 
 <div class="sc-marcas">
@@ -67,8 +92,8 @@
   <figure><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-skoda.png?v=1791754493" alt="Škoda" loading="lazy" width="1000" height="138"></figure>
   <figure><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-seguros-sura.png?v=1791754493" alt="Seguros SURA" loading="lazy" width="142" height="50"></figure>
   <figure><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-cencomalls.png?v=1791754492" alt="Cencomalls" loading="lazy" width="999" height="100"></figure>
-  <figure><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-saga-gravel-race.png?v=1791755270" alt="Saga Gravel Race" loading="lazy" width="340" height="394"></figure>
-  <figure><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-watts-co.png?v=1791755270" alt="Watts Co." loading="lazy" width="833" height="852"></figure>
+  <figure class="alto"><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-saga-gravel-race.png?v=1791755270" alt="Saga Gravel Race" loading="lazy" width="340" height="394"></figure>
+  <figure class="alto"><img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/marca-watts-co.png?v=1791755270" alt="Watts Co." loading="lazy" width="833" height="852"></figure>
 </div>
 
 <p>¿Organizas eventos y quieres sumarte? Escríbenos a <a href="mailto:manuel@sepiacoffee.cl">manuel@sepiacoffee.cl</a>.</p>
