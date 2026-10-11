@@ -31,7 +31,9 @@ no hay cafetería abierta al público.
 
 **Qué hacen:** compran lotes chicos de fincas que pueden nombrar, **tuestan
 ellos mismos en Santiago** y despachan recién tostado. El tueste propio es
-un diferenciador real y hay que usarlo, no dejarlo al pasar.
+un diferenciador real y hay que usarlo, no dejarlo al pasar. Hoy son dos
+orígenes: Colombia (vainilla, frutos secos, cacao) y Bolivia (avellana,
+cítrico, caramelo), los dos de tueste medio, en 250 g y 1 kg.
 
 ### Personalidad
 - **Tono:** Cálido pero contenido. Nunca efusivo, nunca frío.

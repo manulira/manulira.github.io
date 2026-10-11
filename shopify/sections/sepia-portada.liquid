@@ -1,6 +1,24 @@
 {%- comment -%}
   ============================================================================
-  SEPIA — PORTADA v2
+  SEPIA — PORTADA v2   ·   DESACTUALIZADA, NO USAR COMO ESTÁ
+  ----------------------------------------------------------------------------
+  ESTE ARCHIVO QUEDÓ ATRÁS. La tienda hoy corre con el tema Horizon y las
+  páginas Nosotros / Eventos / Contacto, no con esta sección. Antes de
+  revivirla hay que rehacerla, porque le falta todo esto:
+
+    · el café Bolivia, y la nota de cata real del Colombia
+    · los precios ($11.990 los 250 g, $37.990 el kilo)
+    · las fotos reales de producto y de las dos barras
+    · el cotizador con las dos tablas del catálogo: hoy trae el modelo
+      viejo, que cobraba la mesa martini con la tabla de la cafetero
+    · sigue diciendo que hay «un solo café» y «un único origen»
+
+  Y además no se puede subir tal cual: con 199 KB, themeFilesUpsert
+  devuelve éxito y no escribe nada. Habría que partirla en sección + CSS +
+  JS + símbolos SVG, cada parte bajo ~56 KB.
+
+  La versión viva y correcta de todo esto es index.html en la raíz, que se
+  genera desde ia/datos.py.
   ----------------------------------------------------------------------------
   Portada completa en un solo archivo, con la misma arquitectura que una
   tienda headless: hero en carrusel, cinta de ventajas, carruseles de
