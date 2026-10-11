@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>sepia coffee — Café de especialidad y matcha</title>
-<meta name="description" content="Café de especialidad tostado en Santiago, matcha ceremonial y accesorios. Envío gratis sobre $65.000 en todo Chile." />
+<meta name="description" content="Café de especialidad tostado en Santiago, matcha ceremonial y accesorios. Envío gratis sobre $50.000 en todo Chile." />
 <meta name="theme-color" content="#F5EFEB" />
 <link rel="canonical" href="https://sepiacoffee.cl/" />
 <meta property="og:type" content="website" />
@@ -183,7 +183,7 @@
         "@type": "DefinedRegion",
         "addressCountry": "CL"
       },
-      "description": "Envío gratis a todo Chile en compras sobre $65.000. Envío con descuento sobre $30.000."
+      "description": "Envío gratis a todo Chile en compras sobre $50.000. Envío con descuento sobre $0."
     },
     {
       "@type": "MerchantReturnPolicy",
@@ -203,6 +203,67 @@
       "inLanguage": "es-CL",
       "publisher": {
         "@id": "https://sepiacoffee.cl/#tienda"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://sepiacoffee.cl/#eventos",
+      "name": "Barra de café y coctelería con espresso para eventos",
+      "serviceType": "Barra de café para eventos",
+      "description": "Servicio de barra de café para eventos en Santiago: espresso, americano, capuccino y latte preparados al momento, con opción de iced coffee y de cold brew con cold foam. También barra de coctelería con espresso: espresso martini y carajillo. Se cotiza por número de invitados y horas de servicio.",
+      "provider": {
+        "@id": "https://sepiacoffee.cl/#tienda"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Santiago",
+        "containedInPlace": {
+          "@type": "Country",
+          "name": "Chile"
+        }
+      },
+      "availableChannel": {
+        "@type": "ServiceChannel",
+        "serviceUrl": "https://sepiacoffee.cl/#eventos",
+        "name": "Cotizador en línea"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Servicios para eventos",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Barra de café",
+              "description": "Espresso, americano, capuccino y latte preparados al momento por nuestros baristas."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Agregado: iced coffee",
+              "description": "Café helado servido en vaso alto."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Agregado: cold brew con cold foam",
+              "description": "Café extraído en frío, con espuma fría encima."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Espresso martini y carajillo",
+              "description": "Coctelería con espresso recién extraído."
+            }
+          }
+        ]
       }
     },
     {
@@ -415,67 +476,6 @@
       "image": "https://sepiacoffee.cl/assets/fotos/prod-vaso.jpg",
       "@type": "Product",
       "sku": "sepia-vaso"
-    },
-    {
-      "@type": "Service",
-      "@id": "https://sepiacoffee.cl/#eventos",
-      "name": "Barra de café y coctelería con espresso para eventos",
-      "serviceType": "Barra de café para eventos",
-      "description": "Servicio de barra de café para eventos en Santiago: espresso, americano, capuccino y latte preparados al momento, con opción de iced coffee y de cold brew con cold foam. También barra de coctelería con espresso: espresso martini y carajillo. Se cotiza por número de invitados y horas de servicio.",
-      "provider": {
-        "@id": "https://sepiacoffee.cl/#tienda"
-      },
-      "areaServed": {
-        "@type": "City",
-        "name": "Santiago",
-        "containedInPlace": {
-          "@type": "Country",
-          "name": "Chile"
-        }
-      },
-      "availableChannel": {
-        "@type": "ServiceChannel",
-        "serviceUrl": "https://sepiacoffee.cl/#eventos",
-        "name": "Cotizador en línea"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Servicios para eventos",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Barra de café",
-              "description": "Espresso, americano, capuccino y latte preparados al momento por nuestros baristas."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Agregado: iced coffee",
-              "description": "Café helado servido en vaso alto."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Agregado: cold brew con cold foam",
-              "description": "Café extraído en frío, con espuma fría encima."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Espresso martini y carajillo",
-              "description": "Coctelería con espresso recién extraído."
-            }
-          }
-        ]
-      }
     }
   ]
 }
@@ -616,7 +616,7 @@
       "name": "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre $30.000 pagas envío con descuento. El valor exacto depende de la comuna y lo ves antes de pagar."
+        "text": "Sí, despachamos a todo Chile. Sobre $50.000 el envío es gratis. Bajo ese monto el valor depende de la comuna y lo ves antes de pagar."
       }
     },
     {
@@ -1618,6 +1618,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .cot-letra{font-size:.78rem;color:var(--tinta-60);line-height:1.45}
 #eventos .mod-cab .copy{color:var(--claro-64)}
 
+.cot-ficha{font-size:.83rem;color:var(--claro-64);line-height:1.45;margin-top:.1rem}
+.cot-alerta{border-radius:var(--r-md);padding:.7rem .85rem;font-size:.86rem;line-height:1.45;margin-top:.1rem}
+.cot-alerta.mal{background:#F3DADA;color:#7A2E2E}
+.cot-alerta.bien{background:var(--celeste);color:var(--navy)}
+
 /* ---------- Opciones de variante ---------- */
 .opciones{display:grid;gap:.6rem;margin-top:.1rem}
 .opcion{display:grid;gap:.32rem}
@@ -2013,7 +2018,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 
 <!-- ===================== ANUNCIO ===================== -->
 <div class="anuncio">
-  <a href="#cafes">Envío gratis en todo Chile sobre $65.000.</a>
+  <a href="#cafes">Envío gratis en todo Chile sobre $50.000.</a>
 </div>
 
 <!-- ===================== CABECERA ===================== -->
@@ -2412,6 +2417,17 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-val="cocteles" aria-pressed="false">Espresso martini y carajillo</button>
             <button type="button" data-val="ambos" aria-pressed="false">Las dos</button>
           </div>
+          <p class="cot-ficha" data-cot-ficha></p>
+        </fieldset>
+
+        <fieldset class="cot-campo">
+          <legend><label for="cot-mesas">Cuántas mesas</label></legend>
+          <div class="cot-numero">
+            <input type="range" id="cot-mesas-r" min="1" max="6" step="1" value="1" aria-hidden="true" tabindex="-1">
+            <input type="number" id="cot-mesas" min="1" max="12" step="1" value="1" inputmode="numeric">
+            <span class="cot-unidad">mesas</span>
+          </div>
+          <p class="cot-ficha">Cada mesa suma capacidad y su propio equipo. Se pueden agregar mesas sin importar cuánta gente haya.</p>
         </fieldset>
 
         <fieldset class="cot-campo">
@@ -2449,11 +2465,13 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <div class="cot-salida" aria-live="polite">
         <h3>Tu evento</h3>
         <dl class="cot-cifras">
-          <div><dt>Tragos estimados</dt><dd data-cot-tragos>—</dd></div>
-          <div><dt>Baristas</dt><dd data-cot-baristas>—</dd></div>
+          <div><dt>Capacidad de las mesas</dt><dd data-cot-capacidad>—</dd></div>
+          <div><dt>Demanda estimada</dt><dd data-cot-demanda>—</dd></div>
+          <div><dt>Equipo</dt><dd data-cot-equipo>—</dd></div>
           <div><dt>Café</dt><dd data-cot-cafe>—</dd></div>
           <div data-cot-fila-leche><dt>Leche</dt><dd data-cot-leche>—</dd></div>
         </dl>
+        <p class="cot-alerta" data-cot-alerta></p>
 
         <div class="cot-total">
           <span class="cot-total-et">Total estimado</span>
@@ -2658,7 +2676,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           </tbody>
         </table>
       </div>
-      <p class="guia-pie">Todos los productos tienen 15% de descuento por suscripción, y el envío es gratis a todo Chile sobre $65.000.</p>
+      <p class="guia-pie">Todos los productos tienen 15% de descuento por suscripción, y el envío es gratis a todo Chile sobre $50.000.</p>
     </div>
   </div>
 </section>
@@ -2946,7 +2964,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <div class="faq">
         <details>
           <summary>¿Hacen envíos a todo Chile? ¿Cuánto cuesta?</summary>
-          <div class="resp"><p>Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre $30.000 pagas envío con descuento. El valor exacto depende de la comuna y lo ves antes de pagar.</p></div>
+          <div class="resp"><p>Sí, despachamos a todo Chile. Sobre $50.000 el envío es gratis. Bajo ese monto el valor depende de la comuna y lo ves antes de pagar.</p></div>
         </details>
         <details>
           <summary>¿Cómo funciona la suscripción?</summary>
@@ -3061,11 +3079,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   </div>
   <div class="lat-cuerpo">
     <div class="envio" id="envio">
-      <p id="envio-txt">Te faltan <b>$30.000</b> para el envío con descuento.</p>
+      <p id="envio-txt">Te faltan <b>$50.000</b> para el envío gratis.</p>
       <div class="barra"><i id="envio-barra" style="width:0%"></i></div>
       <div class="hitos">
-        <span id="hito-1"><svg class="ic" viewBox="0 0 24 24"><use href="#i-camion"/></svg> $30.000</span>
-        <span id="hito-2"><svg class="ic" viewBox="0 0 24 24"><use href="#i-estrella"/></svg> Gratis $65.000</span>
+        <span id="hito-2"><svg class="ic" viewBox="0 0 24 24"><use href="#i-camion"/></svg> Envío gratis sobre $50.000</span>
       </div>
     </div>
     <div class="carro-vacio" id="carro-vacio">
@@ -3339,7 +3356,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   });
 
   /* ---------- Carrito ---------- */
-  var TRAMO_1 = 30000, TRAMO_2 = 65000, carro = [];
+  var TRAMO_2 = 50000, carro = [];   // un solo tramo: envío gratis
   var elItems = $("#carro-items"), elVacio = $("#carro-vacio"), elPie = $("#carro-pie"),
       elTotal = $("#carro-total"), burbuja = $("#burbuja");
 
@@ -3383,9 +3400,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     $("#envio-barra").style.width = Math.min(100, total / TRAMO_2 * 100) + "%";
     var t = $("#envio-txt");
     if(total >= TRAMO_2) t.innerHTML = "Tienes <b>envío gratis</b>.";
-    else if(total >= TRAMO_1) t.innerHTML = "Envío con descuento activo. Te faltan <b>" + clp(TRAMO_2 - total) + "</b> para el envío gratis.";
-    else t.innerHTML = "Te faltan <b>" + clp(TRAMO_1 - total) + "</b> para el envío con descuento.";
-    $("#hito-1").classList.toggle("ok", total >= TRAMO_1);
+    else t.innerHTML = "Te faltan <b>" + clp(TRAMO_2 - total) + "</b> para el envío gratis.";
     $("#hito-2").classList.toggle("ok", total >= TRAMO_2);
 
     elItems.innerHTML = carro.map(function(i){
@@ -3486,34 +3501,20 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
      muestra el desglose de cantidades y ofrece pedir el valor, en vez de
      inventar una cifra.
      ============================================================ */
-  var TARIFAS = {
-    // Valor por persona, con las horas incluidas que dice `horas_incluidas`
-    barra_cafe:  { por_persona: null, horas_incluidas: 3, minimo_personas: 30 },
-    cocteles:    { por_persona: null, horas_incluidas: 3, minimo_personas: 30 },
-    // Recargo por persona por cada hora sobre las incluidas
-    hora_extra:  { por_persona: null },
-    // Agregados, por persona
-    iced:        { por_persona: null },
-    coldfoam:    { por_persona: null },
-    // Traslado, monto fijo. null = se cotiza según comuna
-    traslado:    null
+  var SERVICIOS = {
+    barra:    { porHora: 60,  porMesa: 1, nombre: "barra de café" },
+    cocteles: { porHora: 100, porMesa: 2, nombre: "espresso martini y carajillo" },
+    ambos:    { porHora: 90,  porMesa: 3, nombre: "barra de café y coctelería" }
   };
 
-  var SUPUESTOS = {
-    // Consumo por persona: la primera hora se toma más que las siguientes
-    tragos_primera_hora: 0.9,
-    tragos_hora_siguiente: 0.45,
-    cocteles_primera_hora: 0.8,
-    cocteles_hora_siguiente: 0.4,
-    // Cuánto rinde un barista por hora, con máquina de dos grupos
-    tragos_por_barista_hora: 70,
-    cocteles_por_barista_hora: 45,
-    // Gramos de café por trago (doble)
-    gramos_por_trago: 18,
-    // Proporción de tragos con leche, y mililitros por trago
-    proporcion_con_leche: 0.6,
-    ml_leche_por_trago: 180
-  };
+  // Cuánto pide una persona: la primera hora más que las siguientes.
+  var CONSUMO = { primera: 0.9, siguiente: 0.45 };
+  // Gramos de café por preparación, y la leche de la barra.
+  var INSUMO = { gramos: 18, conLeche: 0.6, mlLeche: 180 };
+
+  // Tarifas en pesos. En null, el cotizador muestra las cantidades y ofrece
+  // pedir el valor, en vez de inventar una cifra.
+  var TARIFAS = { porMesaHora: null, iced: null, coldfoam: null, traslado: null };
 
   // Para pedir la cotización. Carga uno de los dos y el botón lo usa.
   var CONTACTO = { whatsapp: "", correo: "" };
@@ -3522,7 +3523,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     var sec = $("#eventos");
     if(!sec) return;
 
-    var estado = { servicio:"barra", personas:80, horas:3, iced:false, coldfoam:false };
+    var estado = { servicio:"barra", mesas:1, personas:80, horas:3, iced:false, coldfoam:false };
 
     function grupo(nombre){ return $('[data-cot="' + nombre + '"]', sec); }
     function elegido(nombre){
@@ -3531,57 +3532,44 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     }
 
     function calcular(){
-      var p = Math.max(1, estado.personas), h = estado.horas;
-      var s = estado.servicio;
-      var hayBarra = (s === "barra" || s === "ambos");
-      var hayCoct  = (s === "cocteles" || s === "ambos");
+      var cfg = SERVICIOS[estado.servicio];
+      var capacidad = estado.mesas * cfg.porHora * estado.horas;
+      var demanda = Math.round(estado.personas *
+        (CONSUMO.primera + CONSUMO.siguiente * (estado.horas - 1)));
+      var equipo = estado.mesas * cfg.porMesa;
+      var servidas = Math.min(demanda, capacidad);
+      var hayBarra = (estado.servicio !== "cocteles");
+      var sugeridas = Math.max(1, Math.ceil(demanda / (cfg.porHora * estado.horas)));
 
-      // Si se contratan las dos, el consumo se reparte, no se duplica
-      var reparto = (s === "ambos") ? 0.6 : 1;
-
-      var tragosBarra = hayBarra ? p * reparto *
-        (SUPUESTOS.tragos_primera_hora + SUPUESTOS.tragos_hora_siguiente * (h - 1)) : 0;
-      var tragosCoct = hayCoct ? p * reparto *
-        (SUPUESTOS.cocteles_primera_hora + SUPUESTOS.cocteles_hora_siguiente * (h - 1)) : 0;
-
-      var baristas = 0;
-      if(hayBarra) baristas += Math.ceil(tragosBarra / h / SUPUESTOS.tragos_por_barista_hora);
-      if(hayCoct)  baristas += Math.ceil(tragosCoct / h / SUPUESTOS.cocteles_por_barista_hora);
-      baristas = Math.max(1, baristas);
-
-      var tragos = Math.round(tragosBarra + tragosCoct);
-      var cafeKg = (tragos * SUPUESTOS.gramos_por_trago) / 1000;
-      var lecheL = hayBarra
-        ? (tragosBarra * SUPUESTOS.proporcion_con_leche * SUPUESTOS.ml_leche_por_trago) / 1000
-        : 0;
-
-      // ---- precio ----
-      var total = 0, completo = true, lineas = [];
-      function sumar(tarifa, etiqueta, personas){
-        if(tarifa === null || tarifa === undefined){ completo = false; return; }
-        var monto = tarifa * personas;
-        total += monto; lineas.push([etiqueta, monto]);
+      var total = 0, completo = false;
+      if(TARIFAS.porMesaHora !== null){
+        total = TARIFAS.porMesaHora * estado.mesas * estado.horas;
+        completo = true;
+        if(hayBarra && estado.iced){
+          if(TARIFAS.iced !== null) total += TARIFAS.iced * estado.personas; else completo = false;
+        }
+        if(hayBarra && estado.coldfoam){
+          if(TARIFAS.coldfoam !== null) total += TARIFAS.coldfoam * estado.personas; else completo = false;
+        }
+        if(TARIFAS.traslado !== null) total += TARIFAS.traslado;
       }
-      if(hayBarra) sumar(TARIFAS.barra_cafe.por_persona, "Barra de café", p);
-      if(hayCoct)  sumar(TARIFAS.cocteles.por_persona, "Espresso martini y carajillo", p);
 
-      var incluidas = hayBarra ? TARIFAS.barra_cafe.horas_incluidas
-                               : TARIFAS.cocteles.horas_incluidas;
-      var extra = Math.max(0, h - incluidas);
-      if(extra > 0) sumar(TARIFAS.hora_extra.por_persona, extra + " h adicional" + (extra>1?"es":""), p * extra);
-      if(hayBarra && estado.iced)     sumar(TARIFAS.iced.por_persona, "Iced coffee", p);
-      if(hayBarra && estado.coldfoam) sumar(TARIFAS.coldfoam.por_persona, "Cold brew con cold foam", p);
-      if(TARIFAS.traslado !== null){ total += TARIFAS.traslado; lineas.push(["Traslado", TARIFAS.traslado]); }
-
-      return { tragos:tragos, baristas:baristas, cafeKg:cafeKg, lecheL:lecheL,
-               hayBarra:hayBarra, total:total, completo:completo && lineas.length > 0,
-               personas:p, horas:h };
+      return { cfg:cfg, capacidad:capacidad, demanda:demanda, equipo:equipo,
+               servidas:servidas, hayBarra:hayBarra, sugeridas:sugeridas,
+               cafeKg:(servidas * INSUMO.gramos) / 1000,
+               lecheL: hayBarra ? (servidas * INSUMO.conLeche * INSUMO.mlLeche) / 1000 : 0,
+               total:total, completo:completo,
+               mesas:estado.mesas, personas:estado.personas, horas:estado.horas };
     }
 
     function pintarCot(){
       var c = calcular();
-      $("[data-cot-tragos]", sec).textContent = c.tragos.toLocaleString("es-CL") + " tragos";
-      $("[data-cot-baristas]", sec).textContent = c.baristas + (c.baristas === 1 ? " barista" : " baristas");
+      $("[data-cot-ficha]", sec).textContent = c.cfg.porHora +
+        " preparaciones por hora y " + c.cfg.porMesa +
+        (c.cfg.porMesa === 1 ? " persona" : " personas") + " por mesa.";
+      $("[data-cot-capacidad]", sec).textContent = c.capacidad.toLocaleString("es-CL") + " preparaciones";
+      $("[data-cot-demanda]", sec).textContent = c.demanda.toLocaleString("es-CL") + " preparaciones";
+      $("[data-cot-equipo]", sec).textContent = c.equipo + (c.equipo === 1 ? " persona" : " personas");
       $("[data-cot-cafe]", sec).textContent = (c.cafeKg < 1
         ? Math.round(c.cafeKg * 1000) + " g" : c.cafeKg.toFixed(1).replace(".", ",") + " kg");
       var filaLeche = $("[data-cot-fila-leche]", sec);
@@ -3589,35 +3577,44 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       if(c.hayBarra) $("[data-cot-leche]", sec).textContent =
         Math.round(c.lecheL).toLocaleString("es-CL") + " L";
 
+      var al = $("[data-cot-alerta]", sec);
+      if(c.capacidad < c.demanda){
+        al.className = "cot-alerta mal";
+        al.textContent = "Con " + c.mesas + (c.mesas === 1 ? " mesa" : " mesas") +
+          " no alcanza: se quedarían " + (c.demanda - c.capacidad) +
+          " preparaciones cortas. Te sugerimos " + c.sugeridas +
+          (c.sugeridas === 1 ? " mesa" : " mesas") + ".";
+      } else {
+        al.className = "cot-alerta bien";
+        al.textContent = "Alcanza con holgura: te sobran " + (c.capacidad - c.demanda) + " preparaciones.";
+      }
+
       var val = $("[data-cot-total]", sec), nota = $("[data-cot-nota]", sec);
       if(c.completo){
         val.textContent = clp(c.total);
-        nota.textContent = "Valor estimado para " + c.personas + " personas y " +
-                           c.horas + " horas. La cotización firme va por escrito.";
+        nota.textContent = "Estimado para " + c.mesas + (c.mesas === 1 ? " mesa" : " mesas") +
+          " y " + c.horas + " horas. La cotización firme va por escrito.";
       } else {
         val.textContent = "Te lo confirmamos";
         nota.textContent = "Todavía no publicamos las tarifas. Pídenos el valor y " +
                            "te respondemos con la cotización firme.";
       }
 
-      // Los agregados son solo de la barra de café
       $$("[data-solo-barra]", sec).forEach(function(e){ e.hidden = !c.hayBarra; });
       var soloCoct = $("[data-solo-cocteles]", sec);
       if(soloCoct) soloCoct.hidden = c.hayBarra;
 
-      // El botón arma el mensaje con todo lo elegido
-      var servicio = { barra:"barra de café", cocteles:"espresso martini y carajillo",
-                       ambos:"barra de café y coctelería" }[estado.servicio];
       var agregados = [];
       if(c.hayBarra && estado.iced) agregados.push("iced coffee");
       if(c.hayBarra && estado.coldfoam) agregados.push("cold brew con cold foam");
       var msg = "Hola, quiero cotizar un evento con sepia coffee.\n\n" +
-        "Servicio: " + servicio + "\n" +
+        "Servicio: " + c.cfg.nombre + "\n" +
+        "Mesas: " + c.mesas + "\n" +
         "Invitados: " + c.personas + "\n" +
         "Horas: " + c.horas + "\n" +
         (agregados.length ? "Agregados: " + agregados.join(", ") + "\n" : "") +
-        "\nEstimación del sitio: " + c.tragos + " tragos, " + c.baristas +
-        (c.baristas === 1 ? " barista" : " baristas") + ".";
+        "\nEstimación del sitio: capacidad " + c.capacidad + ", demanda " + c.demanda +
+        ", equipo de " + c.equipo + (c.equipo === 1 ? " persona" : " personas") + ".";
       var btn = $("[data-cot-pedir]", sec);
       if(CONTACTO.whatsapp){
         btn.href = "https://wa.me/" + CONTACTO.whatsapp.replace(/[^0-9]/g, "") +
@@ -3646,16 +3643,20 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       });
     });
 
-    var num = $("#cot-personas", sec), rango = $("#cot-personas-r", sec);
-    function sincronizar(valor, desdeRango){
-      var v = Math.max(1, Math.min(2000, parseInt(valor, 10) || 1));
-      estado.personas = v;
-      if(!desdeRango) rango.value = Math.max(20, Math.min(400, v));
-      else num.value = v;
-      pintarCot();
+    function parNumerico(idNum, idRango, clave, min, max){
+      var n = $(idNum, sec), r = $(idRango, sec);
+      if(!n || !r) return;
+      n.addEventListener("input", function(){
+        estado[clave] = Math.max(min, Math.min(max, parseInt(n.value, 10) || min));
+        r.value = Math.max(parseInt(r.min, 10), Math.min(parseInt(r.max, 10), estado[clave]));
+        pintarCot();
+      });
+      r.addEventListener("input", function(){
+        estado[clave] = parseInt(r.value, 10); n.value = estado[clave]; pintarCot();
+      });
     }
-    num.addEventListener("input", function(){ sincronizar(num.value, false); });
-    rango.addEventListener("input", function(){ sincronizar(rango.value, true); });
+    parNumerico("#cot-mesas", "#cot-mesas-r", "mesas", 1, 12);
+    parNumerico("#cot-personas", "#cot-personas-r", "personas", 1, 2000);
 
     $$("[data-agregado]", sec).forEach(function(c){
       c.addEventListener("change", function(){

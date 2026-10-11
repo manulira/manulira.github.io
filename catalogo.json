@@ -3,10 +3,10 @@
   "sitio": "https://sepiacoffee.cl/",
   "moneda": "CLP",
   "pais": "CL",
-  "actualizado": "2026-10-10",
+  "actualizado": "2026-10-11",
   "envio": {
-    "gratis_sobre": 65000,
-    "con_descuento_sobre": 30000,
+    "gratis_sobre": 50000,
+    "con_descuento_sobre": 0,
     "cobertura": "todo Chile"
   },
   "suscripcion": {

@@ -244,8 +244,45 @@ def main():
              "name": "sepia coffee", "inLanguage": "es-CL",
              "publisher": {"@id": SITIO + "/#tienda"}}
 
+    # El servicio de eventos. «Barra de café para eventos en Santiago» es
+    # justo el tipo de consulta que llega a un asistente, así que conviene
+    # que haya algo que citar.
+    servicio = {
+        "@type": "Service",
+        "@id": SITIO + "/#eventos",
+        "name": "Barra de café y coctelería con espresso para eventos",
+        "serviceType": "Barra de café para eventos",
+        "description": (
+            "Servicio de barra de café para eventos en Santiago: espresso, "
+            "americano, capuccino y latte preparados al momento, con opción de "
+            "iced coffee y de cold brew con cold foam. También barra de "
+            "coctelería con espresso: espresso martini y carajillo. Se cotiza "
+            "por número de invitados y horas de servicio."),
+        "provider": {"@id": SITIO + "/#tienda"},
+        "areaServed": {"@type": "City", "name": "Santiago",
+                       "containedInPlace": {"@type": "Country", "name": "Chile"}},
+        "availableChannel": {"@type": "ServiceChannel",
+                             "serviceUrl": SITIO + "/#eventos",
+                             "name": "Cotizador en línea"},
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog", "name": "Servicios para eventos",
+            "itemListElement": [
+                {"@type": "Offer", "itemOffered":
+                 {"@type": "Service", "name": nom, "description": des}}
+                for nom, des in [
+                    ("Barra de café", "Espresso, americano, capuccino y latte "
+                     "preparados al momento por nuestros baristas."),
+                    ("Agregado: iced coffee", "Café helado servido en vaso alto."),
+                    ("Agregado: cold brew con cold foam",
+                     "Café extraído en frío, con espuma fría encima."),
+                    ("Espresso martini y carajillo",
+                     "Coctelería con espresso recién extraído."),
+                ]]},
+    }
+
     grafo = {"@context": "https://schema.org",
-             "@graph": [tienda, marca, catalogo, envio, devoluciones, sitio] + productos}
+             "@graph": [tienda, marca, catalogo, envio, devoluciones, sitio,
+                        servicio] + productos}
     io.open(os.path.join(AQUI, "ld-tienda.json"), "w", encoding="utf-8").write(
         json.dumps(grafo, ensure_ascii=False, indent=2))
 

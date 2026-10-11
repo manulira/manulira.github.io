@@ -115,6 +115,6 @@ PRODUCTOS = [
 # Categorías en el orden en que se muestran
 CATEGORIAS = ["Café en grano", "Matcha", "Cold brew", "Kits", "Accesorios"]
 
-ENVIO_REDUCIDO = 30000
-ENVIO_GRATIS = 65000
+ENVIO_REDUCIDO = 0   # ya no hay tramo intermedio
+ENVIO_GRATIS = 50000
 SUSCRIPCION_DESC = 15

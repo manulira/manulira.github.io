@@ -170,9 +170,8 @@ PREGUNTAS = [
 
  # ----------------------------------------------------------- PEDIDO
  ("pedido", "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",
-  ["Sí, despachamos a todo Chile. Sobre $65.000 el envío es gratis, y sobre "
-   "$30.000 pagas envío con descuento. El valor exacto depende de la comuna y "
-   "lo ves antes de pagar."],
+  ["Sí, despachamos a todo Chile. Sobre $50.000 el envío es gratis. Bajo ese "
+   "monto el valor depende de la comuna y lo ves antes de pagar."],
   None),
 
  ("pedido", "¿Cómo funciona la suscripción?",
