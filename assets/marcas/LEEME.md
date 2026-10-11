@@ -26,3 +26,25 @@ suyo, reemplázalo.
 - Convertido a PNG transparente con Chromium (el SVG usa un bloque `<style>`
   con clases CSS, que los rasterizadores simples no interpretan: pintan de
   negro el `<rect class="cls-2">` de fondo, que en realidad es `fill:none`).
+
+## skoda.png
+- Origen: sitio oficial `skoda.cl` (`/assets/logos/skoda-logo.svg`)
+- Es el wordmark vigente de la identidad 2022: el háček va integrado en la
+  propia S, no como acento suelto encima.
+
+## cencomalls.png
+- Origen: sitio oficial `cencomalls.com` (`/files/2024-08/cencomalls_white.svg`)
+- Ojo: el otro archivo del sitio, `logo-icon.svg`, trae un recuadro blanco de
+  fondo y no sirve acá, porque el filtro `brightness(0)` lo pintaría negro.
+
+## seguros-sura.png
+- Origen: sitio oficial `sura.cl` (`/Style Library/KitSura/img/logo_sura.png`)
+- Es el único chico del muro: 142 × 50 px, que es el tamaño al que lo publica
+  SURA. Se ve bien a tamaño normal, pero en pantalla retina queda algo blando.
+  Si el cliente manda el vectorial, conviene reemplazarlo.
+
+---
+
+Los logos son marcas registradas de sus dueños y se usan acá solo para
+identificar a clientes con los que se trabajó. La versión más segura y
+vigente siempre es la que entrega el propio cliente en su kit de marca.
