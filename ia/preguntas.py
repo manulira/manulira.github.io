@@ -154,19 +154,32 @@ PREGUNTAS = [
   ["Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres "
    "semanas, que es justo el tiempo en que el café está en su mejor momento, y "
    "el molido te ahorra comprar molinillo mientras decides.",
-   "El kilo conviene cuando ya sabes que este café te gusta, o si en la casa se "
+   "El kilo conviene cuando ya sabes cuál de los dos te gusta, o si en la casa se "
    "toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a "
    "ese volumen la diferencia de frescura se nota."],
   ("Ver el Colombia", "producto-colombia")),
 
- ("cafe", "¿Por qué tienen un solo café?",
-  ["Porque preferimos hacer uno bien antes que cinco a medias. Trabajamos un "
-   "origen de Colombia, lo tostamos nosotros y ajustamos el tueste a ese grano "
-   "en particular.",
-   "Tener una sola referencia también significa que el lote rota rápido: lo que "
-   "te llega es café recién tostado, no una bolsa que llevaba meses esperando "
-   "en una bodega."],
-  ("Ver el Colombia", "producto-colombia")),
+ ("cafe", "¿Cuál es la diferencia entre el Colombia y el Bolivia?",
+  ["Los dos son de tueste medio y los tostamos nosotros, pero saben distinto.",
+   "<b>Colombia:</b> vainilla, frutos secos y cacao. Es el más parejo de los "
+   "dos, dulce y de poca acidez. Funciona igual de bien en espresso que en "
+   "filtro, así que es el que recomendamos si recién entras al café de "
+   "especialidad o si en la casa toma más de una persona.",
+   "<b>Bolivia:</b> avellana, cítrico y caramelo. Tiene más acidez y una nota "
+   "cítrica que se abre sobre todo en filtro, donde más se luce. Si ya te "
+   "gusta un café con más carácter, parte por este.",
+   "Si no te decides, pide los dos en 250 g: alcanzan a durar las semanas en "
+   "que el café está en su mejor momento y los comparas en la misma semana."],
+  ("Ver los cafés", "cafes")),
+
+ ("cafe", "¿Por qué tienen solo dos cafés?",
+  ["Porque preferimos hacer dos bien antes que diez a medias. Trabajamos un "
+   "origen de Colombia y uno de Bolivia, los tostamos nosotros y ajustamos el "
+   "tueste a cada grano en particular.",
+   "Tener pocas referencias también significa que los lotes rotan rápido: lo "
+   "que te llega es café recién tostado, no una bolsa que llevaba meses "
+   "esperando en una bodega."],
+  ("Ver los cafés", "cafes")),
 
  # ----------------------------------------------------------- PEDIDO
  ("pedido", "¿Hacen envíos a todo Chile? ¿Cuánto cuesta?",

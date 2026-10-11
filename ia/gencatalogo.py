@@ -18,10 +18,22 @@ PRODUCTOS = [p for p in TODOS if p[9]]
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.join(AQUI, "..")
 
-TONOS = ["#C8D9E6", "#FFFFFF", "#C8D9E6", "#FFFFFF", "#567C8D", "#FFFFFF",
-         "#C8D9E6", "#FFFFFF"]
-ACENTOS = ["#2F4156", "#567C8D", "#2F4156", "#567C8D", "#F5EFEB", "#2F4156",
-           "#567C8D", "#C8D9E6"]
+# El color de fondo de cada tarjeta, por producto y no por posición: así
+# agregar un café no le corre el color a todos los que vienen detrás. Los
+# dos cafés llevan el color de su propia bolsa.
+TONOS = {
+ "colombia": "#E69B4A", "bolivia": "#DA9296", "matcha": "#FFFFFF",
+ "lata-edicion": "#C8D9E6", "coldbrew-lata": "#FFFFFF",
+ "kit-matcha": "#567C8D", "kit-cafetero": "#FFFFFF",
+ "musette": "#C8D9E6", "polera": "#FFFFFF", "vaso": "#C8D9E6",
+}
+ACENTOS = {
+ "colombia": "#2F4156", "bolivia": "#2F4156", "matcha": "#567C8D",
+ "lata-edicion": "#2F4156", "coldbrew-lata": "#567C8D",
+ "kit-matcha": "#F5EFEB", "kit-cafetero": "#2F4156",
+ "musette": "#567C8D", "polera": "#567C8D", "vaso": "#2F4156",
+}
+TONO_POR_DEFECTO, ACENTO_POR_DEFECTO = "#FFFFFF", "#2F4156"
 
 def clp(n):
     return "$" + format(n, ",d").replace(",", ".")
@@ -37,11 +49,20 @@ def clave_inicial(p):
     return " · ".join(vals[0] for _, vals in opciones)
 
 # ===================================================================== HTML
-def tarjetas():
+# La página tiene dos carruseles y un producto va en uno o en el otro,
+# nunca en los dos: repetirlo duplica el id y rompe los enlaces #producto-x.
+CARRUSELES = [
+    ("cafes", ["Café en grano", "Matcha", "Cold brew"]),
+    ("packs", ["Kits", "Accesorios"]),
+]
+
+
+def tarjetas(lista=None):
     out = []
-    for i, p in enumerate(PRODUCTOS):
+    for i, p in enumerate(PRODUCTOS if lista is None else lista):
         pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo = p
-        tono, acento = TONOS[i % len(TONOS)], ACENTOS[i % len(ACENTOS)]
+        tono = TONOS.get(pid, TONO_POR_DEFECTO)
+        acento = ACENTOS.get(pid, ACENTO_POR_DEFECTO)
         ini = clave_inicial(p)
         precio = variantes.get(ini)
         precio_txt = clp(precio) if precio is not None else "Precio por confirmar"
@@ -100,7 +121,8 @@ def tarjetas():
     return "\n".join(out)
 
 ALT = {
- "colombia": "Bolsa de café de especialidad de Colombia de sepia coffee, tostado en Santiago",
+ "colombia": "Bolsa blanca de café de especialidad Colombia de sepia coffee, con la etiqueta naranja y el sello holográfico",
+ "bolivia": "Bolsa blanca de café de especialidad Bolivia de sepia coffee, con la etiqueta rosada y el sello holográfico",
  "matcha": "Lata celeste de 30 g de matcha en polvo de sepia coffee",
  "lata-edicion": "Lata de edición limitada de 200 g de café de sepia coffee",
  "kit-matcha": "Kit de matcha de sepia coffee con batidor de bambú",
@@ -110,7 +132,8 @@ ALT = {
  "vaso": "Vaso reutilizable de sepia coffee con el caminante",
 }
 ALT2 = {
- "colombia": "Granos de café de Colombia tostados por sepia coffee",
+ "colombia": "La bolsa de Colombia sobre un tronco de madera, con granos de café al lado",
+ "bolivia": "La bolsa de Bolivia sobre un tronco de madera, con granos de café al lado",
  "matcha": "Matcha batido en un bowl, con la espuma formada",
  "lata-edicion": "La lata de edición limitada abierta, con el café dentro",
  "kit-matcha": "El kit de matcha con todas sus piezas sobre una mesa",
@@ -184,8 +207,7 @@ def main():
     productos = [nodo_producto(p) for p in PRODUCTOS]
 
     marca = {"@type": "Brand", "@id": SITIO + "/#marca", "name": "sepia coffee",
-             "url": SITIO + "/", "logo": SITIO + "/assets/sepia/logo-principal.png",
-             "slogan": "La primera cosa buena del día."}
+             "url": SITIO + "/", "logo": SITIO + "/assets/sepia/logo-principal.png"}
 
     tienda = {
         "@type": ["Organization", "OnlineStore"], "@id": SITIO + "/#tienda",
@@ -196,10 +218,10 @@ def main():
         "image": SITIO + "/assets/fotos/hero-1.jpg",
         "description": (
             "sepia coffee es una marca chilena de café de especialidad y matcha. "
-            "Trabajamos un solo origen de café, Colombia, que tostamos en Santiago "
-            "en lotes chicos y despachamos recién tostado a todo Chile. Vendemos "
+            "Trabajamos dos orígenes de café, Colombia y Bolivia, que tostamos en "
+            "Santiago en lotes chicos y despachamos recién tostados a todo Chile. "
+            "Vendemos "
             "café en grano y molido, matcha en polvo, kits y accesorios."),
-        "slogan": "La primera cosa buena del día.",
         "brand": {"@id": SITIO + "/#marca"},
         "areaServed": {"@type": "Country", "name": "Chile"},
         "currenciesAccepted": "CLP",
@@ -363,8 +385,17 @@ def main():
     io.open(os.path.join(RAIZ, "catalogo.json"), "w", encoding="utf-8").write(
         json.dumps(feed, ensure_ascii=False, indent=2) + "\n")
 
-    io.open(os.path.join(AQUI, "parte_productos.html"), "w",
-            encoding="utf-8").write(tarjetas() + "\n")
+    for pista, cats in CARRUSELES:
+        suyos = [p for p in PRODUCTOS if p[2] in cats]
+        io.open(os.path.join(AQUI, "parte_productos_%s.html" % pista), "w",
+                encoding="utf-8").write(tarjetas(suyos) + "\n")
+        print("  carrusel %-6s %d tarjetas: %s"
+              % (pista, len(suyos), ", ".join(x[1] for x in suyos)))
+
+    sueltos = [p[1] for p in PRODUCTOS
+               if not any(p[2] in c for _, c in CARRUSELES)]
+    if sueltos:
+        print("  AVISO: sin carrusel: " + ", ".join(sueltos))
 
     sin = sum(1 for p in PRODUCTOS for v in p[7].values() if v is None)
     print("ld-tienda.json  %d nodos" % len(grafo["@graph"]))

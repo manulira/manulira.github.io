@@ -34,15 +34,29 @@ FORMATO_MATCHA = ("Formato", ["30 g en lata", "80 g en sobre"])
 # ---------------------------------------------------------------------
 PRODUCTOS = [
  ("colombia", "Colombia", "Café en grano", "i-bolsa",
-  "Nuestro único origen",
-  "Café de especialidad de Colombia, tostado por nosotros en Santiago en "
-  "lotes chicos y despachado recién tostado. Es el único café de la carta: "
-  "preferimos hacer uno bien antes que cinco a medias. Lo eliges en grano o "
-  "molido para tu método.",
+  "Vainilla, frutos secos y cacao",
+  "Café de especialidad de Colombia, de tueste medio. En taza: vainilla, "
+  "frutos secos y cacao. Lo tostamos nosotros en Santiago, en lotes chicos, "
+  "y lo despachamos recién tostado. Es el más parejo de los dos: dulce, de "
+  "cuerpo medio y poca acidez, así que funciona igual de bien en espresso "
+  "que en filtro. Si recién entras al café de especialidad, parte por acá. "
+  "Lo eliges en grano o molido para tu método.",
   [TAMANO_CAFE, MOLIENDA],
   {"250 g · En grano": None, "250 g · Molido": None,
    "1 kg · En grano": None,  "1 kg · Molido": None},
   "Más vendido", True),
+
+ ("bolivia", "Bolivia", "Café en grano", "i-bolsa",
+  "Avellana, cítrico y caramelo",
+  "Café de especialidad de Bolivia, de tueste medio. En taza: avellana, "
+  "cítrico y caramelo. Lo tostamos nosotros en Santiago, en lotes chicos, "
+  "y lo despachamos recién tostado. Tiene más acidez que el Colombia y una "
+  "nota cítrica que se abre sobre todo en filtro, donde más se luce. "
+  "Lo eliges en grano o molido para tu método.",
+  [TAMANO_CAFE, MOLIENDA],
+  {"250 g · En grano": None, "250 g · Molido": None,
+   "1 kg · En grano": None,  "1 kg · Molido": None},
+  "Nuevo", True),
 
  ("matcha", "Matcha", "Matcha", "i-tarro",
   "En lata o en sobre de recarga",

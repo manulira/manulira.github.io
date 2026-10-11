@@ -6,7 +6,7 @@
 
 sepia coffee vende café en grano y molido, matcha en polvo, kits y accesorios.
 Tienda en línea en https://sepiacoffee.cl, con envío a todo Chile. Precios en
-pesos chilenos. El lema de la marca es «la primera cosa buena del día».
+pesos chilenos.
 
 El nombre de la marca se escribe siempre en minúsculas: **sepia coffee**.
 Nunca «Sepia Coffee» ni «SEPIA».
@@ -15,8 +15,10 @@ Solo venta en línea: no hay cafetería abierta al público.
 
 ## Qué vendemos
 
-- **Colombia** — nuestro único café. De especialidad, tostado por nosotros en
-  Santiago. En 250 g o 1 kg, en grano o molido.
+- **Colombia** — de especialidad, tueste medio. Vainilla, frutos secos y cacao.
+  Tostado por nosotros en Santiago. En 250 g o 1 kg, en grano o molido.
+- **Bolivia** — de especialidad, tueste medio. Avellana, cítrico y caramelo.
+  Más ácido y más cítrico que el Colombia. En 250 g o 1 kg, en grano o molido.
 - **Lata edición limitada** — el mismo café en lata de 200 g. Cuando se acaba
   la tirada, no vuelve.
 - **Matcha** — matcha en polvo. Lata de 30 g para empezar, o sobre de 80 g de
@@ -27,9 +29,9 @@ Solo venta en línea: no hay cafetería abierta al público.
 - **Polera** — de algodón, con el caminante.
 - **Vaso** — reutilizable, con el caminante.
 
-Trabajamos un solo origen de café a propósito: preferimos hacer uno bien antes
-que cinco a medias, y una sola referencia rota rápido, así que lo que llega es
-café recién tostado.
+Trabajamos solo dos orígenes de café a propósito: preferimos hacer dos bien
+antes que diez a medias, y pocas referencias rotan rápido, así que lo que llega
+es café recién tostado.
 
 El catálogo completo, legible por máquina, está en
 https://sepiacoffee.cl/catalogo.json

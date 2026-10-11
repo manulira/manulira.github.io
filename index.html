@@ -66,8 +66,7 @@
         "url": "https://sepiacoffee.cl/assets/sepia/logo-principal.png"
       },
       "image": "https://sepiacoffee.cl/assets/fotos/hero-1.jpg",
-      "description": "sepia coffee es una marca chilena de café de especialidad y matcha. Trabajamos un solo origen de café, Colombia, que tostamos en Santiago en lotes chicos y despachamos recién tostado a todo Chile. Vendemos café en grano y molido, matcha en polvo, kits y accesorios.",
-      "slogan": "La primera cosa buena del día.",
+      "description": "sepia coffee es una marca chilena de café de especialidad y matcha. Trabajamos dos orígenes de café, Colombia y Bolivia, que tostamos en Santiago en lotes chicos y despachamos recién tostados a todo Chile. Vendemos café en grano y molido, matcha en polvo, kits y accesorios.",
       "brand": {
         "@id": "https://sepiacoffee.cl/#marca"
       },
@@ -88,14 +87,13 @@
       "@id": "https://sepiacoffee.cl/#marca",
       "name": "sepia coffee",
       "url": "https://sepiacoffee.cl/",
-      "logo": "https://sepiacoffee.cl/assets/sepia/logo-principal.png",
-      "slogan": "La primera cosa buena del día."
+      "logo": "https://sepiacoffee.cl/assets/sepia/logo-principal.png"
     },
     {
       "@type": "OfferCatalog",
       "@id": "https://sepiacoffee.cl/#catalogo",
       "name": "Catálogo sepia coffee",
-      "numberOfItems": 8,
+      "numberOfItems": 9,
       "itemListElement": [
         {
           "@type": "OfferCatalog",
@@ -105,6 +103,12 @@
               "@type": "Offer",
               "itemOffered": {
                 "@id": "https://sepiacoffee.cl/#producto-colombia"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@id": "https://sepiacoffee.cl/#producto-bolivia"
               }
             },
             {
@@ -646,7 +650,7 @@
     {
       "@id": "https://sepiacoffee.cl/#producto-colombia",
       "name": "Colombia",
-      "description": "Café de especialidad de Colombia, tostado por nosotros en Santiago en lotes chicos y despachado recién tostado. Es el único café de la carta: preferimos hacer uno bien antes que cinco a medias. Lo eliges en grano o molido para tu método.",
+      "description": "Café de especialidad de Colombia, de tueste medio. En taza: vainilla, frutos secos y cacao. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Es el más parejo de los dos: dulce, de cuerpo medio y poca acidez, así que funciona igual de bien en espresso que en filtro. Si recién entras al café de especialidad, parte por acá. Lo eliges en grano o molido para tu método.",
       "category": "Café en grano",
       "brand": {
         "@id": "https://sepiacoffee.cl/#marca"
@@ -722,6 +726,100 @@
           "name": "Colombia — 1 kg · Molido",
           "sku": "sepia-colombia-1kg-molido",
           "image": "https://sepiacoffee.cl/assets/fotos/prod-colombia.jpg",
+          "additionalProperty": [
+            {
+              "@type": "PropertyValue",
+              "name": "Formato",
+              "value": "1 kg"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Molienda",
+              "value": "Molido"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "https://sepiacoffee.cl/#producto-bolivia",
+      "name": "Bolivia",
+      "description": "Café de especialidad de Bolivia, de tueste medio. En taza: avellana, cítrico y caramelo. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Tiene más acidez que el Colombia y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Lo eliges en grano o molido para tu método.",
+      "category": "Café en grano",
+      "brand": {
+        "@id": "https://sepiacoffee.cl/#marca"
+      },
+      "image": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg",
+      "@type": "ProductGroup",
+      "productGroupID": "sepia-bolivia",
+      "variesBy": [
+        "Formato",
+        "Molienda"
+      ],
+      "hasVariant": [
+        {
+          "@type": "Product",
+          "@id": "https://sepiacoffee.cl/#producto-bolivia-250g-engrano",
+          "name": "Bolivia — 250 g · En grano",
+          "sku": "sepia-bolivia-250g-engrano",
+          "image": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg",
+          "additionalProperty": [
+            {
+              "@type": "PropertyValue",
+              "name": "Formato",
+              "value": "250 g"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Molienda",
+              "value": "En grano"
+            }
+          ]
+        },
+        {
+          "@type": "Product",
+          "@id": "https://sepiacoffee.cl/#producto-bolivia-250g-molido",
+          "name": "Bolivia — 250 g · Molido",
+          "sku": "sepia-bolivia-250g-molido",
+          "image": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg",
+          "additionalProperty": [
+            {
+              "@type": "PropertyValue",
+              "name": "Formato",
+              "value": "250 g"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Molienda",
+              "value": "Molido"
+            }
+          ]
+        },
+        {
+          "@type": "Product",
+          "@id": "https://sepiacoffee.cl/#producto-bolivia-1kg-engrano",
+          "name": "Bolivia — 1 kg · En grano",
+          "sku": "sepia-bolivia-1kg-engrano",
+          "image": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg",
+          "additionalProperty": [
+            {
+              "@type": "PropertyValue",
+              "name": "Formato",
+              "value": "1 kg"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Molienda",
+              "value": "En grano"
+            }
+          ]
+        },
+        {
+          "@type": "Product",
+          "@id": "https://sepiacoffee.cl/#producto-bolivia-1kg-molido",
+          "name": "Bolivia — 1 kg · Molido",
+          "sku": "sepia-bolivia-1kg-molido",
+          "image": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg",
           "additionalProperty": [
             {
               "@type": "PropertyValue",
@@ -977,15 +1075,23 @@
       "name": "¿Qué formato me conviene si recién empiezo?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres semanas, que es justo el tiempo en que el café está en su mejor momento, y el molido te ahorra comprar molinillo mientras decides. El kilo conviene cuando ya sabes que este café te gusta, o si en la casa se toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a ese volumen la diferencia de frescura se nota."
+        "text": "Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres semanas, que es justo el tiempo en que el café está en su mejor momento, y el molido te ahorra comprar molinillo mientras decides. El kilo conviene cuando ya sabes cuál de los dos te gusta, o si en la casa se toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a ese volumen la diferencia de frescura se nota."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Por qué tienen un solo café?",
+      "name": "¿Cuál es la diferencia entre el Colombia y el Bolivia?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Porque preferimos hacer uno bien antes que cinco a medias. Trabajamos un origen de Colombia, lo tostamos nosotros y ajustamos el tueste a ese grano en particular. Tener una sola referencia también significa que el lote rota rápido: lo que te llega es café recién tostado, no una bolsa que llevaba meses esperando en una bodega."
+        "text": "Los dos son de tueste medio y los tostamos nosotros, pero saben distinto. Colombia: vainilla, frutos secos y cacao. Es el más parejo de los dos, dulce y de poca acidez. Funciona igual de bien en espresso que en filtro, así que es el que recomendamos si recién entras al café de especialidad o si en la casa toma más de una persona. Bolivia: avellana, cítrico y caramelo. Tiene más acidez y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Si ya te gusta un café con más carácter, parte por este. Si no te decides, pide los dos en 250 g: alcanzan a durar las semanas en que el café está en su mejor momento y los comparas en la misma semana."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Por qué tienen solo dos cafés?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Porque preferimos hacer dos bien antes que diez a medias. Trabajamos un origen de Colombia y uno de Bolivia, los tostamos nosotros y ajustamos el tueste a cada grano en particular. Tener pocas referencias también significa que los lotes rotan rápido: lo que te llega es café recién tostado, no una bolsa que llevaba meses esperando en una bodega."
       }
     },
     {
@@ -1703,10 +1809,14 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   position:relative;aspect-ratio:1;border-radius:var(--r-xl);overflow:hidden;
   background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
 }
-.prod-media .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transition:opacity .4s var(--ease)}
-.prod-media .foto.alterna{opacity:0;z-index:2}
+/* La portada es el packshot sobre fondo blanco: va entero, con el color de
+   la tarjeta haciendo de marco. La segunda es la foto de ambiente, que sí
+   llena el cuadro. El dibujo SVG queda debajo: se ve solo cuando todavía
+   no hay foto, porque el onerror de la etiqueta img la borra si falta. */
+.prod-media .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1;transition:opacity .4s var(--ease)}
+.prod-media .foto.alterna{opacity:0;z-index:2;object-fit:cover}
 .prod:hover .prod-media .foto.alterna{opacity:1}
-.prod-media .arte{width:62%;height:auto;z-index:1;transition:transform .5s var(--ease)}
+.prod-media .arte{width:62%;height:auto;z-index:0;transition:transform .5s var(--ease)}
 .prod:hover .prod-media .arte{transform:translateY(-6px) scale(1.04)}
 .prod-etq{
   position:absolute;top:.8rem;left:.8rem;z-index:4;
@@ -2004,6 +2114,14 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 /* .cot-campo y .cot-cifras>div traen display propio, que le gana al
    atributo hidden del navegador. Sin esta regla, lo oculto se ve. */
 #eventos [hidden]{display:none}
+.cot-mesas{display:grid;gap:.6rem;grid-template-columns:1fr}
+@media(min-width:520px){.cot-mesas{grid-template-columns:1fr 1fr}}
+.cot-mesas button{display:grid;gap:.28rem;text-align:left;padding:.5rem .5rem .75rem;border-radius:var(--r-lg);background:rgba(255,255,255,.08);color:var(--papel);transition:background .2s var(--ease)}
+.cot-mesas button:hover[aria-pressed="false"]{background:rgba(255,255,255,.16)}
+.cot-mesas button[aria-pressed="true"]{background:var(--celeste);color:var(--navy)}
+.cot-mesas img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--papel);border-radius:var(--r-md);margin-bottom:.35rem}
+.cot-mesas b{font-family:var(--display);font-weight:600;font-size:.98rem;padding-inline:.25rem}
+.cot-mesas em{font-style:normal;font-size:.82rem;opacity:.75;line-height:1.35;padding-inline:.25rem}
 .cot-select{font-family:var(--display);font-weight:600;font-size:.95rem;padding:.55rem .7rem;border:0;border-radius:var(--r-md);background:var(--papel);color:var(--navy);width:100%;max-width:24rem}
 
 /* ---------- Opciones de variante ---------- */
@@ -2541,10 +2659,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-colombia" data-id="colombia" data-nombre="Colombia"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;250 g · En grano&quot;: null, &quot;250 g · Molido&quot;: null, &quot;1 kg · En grano&quot;: null, &quot;1 kg · Molido&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-bolsa" data-cat="Café en grano">
-          <div class="prod-media" style="--tono:#C8D9E6">
-            <img class="foto" src="assets/fotos/prod-colombia.jpg" alt="Bolsa de café de especialidad de Colombia de sepia coffee, tostado en Santiago" loading="lazy" decoding="async" onerror="this.remove()">
-            <img class="foto alterna" src="assets/fotos/prod-colombia-2.jpg" alt="Granos de café de Colombia tostados por sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
+                 data-tono="#E69B4A" data-acento="#2F4156" data-arte="i-bolsa" data-cat="Café en grano">
+          <div class="prod-media" style="--tono:#E69B4A">
+            <img class="foto" src="assets/fotos/prod-colombia.jpg" alt="Bolsa blanca de café de especialidad Colombia de sepia coffee, con la etiqueta naranja y el sello holográfico" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-colombia-2.jpg" alt="La bolsa de Colombia sobre un tronco de madera, con granos de café al lado" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Colombia"><use href="#i-bolsa"/></svg>
             <span class="prod-etq">Más vendido</span>
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
@@ -2552,10 +2670,32 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <div class="opciones"><div class="opcion" data-eje="Formato"><span class="opcion-et">Formato</span><div class="opcion-chips"><button type="button" data-val="250 g" aria-pressed="true">250 g</button><button type="button" data-val="1 kg" aria-pressed="false">1 kg</button></div></div><div class="opcion" data-eje="Molienda"><span class="opcion-et">Molienda</span><div class="opcion-chips"><button type="button" data-val="En grano" aria-pressed="true">En grano</button><button type="button" data-val="Molido" aria-pressed="false">Molido</button></div></div></div>
           <div class="prod-info">
             <h3>Colombia</h3>
-            <p class="prod-sub">Nuestro único origen</p>
+            <p class="prod-sub">Vainilla, frutos secos y cacao</p>
             <p class="prod-precio pendiente" data-precio-txt>Precio por confirmar</p>
           </div>
           <div class="compra" role="group" aria-label="Tipo de compra de Colombia">
+            <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
+            <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
+          </div>
+        </article>
+        <article class="prod" id="producto-bolivia" data-id="bolivia" data-nombre="Bolivia"
+                 data-precio="" data-precio-txt="Precio por confirmar"
+                 data-variantes='{&quot;250 g · En grano&quot;: null, &quot;250 g · Molido&quot;: null, &quot;1 kg · En grano&quot;: null, &quot;1 kg · Molido&quot;: null}'
+                 data-tono="#DA9296" data-acento="#2F4156" data-arte="i-bolsa" data-cat="Café en grano">
+          <div class="prod-media" style="--tono:#DA9296">
+            <img class="foto" src="assets/fotos/prod-bolivia.jpg" alt="Bolsa blanca de café de especialidad Bolivia de sepia coffee, con la etiqueta rosada y el sello holográfico" loading="lazy" decoding="async" onerror="this.remove()">
+            <img class="foto alterna" src="assets/fotos/prod-bolivia-2.jpg" alt="La bolsa de Bolivia sobre un tronco de madera, con granos de café al lado" loading="lazy" decoding="async" onerror="this.remove()">
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Bolivia"><use href="#i-bolsa"/></svg>
+            <span class="prod-etq">Nuevo</span>
+            <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
+          </div>
+          <div class="opciones"><div class="opcion" data-eje="Formato"><span class="opcion-et">Formato</span><div class="opcion-chips"><button type="button" data-val="250 g" aria-pressed="true">250 g</button><button type="button" data-val="1 kg" aria-pressed="false">1 kg</button></div></div><div class="opcion" data-eje="Molienda"><span class="opcion-et">Molienda</span><div class="opcion-chips"><button type="button" data-val="En grano" aria-pressed="true">En grano</button><button type="button" data-val="Molido" aria-pressed="false">Molido</button></div></div></div>
+          <div class="prod-info">
+            <h3>Bolivia</h3>
+            <p class="prod-sub">Avellana, cítrico y caramelo</p>
+            <p class="prod-precio pendiente" data-precio-txt>Precio por confirmar</p>
+          </div>
+          <div class="compra" role="group" aria-label="Tipo de compra de Bolivia">
             <button type="button" data-plan="unica" aria-pressed="true">Una vez</button>
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
@@ -2585,7 +2725,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-lata-edicion" data-id="lata-edicion" data-nombre="Lata edición limitada"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-tarro" data-cat="Café en grano">
+                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-lata-cafe" data-cat="Café en grano">
           <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-lata-edicion.jpg" alt="Lata de edición limitada de 200 g de café de sepia coffee" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-lata-edicion-2.jpg" alt="La lata de edición limitada abierta, con el café dentro" loading="lazy" decoding="async" onerror="this.remove()">
@@ -2603,9 +2743,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-      
-      
-        
       </div>
     </div>
   </div>
@@ -2666,11 +2803,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-kit-matcha" data-id="kit-matcha" data-nombre="Kit matcha"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#567C8D" data-arte="i-batidor" data-cat="Kits">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#567C8D" data-acento="#F5EFEB" data-arte="i-batidor" data-cat="Kits">
+          <div class="prod-media" style="--tono:#567C8D">
             <img class="foto" src="assets/fotos/prod-kit-matcha.jpg" alt="Kit de matcha de sepia coffee con batidor de bambú" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-kit-matcha-2.jpg" alt="El kit de matcha con todas sus piezas sobre una mesa" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Kit matcha"><use href="#i-batidor"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Kit matcha"><use href="#i-batidor"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2687,11 +2824,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-kit-cafetero" data-id="kit-cafetero" data-nombre="Kit cafetero"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#567C8D" data-acento="#F5EFEB" data-arte="i-caja" data-cat="Kits">
-          <div class="prod-media" style="--tono:#567C8D">
+                 data-tono="#FFFFFF" data-acento="#2F4156" data-arte="i-caja" data-cat="Kits">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-kit-cafetero.jpg" alt="Kit cafetero de sepia coffee para preparar café de especialidad en casa" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-kit-cafetero-2.jpg" alt="El kit cafetero con todas sus piezas sobre una mesa" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Kit cafetero"><use href="#i-caja"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Kit cafetero"><use href="#i-caja"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2708,11 +2845,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-musette" data-id="musette" data-nombre="Musette"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#2F4156" data-arte="i-caja" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#C8D9E6" data-acento="#567C8D" data-arte="i-musette" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-musette.jpg" alt="Musette de tela de sepia coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-musette-2.jpg" alt="La musette de sepia coffee colgada al hombro" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Musette"><use href="#i-musette"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Musette"><use href="#i-musette"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2729,8 +2866,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-polera" data-id="polera" data-nombre="Polera"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#567C8D" data-arte="i-caja" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#C8D9E6">
+                 data-tono="#FFFFFF" data-acento="#567C8D" data-arte="i-polera" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#FFFFFF">
             <img class="foto" src="assets/fotos/prod-polera.jpg" alt="Polera de algodón de sepia coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-polera-2.jpg" alt="La polera de sepia coffee puesta" loading="lazy" decoding="async" onerror="this.remove()">
             <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Polera"><use href="#i-polera"/></svg>
@@ -2750,11 +2887,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-vaso" data-id="vaso" data-nombre="Vaso"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#C8D9E6" data-arte="i-taza" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-taza" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#C8D9E6">
             <img class="foto" src="assets/fotos/prod-vaso.jpg" alt="Vaso reutilizable de sepia coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-vaso-2.jpg" alt="El vaso de sepia coffee servido con café" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#C8D9E6" role="img" aria-label="Vaso"><use href="#i-taza"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Vaso"><use href="#i-taza"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2768,8 +2905,6 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
             <button type="button" data-plan="susc" aria-pressed="false">Suscripción <span class="ahorro">−15%</span></button>
           </div>
         </article>
-      
-      
       </div>
     </div>
   </div>
@@ -2777,10 +2912,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 <!-- ===================== 05 · COTIZADOR DE EVENTOS =====================
      Dos mesas distintas, con tablas de precio distintas. No se mezclan.
 
-     · MESA CAFETERO: la negra, con máquina espresso. Cambia según QUÉ
+     · MESA CAFETERO: con máquina espresso. Cambia según QUÉ
        SIRVE (solo café / martini y carajillo / las dos cartas) y cuántas
        horas. Con la carta cambia el equipo: 1, 2 o 3 baristas.
-     · MESA MARTINI: la barra clara, sin máquina. Siempre sirve espresso
+     · MESA MARTINI: sin máquina espresso. Siempre sirve espresso
        martini y carajillo juntos, nunca uno solo. Cambia según CUÁNTAS
        MESAS (1, 2 o 3) y cuántas horas. Van 2 baristas por mesa.
 
@@ -2800,9 +2935,17 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       <div class="cot-form">
         <fieldset class="cot-campo">
           <legend>Qué mesa</legend>
-          <div class="cot-chips" role="group" data-cot="mesa">
-            <button type="button" data-val="cafetero" aria-pressed="true">Mesa cafetero</button>
-            <button type="button" data-val="martini" aria-pressed="false">Mesa martini</button>
+          <div class="cot-mesas" role="group" data-cot="mesa">
+            <button type="button" data-val="cafetero" aria-pressed="true">
+              <img src="assets/fotos/mesa-cafetero.jpg" alt="Mesa cafetero de sepia coffee: barra negra con cubierta de madera, molinillo y máquina espresso Rocket" loading="lazy" decoding="async" onerror="this.remove()">
+              <b>Mesa cafetero</b>
+              <em>Con máquina espresso a la vista</em>
+            </button>
+            <button type="button" data-val="martini" aria-pressed="false">
+              <img src="assets/fotos/mesa-martini.jpg" alt="Mesa martini de sepia coffee: barra negra de listones con cubierta de madera, copas y botellas" loading="lazy" decoding="async" onerror="this.remove()">
+              <b>Mesa martini</b>
+              <em>Barra de alto flujo, sin máquina</em>
+            </button>
           </div>
           <p class="cot-ficha" data-cot-ficha></p>
         </fieldset>
@@ -3245,8 +3388,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <h2 class="t-4xl">Hecho en Santiago</h2>
           <p>En sepia coffee nos tomamos en serio lo que tomas todos los días. Compramos lotes chicos
              de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>
-          <p>Creemos que una taza puede ser más que una taza: es la primera cosa buena del día.
-             Por eso cuidamos cada parte del proceso, desde el origen hasta cómo te llega.</p>
+          <p>Trabajamos dos orígenes, Colombia y Bolivia, y cuidamos cada parte del proceso,
+             desde la finca hasta cómo te llega la bolsa.</p>
           <a href="#categorias" class="btn blanco">Conócenos</a>
         </div>
         <div class="editorial-fotos">
@@ -3352,11 +3495,15 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         </details>
         <details>
           <summary>¿Qué formato me conviene si recién empiezo?</summary>
-          <div class="resp"><p>Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres semanas, que es justo el tiempo en que el café está en su mejor momento, y el molido te ahorra comprar molinillo mientras decides.</p><p>El kilo conviene cuando ya sabes que este café te gusta, o si en la casa se toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a ese volumen la diferencia de frescura se nota.</p><p class="resp-cta"><a href="#producto-colombia">Ver el Colombia<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></a></p></div>
+          <div class="resp"><p>Los 250 g molidos para tu método. Es la cantidad que se toma en dos o tres semanas, que es justo el tiempo en que el café está en su mejor momento, y el molido te ahorra comprar molinillo mientras decides.</p><p>El kilo conviene cuando ya sabes cuál de los dos te gusta, o si en la casa se toma más de una taza al día. Si vas a comprar el kilo, pídelo en grano: a ese volumen la diferencia de frescura se nota.</p><p class="resp-cta"><a href="#producto-colombia">Ver el Colombia<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></a></p></div>
         </details>
         <details>
-          <summary>¿Por qué tienen un solo café?</summary>
-          <div class="resp"><p>Porque preferimos hacer uno bien antes que cinco a medias. Trabajamos un origen de Colombia, lo tostamos nosotros y ajustamos el tueste a ese grano en particular.</p><p>Tener una sola referencia también significa que el lote rota rápido: lo que te llega es café recién tostado, no una bolsa que llevaba meses esperando en una bodega.</p><p class="resp-cta"><a href="#producto-colombia">Ver el Colombia<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></a></p></div>
+          <summary>¿Cuál es la diferencia entre el Colombia y el Bolivia?</summary>
+          <div class="resp"><p>Los dos son de tueste medio y los tostamos nosotros, pero saben distinto.</p><p><b>Colombia:</b> vainilla, frutos secos y cacao. Es el más parejo de los dos, dulce y de poca acidez. Funciona igual de bien en espresso que en filtro, así que es el que recomendamos si recién entras al café de especialidad o si en la casa toma más de una persona.</p><p><b>Bolivia:</b> avellana, cítrico y caramelo. Tiene más acidez y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Si ya te gusta un café con más carácter, parte por este.</p><p>Si no te decides, pide los dos en 250 g: alcanzan a durar las semanas en que el café está en su mejor momento y los comparas en la misma semana.</p><p class="resp-cta"><a href="#cafes">Ver los cafés<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></a></p></div>
+        </details>
+        <details>
+          <summary>¿Por qué tienen solo dos cafés?</summary>
+          <div class="resp"><p>Porque preferimos hacer dos bien antes que diez a medias. Trabajamos un origen de Colombia y uno de Bolivia, los tostamos nosotros y ajustamos el tueste a cada grano en particular.</p><p>Tener pocas referencias también significa que los lotes rotan rápido: lo que te llega es café recién tostado, no una bolsa que llevaba meses esperando en una bodega.</p><p class="resp-cta"><a href="#cafes">Ver los cafés<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></a></p></div>
         </details>
       </div>
     </div>
@@ -3970,8 +4117,8 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
       $$("[data-solo]", sec).forEach(function(f){ f.hidden = f.dataset.solo !== estado.mesa; });
 
       $("[data-cot-ficha]", sec).textContent = c.esCafetero
-        ? "La negra, con máquina espresso a la vista. Es la más lenta y la más romántica."
-        : "La barra clara, sin máquina espresso. Está armada para alto flujo.";
+        ? "Lleva molinillo y máquina espresso: todo se prepara a la vista. Es la más lenta de las dos y la más romántica."
+        : "Sin máquina espresso. Está armada para alto flujo: sirve rápido cuando hay mucha gente junta.";
       $("[data-cot-detalle]", sec).textContent = c.detalle;
 
       $("[data-cot-mesa]", sec).textContent = c.mesa;

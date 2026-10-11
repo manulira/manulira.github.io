@@ -33,8 +33,6 @@ no hay cafetería abierta al público.
 ellos mismos en Santiago** y despachan recién tostado. El tueste propio es
 un diferenciador real y hay que usarlo, no dejarlo al pasar.
 
-**Lema:** La primera cosa buena del día.
-
 ### Personalidad
 - **Tono:** Cálido pero contenido. Nunca efusivo, nunca frío.
 - **Voz:** Directa, elegante, con personalidad. Evitar jerga técnica de café

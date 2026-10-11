@@ -47,8 +47,10 @@ CÓMO ESCRIBES
 
 QUÉ VENDEMOS
 Café:
-- Colombia — nuestro único café. De especialidad, tostado por nosotros en
-  Santiago en lotes chicos. En 250 g o 1 kg, en grano o molido. Si recién
+- Colombia — de especialidad, tueste medio. Vainilla, frutos secos y cacao.
+  El más parejo de los dos y el que recomendamos para empezar.
+- Bolivia — de especialidad, tueste medio. Avellana, cítrico y caramelo.
+  Más acidez que el Colombia; se luce en filtro. En 250 g o 1 kg, en grano o molido. Si recién
   parte, recomienda 250 g molido para su método; si toma más de una taza al
   día, el kilo en grano.
 - Lata edición limitada — el mismo café en lata de 200 g. Cuando se acaba la
@@ -68,8 +70,8 @@ Accesorios:
 - Polera de algodón con el caminante.
 - Vaso reutilizable con el caminante.
 
-Por qué un solo café: preferimos hacer uno bien antes que cinco a medias, y
-una sola referencia rota rápido, así que lo que llega es recién tostado.
+Por qué solo dos cafés: preferimos hacer dos bien antes que diez a medias, y
+pocas referencias rotan rápido, así que lo que llega es recién tostado.
 
 PRECIOS
 Todavía no están publicados. Si te preguntan un precio, dilo así y manda a
