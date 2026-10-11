@@ -42,8 +42,8 @@ PRODUCTOS = [
   "que en filtro. Si recién entras al café de especialidad, parte por acá. "
   "Lo eliges en grano o molido para tu método.",
   [TAMANO_CAFE, MOLIENDA],
-  {"250 g · En grano": None, "250 g · Molido": None,
-   "1 kg · En grano": None,  "1 kg · Molido": None},
+  {"250 g · En grano": 11990, "250 g · Molido": 11990,
+   "1 kg · En grano": 37990,  "1 kg · Molido": 37990},
   "Más vendido", True),
 
  ("bolivia", "Bolivia", "Café en grano", "i-bolsa",
@@ -54,8 +54,8 @@ PRODUCTOS = [
   "nota cítrica que se abre sobre todo en filtro, donde más se luce. "
   "Lo eliges en grano o molido para tu método.",
   [TAMANO_CAFE, MOLIENDA],
-  {"250 g · En grano": None, "250 g · Molido": None,
-   "1 kg · En grano": None,  "1 kg · Molido": None},
+  {"250 g · En grano": 11990, "250 g · Molido": 11990,
+   "1 kg · En grano": 37990,  "1 kg · Molido": 37990},
   "Nuevo", True),
 
  ("matcha", "Matcha", "Matcha", "i-tarro",
@@ -177,3 +177,41 @@ EVENTO_MIN_PERSONAS = 80      # bajo esto se aplica el descuento
 EVENTO_MAX_PERSONAS = 500     # sobre esto se cotiza aparte
 EVENTO_DESCUENTO = 40         # % bajo 80 personas
 EVENTO_ABONO = 50             # % para reservar la fecha
+
+# --------------------------------------------------------------- COMPARAR
+# La tabla «¿Cuál me conviene?». Es el formato que un asistente cita casi
+# textual cuando alguien pregunta cuál llevar, porque la respuesta ya está
+# resuelta en una fila. El precio sale de las variantes, no se escribe acá.
+#
+# id -> (qué es, cómo se prepara, elígelo si)
+# Los productos que no estén en este diccionario no salen en la tabla.
+COMPARAR = {
+ "colombia": (
+   "Café de especialidad en grano o molido, 250 g o 1 kg",
+   "Filtro, prensa francesa, italiana o espresso",
+   "Quieres un café parejo y dulce, que funcione en cualquier método"),
+ "bolivia": (
+   "Café de especialidad en grano o molido, 250 g o 1 kg",
+   "Se luce en filtro; también va en espresso",
+   "Ya te gusta el café y buscas más acidez y una nota cítrica"),
+ "lata-edicion": (
+   "Café en lata de 200 g, edición limitada",
+   "Igual que los otros dos",
+   "Lo quieres de regalo, o quieres quedarte con la lata"),
+ "matcha": (
+   "Matcha en polvo, lata de 30 g o sobre de 80 g",
+   "Tamizar y batir con agua a 80 °C",
+   "Buscas energía más pareja, o reemplazar el segundo café del día"),
+ "kit-matcha": (
+   "El matcha más el batidor de bambú",
+   "Trae todo lo necesario",
+   "Partes de cero y no quieres comprar las cosas por separado"),
+ "kit-cafetero": (
+   "El equipo para preparar café de especialidad en casa",
+   "Trae todo lo necesario",
+   "Te estás metiendo en el café y no sabes qué equipo comprar"),
+ "musette": (
+   "Bolso de hombro de tela, un bolsillo",
+   "—",
+   "Quieres llevar la marca puesta sin que sea una polera"),
+}

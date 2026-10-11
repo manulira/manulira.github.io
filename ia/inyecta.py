@@ -37,6 +37,9 @@ SECCIONES = [
 # el div. Cada producto va en uno solo, así que no se duplican los id.
 PISTAS = ["cafes", "packs"]
 
+# El cuerpo de la tabla comparativa: solo las filas, no el <tbody>.
+TBODY = "<tbody>"
+
 
 def bloques_ld(texto):
     sitios, desde = [], 0
@@ -94,6 +97,13 @@ def main():
         pagina = pagina[:ini] + "\n" + trozo + "\n      " + pagina[fin:]
         print("  carrusel %-6s       %d tarjetas"
               % (pista, trozo.count('<article class="prod"')))
+
+    # ---- las filas de la tabla comparativa
+    ini = pagina.index(TBODY, pagina.index('id="comparar"')) + len(TBODY)
+    fin = pagina.index("</tbody>", ini)
+    filas = leer("parte_comparar.html").rstrip("\n")
+    pagina = pagina[:ini] + "\n" + filas + "\n          " + pagina[fin:]
+    print("  %-22s %d filas" % ("parte_comparar.html", filas.count("<tr>")))
 
     # ---- los tres JSON-LD, de abajo hacia arriba
     sitios = bloques_ld(pagina)

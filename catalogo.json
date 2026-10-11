@@ -39,23 +39,23 @@
       "variantes": [
         {
           "variante": "250 g · En grano",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 11990,
+          "precio_confirmado": true
         },
         {
           "variante": "250 g · Molido",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 11990,
+          "precio_confirmado": true
         },
         {
           "variante": "1 kg · En grano",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 37990,
+          "precio_confirmado": true
         },
         {
           "variante": "1 kg · Molido",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 37990,
+          "precio_confirmado": true
         }
       ],
       "activo": true,
@@ -87,23 +87,23 @@
       "variantes": [
         {
           "variante": "250 g · En grano",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 11990,
+          "precio_confirmado": true
         },
         {
           "variante": "250 g · Molido",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 11990,
+          "precio_confirmado": true
         },
         {
           "variante": "1 kg · En grano",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 37990,
+          "precio_confirmado": true
         },
         {
           "variante": "1 kg · Molido",
-          "precio": null,
-          "precio_confirmado": false
+          "precio": 37990,
+          "precio_confirmado": true
         }
       ],
       "activo": true,

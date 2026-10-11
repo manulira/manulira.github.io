@@ -9,7 +9,7 @@ from datos import (PRODUCTOS as TODOS, CATEGORIAS, SITIO, ENVIO_GRATIS,
                    ENVIO_REDUCIDO, SUSCRIPCION_DESC,
                    MESA_CAFETERO, MESA_MARTINI, BARISTAS_POR_MESA_MARTINI,
                    EVENTO_MIN_PERSONAS, EVENTO_MAX_PERSONAS,
-                   EVENTO_DESCUENTO, EVENTO_ABONO)
+                   EVENTO_DESCUENTO, EVENTO_ABONO, COMPARAR)
 
 # Solo los activos salen a la página y al JSON-LD. Los inactivos se
 # quedan en py y aparecen en catalogo.json marcados como tales.
@@ -119,6 +119,34 @@ def tarjetas(lista=None):
             alt=esc(ALT.get(pid, nombre)), alt2=esc(ALT2.get(pid, "")),
             etiqueta=etiqueta, boton=boton, chips=chips, desc=SUSCRIPCION_DESC))
     return "\n".join(out)
+
+def comparativa():
+    """La tabla «¿Cuál me conviene?», con el precio sacado de las variantes."""
+    filas = []
+    for p in PRODUCTOS:
+        pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo = p
+        if pid not in COMPARAR:
+            continue
+        que, como, elige = COMPARAR[pid]
+        precios = [v for v in variantes.values() if v is not None]
+        if not precios:
+            precio = "Por confirmar"
+        elif len(set(precios)) == 1:
+            precio = clp(precios[0])
+        else:
+            precio = "Desde " + clp(min(precios))
+        pildora = ('<span class="pildora">%s</span>' % esc(etq)) if etq else ""
+        filas.append(
+            '            <tr>\n'
+            '              <th scope="row">%s %s</th>\n'
+            '              <td data-etq="Qué es">%s</td>\n'
+            '              <td data-etq="Cómo se prepara">%s</td>\n'
+            '              <td data-etq="Elígelo si…">%s</td>\n'
+            '              <td data-etq="Precio" class="precio">%s</td>\n'
+            '            </tr>'
+            % (esc(nombre), pildora, esc(que), esc(como), esc(elige), precio))
+    return "\n".join(filas)
+
 
 ALT = {
  "colombia": "Bolsa blanca de café de especialidad Colombia de sepia coffee, con la etiqueta naranja y el sello holográfico",
@@ -384,6 +412,9 @@ def main():
         })
     io.open(os.path.join(RAIZ, "catalogo.json"), "w", encoding="utf-8").write(
         json.dumps(feed, ensure_ascii=False, indent=2) + "\n")
+
+    io.open(os.path.join(AQUI, "parte_comparar.html"), "w",
+            encoding="utf-8").write(comparativa() + "\n")
 
     for pista, cats in CARRUSELES:
         suyos = [p for p in PRODUCTOS if p[2] in cats]
