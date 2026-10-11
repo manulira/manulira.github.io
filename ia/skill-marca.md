@@ -30,8 +30,9 @@ logo** va en minúsculas, que es como está dibujado y como sale impreso en las
 bolsas. Una cosa es cómo se escribe la marca y otra cómo se dibuja.
 
 **Categoría:** Café de especialidad y matcha — lujo accesible
-**Mercado:** Santiago, Chile. Despacho a todo el país. **Solo venta online**,
-no hay cafetería abierta al público.
+**Mercado:** Santiago, Chile. Despacho a todo el país. Hoy es **solo venta
+online**, con retiro en Tabancura. La cafetería está anunciada pero todavía
+no abre, así que se habla de ella en futuro.
 **Dominio:** sepiacoffee.cl
 
 **Qué hacen:** compran lotes chicos de fincas que pueden nombrar, **tuestan
@@ -196,6 +197,12 @@ delantales, totes, tumblers.
 
 ## 5. Guardrails
 
+> **La cafetería.** En octubre de 2026 la marca anunció que viene una
+> cafetería Sepia Coffee, con la bajada «donde la velocidad y la calidad no
+> se transan». Hasta que abra, se habla de ella siempre en futuro: la venta
+> hoy es en línea, y Tabancura es punto de retiro, no local. La regla
+> anterior prohibía mencionarla del todo; ya no.
+
 | ❌ Evitar | ✅ En cambio |
 |---|---|
 | Paleta vino y crema (identidad vieja) | Los cinco colores azules y beige |
@@ -203,7 +210,7 @@ delantales, totes, tumblers.
 | «sepia coffee» en texto, «Sepia Coffee Co», «SEPIA» | **Sepia Coffee**, con S y C mayúsculas |
 | Grano de café como punto de la i | El caminante |
 | Voseo rioplatense | Tuteo chileno |
-| Prometer cafetería o local físico | Solo venta online, despacho a todo Chile |
+| Hablar de la cafetería como si ya estuviera abierta | «Próximamente»: hoy la venta es solo en línea, con despacho a todo Chile y retiro en Tabancura |
 | Colores brillantes o neones | Paleta desaturada |
 | Copy hype o exagerado | Directa, confiada, concisa |
 | Inventar precios, reseñas o direcciones | Dejar el dato pendiente y marcarlo |
