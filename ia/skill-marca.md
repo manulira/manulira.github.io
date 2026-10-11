@@ -1,11 +1,11 @@
 ---
 name: sepia-coffee-brand
-description: ADN completo de sepia coffee para crear contenido de marca 100% alineado sin necesidad de contexto adicional. Usar SIEMPRE que el usuario pida cualquier cosa relacionada con sepia coffee - copy, social media, brandbook, mockups visuales, merchandising, prompts de imagen, packaging, naming, taglines, guías de estilo, web, o cualquier material de comunicación de la marca. También usar cuando el usuario mencione "sepia", "la marca de café", "el brandbook", "el Instagram de sepia", o pida contenido de especialidad para café o matcha. No esperar a que el usuario diga explícitamente "usa el skill de sepia" - si el contexto es de marca sepia coffee, cargar este skill y aplicarlo.
+description: ADN completo de Sepia Coffee para crear contenido de marca 100% alineado sin necesidad de contexto adicional. Usar SIEMPRE que el usuario pida cualquier cosa relacionada con Sepia Coffee - copy, social media, brandbook, mockups visuales, merchandising, prompts de imagen, packaging, naming, taglines, guías de estilo, web, o cualquier material de comunicación de la marca. También usar cuando el usuario mencione "sepia", "la marca de café", "el brandbook", "el Instagram de sepia", o pida contenido de especialidad para café o matcha. No esperar a que el usuario diga explícitamente "usa el skill de sepia" - si el contexto es de marca Sepia Coffee, cargar este skill y aplicarlo.
 ---
 
-# sepia coffee — Brand Skill
+# Sepia Coffee — Brand Skill
 
-Todo el ADN de sepia coffee. Siempre que generes contenido para esta marca,
+Todo el ADN de Sepia Coffee. Siempre que generes contenido para esta marca,
 este documento es la fuente de verdad.
 
 > **Actualizado en octubre de 2026.** Esta versión reemplaza la identidad
@@ -18,11 +18,16 @@ este documento es la fuente de verdad.
 
 ## 1. Identidad de marca
 
-**Nombre:** sepia coffee
+**Nombre:** Sepia Coffee
 
-**Siempre en minúsculas, siempre las dos palabras.** Nunca «Sepia Coffee»,
-nunca «SEPIA», nunca «Sepia Coffee Co», nunca solo «sepia» en un titular.
-Esta regla no tiene excepciones, ni al principio de una oración.
+**En texto se escribe «Sepia Coffee», con S y C mayúsculas, siempre las dos
+palabras.** Nunca «SEPIA», nunca «Sepia Coffee Co», nunca solo «Sepia» en un
+titular. Lo pidió el dueño de la marca en octubre de 2026; antes la regla era
+al revés, todo en minúsculas, y quedó obsoleta.
+
+Ojo con la distinción: lo anterior es para el **texto**. El **wordmark del
+logo** va en minúsculas, que es como está dibujado y como sale impreso en las
+bolsas. Una cosa es cómo se escribe la marca y otra cómo se dibuja.
 
 **Categoría:** Café de especialidad y matcha — lujo accesible
 **Mercado:** Santiago, Chile. Despacho a todo el país. **Solo venta online**,
@@ -54,7 +59,7 @@ Santiago · Tueste propio · Artesanal · Accesible
 
 ### Logo
 
-El wordmark es **sepia coffee** en minúsculas, en tipografía display
+El wordmark es **Sepia Coffee** en minúsculas, en tipografía display
 redondeada. El punto de la **i** no es un punto: es un **caminante**, una
 figura de cabeza redonda y dos piernas en zancada. La cabeza hace de punto y
 las piernas cruzan el trazo de la i.
@@ -176,7 +181,7 @@ delantales, totes, tumblers.
 |---|---|
 | Paleta vino y crema (identidad vieja) | Los cinco colores azules y beige |
 | Serif editorial, Playfair | Poppins y DM Sans |
-| «Sepia Coffee Co», «Sepia», «SEPIA» | **sepia coffee**, siempre en minúsculas |
+| «sepia coffee» en texto, «Sepia Coffee Co», «SEPIA» | **Sepia Coffee**, con S y C mayúsculas |
 | Grano de café como punto de la i | El caminante |
 | Voseo rioplatense | Tuteo chileno |
 | Prometer cafetería o local físico | Solo venta online, despacho a todo Chile |

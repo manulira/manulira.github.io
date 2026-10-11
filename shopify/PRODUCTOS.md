@@ -50,14 +50,14 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 
 ---
 
-## Bolivia
+## Bolivia Yungas
 
 **Título**  
-`Bolivia`
+`Bolivia Yungas`
 
 **Descripción**
 
-> Café de especialidad de Bolivia, de tueste medio. En taza: avellana, cítrico y caramelo. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Tiene más acidez que el Colombia y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Lo eliges en grano o molido para tu método.
+> Café de especialidad de Yungas, Bolivia, de tueste medio ligero. En taza: cacao, cítricos, avellana y caramelo. Los Yungas son la ceja de selva boliviana, donde la cordillera baja hacia el Amazonas: a 1.700 metros el grano madura lento y guarda más acidez. Variedades Caturra, Typica y Catuai, proceso lavado. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Tiene más acidez que el Colombia y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Lo eliges en grano o molido para tu método.
 
 **Categoría del producto**  
 `Café en grano`
@@ -79,7 +79,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 **Etiquetas**
 
 ```
-sub:Avellana, cítrico y caramelo, tono:#FFFFFF, acento:#2F4156, arte:bolsa, etq:Nuevo
+sub:Cacao, cítricos, avellana y caramelo, tono:#FFFFFF, acento:#2F4156, arte:bolsa, etq:Nuevo
 ```
 
 **Foto**  
@@ -238,7 +238,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 
 **Descripción**
 
-> Musette de tela con el caminante de sepia coffee. Liviana, de un solo bolsillo y correa larga: la de salir a comprar el pan y volver con el café.
+> Musette de tela con el caminante de Sepia Coffee. Liviana, de un solo bolsillo y correa larga: la de salir a comprar el pan y volver con el café.
 
 **Categoría del producto**  
 `Accesorios`
@@ -265,7 +265,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 
 **Descripción**
 
-> Polera de algodón con el caminante de sepia coffee.
+> Polera de algodón con el caminante de Sepia Coffee.
 
 **Categoría del producto**  
 `Accesorios`
@@ -292,7 +292,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 
 **Descripción**
 
-> Vaso reutilizable con el caminante de sepia coffee. Para el café de la mañana o para el matcha helado de la tarde.
+> Vaso reutilizable con el caminante de Sepia Coffee. Para el café de la mañana o para el matcha helado de la tarde.
 
 **Categoría del producto**  
 `Accesorios`

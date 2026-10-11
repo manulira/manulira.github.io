@@ -682,7 +682,7 @@
     "@context": "https://schema.org",
     "@type": ["Organization", "OnlineStore"],
     "@id": {{ shop.url | append: '/#tienda' | json }},
-    "name": {{ shop.name | default: "sepia coffee" | json }},
+    "name": {{ shop.name | default: "Sepia Coffee" | json }},
     "url": {{ shop.url | append: '/' | json }},
     {%- assign ld_desc = section.settings.ld_descripcion | default: shop.description | strip_html | strip_newlines -%}
     {%- if ld_desc != blank %}
@@ -772,7 +772,7 @@
    <rect x="32" y="106" width="136" height="84" fill="var(--acento,#2F4156)"/>
    <path d="M32 106h136v3H32z" fill="#2F4156" opacity=".14"/>
    <text x="100" y="153" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700"
-         font-size="18" letter-spacing="-.4" fill="#F5EFEB">sepia coffee</text>
+         font-size="18" letter-spacing="-.4" fill="#F5EFEB">Sepia Coffee</text>
    <circle cx="100" cy="214" r="21" fill="#F5EFEB"/>
    <g transform="translate(89,201) scale(.104)" style="color:#2F4156">
      <use href="#s2-i-caminante-solido"/>
@@ -788,7 +788,7 @@
    <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="url(#s2-g-vidrio)"/>
    <rect x="80" y="8" width="40" height="16" rx="5" fill="#2F4156" opacity=".82"/>
    <rect x="58" y="120" width="84" height="76" fill="#F5EFEB"/>
-   <text x="100" y="150" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11.5" font-weight="700" letter-spacing="-.25" fill="#2F4156">sepia coffee</text>
+   <text x="100" y="150" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11.5" font-weight="700" letter-spacing="-.25" fill="#2F4156">Sepia Coffee</text>
    <text x="100" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#2F4156" opacity=".65">COLD BREW</text>
    <path d="M58 214h84" stroke="#2F4156" stroke-width="1" opacity=".18"/>
    <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#F5EFEB" opacity=".8">1 LITRO</text>
@@ -809,7 +809,7 @@
    </g>
    <!-- Textos en Navy -->
    <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">sepia coffee</text>
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">Sepia Coffee</text>
    <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
          font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">MATCHA</text>
    <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
@@ -856,7 +856,7 @@
    </g>
    <!-- Textos en Navy -->
    <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">sepia coffee</text>
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">Sepia Coffee</text>
    <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
          font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">CAFÉ DE ORIGEN</text>
    <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
@@ -908,7 +908,7 @@
      <use href="#s2-i-caminante-solido"/>
    </g>
    <text x="100" y="166" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="12" font-weight="700" letter-spacing="-.2" fill="#F5EFEB">sepia coffee</text>
+         font-size="12" font-weight="700" letter-spacing="-.2" fill="#F5EFEB">Sepia Coffee</text>
    <text x="100" y="184" text-anchor="middle" font-family="DM Sans,sans-serif"
          font-size="7.5" letter-spacing="2.2" fill="#F5EFEB" opacity=".8">COLD BREW</text>
    <path d="M70 198h60" stroke="#F5EFEB" stroke-width="1" opacity=".3"/>
@@ -2421,7 +2421,7 @@
       var agregados = [];
       if(c.hayBarra && estado.iced) agregados.push("iced coffee");
       if(c.hayBarra && estado.coldfoam) agregados.push("cold brew con cold foam");
-      var msg = "Hola, quiero cotizar un evento con sepia coffee.\n\n" +
+      var msg = "Hola, quiero cotizar un evento con Sepia Coffee.\n\n" +
         "Servicio: " + servicio + "\n" +
         "Invitados: " + c.personas + "\n" +
         "Horas: " + c.horas + "\n" +
@@ -2508,7 +2508,7 @@
       "type": "text",
       "id": "marca_texto",
       "label": "Nombre en texto",
-      "default": "sepia coffee"
+      "default": "Sepia Coffee"
     },
     {
       "type": "header",
@@ -2704,7 +2704,7 @@
       "type": "richtext",
       "id": "edi_texto",
       "label": "Texto",
-      "default": "<p>En sepia coffee nos tomamos en serio lo que tomas todos los días. Compramos lotes chicos de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>"
+      "default": "<p>En Sepia Coffee nos tomamos en serio lo que tomas todos los días. Compramos lotes chicos de fincas que podemos nombrar, los tostamos acá y los despachamos recién tostados.</p>"
     },
     {
       "type": "text",
@@ -2883,7 +2883,7 @@
       "type": "text",
       "id": "comp_leyenda",
       "label": "Leyenda de la tabla",
-      "default": "Comparativa de los productos de sepia coffee.",
+      "default": "Comparativa de los productos de Sepia Coffee.",
       "info": "La leen los rastreadores para entender de qué es la tabla."
     },
     {

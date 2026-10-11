@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Catálogo real de sepia coffee. Fuente única de verdad.
+"""Catálogo real de Sepia Coffee. Fuente única de verdad.
 
 De acá salen el JSON-LD de index.html y catalogo.json. Si cambia un precio
 o entra un producto, se cambia acá y se vuelve a generar: así la página y
@@ -46,10 +46,13 @@ PRODUCTOS = [
    "1 kg · En grano": 37990,  "1 kg · Molido": 37990},
   "Más vendido", True),
 
- ("bolivia", "Bolivia", "Café en grano", "i-bolsa",
-  "Avellana, cítrico y caramelo",
-  "Café de especialidad de Bolivia, de tueste medio. En taza: avellana, "
-  "cítrico y caramelo. Lo tostamos nosotros en Santiago, en lotes chicos, "
+ ("bolivia", "Bolivia Yungas", "Café en grano", "i-bolsa",
+  "Cacao, cítricos, avellana y caramelo",
+  "Café de especialidad de Yungas, Bolivia, de tueste medio ligero. En taza: "
+  "cacao, cítricos, avellana y caramelo. Los Yungas son la ceja de selva "
+  "boliviana, donde la cordillera baja hacia el Amazonas: a 1.700 metros el "
+  "grano madura lento y guarda más acidez. Variedades Caturra, Typica y "
+  "Catuai, proceso lavado. Lo tostamos nosotros en Santiago, en lotes chicos, "
   "y lo despachamos recién tostado. Tiene más acidez que el Colombia y una "
   "nota cítrica que se abre sobre todo en filtro, donde más se luce. "
   "Lo eliges en grano o molido para tu método.",
@@ -103,7 +106,7 @@ PRODUCTOS = [
 
  ("musette", "Musette", "Accesorios", "i-musette",
   "Bolso de hombro",
-  "Musette de tela con el caminante de sepia coffee. Liviana, de un solo "
+  "Musette de tela con el caminante de Sepia Coffee. Liviana, de un solo "
   "bolsillo y correa larga: la de salir a comprar el pan y volver con el "
   "café.",
   [],
@@ -112,14 +115,14 @@ PRODUCTOS = [
 
  ("polera", "Polera", "Accesorios", "i-polera",
   "Algodón, con el caminante",
-  "Polera de algodón con el caminante de sepia coffee.",
+  "Polera de algodón con el caminante de Sepia Coffee.",
   [],
   {"": None},
   None, True),
 
  ("vaso", "Vaso", "Accesorios", "i-taza",
   "Reutilizable",
-  "Vaso reutilizable con el caminante de sepia coffee. Para el café de la "
+  "Vaso reutilizable con el caminante de Sepia Coffee. Para el café de la "
   "mañana o para el matcha helado de la tarde.",
   [],
   {"": None},
@@ -129,8 +132,10 @@ PRODUCTOS = [
 # Categorías en el orden en que se muestran
 CATEGORIAS = ["Café en grano", "Matcha", "Cold brew", "Kits", "Accesorios"]
 
-ENVIO_REDUCIDO = 0   # ya no hay tramo intermedio
-ENVIO_GRATIS = 50000
+# Despacho: tarifa plana por zona, y gratis desde cierto monto en todo Chile.
+ENVIO_RM = 3000        # Región Metropolitana
+ENVIO_REGIONES = 4000  # el resto del país
+ENVIO_GRATIS = 50000   # desde acá no se cobra despacho, en ninguna zona
 SUSCRIPCION_DESC = 15
 
 # ---------------------------------------------------------------- EVENTOS

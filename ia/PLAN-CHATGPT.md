@@ -1,4 +1,4 @@
-# Plan para optimizar la presencia de sepia coffee en ChatGPT
+# Plan para optimizar la presencia de Sepia Coffee en ChatGPT
 
 Los 10 puntos del plan, con lo que ya quedó hecho en el código y lo que
 depende de vos. Lo marcado **(tuyo)** no lo puedo hacer yo: necesita tus
@@ -144,7 +144,7 @@ Hecho:
 - Texto alternativo descriptivo y con contexto en todas las imágenes. Antes
   el `alt` repetía el nombre del producto, que ya estaba en el título; ahora
   dice qué se ve («Lata celeste de 80 g de matcha ceremonial orgánico de
-  sepia coffee»).
+  Sepia Coffee»).
 - Nombres de archivo descriptivos, listados en `assets/fotos/LEEME.md`.
 - `loading="lazy"` y `decoding="async"` donde corresponde.
 - La imagen del hero declarada como `og:image` con su propio `alt`.

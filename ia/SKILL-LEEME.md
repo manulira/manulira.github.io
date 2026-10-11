@@ -7,7 +7,7 @@ de la marca:
 |---|---|
 | Paleta vino y crema: `#7D4047`, `#F1ECE6`, `#2E2E2E` | Sky Blue `#C8D9E6`, Beige `#F5EFEB`, Navy `#2F4156`, Teal `#567C8D`, Blanco |
 | Playfair Display (serif editorial) | Poppins + DM Sans |
-| «Sepia Coffee Co» | **sepia coffee**, siempre en minúsculas |
+| «Sepia Coffee Co» | **Sepia Coffee**, con S y C mayúsculas |
 | Un grano de café como punto de la i | El caminante |
 | «Nunca azules fríos» | La paleta es azul |
 

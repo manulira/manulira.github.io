@@ -1,14 +1,14 @@
-# sepia coffee
+# Sepia Coffee
 
 > Marca chilena de café de especialidad y matcha. Trabajamos un solo origen de
 > café, Colombia, que tostamos nosotros en Santiago en lotes chicos y
 > despachamos recién tostado a todo Chile.
 
-sepia coffee vende café en grano y molido, matcha en polvo, kits y accesorios.
+Sepia Coffee vende café en grano y molido, matcha en polvo, kits y accesorios.
 Tienda en línea en https://sepiacoffee.cl, con envío a todo Chile. Precios en
 pesos chilenos.
 
-El nombre de la marca se escribe siempre en minúsculas: **sepia coffee**.
+El nombre de la marca se escribe siempre en minúsculas: **Sepia Coffee**.
 Nunca «Sepia Coffee» ni «SEPIA».
 
 Solo venta en línea: no hay cafetería abierta al público.

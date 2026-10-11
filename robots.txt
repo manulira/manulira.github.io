@@ -1,5 +1,5 @@
 # ============================================================
-# sepia coffee — https://sepiacoffee.cl
+# Sepia Coffee — https://sepiacoffee.cl
 #
 # Punto 3 del plan: REVISAR EL ACCESO.
 # Si bloqueas los rastreadores, ChatGPT y los demás asistentes

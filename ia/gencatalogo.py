@@ -6,7 +6,7 @@
 """
 import io, json, os, html, datetime
 from datos import (PRODUCTOS as TODOS, CATEGORIAS, SITIO, ENVIO_GRATIS,
-                   ENVIO_REDUCIDO, SUSCRIPCION_DESC,
+                   ENVIO_RM, ENVIO_REGIONES, SUSCRIPCION_DESC,
                    MESA_CAFETERO, MESA_MARTINI, BARISTAS_POR_MESA_MARTINI,
                    EVENTO_MIN_PERSONAS, EVENTO_MAX_PERSONAS,
                    EVENTO_DESCUENTO, EVENTO_ABONO, COMPARAR)
@@ -149,15 +149,15 @@ def comparativa():
 
 
 ALT = {
- "colombia": "Bolsa blanca de café de especialidad Colombia de sepia coffee, con la etiqueta naranja y el sello holográfico",
- "bolivia": "Bolsa blanca de café de especialidad Bolivia de sepia coffee, con la etiqueta rosada y el sello holográfico",
- "matcha": "Lata celeste de 30 g de matcha en polvo de sepia coffee",
- "lata-edicion": "Lata de edición limitada de 200 g de café de sepia coffee",
- "kit-matcha": "Kit de matcha de sepia coffee con batidor de bambú",
- "kit-cafetero": "Kit cafetero de sepia coffee para preparar café de especialidad en casa",
- "musette": "Musette de tela de sepia coffee con el caminante",
- "polera": "Polera de algodón de sepia coffee con el caminante",
- "vaso": "Vaso reutilizable de sepia coffee con el caminante",
+ "colombia": "Bolsa blanca de café de especialidad Colombia de Sepia Coffee, con la etiqueta naranja y el sello holográfico",
+ "bolivia": "Bolsa blanca de café de especialidad Bolivia de Sepia Coffee, con la etiqueta rosada y el sello holográfico",
+ "matcha": "Lata celeste de 30 g de matcha en polvo de Sepia Coffee",
+ "lata-edicion": "Lata de edición limitada de 200 g de café de Sepia Coffee",
+ "kit-matcha": "Kit de matcha de Sepia Coffee con batidor de bambú",
+ "kit-cafetero": "Kit cafetero de Sepia Coffee para preparar café de especialidad en casa",
+ "musette": "Musette de tela de Sepia Coffee con el caminante",
+ "polera": "Polera de algodón de Sepia Coffee con el caminante",
+ "vaso": "Vaso reutilizable de Sepia Coffee con el caminante",
 }
 ALT2 = {
  "colombia": "La bolsa de Colombia sobre un tronco de madera, con granos de café al lado",
@@ -166,9 +166,9 @@ ALT2 = {
  "lata-edicion": "La lata de edición limitada abierta, con el café dentro",
  "kit-matcha": "El kit de matcha con todas sus piezas sobre una mesa",
  "kit-cafetero": "El kit cafetero con todas sus piezas sobre una mesa",
- "musette": "La musette de sepia coffee colgada al hombro",
- "polera": "La polera de sepia coffee puesta",
- "vaso": "El vaso de sepia coffee servido con café",
+ "musette": "La musette de Sepia Coffee colgada al hombro",
+ "polera": "La polera de Sepia Coffee puesta",
+ "vaso": "El vaso de Sepia Coffee servido con café",
 }
 
 # ================================================================== JSON-LD
@@ -234,18 +234,18 @@ def nodo_producto(p):
 def main():
     productos = [nodo_producto(p) for p in PRODUCTOS]
 
-    marca = {"@type": "Brand", "@id": SITIO + "/#marca", "name": "sepia coffee",
+    marca = {"@type": "Brand", "@id": SITIO + "/#marca", "name": "Sepia Coffee",
              "url": SITIO + "/", "logo": SITIO + "/assets/sepia/logo-principal.png"}
 
     tienda = {
         "@type": ["Organization", "OnlineStore"], "@id": SITIO + "/#tienda",
-        "name": "sepia coffee", "alternateName": "sepiacoffee.cl",
+        "name": "Sepia Coffee", "alternateName": "sepiacoffee.cl",
         "url": SITIO + "/",
         "logo": {"@type": "ImageObject",
                  "url": SITIO + "/assets/sepia/logo-principal.png"},
         "image": SITIO + "/assets/fotos/hero-1.jpg",
         "description": (
-            "sepia coffee es una marca chilena de café de especialidad y matcha. "
+            "Sepia Coffee es una marca chilena de café de especialidad y matcha. "
             "Trabajamos dos orígenes de café, Colombia y Bolivia, que tostamos en "
             "Santiago en lotes chicos y despachamos recién tostados a todo Chile. "
             "Vendemos "
@@ -263,7 +263,7 @@ def main():
 
     catalogo = {
         "@type": "OfferCatalog", "@id": SITIO + "/#catalogo",
-        "name": "Catálogo sepia coffee", "numberOfItems": len(productos),
+        "name": "Catálogo Sepia Coffee", "numberOfItems": len(productos),
         # Solo las categorías que hoy tienen algún producto activo: una
         # categoría vacía en el JSON-LD es ruido para el rastreador.
         "itemListElement": [
@@ -278,8 +278,9 @@ def main():
         "@type": "OfferShippingDetails", "@id": SITIO + "/#envio-gratis",
         "shippingRate": {"@type": "MonetaryAmount", "value": "0", "currency": "CLP"},
         "shippingDestination": {"@type": "DefinedRegion", "addressCountry": "CL"},
-        "description": "Envío gratis a todo Chile en compras sobre %s. Envío con "
-                       "descuento sobre %s." % (clp(ENVIO_GRATIS), clp(ENVIO_REDUCIDO)),
+        "description": "Envío gratis a todo Chile en compras sobre %s. Bajo ese "
+                       "monto, %s en la Región Metropolitana y %s en regiones."
+                       % (clp(ENVIO_GRATIS), clp(ENVIO_RM), clp(ENVIO_REGIONES)),
     }
 
     devoluciones = {
@@ -294,7 +295,7 @@ def main():
     }
 
     sitio = {"@type": "WebSite", "@id": SITIO + "/#sitio", "url": SITIO + "/",
-             "name": "sepia coffee", "inLanguage": "es-CL",
+             "name": "Sepia Coffee", "inLanguage": "es-CL",
              "publisher": {"@id": SITIO + "/#tienda"}}
 
     # El servicio de eventos. «Barra de café para eventos en Santiago» o
@@ -390,9 +391,10 @@ def main():
 
     # ---- feed ----
     feed = {
-        "marca": "sepia coffee", "sitio": SITIO + "/", "moneda": "CLP", "pais": "CL",
+        "marca": "Sepia Coffee", "sitio": SITIO + "/", "moneda": "CLP", "pais": "CL",
         "actualizado": datetime.date.today().isoformat(),
-        "envio": {"gratis_sobre": ENVIO_GRATIS, "con_descuento_sobre": ENVIO_REDUCIDO,
+        "envio": {"gratis_sobre": ENVIO_GRATIS,
+                  "region_metropolitana": ENVIO_RM, "regiones": ENVIO_REGIONES,
                   "cobertura": "todo Chile"},
         "suscripcion": {"descuento_porcentaje": SUSCRIPCION_DESC,
                         "nota": "aplica a todos los productos"},
