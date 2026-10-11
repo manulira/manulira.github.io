@@ -823,6 +823,81 @@
  </symbol>
 
  <!-- Batidor de matcha -->
+ <!-- Lata de café, edición limitada -->
+ <symbol id="s2-i-lata-cafe" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <!-- Cuerpo en Sky Blue, fijo: es el color de la lata en el packaging -->
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="#F5EFEB"/>
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="url(#g-lata)"/>
+   <!-- Tapa en Navy -->
+   <rect x="40" y="52" width="120" height="30" rx="10" fill="#2F4156"/>
+   <rect x="52" y="44" width="96" height="12" rx="6" fill="#2F4156" opacity=".55"/>
+   <!-- Caminante de marca -->
+   <g transform="translate(74,88) scale(.26)" style="color:#2F4156;--cam-fondo:#F5EFEB">
+     <use href="#s2-i-caminante"/>
+   </g>
+   <!-- Textos en Navy -->
+   <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">sepia coffee</text>
+   <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">CAFÉ DE ORIGEN</text>
+   <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
+   <text x="101" y="232" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="7.5" letter-spacing="1.8" fill="#2F4156" opacity=".6">200 G · COLOMBIA</text>
+ </symbol>
+ <!-- Musette: bolso de hombro con correa larga -->
+ <symbol id="s2-i-musette" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="244" rx="60" ry="8" fill="#2F4156" opacity=".16"/>
+   <!-- correa -->
+   <path d="M58 118C58 58 72 38 100 38s42 20 42 80" fill="none"
+         stroke="#2F4156" stroke-width="9" stroke-linecap="round" opacity=".9"/>
+   <!-- cuerpo del bolso -->
+   <path d="M44 112h112a8 8 0 0 1 8 8v96a16 16 0 0 1-16 16H52a16 16 0 0 1-16-16v-96a8 8 0 0 1 8-8z"
+         fill="var(--acento,#C8D9E6)"/>
+   <path d="M44 112h112a8 8 0 0 1 8 8v96a16 16 0 0 1-16 16H52a16 16 0 0 1-16-16v-96a8 8 0 0 1 8-8z"
+         fill="url(#g-lata)"/>
+   <!-- solapa -->
+   <path d="M36 120h128v42a6 6 0 0 1-6 6H42a6 6 0 0 1-6-6z" fill="#2F4156" opacity=".82"/>
+   <!-- caminante -->
+   <g transform="translate(76,178) scale(.2)" style="color:#2F4156;--cam-fondo:none">
+     <use href="#s2-i-caminante-solido"/>
+   </g>
+ </symbol>
+ <!-- Polera -->
+ <symbol id="s2-i-polera" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="246" rx="60" ry="8" fill="#2F4156" opacity=".16"/>
+   <path d="M74 54h52l40 26-16 34-18-10v124a6 6 0 0 1-6 6H74a6 6 0 0 1-6-6V104l-18 10-16-34z"
+         fill="var(--acento,#F5EFEB)"/>
+   <path d="M74 54h52l40 26-16 34-18-10v124a6 6 0 0 1-6 6H74a6 6 0 0 1-6-6V104l-18 10-16-34z"
+         fill="url(#g-lata)"/>
+   <!-- cuello -->
+   <path d="M78 54h44c0 14-10 22-22 22s-22-8-22-22z" fill="#2F4156" opacity=".8"/>
+   <!-- caminante en el pecho -->
+   <g transform="translate(78,120) scale(.22)" style="color:#2F4156;--cam-fondo:none">
+     <use href="#s2-i-caminante-solido"/>
+   </g>
+ </symbol>
+ <!-- Lata de cold brew (guardada: el producto está inactivo en ia/datos.py) -->
+ <symbol id="s2-i-coldbrew-lata" viewBox="0 0 200 272">
+   <ellipse cx="100" cy="246" rx="46" ry="7" fill="#2F4156" opacity=".16"/>
+   <path d="M66 62h68a6 6 0 0 1 6 6v158a14 14 0 0 1-14 14H74a14 14 0 0 1-14-14V68a6 6 0 0 1 6-6z"
+         fill="var(--acento,#567C8D)"/>
+   <path d="M66 62h68a6 6 0 0 1 6 6v158a14 14 0 0 1-14 14H74a14 14 0 0 1-14-14V68a6 6 0 0 1 6-6z"
+         fill="url(#g-lata)"/>
+   <rect x="62" y="54" width="76" height="14" rx="5" fill="#2F4156" opacity=".9"/>
+   <ellipse cx="100" cy="56" rx="38" ry="7" fill="#2F4156" opacity=".55"/>
+   <g transform="translate(82,92) scale(.18)" style="color:#F5EFEB;--cam-fondo:none">
+     <use href="#s2-i-caminante-solido"/>
+   </g>
+   <text x="100" y="166" text-anchor="middle" font-family="Poppins,sans-serif"
+         font-size="12" font-weight="700" letter-spacing="-.2" fill="#F5EFEB">sepia coffee</text>
+   <text x="100" y="184" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="7.5" letter-spacing="2.2" fill="#F5EFEB" opacity=".8">COLD BREW</text>
+   <path d="M70 198h60" stroke="#F5EFEB" stroke-width="1" opacity=".3"/>
+   <text x="100" y="214" text-anchor="middle" font-family="DM Sans,sans-serif"
+         font-size="7" letter-spacing="1.6" fill="#F5EFEB" opacity=".66">SIN AZÚCAR</text>
+ </symbol>
+
  <symbol id="s2-i-batidor" viewBox="0 0 200 272">
    <ellipse cx="100" cy="248" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
    <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#F5EFEB)"/>

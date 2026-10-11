@@ -13,13 +13,62 @@ a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 
 ---
 
-## Subirlas
+## Subirla a una tienda nueva
+
+Son tres archivos y unos diez minutos. No necesitas instalar nada.
+
+### 1 · La portada
 
 1. **Tienda online → Temas → ··· → Editar código**
 2. **Secciones → Agregar una sección nueva**
-3. Ponele de nombre `sepia-portada` (o `sepia-homepage` para la v1)
-4. Borra el contenido de ejemplo, pega el archivo entero y guarda
-5. En **Personalizar**, agrega la sección y subila al tope
+3. Ponle de nombre `sepia-portada`
+4. Borra el contenido de ejemplo, pega **todo** `sections/sepia-portada.liquid`
+   y guarda
+5. **Personalizar → Agregar sección → Sepia — Portada v2**, y súbela al tope
+6. Oculta las secciones que trae el tema por defecto (el hero de ejemplo, los
+   productos destacados): esta las reemplaza
+
+La sección viene con contenido de ejemplo cargado: el catálogo, las recetas,
+las preguntas y el cotizador. Lo vas reemplazando por lo tuyo desde el panel.
+
+### 2 · El robots.txt
+
+En Shopify el `robots.txt` lo genera el tema, no es un archivo que puedas
+subir. Sin esto no hay garantía de que GPTBot y los demás rastreadores de IA
+puedan entrar, que es el punto 3 del plan.
+
+1. **Templates → Agregar una plantilla nueva → robots.txt**
+2. Borra lo que venga, pega `templates/robots.txt.liquid` entero
+3. Comprueba en `https://tu-tienda.myshopify.com/robots.txt`
+
+### 3 · La cabecera y el pie
+
+Vienen **apagados**, porque tu tema ya trae los suyos. Si dejas los dos,
+quedan duplicados. Decide uno:
+
+- **Usar los del tema** (lo normal): no toques nada.
+- **Usar los de la sección**: enciéndelos en los ajustes y oculta los del
+  tema en Personalizar.
+
+### 4 · Enchufar el catálogo real
+
+Las nueve fichas, con descripciones, variantes, SKU y etiquetas listas para
+copiar, están en **`shopify/PRODUCTOS.md`**.
+
+
+Cada carrusel tiene un ajuste de colección. Mientras no elijas una, muestra
+los productos de ejemplo. Cuando crees los productos en Shopify:
+
+1. Arma dos colecciones, por ejemplo **Café y matcha** y **Kits y accesorios**
+2. Elígelas en los ajustes de cada carrusel
+3. Etiqueta los productos para que la tarjeta se vea bien (ver más abajo)
+
+### 5 · Cargar los precios
+
+Los precios de los productos salen de Shopify, así que basta con ponerlos en
+cada ficha. Los del **cotizador de eventos** son aparte: van en los ajustes
+de la sección, en pesos y sin puntos. Mientras estén en 0, el cotizador
+muestra las cantidades y ofrece pedir el valor, sin inventar una cifra.
 
 ---
 
@@ -34,12 +83,13 @@ a su propio contenedor, así que no se pisan entre ellas ni con el tema.
 6. Grilla de categorías
 7. Carrusel de packs
 8. Testimonios
-9. Guía comparativa
-10. Recetas
-11. Bloque editorial
-12. Preguntas frecuentes
-13. Boletín
-14. Pie con columnas plegables
+9. Cotizador de eventos
+10. Guía comparativa
+11. Recetas
+12. Bloque editorial
+13. Preguntas frecuentes
+14. Boletín
+15. Pie con columnas plegables
 
 Cada módulo se apaga dejando su título vacío o quitando sus bloques.
 
@@ -136,6 +186,19 @@ defecto y no hay garantía de que GPTBot y los demás puedan entrar.
 
 Mantiene las reglas por defecto de Shopify (que ya esconden carrito y checkout)
 y suma de forma explícita los rastreadores de IA.
+
+### Cotizador de eventos
+Ajustes **«Cotizador de eventos»**. Calcula en vivo tragos, baristas, café y
+leche a partir de invitados y horas; esas cuentas no dependen de las tarifas.
+
+Las tarifas van en pesos y sin puntos. Si dejas una en 0, el cotizador muestra
+el desglose de cantidades y ofrece pedir el valor, en vez de inventar una
+cifra. Carga también el WhatsApp: el botón arma el mensaje con todo lo que el
+cliente eligió.
+
+Se publica además como `schema.org/Service`, que es lo que hace que un
+asistente pueda responder «¿quién hace barra de café para eventos en
+Santiago?».
 
 ### Lo que no se puede hacer desde acá
 Registrar la tienda en [Google Search Console](https://search.google.com/search-console)
