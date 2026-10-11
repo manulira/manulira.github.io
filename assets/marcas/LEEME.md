@@ -19,3 +19,10 @@ logo transparente, del color que sea, sale uniforme con el resto.
 La fuente preferible siempre es el kit de marca del propio cliente. Estos
 salieron de Commons porque no los teníamos a mano; si el cliente manda el
 suyo, reemplázalo.
+
+## banana-republic.png
+- Origen: Wikimedia Commons, `Banana Republic Logo.svg`
+- Licencia: CC BY-SA 4.0
+- Convertido a PNG transparente con Chromium (el SVG usa un bloque `<style>`
+  con clases CSS, que los rasterizadores simples no interpretan: pintan de
+  negro el `<rect class="cls-2">` de fondo, que en realidad es `fill:none`).
