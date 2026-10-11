@@ -48,3 +48,17 @@ suyo, reemplázalo.
 Los logos son marcas registradas de sus dueños y se usan acá solo para
 identificar a clientes con los que se trabajó. La versión más segura y
 vigente siempre es la que entrega el propio cliente en su kit de marca.
+
+## watts-co.png
+- Origen: logo que mandó el cliente (captura del perfil de Watts Co.).
+- Es un sello calado: disco negro con el texto en blanco. Acá el blanco va
+  como transparente, no como blanco, así el fondo de la tarjeta se ve a
+  través de las letras. Si fuera blanco opaco, brightness(0) lo pintaría
+  negro también y quedaría un círculo negro macizo.
+
+## saga-gravel-race.png
+- Origen: logo que mandó el cliente (texto blanco sobre fondo azul).
+- Acá al revés: la tinta es lo claro, así que el alfa sale del brillo y el
+  fondo azul queda transparente.
+
+Los dos se armaron con ia/marcas/a_tinta.py, que está en el repo.
