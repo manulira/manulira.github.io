@@ -19,7 +19,7 @@ Shopify.
 
 **Descripción**
 
-> Café de especialidad de Colombia, tostado por nosotros en Santiago en lotes chicos y despachado recién tostado. Es el único café de la carta: preferimos hacer uno bien antes que cinco a medias. Lo eliges en grano o molido para tu método.
+> Café de especialidad de Colombia, de tueste medio. En taza: vainilla, frutos secos y cacao. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Es el más parejo de los dos: dulce, de cuerpo medio y poca acidez, así que funciona igual de bien en espresso que en filtro. Si recién entras al café de especialidad, parte por acá. Lo eliges en grano o molido para tu método.
 
 **Categoría del producto**  
 `Café en grano`
@@ -41,11 +41,49 @@ Shopify.
 **Etiquetas**
 
 ```
-sub:Nuestro único origen, tono:#C8D9E6, acento:#2F4156, arte:bolsa, etq:Más vendido
+sub:Vainilla, frutos secos y cacao, tono:#C8D9E6, acento:#2F4156, arte:bolsa, etq:Más vendido
 ```
 
 **Foto**  
 `assets/fotos/prod-colombia.jpg` del repositorio, cuando la tengas.  
+Texto alternativo sugerido en `assets/fotos/LEEME.md`.
+
+---
+
+## Bolivia
+
+**Título**  
+`Bolivia`
+
+**Descripción**
+
+> Café de especialidad de Bolivia, de tueste medio. En taza: avellana, cítrico y caramelo. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Tiene más acidez que el Colombia y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Lo eliges en grano o molido para tu método.
+
+**Categoría del producto**  
+`Café en grano`
+
+**Opciones**
+
+1. `Formato` → `250 g`, `1 kg`
+2. `Molienda` → `En grano`, `Molido`
+
+**Variantes** (4)
+
+| Variante | SKU | Precio |
+|---|---|---|
+| 250 g · En grano | `sepia-bolivia-250g-engrano` | *(por definir)* |
+| 250 g · Molido | `sepia-bolivia-250g-molido` | *(por definir)* |
+| 1 kg · En grano | `sepia-bolivia-1kg-engrano` | *(por definir)* |
+| 1 kg · Molido | `sepia-bolivia-1kg-molido` | *(por definir)* |
+
+**Etiquetas**
+
+```
+sub:Avellana, cítrico y caramelo, tono:#FFFFFF, acento:#2F4156, arte:bolsa, etq:Nuevo
+```
+
+**Foto**  
+`assets/fotos/prod-bolivia.jpg` del repositorio, cuando la tengas.  
 Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 
 ---
