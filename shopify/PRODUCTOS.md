@@ -41,7 +41,7 @@ Shopify.
 **Etiquetas**
 
 ```
-sub:Vainilla, frutos secos y cacao, tono:#C8D9E6, acento:#2F4156, arte:bolsa, etq:Más vendido
+sub:Vainilla, frutos secos y cacao, tono:#AEBFC2, acento:#3F5363, arte:bolsa, etq:Más vendido
 ```
 
 **Foto**  
@@ -79,7 +79,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 **Etiquetas**
 
 ```
-sub:Cacao, cítricos, avellana y caramelo, tono:#FFFFFF, acento:#2F4156, arte:bolsa, etq:Nuevo
+sub:Cacao, cítricos, avellana y caramelo, tono:#FFFFFF, acento:#3F5363, arte:bolsa, etq:Nuevo
 ```
 
 **Foto**  
@@ -114,7 +114,7 @@ Texto alternativo sugerido en `assets/fotos/LEEME.md`.
 **Etiquetas**
 
 ```
-sub:En lata o en sobre de recarga, tono:#C8D9E6, acento:#2F4156, arte:tarro
+sub:En lata o en sobre de recarga, tono:#AEBFC2, acento:#3F5363, arte:tarro
 ```
 
 **Foto**  
@@ -141,7 +141,7 @@ Ninguna. SKU: `sepia-lata-edicion`
 **Etiquetas**
 
 ```
-sub:200 g · mientras dure, tono:#F5EFEB, acento:#2F4156, arte:tarro, etq:Edición limitada
+sub:200 g · mientras dure, tono:#E8E2D7, acento:#3F5363, arte:tarro, etq:Edición limitada
 ```
 
 **Foto**  
@@ -168,7 +168,7 @@ Ninguna. SKU: `sepia-coldbrew-lata`
 **Etiquetas**
 
 ```
-sub:Listo para tomar, tono:#567C8D, acento:#F5EFEB, arte:botella
+sub:Listo para tomar, tono:#706962, acento:#E8E2D7, arte:botella
 ```
 
 **Foto**  
@@ -195,7 +195,7 @@ Ninguna. SKU: `sepia-kit-matcha`
 **Etiquetas**
 
 ```
-sub:Todo para partir, tono:#FFFFFF, acento:#567C8D, arte:batidor
+sub:Todo para partir, tono:#FFFFFF, acento:#706962, arte:batidor
 ```
 
 **Foto**  
@@ -222,7 +222,7 @@ Ninguna. SKU: `sepia-kit-cafetero`
 **Etiquetas**
 
 ```
-sub:Todo para partir, tono:#FFFFFF, acento:#2F4156, arte:caja
+sub:Todo para partir, tono:#FFFFFF, acento:#3F5363, arte:caja
 ```
 
 **Foto**  
@@ -249,7 +249,7 @@ Ninguna. SKU: `sepia-musette`
 **Etiquetas**
 
 ```
-sub:Bolso de hombro, tono:#C8D9E6, acento:#567C8D, arte:caja
+sub:Bolso de hombro, tono:#AEBFC2, acento:#706962, arte:caja
 ```
 
 **Foto**  
@@ -276,7 +276,7 @@ Ninguna. SKU: `sepia-polera`
 **Etiquetas**
 
 ```
-sub:Algodón, con el caminante, tono:#FFFFFF, acento:#C8D9E6, arte:caja
+sub:Algodón, con el caminante, tono:#FFFFFF, acento:#AEBFC2, arte:caja
 ```
 
 **Foto**  
@@ -303,7 +303,7 @@ Ninguna. SKU: `sepia-vaso`
 **Etiquetas**
 
 ```
-sub:Reutilizable, tono:#FFFFFF, acento:#C8D9E6, arte:taza
+sub:Reutilizable, tono:#FFFFFF, acento:#AEBFC2, arte:taza
 ```
 
 **Foto**  

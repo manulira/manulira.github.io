@@ -35,10 +35,10 @@ Estos cinco colores son los únicos de marca. No se agregan otros.
 
 | Uso | Color | HEX |
 |---|---|---|
-| Principal | Sky Blue · Celeste | `#C8D9E6` |
-| Secundario | Beige | `#F5EFEB` |
-| Logos y textos | Navy · Azul marino | `#2F4156` |
-| Apoyo | Teal · Azul petróleo | `#567C8D` |
+| Principal | Sky Blue · Celeste | `#AEBFC2` |
+| Secundario | Beige | `#E8E2D7` |
+| Logos y textos | Navy · Azul marino | `#3F5363` |
+| Apoyo | Teal · Azul petróleo | `#706962` |
 | Apoyo | White · Blanco | `#FFFFFF` |
 
 Reglas de uso en la página:

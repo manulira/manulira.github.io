@@ -70,25 +70,44 @@ sin el wordmark, como símbolo.
 Nunca: efectos, sombras, gradientes, contornos, ni reemplazar el caminante
 por un grano de café (eso era la identidad anterior).
 
-### Paleta — bloqueada
+### Paleta — la del brand book
 
-| Uso | Nombre | HEX |
+| Nombre | HEX | Uso |
 |---|---|---|
-| Principal | Sky Blue · Celeste | `#C8D9E6` |
-| Secundario | Beige | `#F5EFEB` |
-| Logos y textos | Navy · Azul marino | `#2F4156` |
-| Apoyo | Teal · Azul petróleo | `#567C8D` |
-| Apoyo | White · Blanco | `#FFFFFF` |
+| Azul principal | `#3F5363` | Botones principales, títulos, íconos y logo |
+| Celeste grisáceo | `#AEBFC2` | Fondos de secciones destacadas, tarjetas y bloques de producto |
+| Crema | `#E8E2D7` | Fondo principal de la página |
+| Beige arena | `#CFC4B2` | Fondos secundarios, separadores y bordes |
+| Madera clara | `#C9A779` | Acentos pequeños, etiquetas y detalles decorativos |
+| Café topo | `#706962` | Textos secundarios y descripciones sobre crema |
+| Negro grafito | `#252A2C` | Texto principal, precios y navegación |
 
-**Estos cinco son los únicos colores.** Todo lo demás es uno de ellos, o navy
-y blanco con transparencia. Nada de vino, crema, terracota ni neones.
+**Estos siete son los únicos colores.** Protagonismo al crema, el azul y el
+celeste; el beige, la madera y el topo son de apoyo. Nada de vino, terracota
+ni neones.
 
-Contraste verificado: Navy sobre Beige 10,4:1 · Navy sobre Celeste 7,2:1 ·
-Blanco sobre Teal 4,51:1. El blanco sobre teal pasa AA justo, así que se usa
-solo en botones y cintas, nunca en texto corrido.
+Cómo se aplica:
 
-**La lata de matcha** va con fondo Sky Blue, y los textos y el caminante en
-Navy. Esto es fijo.
+- Página: fondo crema, texto grafito, títulos azules.
+- Botón principal: fondo azul, texto crema.
+- Botón secundario: fondo crema, borde y texto azul.
+- Sección destacada de matcha: fondo celeste, texto grafito.
+- Pie de página: fondo azul, texto crema.
+
+**Contraste, medido.** Lo que pasa AA (4,5:1): grafito sobre crema 11,3 ·
+grafito sobre celeste 7,6 · grafito sobre arena 8,4 · grafito sobre madera
+6,4 · azul sobre crema 6,2 · crema sobre azul 6,2.
+
+Lo que **no** pasa y hay que evitar: topo sobre crema 4,19 y azul sobre
+celeste 4,20, los dos apenas bajo el mínimo, así que van solo en texto
+grande (18 pt o 14 pt en negrita), nunca en cuerpo. Topo sobre celeste 2,84,
+no se usa. Y crema sobre celeste 1,48 o sobre arena 1,34: ilegible, nunca.
+
+Ojo con las fotos: el celeste sale más claro y más azulado por la
+iluminación. El de la paleta es `#AEBFC2` y manda ese.
+
+> **La paleta cambió en octubre de 2026.** La anterior era celeste `#C8D9E6`,
+> beige `#F5EFEB`, navy `#2F4156` y teal `#567C8D`. Ya no se usa.
 
 ### Tipografía
 - **Display y titulares:** Poppins (500–800). Es la que calza con el
@@ -151,7 +170,7 @@ marca le restan credibilidad: si el matcha no hace bajar de peso, se dice.
 - **Emojis:** máximo 1–2 por post, si aplica.
 
 ### Mockups y web
-- Paleta oficial. Fondos en `#F5EFEB` o `#C8D9E6`, nunca blanco puro de fondo
+- Paleta oficial. Fondos en `#E8E2D7` o `#AEBFC2`, nunca blanco puro de fondo
   general.
 - Google Fonts: `Poppins` display, `DM Sans` cuerpo.
 - Líneas finas, esquinas muy redondeadas, espaciado generoso, sin sombras
@@ -161,8 +180,8 @@ marca le restan credibilidad: si el matcha no hace bajar de peso, se dice.
 ### Prompts de imagen
 ```
 [producto o escena], soft natural side lighting, editorial coffee photography,
-minimalist composition, ceramic surfaces, warm beige #F5EFEB background,
-pale blue #C8D9E6 accents, premium specialty coffee aesthetic,
+minimalist composition, ceramic surfaces, warm beige #E8E2D7 background,
+pale blue #AEBFC2 accents, premium specialty coffee aesthetic,
 muted palette, --ar [ratio] --style raw
 ```
 Para lifestyle añadir: `Santiago Chile, latin warmth, natural textures, linen, warm wood`

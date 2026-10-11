@@ -8,14 +8,14 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 DEST = os.path.join(AQUI, "..", "shopify", "PRODUCTOS.md")
 
 # Etiquetas que lee la sección para pintar la tarjeta
-TONOS = {"colombia": "#C8D9E6", "matcha": "#C8D9E6", "lata-edicion": "#F5EFEB",
-         "coldbrew-lata": "#567C8D", "kit-matcha": "#FFFFFF",
-         "kit-cafetero": "#FFFFFF", "musette": "#C8D9E6", "polera": "#FFFFFF",
+TONOS = {"colombia": "#AEBFC2", "matcha": "#AEBFC2", "lata-edicion": "#E8E2D7",
+         "coldbrew-lata": "#706962", "kit-matcha": "#FFFFFF",
+         "kit-cafetero": "#FFFFFF", "musette": "#AEBFC2", "polera": "#FFFFFF",
          "vaso": "#FFFFFF"}
-ACENTOS = {"colombia": "#2F4156", "matcha": "#2F4156", "lata-edicion": "#2F4156",
-           "coldbrew-lata": "#F5EFEB", "kit-matcha": "#567C8D",
-           "kit-cafetero": "#2F4156", "musette": "#567C8D", "polera": "#C8D9E6",
-           "vaso": "#C8D9E6"}
+ACENTOS = {"colombia": "#3F5363", "matcha": "#3F5363", "lata-edicion": "#3F5363",
+           "coldbrew-lata": "#E8E2D7", "kit-matcha": "#706962",
+           "kit-cafetero": "#3F5363", "musette": "#706962", "polera": "#AEBFC2",
+           "vaso": "#AEBFC2"}
 ARTE = {"i-bolsa": "bolsa", "i-tarro": "tarro", "i-lata-cafe": "tarro",
         "i-coldbrew-lata": "botella", "i-batidor": "batidor", "i-caja": "caja",
         "i-musette": "caja", "i-polera": "caja", "i-taza": "taza"}
@@ -58,7 +58,7 @@ for pid, nombre, cat, arte, bajada, desc, opciones, variantes, etq, activo in PR
         out.append("**Variantes**  \nNinguna. SKU: `sepia-%s`\n" % pid)
 
     tags = ["sub:%s" % bajada, "tono:%s" % TONOS.get(pid, "#FFFFFF"),
-            "acento:%s" % ACENTOS.get(pid, "#2F4156"),
+            "acento:%s" % ACENTOS.get(pid, "#3F5363"),
             "arte:%s" % ARTE.get(arte, "caja")]
     if etq:
         tags.append("etq:%s" % etq)

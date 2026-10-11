@@ -5,7 +5,7 @@ de la marca:
 
 | El skill decía | Lo que bloqueaste en esta conversación |
 |---|---|
-| Paleta vino y crema: `#7D4047`, `#F1ECE6`, `#2E2E2E` | Sky Blue `#C8D9E6`, Beige `#F5EFEB`, Navy `#2F4156`, Teal `#567C8D`, Blanco |
+| Paleta vino y crema: `#7D4047`, `#F1ECE6`, `#2E2E2E` | Sky Blue `#AEBFC2`, Beige `#E8E2D7`, Navy `#3F5363`, Teal `#706962`, Blanco |
 | Playfair Display (serif editorial) | Poppins + DM Sans |
 | «Sepia Coffee Co» | **Sepia Coffee**, con S y C mayúsculas |
 | Un grano de café como punto de la i | El caminante |

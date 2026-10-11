@@ -18,22 +18,22 @@ PRODUCTOS = [p for p in TODOS if p[9]]
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.join(AQUI, "..")
 
-# El color de fondo de cada tarjeta, por producto y no por posición: así
-# agregar un café no le corre el color a todos los que vienen detrás. Los
-# dos cafés llevan el color de su propia bolsa.
+# El fondo de cada tarjeta. El brand book asigna el celeste grisáceo a los
+# bloques de producto, así que van en celeste y crema alternados, que da
+# ritmo sin salirse de la paleta. El acento de la ilustración va en azul.
+#
+# Antes los dos cafés llevaban el color de su propia bolsa (naranja y rosado).
+# Se sacó: son colores de packaging, no de la paleta de marca, y el brand book
+# es explícito en que las tarjetas van en celeste.
+CELESTE, CREMA, AZUL = "#AEBFC2", "#E8E2D7", "#3F5363"
 TONOS = {
- "colombia": "#E69B4A", "bolivia": "#DA9296", "matcha": "#FFFFFF",
- "lata-edicion": "#C8D9E6", "coldbrew-lata": "#FFFFFF",
- "kit-matcha": "#567C8D", "kit-cafetero": "#FFFFFF",
- "musette": "#C8D9E6", "polera": "#FFFFFF", "vaso": "#C8D9E6",
+ "colombia": CELESTE, "bolivia": CREMA, "matcha": CELESTE,
+ "lata-edicion": CREMA, "coldbrew-lata": CELESTE,
+ "kit-matcha": CREMA, "kit-cafetero": CELESTE,
+ "musette": CREMA, "polera": CELESTE, "vaso": CREMA,
 }
-ACENTOS = {
- "colombia": "#2F4156", "bolivia": "#2F4156", "matcha": "#567C8D",
- "lata-edicion": "#2F4156", "coldbrew-lata": "#567C8D",
- "kit-matcha": "#F5EFEB", "kit-cafetero": "#2F4156",
- "musette": "#567C8D", "polera": "#567C8D", "vaso": "#2F4156",
-}
-TONO_POR_DEFECTO, ACENTO_POR_DEFECTO = "#FFFFFF", "#2F4156"
+ACENTOS = {k: AZUL for k in TONOS}
+TONO_POR_DEFECTO, ACENTO_POR_DEFECTO = CELESTE, AZUL
 
 def clp(n):
     return "$" + format(n, ",d").replace(",", ".")

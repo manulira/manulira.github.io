@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Sepia Coffee — Café de especialidad y matcha</title>
 <meta name="description" content="Café de especialidad tostado en Santiago, matcha ceremonial y accesorios. Envío gratis sobre $50.000 en todo Chile." />
-<meta name="theme-color" content="#F5EFEB" />
+<meta name="theme-color" content="#E8E2D7" />
 <link rel="canonical" href="https://sepiacoffee.cl/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Sepia Coffee" />
@@ -1627,26 +1627,41 @@
    Los tokens de abajo son el único lugar donde tocar la marca.
    ============================================================ */
 :root{
-  /* ---------- PALETA BLOQUEADA ----------
-     Estos cinco son los únicos colores de marca. Todo lo demás
-     en la página es uno de ellos, o navy/blanco con transparencia. */
-  --celeste:#C8D9E6;   /* principal */
-  --beige:#F5EFEB;     /* secundario */
-  --navy:#2F4156;      /* logos y textos */
-  --teal:#567C8D;      /* apoyo */
-  --blanco:#FFFFFF;    /* apoyo */
+  /* ---------- PALETA DEL BRAND BOOK ----------
+     Los siete colores de la marca. Todo lo demás en la página es uno de
+     ellos, o grafito con transparencia.
+
+     Dos combinaciones quedan bajo el mínimo AA de 4,5:1 y por eso no se
+     usan en texto de cuerpo. Topo sobre crema da 4,19 y azul sobre celeste
+     da 4,20, así que el topo va solo en texto grande y el cuerpo en
+     grafito, que sobre crema da 11,3. Crema sobre celeste o arena no se
+     usa nunca: 1,48 y 1,34, ilegible. */
+  --azul:#3F5363;      /* botones, títulos, íconos y logo */
+  --celeste:#AEBFC2;   /* fondos destacados, tarjetas y bloques de producto */
+  --crema:#E8E2D7;     /* fondo principal de la página */
+  --arena:#CFC4B2;     /* fondos secundarios, separadores y bordes */
+  --madera:#C9A779;    /* acentos chicos, etiquetas y detalles */
+  --topo:#706962;      /* texto secundario, solo en tamaño grande */
+  --grafito:#252A2C;   /* texto principal, precios y navegación */
+  --blanco:#FFFFFF;
+
+  /* Nombres de la paleta anterior, para no reescribir las reglas que ya
+     los usan. Apuntan al color nuevo que cumple el mismo rol. */
+  --navy:var(--azul);
+  --beige:var(--crema);
+  --teal:var(--topo);
 
   /* ---------- Roles ---------- */
-  --tinta:var(--navy);
-  --papel:var(--beige);
-  --humo:rgba(47,65,86,.06);
+  --tinta:var(--grafito);
+  --papel:var(--crema);
+  --humo:rgba(37,42,44,.06);
 
   /* Transparencias de navy sobre fondos claros */
-  --tinta-70:rgba(47,65,86,.72);
-  --tinta-60:rgba(47,65,86,.66);
-  --tinta-40:rgba(47,65,86,.45);
-  --tinta-14:rgba(47,65,86,.16);
-  --tinta-08:rgba(47,65,86,.08);
+  --tinta-70:rgba(37,42,44,.72);
+  --tinta-60:rgba(37,42,44,.66);
+  --tinta-40:rgba(37,42,44,.45);
+  --tinta-14:rgba(37,42,44,.16);
+  --tinta-08:rgba(37,42,44,.08);
   /* Transparencias de blanco sobre navy o teal */
   --claro-24:rgba(255,255,255,.26);
   --claro-64:rgba(255,255,255,.72);
@@ -1943,7 +1958,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .prod{display:flex;flex-direction:column;gap:.75rem;position:relative}
 .prod-media{
   position:relative;aspect-ratio:1;border-radius:var(--r-xl);overflow:hidden;
-  background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
+  background:var(--tono,var(--humo));display:grid;place-items:center;isolation:isolate;box-shadow:inset 0 0 0 1px rgba(37,42,44,.07);
 }
 /* La portada es el packshot sobre fondo blanco: va entero, con el color de
    la tarjeta haciendo de marco. La segunda es la foto de ambiente, que sí
@@ -2007,7 +2022,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 @media(max-width:759px){.cats.de-3{grid-template-columns:1fr}}
 .cat{
   display:flex;flex-direction:column;gap:.85rem;border-radius:var(--r-xl);
-  background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;box-shadow:inset 0 0 0 1px rgba(47,65,86,.07);
+  background:var(--tono,var(--humo));padding:1rem 1rem 1.15rem;box-shadow:inset 0 0 0 1px rgba(37,42,44,.07);
   transition:transform .3s var(--ease);
 }
 .cat:hover{transform:translateY(-5px)}
@@ -2276,7 +2291,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .selector{display:grid;gap:clamp(.8rem,1.6vw,1.1rem);grid-template-columns:1fr}
 @media(min-width:760px){.selector{grid-template-columns:repeat(3,1fr)}}
 .sel-tarjeta{background:var(--blanco);border-radius:var(--r-xl);padding:clamp(1.3rem,2.4vw,1.7rem);display:flex;flex-direction:column;gap:.7rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
-.sel-tarjeta:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(47,65,86,.13)}
+.sel-tarjeta:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(37,42,44,.13)}
 .sel-etq{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)}
 .sel-arte{width:64px;height:88px;max-width:none;--acento:var(--navy);margin:.2rem 0}
 .sel-tarjeta h3{font-size:clamp(1.18rem,1.8vw,1.4rem)}
@@ -2337,6 +2352,12 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 .faq .resp p{color:var(--tinta-70);line-height:1.6}
 .faq .resp a{border-bottom:2px solid var(--tinta-14);font-weight:500}
 .faq .resp a:hover{border-bottom-color:currentColor}
+
+/* El brand book pide títulos azules sobre fondo claro. La sección oscura
+   lleva el azul de fondo, así que ahí el título hereda el crema del
+   contenedor en vez de desaparecer sobre sí mismo. */
+h1,h2,h3,h4,.t-4xl,.t-3xl,.t-xl{color:var(--azul)}
+section[style*="--navy"] :is(h1,h2,h3,h4,.t-4xl,.t-3xl,.t-xl){color:inherit}
 </style>
 </head>
 <body>
@@ -2369,7 +2390,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 <!-- ===================== BIBLIOTECA SVG ===================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
 <linearGradient id="g-bolsa" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#CFC6BF"/><stop offset=".14" stop-color="#F5EFEB"/>
+    <stop offset="0" stop-color="#CFC6BF"/><stop offset=".14" stop-color="#E8E2D7"/>
     <stop offset=".44" stop-color="#FFFFFF"/><stop offset=".74" stop-color="#EAE2DC"/>
     <stop offset="1" stop-color="#C6BCB4"/>
   </linearGradient>
@@ -2378,14 +2399,14 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     <stop offset="1" stop-color="#BCB2AA"/>
   </linearGradient>
   <filter id="f-bolsa" x="-25%" y="-12%" width="150%" height="132%">
-    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#2F4156" flood-opacity=".2"/>
+    <feDropShadow dx="0" dy="9" stdDeviation="11" flood-color="#3F5363" flood-opacity=".2"/>
   </filter>
   <radialGradient id="g-cafe" cx=".38" cy=".32" r=".82">
-    <stop offset="0" stop-color="#567C8D"/><stop offset=".5" stop-color="#3E5670"/>
-    <stop offset="1" stop-color="#2F4156"/>
+    <stop offset="0" stop-color="#706962"/><stop offset=".5" stop-color="#3E5670"/>
+    <stop offset="1" stop-color="#3F5363"/>
   </radialGradient>
   <radialGradient id="g-platillo" cx=".36" cy=".28" r=".9">
-    <stop offset="0" stop-color="#F5EFEB"/><stop offset="1" stop-color="#DED6CF"/>
+    <stop offset="0" stop-color="#E8E2D7"/><stop offset="1" stop-color="#DED6CF"/>
   </radialGradient>
   <linearGradient id="g-ceramica" x1=".2" y1="0" x2=".85" y2="1">
     <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6DED8"/>
@@ -2403,143 +2424,143 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 </defs>
 
 <symbol id="i-bolsa" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#2F4156" opacity=".17"/>
+   <ellipse cx="100" cy="252" rx="63" ry="7" fill="#3F5363" opacity=".17"/>
    <g filter="url(#f-bolsa)">
      <path d="M32 44h136v186a14 14 0 0 1-14 14H46a14 14 0 0 1-14-14z" fill="url(#g-bolsa)"/>
-     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#2F4156" opacity=".085"/>
-     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#2F4156" opacity=".065"/>
+     <path d="M32 44h15v200h-1a14 14 0 0 1-14-14z" fill="#3F5363" opacity=".085"/>
+     <path d="M153 44h15v186a14 14 0 0 1-14 14h-1z" fill="#3F5363" opacity=".065"/>
      <path d="M32 25h136v19H32z" fill="url(#g-sello)"/>
      <path d="M40 25v19M48 25v19M56 25v19M64 25v19M72 25v19M80 25v19M88 25v19M96 25v19M104 25v19M112 25v19M120 25v19M128 25v19M136 25v19M144 25v19M152 25v19M160 25v19"
-           stroke="#2F4156" stroke-width="1" opacity=".17"/>
-     <path d="M32 44h136v3.5H32z" fill="#2F4156" opacity=".2"/>
+           stroke="#3F5363" stroke-width="1" opacity=".17"/>
+     <path d="M32 44h136v3.5H32z" fill="#3F5363" opacity=".2"/>
    </g>
    <text x="101" y="84" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.2"
-         letter-spacing="2" fill="#2F4156" opacity=".45">250 G · GRANO ENTERO</text>
-   <path d="M46 94h108" stroke="#2F4156" stroke-width="1" opacity=".16"/>
-   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#2F4156)"/>
-   <path d="M32 106h136v3H32z" fill="#2F4156" opacity=".14"/>
+         letter-spacing="2" fill="#3F5363" opacity=".45">250 G · GRANO ENTERO</text>
+   <path d="M46 94h108" stroke="#3F5363" stroke-width="1" opacity=".16"/>
+   <rect x="32" y="106" width="136" height="84" fill="var(--acento,#3F5363)"/>
+   <path d="M32 106h136v3H32z" fill="#3F5363" opacity=".14"/>
    <text x="100" y="153" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700"
-         font-size="18" letter-spacing="-.4" fill="#F5EFEB">Sepia Coffee</text>
-   <circle cx="100" cy="214" r="21" fill="#F5EFEB"/>
-   <g transform="translate(89,201) scale(.104)" style="color:#2F4156">
+         font-size="18" letter-spacing="-.4" fill="#E8E2D7">Sepia Coffee</text>
+   <circle cx="100" cy="214" r="21" fill="#E8E2D7"/>
+   <g transform="translate(89,201) scale(.104)" style="color:#3F5363">
      <use href="#i-caminante-solido"/>
    </g>
    <text x="101" y="238" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.6"
-         letter-spacing="2.4" fill="#2F4156" opacity=".34">TOSTADO EN SANTIAGO</text>
+         letter-spacing="2.4" fill="#3F5363" opacity=".34">TOSTADO EN SANTIAGO</text>
  </symbol>
 
  <!-- Botella de cold brew -->
  <symbol id="i-botella" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="256" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
-   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="var(--acento,#567C8D)"/>
+   <ellipse cx="100" cy="256" rx="52" ry="7" fill="#3F5363" opacity=".16"/>
+   <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="var(--acento,#706962)"/>
    <path d="M84 18h32v24c0 10 26 26 26 52v134a20 20 0 0 1-20 20H78a20 20 0 0 1-20-20V94c0-26 26-42 26-52z" fill="url(#g-vidrio)"/>
-   <rect x="80" y="8" width="40" height="16" rx="5" fill="#2F4156" opacity=".82"/>
-   <rect x="58" y="120" width="84" height="76" fill="#F5EFEB"/>
-   <text x="100" y="150" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11.5" font-weight="700" letter-spacing="-.25" fill="#2F4156">Sepia Coffee</text>
-   <text x="100" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#2F4156" opacity=".65">COLD BREW</text>
-   <path d="M58 214h84" stroke="#2F4156" stroke-width="1" opacity=".18"/>
-   <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#F5EFEB" opacity=".8">1 LITRO</text>
+   <rect x="80" y="8" width="40" height="16" rx="5" fill="#3F5363" opacity=".82"/>
+   <rect x="58" y="120" width="84" height="76" fill="#E8E2D7"/>
+   <text x="100" y="150" text-anchor="middle" font-family="Poppins,sans-serif" font-size="11.5" font-weight="700" letter-spacing="-.25" fill="#3F5363">Sepia Coffee</text>
+   <text x="100" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" letter-spacing="2.4" fill="#3F5363" opacity=".65">COLD BREW</text>
+   <path d="M58 214h84" stroke="#3F5363" stroke-width="1" opacity=".18"/>
+   <text x="100" y="232" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" letter-spacing="1.8" fill="#E8E2D7" opacity=".8">1 LITRO</text>
  </symbol>
 
  <!-- Tarro de matcha -->
  <symbol id="i-tarro" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#3F5363" opacity=".16"/>
    <!-- Cuerpo en Sky Blue, fijo: es el color de la lata en el packaging -->
-   <rect x="46" y="76" width="108" height="168" rx="14" fill="#C8D9E6"/>
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="#AEBFC2"/>
    <rect x="46" y="76" width="108" height="168" rx="14" fill="url(#g-lata)"/>
    <!-- Tapa en Navy -->
-   <rect x="40" y="52" width="120" height="30" rx="10" fill="#2F4156"/>
-   <rect x="52" y="44" width="96" height="12" rx="6" fill="#2F4156" opacity=".55"/>
+   <rect x="40" y="52" width="120" height="30" rx="10" fill="#3F5363"/>
+   <rect x="52" y="44" width="96" height="12" rx="6" fill="#3F5363" opacity=".55"/>
    <!-- Caminante de marca -->
-   <g transform="translate(74,88) scale(.26)" style="color:#2F4156;--cam-fondo:#C8D9E6">
+   <g transform="translate(74,88) scale(.26)" style="color:#3F5363;--cam-fondo:#AEBFC2">
      <use href="#i-caminante"/>
    </g>
    <!-- Textos en Navy -->
    <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">Sepia Coffee</text>
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#3F5363">Sepia Coffee</text>
    <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">MATCHA</text>
-   <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
+         font-size="8" letter-spacing="2.6" fill="#3F5363" opacity=".75">MATCHA</text>
+   <path d="M64 216h72" stroke="#3F5363" stroke-width="1" opacity=".28"/>
    <text x="101" y="232" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="7.5" letter-spacing="1.8" fill="#2F4156" opacity=".6">30 G EN POLVO</text>
+         font-size="7.5" letter-spacing="1.8" fill="#3F5363" opacity=".6">30 G EN POLVO</text>
  </symbol>
  <!-- Lata de café, edición limitada -->
  <symbol id="i-lata-cafe" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
+   <ellipse cx="100" cy="252" rx="58" ry="7" fill="#3F5363" opacity=".16"/>
    <!-- Cuerpo en Sky Blue, fijo: es el color de la lata en el packaging -->
-   <rect x="46" y="76" width="108" height="168" rx="14" fill="#F5EFEB"/>
+   <rect x="46" y="76" width="108" height="168" rx="14" fill="#E8E2D7"/>
    <rect x="46" y="76" width="108" height="168" rx="14" fill="url(#g-lata)"/>
    <!-- Tapa en Navy -->
-   <rect x="40" y="52" width="120" height="30" rx="10" fill="#2F4156"/>
-   <rect x="52" y="44" width="96" height="12" rx="6" fill="#2F4156" opacity=".55"/>
+   <rect x="40" y="52" width="120" height="30" rx="10" fill="#3F5363"/>
+   <rect x="52" y="44" width="96" height="12" rx="6" fill="#3F5363" opacity=".55"/>
    <!-- Caminante de marca -->
-   <g transform="translate(74,88) scale(.26)" style="color:#2F4156;--cam-fondo:#F5EFEB">
+   <g transform="translate(74,88) scale(.26)" style="color:#3F5363;--cam-fondo:#E8E2D7">
      <use href="#i-caminante"/>
    </g>
    <!-- Textos en Navy -->
    <text x="100" y="182" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="14" font-weight="700" letter-spacing="-.3" fill="#2F4156">Sepia Coffee</text>
+         font-size="14" font-weight="700" letter-spacing="-.3" fill="#3F5363">Sepia Coffee</text>
    <text x="101" y="200" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="8" letter-spacing="2.6" fill="#2F4156" opacity=".75">CAFÉ DE ORIGEN</text>
-   <path d="M64 216h72" stroke="#2F4156" stroke-width="1" opacity=".28"/>
+         font-size="8" letter-spacing="2.6" fill="#3F5363" opacity=".75">CAFÉ DE ORIGEN</text>
+   <path d="M64 216h72" stroke="#3F5363" stroke-width="1" opacity=".28"/>
    <text x="101" y="232" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="7.5" letter-spacing="1.8" fill="#2F4156" opacity=".6">200 G · COLOMBIA</text>
+         font-size="7.5" letter-spacing="1.8" fill="#3F5363" opacity=".6">200 G · COLOMBIA</text>
  </symbol>
 
  <!-- Vaso -->
  <symbol id="i-taza" viewBox="0 0 200 272">
-   <ellipse cx="96" cy="238" rx="58" ry="7" fill="#2F4156" opacity=".16"/>
-   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="var(--acento,#C8D9E6)"/>
+   <ellipse cx="96" cy="238" rx="58" ry="7" fill="#3F5363" opacity=".16"/>
+   <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="var(--acento,#AEBFC2)"/>
    <path d="M42 96h108v78a54 54 0 0 1-54 54h0a54 54 0 0 1-54-54z" fill="url(#g-lata)"/>
-   <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#C8D9E6)" stroke-width="14" stroke-linecap="round"/>
-   <ellipse cx="96" cy="96" rx="54" ry="11" fill="#F5EFEB"/>
-   <ellipse cx="96" cy="97" rx="44" ry="8" fill="#2F4156"/>
-   <ellipse cx="96" cy="176" rx="26" ry="4.6" fill="none" stroke="#F5EFEB" stroke-width="2.6" opacity=".5"/>
+   <path d="M150 116h16a26 26 0 0 1 0 52h-16" fill="none" stroke="var(--acento,#AEBFC2)" stroke-width="14" stroke-linecap="round"/>
+   <ellipse cx="96" cy="96" rx="54" ry="11" fill="#E8E2D7"/>
+   <ellipse cx="96" cy="97" rx="44" ry="8" fill="#3F5363"/>
+   <ellipse cx="96" cy="176" rx="26" ry="4.6" fill="none" stroke="#E8E2D7" stroke-width="2.6" opacity=".5"/>
  </symbol>
 
  <!-- Caja de pack -->
  <symbol id="i-caja" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="248" rx="66" ry="8" fill="#2F4156" opacity=".16"/>
-   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="var(--acento,#C8D9E6)"/>
+   <ellipse cx="100" cy="248" rx="66" ry="8" fill="#3F5363" opacity=".16"/>
+   <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="var(--acento,#AEBFC2)"/>
    <path d="M30 104h140v126a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14z" fill="url(#g-lata)"/>
-   <path d="M22 74h156v34H22z" fill="#2F4156" opacity=".86"/>
-   <path d="M92 74h16v170H92z" fill="#F5EFEB" opacity=".9"/>
-   <path d="M30 150h140v10H30z" fill="#F5EFEB" opacity=".9"/>
-   <path d="M100 74c-14-22-42-22-42-4 0 10 18 10 42 4zM100 74c14-22 42-22 42-4 0 10-18 10-42 4z" fill="#F5EFEB" opacity=".92"/>
-   <text x="100" y="200" text-anchor="middle" font-family="Poppins,sans-serif" font-size="20" font-weight="600" fill="#2F4156">kit</text>
+   <path d="M22 74h156v34H22z" fill="#3F5363" opacity=".86"/>
+   <path d="M92 74h16v170H92z" fill="#E8E2D7" opacity=".9"/>
+   <path d="M30 150h140v10H30z" fill="#E8E2D7" opacity=".9"/>
+   <path d="M100 74c-14-22-42-22-42-4 0 10 18 10 42 4zM100 74c14-22 42-22 42-4 0 10-18 10-42 4z" fill="#E8E2D7" opacity=".92"/>
+   <text x="100" y="200" text-anchor="middle" font-family="Poppins,sans-serif" font-size="20" font-weight="600" fill="#3F5363">kit</text>
  </symbol>
 
 
  <!-- Musette: bolso de hombro con correa larga -->
  <symbol id="i-musette" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="244" rx="60" ry="8" fill="#2F4156" opacity=".16"/>
+   <ellipse cx="100" cy="244" rx="60" ry="8" fill="#3F5363" opacity=".16"/>
    <!-- correa -->
    <path d="M58 118C58 58 72 38 100 38s42 20 42 80" fill="none"
-         stroke="#2F4156" stroke-width="9" stroke-linecap="round" opacity=".9"/>
+         stroke="#3F5363" stroke-width="9" stroke-linecap="round" opacity=".9"/>
    <!-- cuerpo del bolso -->
    <path d="M44 112h112a8 8 0 0 1 8 8v96a16 16 0 0 1-16 16H52a16 16 0 0 1-16-16v-96a8 8 0 0 1 8-8z"
-         fill="var(--acento,#C8D9E6)"/>
+         fill="var(--acento,#AEBFC2)"/>
    <path d="M44 112h112a8 8 0 0 1 8 8v96a16 16 0 0 1-16 16H52a16 16 0 0 1-16-16v-96a8 8 0 0 1 8-8z"
          fill="url(#g-lata)"/>
    <!-- solapa -->
-   <path d="M36 120h128v42a6 6 0 0 1-6 6H42a6 6 0 0 1-6-6z" fill="#2F4156" opacity=".82"/>
+   <path d="M36 120h128v42a6 6 0 0 1-6 6H42a6 6 0 0 1-6-6z" fill="#3F5363" opacity=".82"/>
    <!-- caminante -->
-   <g transform="translate(76,178) scale(.2)" style="color:#2F4156;--cam-fondo:none">
+   <g transform="translate(76,178) scale(.2)" style="color:#3F5363;--cam-fondo:none">
      <use href="#i-caminante-solido"/>
    </g>
  </symbol>
 
  <!-- Polera -->
  <symbol id="i-polera" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="246" rx="60" ry="8" fill="#2F4156" opacity=".16"/>
+   <ellipse cx="100" cy="246" rx="60" ry="8" fill="#3F5363" opacity=".16"/>
    <path d="M74 54h52l40 26-16 34-18-10v124a6 6 0 0 1-6 6H74a6 6 0 0 1-6-6V104l-18 10-16-34z"
-         fill="var(--acento,#F5EFEB)"/>
+         fill="var(--acento,#E8E2D7)"/>
    <path d="M74 54h52l40 26-16 34-18-10v124a6 6 0 0 1-6 6H74a6 6 0 0 1-6-6V104l-18 10-16-34z"
          fill="url(#g-lata)"/>
    <!-- cuello -->
-   <path d="M78 54h44c0 14-10 22-22 22s-22-8-22-22z" fill="#2F4156" opacity=".8"/>
+   <path d="M78 54h44c0 14-10 22-22 22s-22-8-22-22z" fill="#3F5363" opacity=".8"/>
    <!-- caminante en el pecho -->
-   <g transform="translate(78,120) scale(.22)" style="color:#2F4156;--cam-fondo:none">
+   <g transform="translate(78,120) scale(.22)" style="color:#3F5363;--cam-fondo:none">
      <use href="#i-caminante-solido"/>
    </g>
  </symbol>
@@ -2547,50 +2568,50 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
 
  <!-- Lata de cold brew (guardada: el producto está inactivo en ia/datos.py) -->
  <symbol id="i-coldbrew-lata" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="246" rx="46" ry="7" fill="#2F4156" opacity=".16"/>
+   <ellipse cx="100" cy="246" rx="46" ry="7" fill="#3F5363" opacity=".16"/>
    <path d="M66 62h68a6 6 0 0 1 6 6v158a14 14 0 0 1-14 14H74a14 14 0 0 1-14-14V68a6 6 0 0 1 6-6z"
-         fill="var(--acento,#567C8D)"/>
+         fill="var(--acento,#706962)"/>
    <path d="M66 62h68a6 6 0 0 1 6 6v158a14 14 0 0 1-14 14H74a14 14 0 0 1-14-14V68a6 6 0 0 1 6-6z"
          fill="url(#g-lata)"/>
-   <rect x="62" y="54" width="76" height="14" rx="5" fill="#2F4156" opacity=".9"/>
-   <ellipse cx="100" cy="56" rx="38" ry="7" fill="#2F4156" opacity=".55"/>
-   <g transform="translate(82,92) scale(.18)" style="color:#F5EFEB;--cam-fondo:none">
+   <rect x="62" y="54" width="76" height="14" rx="5" fill="#3F5363" opacity=".9"/>
+   <ellipse cx="100" cy="56" rx="38" ry="7" fill="#3F5363" opacity=".55"/>
+   <g transform="translate(82,92) scale(.18)" style="color:#E8E2D7;--cam-fondo:none">
      <use href="#i-caminante-solido"/>
    </g>
    <text x="100" y="166" text-anchor="middle" font-family="Poppins,sans-serif"
-         font-size="12" font-weight="700" letter-spacing="-.2" fill="#F5EFEB">Sepia Coffee</text>
+         font-size="12" font-weight="700" letter-spacing="-.2" fill="#E8E2D7">Sepia Coffee</text>
    <text x="100" y="184" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="7.5" letter-spacing="2.2" fill="#F5EFEB" opacity=".8">COLD BREW</text>
-   <path d="M70 198h60" stroke="#F5EFEB" stroke-width="1" opacity=".3"/>
+         font-size="7.5" letter-spacing="2.2" fill="#E8E2D7" opacity=".8">COLD BREW</text>
+   <path d="M70 198h60" stroke="#E8E2D7" stroke-width="1" opacity=".3"/>
    <text x="100" y="214" text-anchor="middle" font-family="DM Sans,sans-serif"
-         font-size="7" letter-spacing="1.6" fill="#F5EFEB" opacity=".66">SIN AZÚCAR</text>
+         font-size="7" letter-spacing="1.6" fill="#E8E2D7" opacity=".66">SIN AZÚCAR</text>
  </symbol>
 
  <!-- Batidor de matcha -->
  <symbol id="i-batidor" viewBox="0 0 200 272">
-   <ellipse cx="100" cy="248" rx="52" ry="7" fill="#2F4156" opacity=".16"/>
-   <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#F5EFEB)"/>
-   <path d="M70 146h60l-4 30H74z" fill="var(--acento,#F5EFEB)"/>
-   <g stroke="var(--acento,#F5EFEB)" stroke-width="3" stroke-linecap="round" fill="none">
+   <ellipse cx="100" cy="248" rx="52" ry="7" fill="#3F5363" opacity=".16"/>
+   <rect x="88" y="34" width="24" height="112" rx="8" fill="var(--acento,#E8E2D7)"/>
+   <path d="M70 146h60l-4 30H74z" fill="var(--acento,#E8E2D7)"/>
+   <g stroke="var(--acento,#E8E2D7)" stroke-width="3" stroke-linecap="round" fill="none">
      <path d="M76 176c-8 24-4 48 4 60M88 178c-5 24-2 48 3 58M100 178v60M112 178c5 24 2 48-3 58M124 176c8 24 4 48-4 60"/>
      <path d="M68 174c-10 24-6 50 4 62M132 174c10 24 6 50-4 62"/>
    </g>
-   <path d="M64 172h72" stroke="#2F4156" stroke-width="2" opacity=".2"/>
+   <path d="M64 172h72" stroke="#3F5363" stroke-width="2" opacity=".2"/>
  </symbol>
 
  <!-- Granos -->
  <symbol id="i-granos" viewBox="0 0 120 120">
-   <g transform="translate(40 44) rotate(-24)"><ellipse rx="15" ry="21" fill="#2F4156"/><path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#C8D9E6" stroke-width="2.2" stroke-linecap="round"/></g>
-   <g transform="translate(76 62) rotate(32)"><ellipse rx="14" ry="20" fill="#567C8D"/><path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#C8D9E6" stroke-width="2.1" stroke-linecap="round"/></g>
-   <g transform="translate(50 86) rotate(8)"><ellipse rx="13" ry="18.5" fill="#2F4156"/><path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#C8D9E6" stroke-width="2" stroke-linecap="round"/></g>
+   <g transform="translate(40 44) rotate(-24)"><ellipse rx="15" ry="21" fill="#3F5363"/><path d="M0-18C6-9-6 9 0 18" fill="none" stroke="#AEBFC2" stroke-width="2.2" stroke-linecap="round"/></g>
+   <g transform="translate(76 62) rotate(32)"><ellipse rx="14" ry="20" fill="#706962"/><path d="M0-17C6-8-6 8 0 17" fill="none" stroke="#AEBFC2" stroke-width="2.1" stroke-linecap="round"/></g>
+   <g transform="translate(50 86) rotate(8)"><ellipse rx="13" ry="18.5" fill="#3F5363"/><path d="M0-16C5-8-5 8 0 16" fill="none" stroke="#AEBFC2" stroke-width="2" stroke-linecap="round"/></g>
  </symbol>
  <symbol id="i-grano" viewBox="0 0 24 32">
    <ellipse cx="12" cy="16" rx="10.5" ry="15" fill="currentColor"/>
-   <path d="M12 3.5C16.6 10.5 7.4 21.5 12 28.5" fill="none" stroke="var(--fondo-grano,#F5EFEB)" stroke-width="2.8" stroke-linecap="round"/>
+   <path d="M12 3.5C16.6 10.5 7.4 21.5 12 28.5" fill="none" stroke="var(--fondo-grano,#E8E2D7)" stroke-width="2.8" stroke-linecap="round"/>
  </symbol>
  <symbol id="i-hoja-matcha" viewBox="0 0 120 120">
-   <path d="M96 24s-4 58-42 58a24 24 0 0 1-24-24c0-34 66-34 66-34z" fill="var(--acento,#567C8D)"/>
-   <path d="M24 98s10-30 36-46" fill="none" stroke="#2F4156" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+   <path d="M96 24s-4 58-42 58a24 24 0 0 1-24-24c0-34 66-34 66-34z" fill="var(--acento,#706962)"/>
+   <path d="M24 98s10-30 36-46" fill="none" stroke="#3F5363" stroke-width="4" stroke-linecap="round" opacity=".45"/>
  </symbol>
 
 
@@ -2736,23 +2757,23 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
           <img src="assets/fotos/hero-1.jpg" alt="Dos manos sosteniendo un matcha helado y un café de Sepia Coffee" onerror="this.remove()">
           <div class="hero-arte" aria-hidden="true">
             <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
-            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#2F4156"><use href="#i-bolsa"/></svg>
+            <svg class="pieza p1" viewBox="0 0 200 272" style="--acento:#3F5363"><use href="#i-bolsa"/></svg>
             <svg class="pieza p2" viewBox="0 0 200 272"><use href="#i-tarro"/></svg>
-            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#567C8D"><use href="#i-botella"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#706962"><use href="#i-botella"/></svg>
           </div>
         </div>
       </div>
     </article>
 
     <article class="hero-slide" role="group" aria-roledescription="diapositiva" aria-label="2 de 2">
-      <div class="hero-caja" style="background:linear-gradient(120deg,#567C8D,#C8D9E6)">
+      <div class="hero-caja" style="background:linear-gradient(120deg,#706962,#AEBFC2)">
         <div class="hero-fondo">
           <img src="assets/fotos/hero-2.jpg" alt="Matcha de Sepia Coffee batido en su bowl, junto a la lata celeste" onerror="this.remove()">
           <div class="hero-arte" aria-hidden="true">
             <span class="burbuja-deco b1"></span><span class="burbuja-deco b2"></span>
             <svg class="pieza p1" viewBox="0 0 200 272" ><use href="#i-tarro"/></svg>
-            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#C8D9E6"><use href="#i-taza"/></svg>
-            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#F5EFEB"><use href="#i-batidor"/></svg>
+            <svg class="pieza p2" viewBox="0 0 200 272" style="--acento:#AEBFC2"><use href="#i-taza"/></svg>
+            <svg class="pieza p3" viewBox="0 0 200 272" style="--acento:#E8E2D7"><use href="#i-batidor"/></svg>
           </div>
         </div>
         <div class="hero-velo"></div>
@@ -2795,11 +2816,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-colombia" data-id="colombia" data-nombre="Colombia"
                  data-precio="11990" data-precio-txt="$11.990"
                  data-variantes='{&quot;250 g · En grano&quot;: 11990, &quot;250 g · Molido&quot;: 11990, &quot;1 kg · En grano&quot;: 37990, &quot;1 kg · Molido&quot;: 37990}'
-                 data-tono="#E69B4A" data-acento="#2F4156" data-arte="i-bolsa" data-cat="Café en grano">
-          <div class="prod-media" style="--tono:#E69B4A">
+                 data-tono="#AEBFC2" data-acento="#3F5363" data-arte="i-bolsa" data-cat="Café en grano">
+          <div class="prod-media" style="--tono:#AEBFC2">
             <img class="foto" src="assets/fotos/prod-colombia.jpg" alt="Bolsa blanca de café de especialidad Colombia de Sepia Coffee, con la etiqueta naranja y el sello holográfico" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-colombia-2.jpg" alt="La bolsa de Colombia sobre un tronco de madera, con granos de café al lado" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Colombia"><use href="#i-bolsa"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Colombia"><use href="#i-bolsa"/></svg>
             <span class="prod-etq">Más vendido</span>
             <button class="prod-rapido" type="button" data-agregar><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Agregar · $11.990</span></button>
           </div>
@@ -2817,11 +2838,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-bolivia" data-id="bolivia" data-nombre="Bolivia Yungas"
                  data-precio="11990" data-precio-txt="$11.990"
                  data-variantes='{&quot;250 g · En grano&quot;: 11990, &quot;250 g · Molido&quot;: 11990, &quot;1 kg · En grano&quot;: 37990, &quot;1 kg · Molido&quot;: 37990}'
-                 data-tono="#DA9296" data-acento="#2F4156" data-arte="i-bolsa" data-cat="Café en grano">
-          <div class="prod-media" style="--tono:#DA9296">
+                 data-tono="#E8E2D7" data-acento="#3F5363" data-arte="i-bolsa" data-cat="Café en grano">
+          <div class="prod-media" style="--tono:#E8E2D7">
             <img class="foto" src="assets/fotos/prod-bolivia.jpg" alt="Bolsa blanca de café de especialidad Bolivia de Sepia Coffee, con la etiqueta rosada y el sello holográfico" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-bolivia-2.jpg" alt="La bolsa de Bolivia sobre un tronco de madera, con granos de café al lado" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Bolivia Yungas"><use href="#i-bolsa"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Bolivia Yungas"><use href="#i-bolsa"/></svg>
             <span class="prod-etq">Nuevo</span>
             <button class="prod-rapido" type="button" data-agregar><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Agregar · $11.990</span></button>
           </div>
@@ -2839,11 +2860,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-matcha" data-id="matcha" data-nombre="Matcha"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;30 g en lata&quot;: null, &quot;80 g en sobre&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#567C8D" data-arte="i-tarro" data-cat="Matcha">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#AEBFC2" data-acento="#3F5363" data-arte="i-tarro" data-cat="Matcha">
+          <div class="prod-media" style="--tono:#AEBFC2">
             <img class="foto" src="assets/fotos/prod-matcha.jpg" alt="Lata celeste de 30 g de matcha en polvo de Sepia Coffee" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-matcha-2.jpg" alt="Matcha batido en un bowl, con la espuma formada" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Matcha"><use href="#i-tarro"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Matcha"><use href="#i-tarro"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2861,11 +2882,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-lata-edicion" data-id="lata-edicion" data-nombre="Lata edición limitada"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-lata-cafe" data-cat="Café en grano">
-          <div class="prod-media" style="--tono:#C8D9E6">
+                 data-tono="#E8E2D7" data-acento="#3F5363" data-arte="i-lata-cafe" data-cat="Café en grano">
+          <div class="prod-media" style="--tono:#E8E2D7">
             <img class="foto" src="assets/fotos/prod-lata-edicion.jpg" alt="Lata de edición limitada de 200 g de café de Sepia Coffee" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-lata-edicion-2.jpg" alt="La lata de edición limitada abierta, con el café dentro" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Lata edición limitada"><use href="#i-lata-cafe"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Lata edición limitada"><use href="#i-lata-cafe"/></svg>
             <span class="prod-etq">Edición limitada</span>
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2892,10 +2913,10 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <a href="#cafes" class="enlace-sub">Ver todo</a>
       </div>
       <div class="cats de-3 rev">
-        <a class="cat" href="#cafes" style="--tono:#C8D9E6">
+        <a class="cat" href="#cafes" style="--tono:#AEBFC2">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-cafe.jpg" alt="Bolsas de café de especialidad en grano de Sepia Coffee" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-bolsa"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#3F5363" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <h3>Café</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
@@ -2903,15 +2924,15 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <a class="cat" href="#matcha" style="--tono:#FFFFFF">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-matcha.jpg" alt="Matcha helado de Sepia Coffee servido en un vaso alto" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg viewBox="0 0 120 120" style="--acento:#567C8D" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
+            <svg viewBox="0 0 120 120" style="--acento:#706962" aria-hidden="true"><use href="#i-hoja-matcha"/></svg>
           </div>
           <h3>Matcha</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
         </a>
-        <a class="cat" href="#packs" style="--tono:#C8D9E6">
+        <a class="cat" href="#packs" style="--tono:#AEBFC2">
           <div class="cat-media">
             <img class="foto" src="assets/fotos/cat-accesorios.jpg" alt="Musette, polera y vaso de Sepia Coffee" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#2F4156" aria-hidden="true"><use href="#i-taza"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#3F5363" aria-hidden="true"><use href="#i-taza"/></svg>
           </div>
           <h3>Kits y accesorios</h3>
           <span class="flecha">Ver <svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-der"/></svg></span>
@@ -2939,11 +2960,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-kit-matcha" data-id="kit-matcha" data-nombre="Kit matcha"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#567C8D" data-acento="#F5EFEB" data-arte="i-batidor" data-cat="Kits">
-          <div class="prod-media" style="--tono:#567C8D">
+                 data-tono="#E8E2D7" data-acento="#3F5363" data-arte="i-batidor" data-cat="Kits">
+          <div class="prod-media" style="--tono:#E8E2D7">
             <img class="foto" src="assets/fotos/prod-kit-matcha.jpg" alt="Kit de matcha de Sepia Coffee con batidor de bambú" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-kit-matcha-2.jpg" alt="El kit de matcha con todas sus piezas sobre una mesa" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#F5EFEB" role="img" aria-label="Kit matcha"><use href="#i-batidor"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Kit matcha"><use href="#i-batidor"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2960,11 +2981,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-kit-cafetero" data-id="kit-cafetero" data-nombre="Kit cafetero"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#2F4156" data-arte="i-caja" data-cat="Kits">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#AEBFC2" data-acento="#3F5363" data-arte="i-caja" data-cat="Kits">
+          <div class="prod-media" style="--tono:#AEBFC2">
             <img class="foto" src="assets/fotos/prod-kit-cafetero.jpg" alt="Kit cafetero de Sepia Coffee para preparar café de especialidad en casa" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-kit-cafetero-2.jpg" alt="El kit cafetero con todas sus piezas sobre una mesa" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Kit cafetero"><use href="#i-caja"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Kit cafetero"><use href="#i-caja"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -2981,11 +3002,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-musette" data-id="musette" data-nombre="Musette"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#567C8D" data-arte="i-musette" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#C8D9E6">
+                 data-tono="#E8E2D7" data-acento="#3F5363" data-arte="i-musette" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#E8E2D7">
             <img class="foto" src="assets/fotos/prod-musette.jpg" alt="Musette de tela de Sepia Coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-musette-2.jpg" alt="La musette de Sepia Coffee colgada al hombro" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Musette"><use href="#i-musette"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Musette"><use href="#i-musette"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -3002,11 +3023,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-polera" data-id="polera" data-nombre="Polera"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#FFFFFF" data-acento="#567C8D" data-arte="i-polera" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#FFFFFF">
+                 data-tono="#AEBFC2" data-acento="#3F5363" data-arte="i-polera" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#AEBFC2">
             <img class="foto" src="assets/fotos/prod-polera.jpg" alt="Polera de algodón de Sepia Coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-polera-2.jpg" alt="La polera de Sepia Coffee puesta" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#567C8D" role="img" aria-label="Polera"><use href="#i-polera"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Polera"><use href="#i-polera"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -3023,11 +3044,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <article class="prod" id="producto-vaso" data-id="vaso" data-nombre="Vaso"
                  data-precio="" data-precio-txt="Precio por confirmar"
                  data-variantes='{&quot;&quot;: null}'
-                 data-tono="#C8D9E6" data-acento="#2F4156" data-arte="i-taza" data-cat="Accesorios">
-          <div class="prod-media" style="--tono:#C8D9E6">
+                 data-tono="#E8E2D7" data-acento="#3F5363" data-arte="i-taza" data-cat="Accesorios">
+          <div class="prod-media" style="--tono:#E8E2D7">
             <img class="foto" src="assets/fotos/prod-vaso.jpg" alt="Vaso reutilizable de Sepia Coffee con el caminante" loading="lazy" decoding="async" onerror="this.remove()">
             <img class="foto alterna" src="assets/fotos/prod-vaso-2.jpg" alt="El vaso de Sepia Coffee servido con café" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg class="arte" viewBox="0 0 200 272" style="--acento:#2F4156" role="img" aria-label="Vaso"><use href="#i-taza"/></svg>
+            <svg class="arte" viewBox="0 0 200 272" style="--acento:#3F5363" role="img" aria-label="Vaso"><use href="#i-taza"/></svg>
             
             <button class="prod-rapido" type="button" data-agregar disabled><svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mas"/></svg><span data-etq-agregar>Pronto</span></button>
           </div>
@@ -3538,11 +3559,11 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
         <div class="editorial-fotos">
           <div>
             <img class="foto" src="assets/fotos/nosotros-1.jpg" alt="Café de Sepia Coffee recién tostado en Santiago" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-bolsa"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#AEBFC2" aria-hidden="true"><use href="#i-bolsa"/></svg>
           </div>
           <div>
             <img class="foto" src="assets/fotos/nosotros-2.jpg" alt="Matcha de Sepia Coffee en su lata celeste" loading="lazy" decoding="async" onerror="this.remove()">
-            <svg viewBox="0 0 200 272" style="--acento:#C8D9E6" aria-hidden="true"><use href="#i-tarro"/></svg>
+            <svg viewBox="0 0 200 272" style="--acento:#AEBFC2" aria-hidden="true"><use href="#i-tarro"/></svg>
           </div>
         </div>
       </div>
@@ -3831,7 +3852,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
     var enl = $("[data-g-enlace]");
     if(GOOGLE.enlace) enl.href = GOOGLE.enlace; else enl.remove();
 
-    var tonos = ["#FFFFFF", "#F5EFEB", "#FFFFFF", "#F5EFEB"];  // sobre el celeste de la sección
+    var tonos = ["#FFFFFF", "#E8E2D7", "#FFFFFF", "#E8E2D7"];  // sobre el celeste de la sección
     /* Punto 1 del plan: las reseñas también van en los datos
        estructurados, para que Google y ChatGPT las puedan citar.
        Se inyecta solo si hay datos reales, nunca inventados. */
@@ -4178,7 +4199,7 @@ h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;line-height:1.02
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var c = $("#correo");
-    if(!c.value || c.value.indexOf("@") === -1 || c.value.indexOf(".") === -1){ c.focus(); c.style.borderColor = "#567C8D"; return; }
+    if(!c.value || c.value.indexOf("@") === -1 || c.value.indexOf(".") === -1){ c.focus(); c.style.borderColor = "#706962"; return; }
     c.style.borderColor = "";
     form.style.display = "none";
     $("#bol-ok").classList.add("visible");
