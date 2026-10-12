@@ -25,7 +25,7 @@ RAIZ = os.path.join(AQUI, "..")
 # Antes los dos cafés llevaban el color de su propia bolsa (naranja y rosado).
 # Se sacó: son colores de packaging, no de la paleta de marca, y el brand book
 # es explícito en que las tarjetas van en celeste.
-CELESTE, CREMA, AZUL = "#AEBFC2", "#E8E2D7", "#3F5363"
+CELESTE, CREMA, AZUL = "#B9C5D3", "#E7E5D9", "#526EA0"
 TONOS = {
  "colombia": CELESTE, "bolivia": CREMA, "matcha": CELESTE,
  "lata-edicion": CREMA, "coldbrew-lata": CELESTE,

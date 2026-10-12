@@ -71,44 +71,55 @@ sin el wordmark, como símbolo.
 Nunca: efectos, sombras, gradientes, contornos, ni reemplazar el caminante
 por un grano de café (eso era la identidad anterior).
 
-### Paleta — la del brand book
+### Paleta — la que sale del logo
 
 | Nombre | HEX | Uso |
 |---|---|---|
-| Azul principal | `#3F5363` | Botones principales, títulos, íconos y logo |
-| Celeste grisáceo | `#AEBFC2` | Fondos de secciones destacadas, tarjetas y bloques de producto |
-| Crema | `#E8E2D7` | Fondo principal de la página |
-| Beige arena | `#CFC4B2` | Fondos secundarios, separadores y bordes |
-| Madera clara | `#C9A779` | Acentos pequeños, etiquetas y detalles decorativos |
-| Café topo | `#706962` | Textos secundarios y descripciones sobre crema |
-| Negro grafito | `#252A2C` | Texto principal, precios y navegación |
+| Azul principal | `#526EA0` | Logo, títulos de sección, botones y enlaces del pie |
+| Celeste grisáceo | `#B9C5D3` | Bordes, separadores, lo seleccionado y cajas de apoyo |
+| Crema cálido | `#E7E5D9` | Fondos claros, y la letra sobre el azul noche |
+| Azul noche | `#020526` | Texto principal, barra de anuncio y contrastes |
+| Gris blanco | `#F2F2F2` | Fondos neutros y la etiqueta de agotado |
 
-**Estos siete son los únicos colores.** Protagonismo al crema, el azul y el
-celeste; el beige, la madera y el topo son de apoyo. Nada de vino, terracota
-ni neones.
+**Estos cinco son los únicos colores**, más el blanco, que es el fondo de la
+página. Protagonismo al azul principal y al azul noche; el celeste, la crema
+y el gris son de apoyo. Nada de vino, terracota, dorado ni neones.
 
 Cómo se aplica:
 
-- Página: fondo crema, texto grafito, títulos azules.
-- Botón principal: fondo azul, texto crema.
-- Botón secundario: fondo crema, borde y texto azul.
-- Sección destacada de matcha: fondo celeste, texto grafito.
-- Pie de página: fondo azul, texto crema.
+- Página: fondo blanco, texto azul noche, títulos de sección en azul principal.
+- Barra de anuncio: fondo azul noche, texto blanco.
+- Encabezado: fondo blanco, menú en azul noche, borde inferior celeste.
+- Pie de página: fondo blanco, enlaces en azul principal.
+- Botón principal: fondo azul principal, texto blanco.
+- Botón secundario: fondo transparente, borde y texto azul principal.
+- Bloque sobre azul (Nosotros): fondo azul principal, texto y botón blancos.
+- Panel oscuro (el cotizador de eventos): fondo azul noche, letra crema.
 
-**Contraste, medido.** Lo que pasa AA (4,5:1): grafito sobre crema 11,3 ·
-grafito sobre celeste 7,6 · grafito sobre arena 8,4 · grafito sobre madera
-6,4 · azul sobre crema 6,2 · crema sobre azul 6,2.
+**Contraste, medido.** Lo que pasa AA (4,5:1): azul noche sobre blanco 19,96 ·
+azul noche sobre gris 17,83 · crema sobre azul noche 15,78 · azul noche sobre
+celeste 11,39 · blanco sobre azul principal 5,13 · azul principal sobre gris
+4,58 · azul principal sobre blanco 5,13.
 
-Lo que **no** pasa y hay que evitar: topo sobre crema 4,19 y azul sobre
-celeste 4,20, los dos apenas bajo el mínimo, así que van solo en texto
-grande (18 pt o 14 pt en negrita), nunca en cuerpo. Topo sobre celeste 2,84,
-no se usa. Y crema sobre celeste 1,48 o sobre arena 1,34: ilegible, nunca.
+Lo que **no** pasa y hay que evitar: crema sobre azul principal 4,05 y azul
+principal sobre azul noche 3,89, los dos bajo el mínimo, así que van solo en
+texto grande (18 pt o 14 pt en negrita), nunca en cuerpo. Azul principal sobre
+celeste 2,93, no se usa. Y celeste sobre crema 1,39, celeste sobre blanco 1,75
+o crema sobre blanco 1,26: ilegibles, nunca.
+
+Ojo con un detalle de la paleta: dice que la crema va «para letras sobre
+azul», pero sobre el azul principal da 4,05 y no alcanza para cuerpo de texto.
+Por eso sobre azul principal la letra va blanca, y la crema se reserva para el
+azul noche, donde da 15,78.
 
 Ojo con las fotos: el celeste sale más claro y más azulado por la
-iluminación. El de la paleta es `#AEBFC2` y manda ese.
+iluminación. El de la paleta es `#B9C5D3` y manda ese.
 
-> **La paleta cambió en octubre de 2026.** La anterior era celeste `#C8D9E6`,
-> beige `#F5EFEB`, navy `#2F4156` y teal `#567C8D`. Ya no se usa.
+> **La paleta cambió dos veces en octubre de 2026.** La primera era celeste
+> `#C8D9E6`, beige `#F5EFEB`, navy `#2F4156` y teal `#567C8D`. La segunda, azul
+> `#3F5363`, celeste `#AEBFC2`, crema `#E8E2D7`, arena `#CFC4B2`, madera
+> `#C9A779`, topo `#706962` y grafito `#252A2C`. Ninguna de las dos se usa: la
+> vigente es la que se sacó del logo.
 
 ### Tipografía
 - **Display y titulares:** Poppins (500–800). Es la que calza con el
@@ -171,8 +182,8 @@ marca le restan credibilidad: si el matcha no hace bajar de peso, se dice.
 - **Emojis:** máximo 1–2 por post, si aplica.
 
 ### Mockups y web
-- Paleta oficial. Fondos en `#E8E2D7` o `#AEBFC2`, nunca blanco puro de fondo
-  general.
+- Paleta oficial. El fondo general es blanco; los fondos de apoyo van en
+  `#E7E5D9` o `#F2F2F2`, nunca en un color de fuera de la paleta.
 - Google Fonts: `Poppins` display, `DM Sans` cuerpo.
 - Líneas finas, esquinas muy redondeadas, espaciado generoso, sin sombras
   dramáticas.
@@ -181,8 +192,8 @@ marca le restan credibilidad: si el matcha no hace bajar de peso, se dice.
 ### Prompts de imagen
 ```
 [producto o escena], soft natural side lighting, editorial coffee photography,
-minimalist composition, ceramic surfaces, warm beige #E8E2D7 background,
-pale blue #AEBFC2 accents, premium specialty coffee aesthetic,
+minimalist composition, ceramic surfaces, warm cream #E7E5D9 background,
+slate blue #526EA0 accents, premium specialty coffee aesthetic,
 muted palette, --ar [ratio] --style raw
 ```
 Para lifestyle añadir: `Santiago Chile, latin warmth, natural textures, linen, warm wood`

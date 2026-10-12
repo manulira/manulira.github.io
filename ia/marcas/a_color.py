@@ -10,7 +10,7 @@ import sys, argparse, pymupdf as fitz
 
 ap = argparse.ArgumentParser()
 ap.add_argument("src"); ap.add_argument("dst")
-ap.add_argument("--color", required=True, help="hex del color final, ej #3F5363")
+ap.add_argument("--color", required=True, help="hex del color final, ej #526EA0")
 ap.add_argument("--piso", type=float, default=0.55)
 ap.add_argument("--techo", type=float, default=0.85)
 a = ap.parse_args()

@@ -31,22 +31,25 @@ redondo, y bloques de color plano.
 
 ### Paleta bloqueada
 
-Estos cinco colores son los únicos de marca. No se agregan otros.
+Estos cinco colores salen del logo y son los únicos de marca, más el
+blanco del fondo. No se agregan otros.
 
 | Uso | Color | HEX |
 |---|---|---|
-| Principal | Sky Blue · Celeste | `#AEBFC2` |
-| Secundario | Beige | `#E8E2D7` |
-| Logos y textos | Navy · Azul marino | `#3F5363` |
-| Apoyo | Teal · Azul petróleo | `#706962` |
-| Apoyo | White · Blanco | `#FFFFFF` |
+| Principal | Azul principal | `#526EA0` |
+| Texto y bloques oscuros | Azul noche | `#020526` |
+| Apoyo | Celeste grisáceo | `#B9C5D3` |
+| Apoyo | Crema cálido | `#E7E5D9` |
+| Apoyo | Gris blanco | `#F2F2F2` |
+| Fondo | Blanco | `#FFFFFF` |
 
 Reglas de uso en la página:
 
-- Fondo de página: Beige. Paneles y tarjetas claras: Blanco.
-- Todo el texto y los bloques oscuros: Navy.
-- Fondos de tarjeta de producto y de categoría: alternan Celeste, Blanco y Teal,
-  en ese orden de frecuencia. El Teal va poco, para dar acento.
+- Fondo de página: Blanco. Fondos de apoyo: Crema o Gris blanco.
+- Todo el texto y los bloques oscuros: Azul noche. Los títulos de sección y los
+  botones, en Azul principal.
+- Fondos de tarjeta de producto y de categoría: alternan Blanco, Crema y
+  Celeste, en ese orden de frecuencia. El Celeste va poco, para dar acento.
 - Cinta de ventajas: fondo Teal, texto Blanco.
 - Botones principales: Navy con texto Blanco. Secundarios: Blanco o contorno Navy.
 - Todo gris, borde o texto secundario es Navy con transparencia, nunca un gris nuevo.
