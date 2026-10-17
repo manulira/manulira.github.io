@@ -1,0 +1,159 @@
+{%- comment -%}
+  SEPIA COFFEE · filtro anti-spam para los formularios de contacto
+
+  Por qué existe. El hCaptcha de Shopify ya está activo y funciona: un envío
+  directo a /contact, sin pasar por el formulario, recibe un 403. Pero es
+  invisible: solo muestra el desafío cuando sospecha de un robot, así que
+  quien mira el formulario no ve nada. Lo que se cuela es gente o robots que
+  abren la página, usan el formulario y pasan el captcha. Shopify no tiene un
+  ajuste más estricto, así que acá se le suman tres trabas que una persona no
+  nota y una herramienta automática sí, y una línea que deja a la vista que
+  el formulario está protegido:
+
+    1. Un campo trampa, escondido, que un humano nunca ve ni llena.
+    2. Un mínimo de tiempo: nadie lee una página y manda el formulario en
+       menos de 4 segundos desde que cargó.
+    3. Sin enlaces en el mensaje. El correo basura que llega por acá casi
+       siempre es un enlace de phishing disfrazado de «tengo una solución
+       para ti»; una consulta real sobre café o un evento no necesita uno.
+
+  Se engancha a cualquier formulario cuyo action contenga /contact y lleve
+  form_type=contact: el mismo criterio con que Shopify cuelga su captcha. Así
+  cubre el formulario de Contacto y el cotizador de Eventos sin tocar ninguno
+  de los dos.
+
+  No interfiere con el captcha. Si el envío es legítimo no hace nada y el
+  evento sigue su camino. Si no lo es, lo corta antes de que el captcha o el
+  navegador lo vean.
+
+  Para apagarlo sin borrar nada: BLOQUEAR_ENLACES = false deja solo las otras
+  dos trabas. Para volver a probarlo en el navegador, cada formulario deja su
+  veredicto en data-sc-veredicto (ok, rapido, trampa o enlace).
+{%- endcomment -%}
+<script>
+(function () {
+  if (window.__scAntiSpam) return;
+  window.__scAntiSpam = true;
+
+  var MIN_MS = 4000;
+  var BLOQUEAR_ENLACES = true;
+  var ENLACE = /https?:\/\/|\bwww\.|\b(?:bit\.ly|tinyurl\.com|cutt\.ly|rb\.gy|is\.gd|t\.co|shorturl\.at|t\.me)\b/i;
+
+  var TEXTO = {
+    rapido: 'Un segundo más y vuelve a enviarlo.',
+    enlace: 'Por seguridad no aceptamos enlaces en el mensaje. Cuéntanos el nombre del lugar o de la empresa y listo.',
+    trampa: 'No pudimos enviar el mensaje. Escríbenos por WhatsApp al +56 9 7928 4400.'
+  };
+
+  function esContacto(f) {
+    if (!f || f.tagName !== 'FORM') return false;
+    if (!/\/contact(?:[#?]|$)/.test(f.getAttribute('action') || '')) return false;
+    return !!f.querySelector('input[name="form_type"][value="contact"]');
+  }
+
+  /* El campo trampa no lleva name: nunca viaja en el envío ni aparece en el
+     correo. Solo se mira con JavaScript al enviar. */
+  function ponerTrampa(f) {
+    if (f.querySelector('.sc-trampa')) return;
+    var caja = document.createElement('div');
+    caja.setAttribute('aria-hidden', 'true');
+    caja.style.cssText = 'position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden';
+    var etq = document.createElement('label');
+    etq.textContent = 'Deja este campo vacío';
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'sc-trampa';
+    inp.tabIndex = -1;
+    inp.autocomplete = 'off';
+    etq.appendChild(inp);
+    caja.appendChild(etq);
+    f.appendChild(caja);
+  }
+
+  /* El captcha de Shopify es invisible: solo muestra el desafío cuando
+     sospecha de un robot. Esta línea deja a la vista que el formulario está
+     protegido, y cumple el aviso que pide hCaptcha cuando no muestra su logo. */
+  function ponerNota(f) {
+    if (f.querySelector('.sc-captcha-nota')) return;
+    var p = document.createElement('p');
+    p.className = 'sc-captcha-nota';
+    p.style.cssText = 'margin:.8rem 0 0;font-size:.8rem;line-height:1.4;color:#020526';
+    p.appendChild(document.createTextNode('Este formulario está protegido con hCaptcha. Se aplican su '));
+    var a1 = document.createElement('a');
+    a1.href = 'https://www.hcaptcha.com/privacy';
+    a1.target = '_blank';
+    a1.rel = 'noopener noreferrer';
+    a1.textContent = 'Política de privacidad';
+    p.appendChild(a1);
+    p.appendChild(document.createTextNode(' y sus '));
+    var a2 = document.createElement('a');
+    a2.href = 'https://www.hcaptcha.com/terms';
+    a2.target = '_blank';
+    a2.rel = 'noopener noreferrer';
+    a2.textContent = 'Términos del servicio';
+    p.appendChild(a2);
+    p.appendChild(document.createTextNode('.'));
+    f.appendChild(p);
+  }
+
+  function aviso(f, texto) {
+    var p = f.querySelector('.sc-aviso');
+    if (!p) {
+      p = document.createElement('p');
+      p.className = 'sc-aviso';
+      p.setAttribute('role', 'alert');
+      p.style.cssText = 'margin:.8rem 0 0;font-size:.9rem;font-weight:600;line-height:1.4;color:#020526';
+      var enviar = f.querySelector('[type="submit"]');
+      if (enviar && enviar.parentNode) enviar.parentNode.insertBefore(p, enviar.nextSibling);
+      else f.appendChild(p);
+    }
+    p.textContent = texto;
+  }
+
+  function veredicto(f) {
+    var t = f.querySelector('.sc-trampa');
+    if (t && t.value.trim() !== '') return 'trampa';
+    if (performance.now() < MIN_MS) return 'rapido';
+    if (BLOQUEAR_ENLACES) {
+      var campos = f.querySelectorAll('textarea, input[type="text"]:not(.sc-trampa)');
+      for (var i = 0; i < campos.length; i++) {
+        if (ENLACE.test(campos[i].value)) return 'enlace';
+      }
+    }
+    return 'ok';
+  }
+
+  function preparar() {
+    var fs = document.forms;
+    for (var i = 0; i < fs.length; i++) if (esContacto(fs[i])) { ponerTrampa(fs[i]); ponerNota(fs[i]); }
+  }
+
+  /* Los formularios del tema pueden aparecer después de la carga: se
+     prepara cada uno la primera vez que alguien lo toca. */
+  document.addEventListener('focusin', function (e) {
+    var f = e.target && e.target.form;
+    if (esContacto(f)) { ponerTrampa(f); ponerNota(f); }
+  });
+
+  /* En captura y sobre document, para correr antes que el captcha de
+     Shopify y que cualquier otro oyente del formulario. */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!esContacto(f)) return;
+    ponerTrampa(f);
+    var v = veredicto(f);
+    f.setAttribute('data-sc-veredicto', v);
+    if (v === 'ok') {
+      var p = f.querySelector('.sc-aviso');
+      if (p) p.textContent = '';
+      return;
+    }
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    aviso(f, TEXTO[v]);
+  }, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', preparar);
+  else preparar();
+})();
+</script>
