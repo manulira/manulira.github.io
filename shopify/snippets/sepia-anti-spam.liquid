@@ -2,10 +2,13 @@
   SEPIA COFFEE · filtro anti-spam para los formularios de contacto
 
   Por qué existe. El hCaptcha de Shopify ya está activo y funciona: un envío
-  directo a /contact, sin pasar por el formulario, recibe un 403. Lo que se
-  cuela es gente o robots que abren la página, usan el formulario y pasan el
-  captcha. Shopify no tiene un ajuste más estricto, así que acá se le suman
-  tres trabas que una persona no nota y una herramienta automática sí:
+  directo a /contact, sin pasar por el formulario, recibe un 403. Pero es
+  invisible: solo muestra el desafío cuando sospecha de un robot, así que
+  quien mira el formulario no ve nada. Lo que se cuela es gente o robots que
+  abren la página, usan el formulario y pasan el captcha. Shopify no tiene un
+  ajuste más estricto, así que acá se le suman tres trabas que una persona no
+  nota y una herramienta automática sí, y una línea que deja a la vista que
+  el formulario está protegido:
 
     1. Un campo trampa, escondido, que un humano nunca ve ni llena.
     2. Un mínimo de tiempo: nadie lee una página y manda el formulario en
@@ -67,6 +70,32 @@
     f.appendChild(caja);
   }
 
+  /* El captcha de Shopify es invisible: solo muestra el desafío cuando
+     sospecha de un robot. Esta línea deja a la vista que el formulario está
+     protegido, y cumple el aviso que pide hCaptcha cuando no muestra su logo. */
+  function ponerNota(f) {
+    if (f.querySelector('.sc-captcha-nota')) return;
+    var p = document.createElement('p');
+    p.className = 'sc-captcha-nota';
+    p.style.cssText = 'margin:.8rem 0 0;font-size:.8rem;line-height:1.4;color:#020526';
+    p.appendChild(document.createTextNode('Este formulario está protegido con hCaptcha. Se aplican su '));
+    var a1 = document.createElement('a');
+    a1.href = 'https://www.hcaptcha.com/privacy';
+    a1.target = '_blank';
+    a1.rel = 'noopener noreferrer';
+    a1.textContent = 'Política de privacidad';
+    p.appendChild(a1);
+    p.appendChild(document.createTextNode(' y sus '));
+    var a2 = document.createElement('a');
+    a2.href = 'https://www.hcaptcha.com/terms';
+    a2.target = '_blank';
+    a2.rel = 'noopener noreferrer';
+    a2.textContent = 'Términos del servicio';
+    p.appendChild(a2);
+    p.appendChild(document.createTextNode('.'));
+    f.appendChild(p);
+  }
+
   function aviso(f, texto) {
     var p = f.querySelector('.sc-aviso');
     if (!p) {
@@ -96,14 +125,14 @@
 
   function preparar() {
     var fs = document.forms;
-    for (var i = 0; i < fs.length; i++) if (esContacto(fs[i])) ponerTrampa(fs[i]);
+    for (var i = 0; i < fs.length; i++) if (esContacto(fs[i])) { ponerTrampa(fs[i]); ponerNota(fs[i]); }
   }
 
   /* Los formularios del tema pueden aparecer después de la carga: se
      prepara cada uno la primera vez que alguien lo toca. */
   document.addEventListener('focusin', function (e) {
     var f = e.target && e.target.form;
-    if (esContacto(f)) ponerTrampa(f);
+    if (esContacto(f)) { ponerTrampa(f); ponerNota(f); }
   });
 
   /* En captura y sobre document, para correr antes que el captcha de
