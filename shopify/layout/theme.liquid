@@ -18,6 +18,9 @@
     {%- render 'view-transition-opt-in' -%}
 
     {%- render 'meta-tags' -%}
+    {%- if template.suffix == 'baristas' -%}
+      <meta name="robots" content="noindex, nofollow">
+    {%- endif -%}
     {%- render 'stylesheets' -%}
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
