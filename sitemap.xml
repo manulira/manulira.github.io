@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sepia coffee — mapa del sitio.
+  Punto 1 del plan: registrá este archivo en Google Search Console
+  y en Bing Webmaster Tools (Bing es el que alimenta a ChatGPT).
+  Cuando la tienda tenga páginas de producto propias en Shopify,
+  Shopify genera su propio /sitemap.xml y este queda de más.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://sepiacoffee.cl/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://sepiacoffee.cl/assets/fotos/hero-1.jpg</image:loc>
+      <image:title>sepia coffee — matcha helado y café de especialidad</image:title>
+    </image:image>
+  </url>
+</urlset>

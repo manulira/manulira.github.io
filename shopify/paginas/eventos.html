@@ -1,0 +1,377 @@
+<p><strong>Barra de café o coctelería con espresso para tu evento.</strong> Elige la mesa, arma la configuración y te damos el valor al tiro. Matrimonios, eventos corporativos y celebraciones privadas.</p>
+
+<style>
+/* Paleta del logo de Sepia Coffee. Los cuatro tonos que usa el cotizador:
+     --na  azul noche  #020526  el panel oscuro, y la letra sobre los claros
+     --ce  celeste     #B9C5D3  lo seleccionado y la caja del total
+     --be  crema       #E7E5D9  fondos claros, y la letra sobre el azul noche
+     --te  azul        #526EA0  rótulos sobre blanco, foco y hover
+   El panel va en azul noche y no en el azul principal a propósito: la crema
+   sobre #526EA0 da 4.05 de contraste y acá hay mucha letra chica, que pide
+   4.5 como mínimo. Sobre azul noche la misma crema da 15.78. */
+.sc{--na:#020526;--ce:#B9C5D3;--be:#E7E5D9;--te:#526EA0;margin:1.5rem 0}
+.sc *{box-sizing:border-box}
+.sc-grid{background:var(--na);color:var(--be);border-radius:24px;padding:clamp(1.2rem,3vw,2rem);display:grid;gap:1.3rem;grid-template-columns:1fr}
+@media(min-width:860px){.sc-grid{grid-template-columns:1.15fr .85fr}}
+.sc fieldset{border:0;margin:0 0 1.15rem;padding:0;display:grid;gap:.5rem}
+.sc [hidden]{display:none}
+.sc legend{font-weight:600;font-size:.73rem;letter-spacing:.07em;text-transform:uppercase;opacity:.72;padding:0}
+.sc-mesas{display:grid;gap:.5rem}
+@media(min-width:560px){.sc-mesas{grid-template-columns:1fr 1fr}}
+.sc-mesa{text-align:left;font:inherit;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--be);padding:.85rem .9rem;cursor:pointer;display:grid;gap:.25rem;transition:background .2s}
+.sc-mesa:hover{background:rgba(255,255,255,.16)}
+.sc-mesa[aria-pressed="true"]{background:var(--ce);color:var(--na)}
+.sc-mesa b{font-size:.98rem;font-weight:600}
+.sc-mesa em{font-style:normal;font-size:.81rem;opacity:.78;line-height:1.4}
+.sc-mesa span{font-size:.75rem;font-weight:600;opacity:.66;letter-spacing:.02em}
+.sc-mesa img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--be);border-radius:10px;margin-bottom:.2rem}
+/* Las fotos de abajo quedan fuera del div .sc, así que acá el crema va
+   literal: una variable declarada en .sc no llega hasta acá. */
+.sc-fotos{display:grid;gap:1rem;grid-template-columns:1fr;margin:1.2rem 0}
+@media(min-width:620px){.sc-fotos{grid-template-columns:1fr 1fr}}
+.sc-fotos figure{margin:0}
+.sc-fotos img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#E7E5D9;border-radius:16px;display:block}
+.sc-fotos figcaption{font-size:.85rem;margin-top:.45rem;opacity:.8;line-height:1.4}
+.sc-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.sc-chips button{font:inherit;font-weight:600;font-size:.86rem;padding:.5rem .95rem;border:0;border-radius:999px;background:rgba(255,255,255,.12);color:var(--be);cursor:pointer}
+.sc-chips button[aria-pressed="true"]{background:var(--ce);color:var(--na)}
+.sc-num{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.sc-num input[type=number]{width:5.5rem;padding:.5rem;border:0;border-radius:12px;background:var(--be);color:var(--na);font:inherit;font-weight:600;text-align:center}
+.sc-num input[type=range]{flex:1 1 9rem;accent-color:var(--ce)}
+.sc select{font:inherit;padding:.55rem .7rem;border:0;border-radius:12px;background:var(--be);color:var(--na);font-weight:600;width:100%;max-width:22rem}
+.sc-mini{font-size:.84rem;opacity:.72;line-height:1.45}
+.sc-out{background:var(--be);color:var(--na);border-radius:20px;padding:clamp(1.1rem,2.4vw,1.5rem)}
+.sc-out h3{margin:0 0 .7rem;font-size:1.22rem}
+.sc-f{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(2,5,38,.14);font-size:.93rem}
+.sc-f:last-of-type{border-bottom:0}
+.sc-f b{font-weight:600;text-align:right}
+/* El descuento se marca con peso, no con un verde: cualquier verde queda
+   fuera de la paleta, y el único que pasaría contraste sobre la crema
+   tendría que ser casi negro. */
+.sc-f.desc b{font-weight:700}
+.sc-sugerencia{background:var(--ce);color:var(--na);border-radius:12px;padding:.75rem .9rem;font-size:.85rem;line-height:1.45;margin-top:.7rem}
+.sc-sugerencia b{display:block;margin-bottom:.15rem}
+.sc-tot{background:var(--ce);border-radius:14px;padding:.85rem 1rem;margin-top:.8rem}
+.sc-tot span{display:block;font-size:.71rem;letter-spacing:.07em;text-transform:uppercase;color:var(--na);font-weight:600}
+.sc-tot strong{display:block;font-size:1.65rem;line-height:1.15;margin-top:.12rem}
+.sc-tot p{font-size:.81rem;margin:.4rem 0 0;opacity:.8}
+.sc-form{background:#fff;border-radius:20px;padding:clamp(1.2rem,2.6vw,1.8rem);margin-top:1.1rem}
+.sc-form h3{margin:0 0 .3rem;font-size:1.22rem;color:var(--na)}
+/* Los textos secundarios son azul noche rebajado, no un gris de otra
+   paleta: sale del mismo color y sobre blanco sigue pasando contraste. */
+.sc-form>p{margin:0 0 1rem;font-size:.9rem;color:var(--na);opacity:.68}
+.sc-campos{display:grid;gap:.8rem;grid-template-columns:1fr}
+@media(min-width:620px){.sc-campos{grid-template-columns:1fr 1fr}}
+.sc-campo{display:grid;gap:.3rem}
+.sc-campo.ancho{grid-column:1/-1}
+.sc-campo label{font-size:.77rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--te)}
+.sc-campo input,.sc-campo textarea{font:inherit;padding:.65rem .8rem;border:1px solid var(--ce);border-radius:12px;background:#fff;color:var(--na);width:100%}
+.sc-campo textarea{min-height:8rem;resize:vertical;line-height:1.5}
+.sc-campo input:focus,.sc-campo textarea:focus{outline:2px solid var(--te);outline-offset:1px;border-color:var(--te)}
+.sc-enviar{margin-top:1rem;width:100%;font:inherit;font-weight:600;font-size:1rem;background:var(--na);color:var(--be);border:0;border-radius:999px;padding:.9rem;cursor:pointer}
+/* En hover el fondo pasa al azul principal, y ahí la letra tiene que ser
+   blanca: la crema sobre ese azul no alcanza el contraste mínimo. */
+.sc-enviar:hover{background:var(--te);color:#FFFFFF}
+.sc-legal{font-size:.77rem;color:var(--na);opacity:.62;margin-top:.7rem}
+.sc-wsp{display:block;text-align:center;margin-top:.8rem;font-size:.9rem;color:var(--na);opacity:.68}
+</style>
+
+<div class="sc" id="sc">
+  <div class="sc-grid">
+    <div>
+      <fieldset>
+        <legend>Qué mesa</legend>
+        <div class="sc-mesas" data-g="mesa">
+          <button type="button" class="sc-mesa" data-v="cafetero" aria-pressed="true">
+            <img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/sepia-mesa-cafetero.jpg?v=1791717082" alt="Mesa cafetero de Sepia Coffee: barra negra con cubierta de madera, molinillo y máquina espresso Rocket" loading="lazy">
+            <b>Mesa cafetero</b>
+            <em>Lleva molinillo y máquina espresso: todo se prepara a la vista. Es la más lenta de las dos y la más romántica.</em>
+            <span>Café · espresso martini · carajillo</span>
+          </button>
+          <button type="button" class="sc-mesa" data-v="martini" aria-pressed="false">
+            <img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/sepia-mesa-martini.jpg?v=1791717082" alt="Mesa martini de Sepia Coffee: barra negra de listones con cubierta de madera, copas y botellas" loading="lazy">
+            <b>Mesa martini</b>
+            <em>Sin máquina espresso. Está armada para alto flujo: sirve rápido cuando hay mucha gente junta.</em>
+            <span>Espresso martini · carajillo</span>
+          </button>
+        </div>
+        <p class="sc-mini">Son dos mesas distintas, con precios distintos.</p>
+      </fieldset>
+
+      <fieldset data-solo="cafetero">
+        <legend>Qué sirve la mesa</legend>
+        <div class="sc-chips" data-g="servicio">
+          <button type="button" data-v="cafe" aria-pressed="true">Solo café</button>
+          <button type="button" data-v="cocteles" aria-pressed="false">Martini y carajillo</button>
+          <button type="button" data-v="ambos" aria-pressed="false">Las dos cartas</button>
+        </div>
+        <p class="sc-mini">Solo café va con 1 barista. Martini y carajillo, con 2. Las dos cartas, con 3.</p>
+      </fieldset>
+
+      <fieldset data-solo="martini">
+        <legend>Cuántas mesas</legend>
+        <div class="sc-chips" data-g="mesas">
+          <button type="button" data-v="1" aria-pressed="true">1 mesa</button>
+          <button type="button" data-v="2" aria-pressed="false">2 mesas</button>
+          <button type="button" data-v="3" aria-pressed="false">3 mesas</button>
+        </div>
+        <p class="sc-mini">Van 2 baristas por mesa. Si necesitas más de tres, cuéntanos en el formulario y lo cotizamos.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Cuántas horas</legend>
+        <div class="sc-chips" data-g="horas">
+          <button type="button" data-v="2" aria-pressed="false">2 h</button>
+          <button type="button" data-v="3" aria-pressed="true">3 h</button>
+          <button type="button" data-v="4" aria-pressed="false">4 h</button>
+          <button type="button" data-v="5" aria-pressed="false">5 h</button>
+        </div>
+        <p class="sc-mini">Mínimo 2 horas. Se pueden sumar horas hasta 48 horas antes del evento.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><label for="sc-pers">Cuántos invitados</label></legend>
+        <div class="sc-num">
+          <input type="range" id="sc-pers-r" min="20" max="600" step="10" value="120" tabindex="-1" aria-hidden="true">
+          <input type="number" id="sc-pers" min="1" max="2000" value="120" inputmode="numeric">
+          <span class="sc-mini">personas</span>
+        </div>
+        <p class="sc-mini">Los valores están pensados para 80 a 500 personas. Bajo 80 se aplica 40% de descuento.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><label for="sc-comuna">Dónde es el evento</label></legend>
+        <select id="sc-comuna">
+          <option value="30000">Lo Barnechea, Vitacura, Las Condes o Providencia</option>
+          <option value="60000">Otra comuna de Santiago</option>
+          <option value="70000">Buin o Pirque</option>
+          <option value="120000">Valparaíso o Rancagua</option>
+          <option value="-1">Otro lugar</option>
+        </select>
+        <p class="sc-mini">El viático cubre el traslado del equipo y del personal.</p>
+      </fieldset>
+    </div>
+
+    <div class="sc-out" aria-live="polite">
+      <h3>Tu evento</h3>
+      <div class="sc-f">
+<span>Mesa</span><b data-o="mesa">—</b>
+</div>
+      <div class="sc-f">
+<span>Qué se sirve</span><b data-o="carta">—</b>
+</div>
+      <div class="sc-f">
+<span>Equipo</span><b data-o="equipo">—</b>
+</div>
+      <div class="sc-f">
+<span>Servicio</span><b data-o="base">—</b>
+</div>
+      <div class="sc-f desc" data-fila-desc hidden>
+<span>Descuento bajo 80 personas</span><b data-o="desc">—</b>
+</div>
+      <div class="sc-f">
+<span>Viático</span><b data-o="viatico">—</b>
+</div>
+      <div class="sc-tot">
+        <span>Total estimado</span>
+        <strong data-o="total">—</strong>
+        <p data-o="nota"></p>
+      </div>
+      <div class="sc-sugerencia" data-o="sugerencia" hidden></div>
+    </div>
+  </div>
+
+  <form class="sc-form" method="post" action="/contact#cotizar" id="cotizar" accept-charset="UTF-8">
+    <input type="hidden" name="form_type" value="contact">
+    <input type="hidden" name="utf8" value="✓">
+    <h3>Mándanos los datos</h3>
+    <p>Te confirmamos disponibilidad y el valor final por correo.</p>
+    <div class="sc-campos">
+      <div class="sc-campo">
+<label for="c-nom">Nombre</label>
+        <input id="c-nom" type="text" name="contact[Nombre]" required autocomplete="name">
+</div>
+      <div class="sc-campo">
+<label for="c-rut">RUT</label>
+        <input id="c-rut" type="text" name="contact[RUT]" required placeholder="12.345.678-9">
+</div>
+      <div class="sc-campo">
+<label for="c-mail">Correo</label>
+        <input id="c-mail" type="email" name="contact[email]" required autocomplete="email">
+</div>
+      <div class="sc-campo">
+<label for="c-fono">Teléfono</label>
+        <input id="c-fono" type="tel" name="contact[Teléfono]" autocomplete="tel">
+</div>
+      <div class="sc-campo">
+<label for="c-fecha">Fecha del evento</label>
+        <input id="c-fecha" type="date" name="contact[Fecha del evento]">
+</div>
+      <div class="sc-campo">
+<label for="c-lugar">Lugar o comuna</label>
+        <input id="c-lugar" type="text" name="contact[Lugar]">
+</div>
+      <div class="sc-campo ancho">
+<label for="c-det">Detalle</label>
+        <textarea id="c-det" name="contact[body]" required></textarea>
+</div>
+    </div>
+    <button class="sc-enviar" type="submit">Enviar la solicitud</button>
+    <p class="sc-legal">El detalle se llena solo con lo que elegiste arriba. Puedes editarlo o agregar lo que necesites.</p>
+    <p class="sc-wsp">O escríbenos por WhatsApp al <a href="https://wa.me/56979284400" target="_blank" rel="noopener">+56 9 7928 4400</a></p>
+  </form>
+</div>
+
+<script>
+(function(){
+  var sec = document.getElementById('sc');
+  if (!sec) return;
+
+  /* Valores del catálogo, IVA incluido. Son dos tablas distintas: la mesa
+     cafetero se cobra según lo que sirva, y la mesa martini según cuántas
+     mesas se monten. No son intercambiables ni se multiplican entre sí. */
+  var CAFETERO = {
+    cafe:     { 2:450000, 3:600000,  4:750000,   5:890000  },
+    cocteles: { 2:660000, 3:900000,  4:1120000,  5:1310000 },
+    ambos:    { 2:850000, 3:1150000, 4:1430000,  5:1690000 }
+  };
+  var MARTINI = {
+    1: { 2:590000,  3:810000,  4:1010000, 5:1180000 },
+    2: { 2:950000,  3:1290000, 4:1610000, 5:1890000 },
+    3: { 2:1240000, 3:1690000, 4:2110000, 5:2480000 }
+  };
+  /* Mesa cafetero: con máquina espresso. Lo que cambia es la carta, no el
+     número de mesas, y con la carta cambia el equipo. */
+  var CARTA = {
+    cafe:     { baristas: 1, nombre: 'Solo café' },
+    cocteles: { baristas: 2, nombre: 'Martini y carajillo' },
+    ambos:    { baristas: 3, nombre: 'Las dos cartas' }
+  };
+  var BARISTAS_POR_MESA_MARTINI = 2;
+  var DESCUENTO_BAJO_80 = 0.40;
+  /* La única sugerencia que se muestra: sobre este número de invitados
+     conviene sumar una mesa más. */
+  var SUGERIR_DESDE = 450;
+
+  var st = { mesa:'cafetero', servicio:'cafe', mesas:1, personas:120, horas:3, viatico:30000 };
+  var $ = function(s){ return sec.querySelector(s); };
+  var clp = function(n){ return '$' + Math.round(n).toLocaleString('es-CL'); };
+
+  function calcular(){
+    var esCafetero = st.mesa === 'cafetero';
+    var base = esCafetero ? CAFETERO[st.servicio][st.horas] : MARTINI[st.mesas][st.horas];
+    var equipo = esCafetero ? CARTA[st.servicio].baristas : st.mesas * BARISTAS_POR_MESA_MARTINI;
+    var hayDesc = st.personas < 80;
+    var desc = hayDesc ? base * DESCUENTO_BAJO_80 : 0;
+    var viatico = st.viatico >= 0 ? st.viatico : 0;
+    return {
+      esCafetero: esCafetero,
+      mesa: esCafetero ? 'Mesa cafetero' : (st.mesas === 1 ? '1 mesa martini' : st.mesas + ' mesas martini'),
+      carta: esCafetero ? CARTA[st.servicio].nombre : 'Espresso martini y carajillo',
+      base: base, equipo: equipo,
+      hayDesc: hayDesc, desc: desc, viatico: viatico,
+      porDefinir: st.viatico < 0,
+      total: base - desc + viatico
+    };
+  }
+
+  function resumen(c){
+    return 'Mesa: ' + c.mesa +
+      '\nQué se sirve: ' + c.carta +
+      '\nHoras: ' + st.horas +
+      '\nInvitados: ' + st.personas +
+      '\n\nValor del sitio:' +
+      '\n- Servicio: ' + clp(c.base) +
+      (c.hayDesc ? '\n- Descuento bajo 80 personas: -' + clp(c.desc) : '') +
+      (c.porDefinir ? '\n- Viático: por definir según el lugar' : '\n- Viático: ' + clp(c.viatico)) +
+      '\n- TOTAL: ' + clp(c.total) + (c.porDefinir ? ' más viático' : '') +
+      '\n- Equipo: ' + c.equipo + (c.equipo === 1 ? ' barista' : ' baristas');
+  }
+
+  function pintar(){
+    var c = calcular();
+
+    [].slice.call(sec.querySelectorAll('[data-solo]')).forEach(function(f){
+      f.hidden = f.dataset.solo !== st.mesa;
+    });
+
+    $('[data-o="mesa"]').textContent = c.mesa;
+    $('[data-o="carta"]').textContent = c.carta;
+    $('[data-o="equipo"]').textContent = c.equipo + (c.equipo === 1 ? ' barista' : ' baristas');
+    $('[data-o="base"]').textContent = clp(c.base);
+    $('[data-fila-desc]').hidden = !c.hayDesc;
+    if (c.hayDesc) $('[data-o="desc"]').textContent = '−' + clp(c.desc);
+    $('[data-o="viatico"]').textContent = c.porDefinir ? 'Por definir' : clp(c.viatico);
+    $('[data-o="total"]').textContent = clp(c.total) + (c.porDefinir ? ' + viático' : '');
+    $('[data-o="nota"]').textContent = 'IVA incluido. No incluye copas. Para reservar se paga el 50% y el resto la semana del evento.';
+
+    /* Una sola sugerencia, y solo cuando corresponde. */
+    var sug = $('[data-o="sugerencia"]');
+    if (st.personas >= SUGERIR_DESDE && (c.esCafetero || st.mesas === 1)) {
+      sug.hidden = false;
+      sug.innerHTML = c.esCafetero
+        ? '<b>Te sugerimos sumar una mesa martini</b>Con ' + st.personas +
+          ' invitados, la mesa cafetero sola se queda corta en los peaks. Pídenos el combinado en el formulario y te lo cotizamos.'
+        : '<b>Te sugerimos una segunda mesa</b>Con ' + st.personas +
+          ' invitados y una sola mesa se arma cola en los peaks. Con dos, la fila no se nota.';
+    } else {
+      sug.hidden = true;
+    }
+
+    var det = $('#c-det');
+    if (det && !det.dataset.tocado) det.value = resumen(c);
+  }
+
+  ['mesa','servicio','mesas','horas'].forEach(function(g){
+    var cont = sec.querySelector('[data-g="' + g + '"]');
+    if (!cont) return;
+    [].slice.call(cont.querySelectorAll('button')).forEach(function(b){
+      b.addEventListener('click', function(){
+        [].slice.call(cont.querySelectorAll('button')).forEach(function(o){ o.setAttribute('aria-pressed', String(o === b)); });
+        st[g] = (g === 'horas' || g === 'mesas') ? parseInt(b.dataset.v, 10) : b.dataset.v;
+        pintar();
+      });
+    });
+  });
+  var np = $('#sc-pers'), rp = $('#sc-pers-r');
+  np.addEventListener('input', function(){
+    st.personas = Math.max(1, Math.min(2000, parseInt(np.value, 10) || 1));
+    rp.value = Math.max(+rp.min, Math.min(+rp.max, st.personas)); pintar();
+  });
+  rp.addEventListener('input', function(){ st.personas = parseInt(rp.value, 10); np.value = st.personas; pintar(); });
+  $('#sc-comuna').addEventListener('change', function(e){ st.viatico = parseInt(e.target.value, 10); pintar(); });
+  var det = $('#c-det');
+  if (det) det.addEventListener('input', function(){ det.dataset.tocado = '1'; });
+  pintar();
+})();
+</script>
+
+<h2>Las dos mesas</h2>
+
+<div class="sc-fotos">
+  <figure>
+    <img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/sepia-mesa-cafetero.jpg?v=1791717082" alt="Mesa cafetero de Sepia Coffee: barra negra con cubierta de madera, molinillo y máquina espresso Rocket" loading="lazy">
+    <figcaption><strong>Mesa cafetero.</strong> Con molinillo y máquina espresso sobre la cubierta.</figcaption>
+  </figure>
+  <figure>
+    <img src="https://cdn.shopify.com/s/files/1/1021/9769/0732/files/sepia-mesa-martini.jpg?v=1791717082" alt="Mesa martini de Sepia Coffee: barra negra de listones con cubierta de madera, copas y botellas" loading="lazy">
+    <figcaption><strong>Mesa martini.</strong> Barra de listones, sin máquina, montada para servir rápido.</figcaption>
+  </figure>
+</div>
+
+<p><strong>Mesa cafetero.</strong> Lleva molinillo y máquina espresso sobre la cubierta, así que todo se prepara al momento y delante de los invitados: molienda, extracción y leche texturizada. Es la más lenta de las dos y la más romántica. Puede servir solo café de especialidad (espresso, americano, capuccino y latte), solo espresso martini y carajillo, o las dos cartas a la vez. Según lo que sirva van 1, 2 o 3 baristas.</p>
+<p><strong>Mesa martini.</strong> No lleva máquina espresso. Está armada para alto flujo: sirve rápido cuando hay mucha gente junta. Siempre va con las dos cosas, espresso martini y carajillo, nunca con una sola. Van 2 baristas por mesa y se pueden montar hasta tres mesas.</p>
+<p>Son dos productos distintos y tienen precios distintos. Si quieres una de cada una, cuéntanos en el formulario y te armamos el valor del combinado.</p>
+
+<h2>Lo que tienes que saber</h2>
+<ul>
+<li>Los valores incluyen IVA y <strong>no incluyen copas</strong>.</li>
+<li>Están pensados para eventos de <strong>80 a 500 personas</strong>. Bajo 80 se aplica <strong>40% de descuento</strong>.</li>
+<li>Mínimo 2 horas. Se pueden sumar horas hasta 48 horas antes.</li>
+<li>Para reservar la fecha se paga el <strong>50%</strong>; el otro 50% la semana del evento.</li>
+<li>Necesitamos <strong>corriente a menos de 10 metros</strong> del stand.</li>
+<li>El viático depende de la comuna y va aparte.</li>
+</ul>
+
+<h2>También hacemos</h2>
+<p>Sobre la misma barra de la mesa martini montamos ginebra, micheladas, pisco sour y amaretto sour. También tenemos una línea de tiramisú. Si te interesa alguna, cuéntanos en el formulario.</p>

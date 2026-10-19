@@ -1,0 +1,323 @@
+{%- comment -%}
+  SEPIA COFFEE · «Necesito factura» en el carrito
+
+  Qué hace. Pone, justo encima del botón Pagar, un interruptor «Necesito
+  factura». Al activarlo aparecen los datos de la empresa (razón social, RUT,
+  giro, dirección, comuna y correo). Esos datos viajan con el pedido como
+  atributos del carrito y quedan en el pedido, en «Detalles adicionales».
+
+  Por qué así. El checkout de Shopify en el plan Advanced no deja agregar
+  campos propios entre los pasos de datos, envío y pago (eso es solo Plus).
+  El carrito es el último lugar donde sí se puede pedir algo antes de pagar.
+
+  Dónde aparece. En la página del carrito y en el cajón del carrito: busca
+  cualquier .cart__ctas (el contenedor del botón Pagar) y se pone antes. Si el
+  tema vuelve a dibujar el carrito, se vuelve a poner solo.
+
+  Qué guarda. Los atributos del pedido son:
+    factura · factura_razon_social · factura_rut · factura_giro ·
+    factura_direccion · factura_comuna · factura_correo
+  Cuando el cliente lo apaga, se borran. Cuando está encendido y le falta
+  algo, o el RUT no cuadra con su dígito verificador, no deja pasar a pagar.
+
+  Límite. Quien use «Comprar ahora» en la ficha del producto o un pago
+  exprés se salta el carrito, y ahí no se puede pedir factura antes de pagar.
+  Esos casos se resuelven después de la compra.
+
+  Colores: solo los de la paleta (azul #526EA0, azul noche #020526, blanco).
+{%- endcomment -%}
+<style>
+  .sc-factura{align-self:stretch;width:100%;margin:0 0 1rem;padding:1rem 1.1rem;background:#FFFFFF;border:1px solid #526EA0;border-radius:1rem;color:#020526;font:inherit;text-align:left}
+  .sc-factura *{box-sizing:border-box}
+  .sc-factura__interruptor{display:flex;align-items:center;gap:.7rem;margin:0;cursor:pointer;font-size:1rem;font-weight:600;line-height:1.3}
+  .sc-factura__chk{flex:none;width:1.25rem;height:1.25rem;margin:0;accent-color:#526EA0;cursor:pointer}
+  .sc-factura__campos{display:grid;gap:.7rem;margin-top:1rem}
+  .sc-factura__campos[hidden]{display:none}
+  .sc-factura__nota{margin:0;font-size:.85rem;line-height:1.4}
+  .sc-factura__etq{display:grid;gap:.3rem;font-size:.85rem;font-weight:600;line-height:1.2}
+  .sc-factura__inp{width:100%;padding:.7rem .85rem;border:1px solid #526EA0;border-radius:.8rem;background:#FFFFFF;color:#020526;font:inherit;font-size:1rem;font-weight:400;line-height:1.3}
+  .sc-factura__inp:focus-visible{outline:2px solid #020526;outline-offset:2px}
+  .sc-factura__inp[aria-invalid="true"]{border:2px solid #020526}
+  .sc-factura__aviso{margin:0;font-size:.9rem;font-weight:600;line-height:1.4}
+  .sc-factura__aviso:empty{display:none}
+</style>
+<script>
+(function () {
+  if (window.__scFactura) return;
+  window.__scFactura = true;
+
+  var CLAVE_ACTIVO = 'factura';
+  var CAMPOS = [
+    { id: 'razon',     clave: 'factura_razon_social', etq: 'Razón social',                  tipo: 'text',  ac: 'organization',    max: 100, min: 3 },
+    { id: 'rut',       clave: 'factura_rut',          etq: 'RUT de la empresa',             tipo: 'text',  ac: 'off',             max: 12,  min: 8, ph: '76.123.456-7' },
+    { id: 'giro',      clave: 'factura_giro',         etq: 'Giro',                          tipo: 'text',  ac: 'off',             max: 100, min: 3 },
+    { id: 'direccion', clave: 'factura_direccion',    etq: 'Dirección',                     tipo: 'text',  ac: 'street-address',  max: 120, min: 5 },
+    { id: 'comuna',    clave: 'factura_comuna',       etq: 'Comuna',                        tipo: 'text',  ac: 'address-level2',  max: 60,  min: 3 },
+    { id: 'correo',    clave: 'factura_correo',       etq: 'Correo para enviar la factura', tipo: 'email', ac: 'email',           max: 120, min: 5 }
+  ];
+
+  var estado = { activo: false };
+  CAMPOS.forEach(function (c) { estado[c.id] = ''; });
+
+  var cargado = false;     // ya se leyeron los atributos que hay en el carrito
+  var promesaCarga = null;
+  var sucio = false;       // hay cambios sin guardar
+  var guardando = null;    // promesa del guardado en curso
+  var enCurso = 0;
+  var version = 0;
+  var reloj = null;
+
+  /* ---------- RUT: dígito verificador (módulo 11) y formato ---------- */
+  function limpiarRut(s) { return String(s || '').replace(/[^0-9kK]/g, '').toUpperCase(); }
+
+  function rutValido(s) {
+    var t = limpiarRut(s);
+    if (!/^\d{7,8}[\dK]$/.test(t)) return false;
+    var cuerpo = t.slice(0, -1), dv = t.slice(-1), suma = 0, m = 2;
+    for (var i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i), 10) * m;
+      m = m === 7 ? 2 : m + 1;
+    }
+    var r = 11 - (suma % 11);
+    var esperado = r === 11 ? '0' : (r === 10 ? 'K' : String(r));
+    return dv === esperado;
+  }
+
+  function formatoRut(s) {
+    var t = limpiarRut(s);
+    if (t.length < 2) return t;
+    return t.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + t.slice(-1);
+  }
+
+  /* ---------- Validación: devuelve el primer problema, o null ---------- */
+  function validar() {
+    if (!estado.activo) return null;
+    for (var i = 0; i < CAMPOS.length; i++) {
+      var c = CAMPOS[i], v = String(estado[c.id] || '').trim();
+      if (c.id === 'rut') {
+        if (!rutValido(v)) return { id: c.id, msg: 'Revisa el RUT: está incompleto o el dígito verificador no calza.' };
+      } else if (c.id === 'correo') {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return { id: c.id, msg: 'Escribe un correo válido para enviarte la factura.' };
+      } else if (v.length < c.min) {
+        return { id: c.id, msg: 'Completa «' + c.etq + '» para poder emitir la factura.' };
+      }
+    }
+    return null;
+  }
+
+  /* ---------- Carrito: leer y guardar los atributos ---------- */
+  function cargar() {
+    if (promesaCarga) return promesaCarga;
+    promesaCarga = fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var a = (cart && cart.attributes) || {};
+        if (!sucio) {
+          estado.activo = a[CLAVE_ACTIVO] === 'Sí';
+          CAMPOS.forEach(function (c) { estado[c.id] = a[c.clave] || ''; });
+        }
+      })
+      .catch(function () { /* sin red: se parte vacío */ })
+      .then(function () { cargado = true; pintarTodo(); });
+    return promesaCarga;
+  }
+
+  /* Cada cambio sube la versión; un guardado solo deja «limpio» si no hubo
+     cambios nuevos mientras viajaba. */
+  function guardar() {
+    var version0 = version;
+    var a = {};
+    a[CLAVE_ACTIVO] = estado.activo ? 'Sí' : '';
+    CAMPOS.forEach(function (c) { a[c.clave] = estado.activo ? String(estado[c.id] || '').trim() : ''; });
+    return fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ attributes: a })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('guardar');
+      if (version0 === version) sucio = false;
+      return r.json();
+    });
+  }
+
+  /* Los guardados van uno tras otro, para que el último en llegar sea el último en enviarse. */
+  function guardarYa() {
+    clearTimeout(reloj);
+    reloj = null;
+    enCurso++;
+    var previa = guardando || Promise.resolve();
+    var p = previa.catch(function () {}).then(guardar);
+    var fin = function () { enCurso--; if (!enCurso) guardando = null; };
+    p.then(fin, fin);
+    guardando = p;
+    return p;
+  }
+
+  function programar() {
+    sucio = true;
+    version++;
+    clearTimeout(reloj);
+    reloj = setTimeout(function () { reloj = null; guardarYa().catch(function () {}); }, 700);
+  }
+
+  /* ---------- Dibujo ---------- */
+  function el(tag, cls, texto) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto) e.textContent = texto;
+    return e;
+  }
+
+  function construir() {
+    var caja = el('div', 'sc-factura');
+
+    var inter = el('label', 'sc-factura__interruptor');
+    var chk = el('input', 'sc-factura__chk');
+    chk.type = 'checkbox';
+    chk.setAttribute('data-sc', 'activo');
+    inter.appendChild(chk);
+    inter.appendChild(el('span', '', 'Necesito factura'));
+    caja.appendChild(inter);
+
+    var campos = el('div', 'sc-factura__campos');
+    campos.hidden = true;
+    campos.appendChild(el('p', 'sc-factura__nota', 'Completa los datos de tu empresa. Los usamos solo para emitir la factura.'));
+    CAMPOS.forEach(function (c) {
+      var etq = el('label', 'sc-factura__etq');
+      etq.appendChild(el('span', '', c.etq));
+      var inp = el('input', 'sc-factura__inp');
+      inp.type = c.tipo;
+      inp.setAttribute('data-sc', c.id);
+      inp.autocomplete = c.ac;
+      inp.maxLength = c.max;
+      if (c.ph) inp.placeholder = c.ph;
+      if (c.id === 'rut') { inp.setAttribute('autocapitalize', 'characters'); inp.spellcheck = false; }
+      etq.appendChild(inp);
+      campos.appendChild(etq);
+    });
+    var aviso = el('p', 'sc-factura__aviso');
+    aviso.setAttribute('role', 'alert');
+    campos.appendChild(aviso);
+    caja.appendChild(campos);
+    return caja;
+  }
+
+  function pintar(caja) {
+    var chk = caja.querySelector('[data-sc="activo"]');
+    if (chk.checked !== estado.activo) chk.checked = estado.activo;
+    caja.querySelector('.sc-factura__campos').hidden = !estado.activo;
+    CAMPOS.forEach(function (c) {
+      var inp = caja.querySelector('[data-sc="' + c.id + '"]');
+      if (inp && inp !== document.activeElement && inp.value !== estado[c.id]) inp.value = estado[c.id];
+    });
+  }
+
+  function pintarTodo() {
+    var cajas = document.querySelectorAll('.sc-factura');
+    for (var i = 0; i < cajas.length; i++) pintar(cajas[i]);
+  }
+
+  function limpiarAviso() {
+    var av = document.querySelectorAll('.sc-factura__aviso');
+    for (var i = 0; i < av.length; i++) av[i].textContent = '';
+    var inv = document.querySelectorAll('.sc-factura__inp[aria-invalid]');
+    for (var j = 0; j < inv.length; j++) inv[j].removeAttribute('aria-invalid');
+  }
+
+  function mostrar(err) {
+    limpiarAviso();
+    var av = document.querySelectorAll('.sc-factura__aviso');
+    for (var i = 0; i < av.length; i++) av[i].textContent = err.msg;
+    if (!err.id) return;
+    var inps = document.querySelectorAll('.sc-factura__inp[data-sc="' + err.id + '"]');
+    var foco = null;
+    for (var k = 0; k < inps.length; k++) {
+      inps[k].setAttribute('aria-invalid', 'true');
+      if (inps[k].offsetParent !== null) foco = inps[k];
+    }
+    if (foco) { foco.focus(); if (foco.scrollIntoView) foco.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  }
+
+  function inyectar() {
+    var ctas = document.querySelectorAll('.cart__ctas');
+    for (var i = 0; i < ctas.length; i++) {
+      var c = ctas[i], prev = c.previousElementSibling;
+      if (prev && prev.classList && prev.classList.contains('sc-factura')) continue;
+      var caja = construir();
+      c.parentNode.insertBefore(caja, c);
+      pintar(caja);
+      cargar();
+    }
+  }
+
+  /* ---------- Eventos ---------- */
+  function dentro(e) {
+    var t = e.target;
+    return t && t.closest && t.closest('.sc-factura') ? t : null;
+  }
+
+  document.addEventListener('change', function (e) {
+    var t = dentro(e);
+    if (!t) return;
+    var id = t.getAttribute('data-sc');
+    if (id === 'activo') {
+      estado.activo = t.checked;
+      limpiarAviso();
+      pintarTodo();
+      programar();
+    } else if (id === 'rut') {
+      estado.rut = formatoRut(t.value);
+      pintarTodo();
+      programar();
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    var t = dentro(e);
+    if (!t) return;
+    var id = t.getAttribute('data-sc');
+    if (!id || id === 'activo') return;
+    estado[id] = t.value;
+    t.removeAttribute('aria-invalid');
+    var av = document.querySelectorAll('.sc-factura__aviso');
+    for (var i = 0; i < av.length; i++) av[i].textContent = '';
+    pintarTodo();
+    programar();
+  });
+
+  /* Antes de pasar a pagar: si hay factura pedida, que esté completa y
+     guardada en el carrito. Sin factura y sin cambios pendientes no se
+     interviene: el botón Pagar funciona como siempre. */
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[name="checkout"]') : null;
+    if (!b) return;
+    if (b.hasAttribute('data-sc-listo')) { b.removeAttribute('data-sc-listo'); return; }
+    if (cargado && !estado.activo && !sucio && !guardando) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    cargar().then(function () {
+      var err = validar();
+      if (err) { mostrar(err); return; }
+      return guardarYa().then(function () {
+        b.setAttribute('data-sc-listo', '');
+        b.click();
+      }, function () {
+        if (estado.activo) { mostrar({ msg: 'No pudimos guardar los datos de la factura. Inténtalo de nuevo.' }); return; }
+        b.setAttribute('data-sc-listo', '');
+        b.click();
+      });
+    });
+  }, true);
+
+  /* El tema vuelve a dibujar el carrito al cambiar cantidades: se vuelve a poner. */
+  var pendiente = false;
+  function mirar() {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(function () { pendiente = false; inyectar(); });
+  }
+  new MutationObserver(mirar).observe(document.body, { childList: true, subtree: true });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inyectar);
+  else inyectar();
+})();
+</script>

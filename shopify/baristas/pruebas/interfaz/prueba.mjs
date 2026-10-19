@@ -1,0 +1,302 @@
+// Pruebas de la interfaz del portal (assets/sepia-baristas.js) en un navegador real, contra una
+// simulación de Supabase (mock-supabase.js). Las reglas de seguridad de verdad se prueban en
+// Postgres (rls.sql). Todos los datos son inventados.
+//
+//   node shopify/baristas/pruebas/interfaz/prueba.mjs
+//
+// Necesita Playwright: PLAYWRIGHT=/ruta/a/playwright/index.mjs (por defecto el del paquete
+// «playwright») y, si el Chromium no es el que descarga Playwright, CHROMIUM=/ruta/al/chromium.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const { chromium } = await import(process.env.PLAYWRIGHT ? pathToFileURL(process.env.PLAYWRIGHT).href : 'playwright');
+const AQUI = path.dirname(fileURLToPath(import.meta.url));
+const ARNES = pathToFileURL(path.join(AQUI, 'arnes.html')).href;
+const LIQUID = fs.readFileSync(path.join(AQUI, '..', '..', '..', 'sections', 'sepia-baristas.liquid'), 'utf8');
+const CSS = /\{% stylesheet %\}([\s\S]*?)\{% endstylesheet %\}/.exec(LIQUID)[1];
+const b = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
+let fallas = 0, total = 0;
+const ok = (c, t) => { total++; if (!c) fallas++; console.log(c ? '  ✔' : '  ✘ FALLA', t); };
+const abrir = async (esc, ancho = 1100) => {
+  const ctx = await b.newContext({ viewport: { width: ancho, height: 1400 }, acceptDownloads: true });
+  const p = await ctx.newPage();
+  const errores = []; p.on('pageerror', e => errores.push(e.message)); p.on('console', m => { if (m.type() === 'error') errores.push(m.text()); });
+  await p.addInitScript(e => { window.__ESC = e; }, esc);
+  await p.goto(ARNES);
+  await p.addStyleTag({ content: CSS });
+  await p.waitForSelector('.sb-cab');
+  await p.waitForTimeout(250);
+  p.errores = errores; return p;
+};
+const txt = p => p.innerText('#sc-baristas');
+const pulsa = (p, nombre) => p.getByRole('button', { name: nombre }).first().click();
+const espera = p => p.waitForTimeout(150);
+
+console.log('\n=== A. Persona nueva: entrar, registrarse, postular ===');
+let p = await abrir({ nuevoId: 'u-nuevo' });
+ok((await txt(p)).includes('Entra con tu correo'), 'parte en «Entra con tu correo»');
+await pulsa(p, 'Enviarme el código'); await espera(p);
+ok((await txt(p)).includes('Escribe un correo válido.'), 'correo vacío → pide un correo válido');
+await p.fill('input[name=correo]', 'limite@ejemplo.cl'); await pulsa(p, 'Enviarme el código'); await espera(p);
+ok((await txt(p)).includes('Pediste muchos códigos'), 'límite de envíos → mensaje claro');
+await p.fill('input[name=correo]', 'nueva@ejemplo.cl'); await pulsa(p, 'Enviarme el código'); await espera(p);
+ok((await txt(p)).includes('Revisa tu correo') && (await p.evaluate(() => window.__otp.options.shouldCreateUser)) === true, 'manda el código y pasa al paso 2');
+await p.fill('input[name=codigo]', '000000'); await pulsa(p, 'Entrar'); await espera(p);
+ok((await txt(p)).includes('Revisa tu correo') && (await txt(p)).includes('no es válido'), 'código malo → mensaje, y sigue en el paso 2');
+await p.fill('input[name=codigo]', '123456'); await pulsa(p, 'Entrar'); await p.waitForSelector('text=Regístrate como barista');
+ok(true, 'código bueno → formulario de registro');
+ok(!(await txt(p)).includes('Camino Falso'), 'sin registro no se ve ningún evento ni dirección');
+
+const f = n => `form [name=${n}]`;
+await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('Escribe tu nombre completo.'), 'vacío → pide el nombre');
+await p.fill(f('nombre'), 'Nueva Barista'); await p.fill(f('rut'), '11.111.111-2');
+await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('Revisa el RUT'), 'RUT con dígito malo → se rechaza');
+await p.fill(f('rut'), '111111111'); await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('teléfono válido'), 'RUT bueno → sigue con el teléfono');
+await p.fill(f('telefono'), '9 1234 5678'); await p.fill(f('comuna'), 'Providencia'); await p.fill(f('banco'), 'Banco Estado');
+await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('tipo de cuenta'), 'pide el tipo de cuenta');
+await p.selectOption(f('tipo_cuenta'), 'Cuenta RUT'); await p.fill(f('numero_cuenta'), '12AB');
+await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('solo números'), 'cuenta con letras → se rechaza');
+await p.fill(f('numero_cuenta'), '9876-5432'); await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('a tu nombre y con tu RUT'), 'exige que la cuenta sea suya');
+await p.check(f('cuenta_propia')); await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('emitir boleta de honorarios'), 'exige declarar la boleta');
+ok((await txt(p)).includes('Declaro que puedo emitir boleta de honorarios electrónica'), 'muestra el texto de la declaración tomado de la configuración');
+await p.check(f('acepta_boleta')); await pulsa(p, 'Completar registro'); ok((await txt(p)).includes('aceptas el uso de tus datos'), 'exige aceptar el uso de datos');
+await p.check(f('acepta_privacidad')); await p.check(f('acepta_avisos')); await pulsa(p, 'Completar registro'); await p.waitForSelector('text=Próximos eventos');
+const fila = await p.evaluate(() => window.__DB.baristas.find(x => x.id === 'u-nuevo'));
+ok(fila && fila.rut === '11.111.111-1' && fila.telefono === '+56912345678' && fila.numero_cuenta === '98765432' && fila.correo === 'nueva@ejemplo.cl' && fila.acepta_boleta === true && fila.acepta_avisos === true, 'queda guardado con RUT formateado, teléfono +56 y cuenta solo con dígitos');
+
+let t = await txt(p);
+ok(t.includes('Matrimonio en Pirque') && t.includes('Coffee break empresa') && t.includes('Cumpleaños'), 've los 3 eventos abiertos y futuros');
+ok(!t.includes('Borrador secreto') && !t.includes('Evento pasado'), 'no ve el borrador ni el evento pasado');
+ok(t.includes('Pago: $50.000 líquidos') && t.includes('boleta de honorarios debe ser por $58.997'), '5 h → $50.000 líquidos y boleta de $58.997');
+ok(t.includes('Pago: $25.000 líquidos') && t.includes('$29.499'), '2 h → $25.000 y boleta de $29.499');
+ok(t.includes('Pago: $40.000 líquidos') && t.includes('$47.198'), '3 h → $40.000 y boleta de $47.198');
+ok(t.includes('retención de 15,25 %'), 'muestra la retención de 15,25 %');
+ok(!t.includes('Camino Falso') && !t.includes('Familia Secreta'), 'no ve la dirección exacta ni al cliente');
+
+await p.locator('article', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Postular' }).click(); await espera(p);
+t = await p.locator('article', { hasText: 'Matrimonio en Pirque' }).innerText();
+ok(t.includes('Postulaste') && t.includes('Retirar postulación'), 'postula: queda «Postulaste» y aparece «Retirar postulación»');
+await p.locator('article', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Retirar postulación' }).click(); await espera(p);
+t = await p.locator('article', { hasText: 'Matrimonio en Pirque' }).innerText();
+ok(t.includes('Retiraste tu postulación') && t.includes('Postular'), 'retira: vuelve a poder postular');
+await p.locator('article', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Postular' }).click(); await espera(p);
+await p.getByRole('tab', { name: 'Mis postulaciones' }).click(); await espera(p);
+ok((await p.locator('article').count()) === 1, '«Mis postulaciones» muestra 1');
+await p.getByRole('tab', { name: 'Mis datos' }).click(); await espera(p);
+await p.fill(f('comuna'), 'Ñuñoa'); await pulsa(p, 'Guardar cambios'); await espera(p);
+ok((await txt(p)).includes('guardamos tus datos') && (await p.evaluate(() => window.__DB.baristas.find(x => x.id === 'u-nuevo').comuna)) === 'Ñuñoa', '«Mis datos» guarda los cambios');
+ok(!(await p.getByRole('tab', { name: /Admin/ }).count()), 'no ve pestañas de administración');
+p.on('dialog', d => d.accept());
+await pulsa(p, 'Borrar mis datos'); await p.waitForSelector('text=Regístrate como barista');
+ok((await p.evaluate(() => window.__DB.baristas.length + window.__DB.postulaciones.length)) === 0, '«Borrar mis datos» elimina registro y postulaciones');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+console.log('\n=== B. Barista registrada: lo ajeno no se ve; al confirmarla ve la dirección ===');
+const perfil = { nombre: 'Ana Prueba', rut: '12.345.678-5', telefono: '+56987654321', comuna: 'Vitacura', experiencia: null, banco: 'BCI', tipo_cuenta: 'Cuenta vista', numero_cuenta: '55556666' };
+p = await abrir({ sesion: { id: 'u-ana', email: 'ana@ejemplo.cl' }, perfilPropio: perfil, otraBarista: true }, 390);
+t = await txt(p);
+ok(t.includes('Próximos eventos') && !t.includes('Otra') && !t.includes('Familia Secreta') && !t.includes('Camino Falso'), 've eventos, pero ni a otros baristas, ni al cliente, ni la dirección');
+ok((await p.evaluate(() => window.__xss)) === undefined, 'un nombre con HTML se muestra como texto (nada se ejecuta)');
+await p.locator('article', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Postular' }).click(); await espera(p);
+await p.evaluate(() => { window.__DB.postulaciones.find(x => x.barista_id === 'u-ana').estado = 'confirmada'; });
+await pulsa(p, 'Actualizar'); await espera(p);
+t = await p.locator('article', { hasText: 'Matrimonio en Pirque' }).innerText();
+ok(t.includes('Asignado: falta que confirmes') && t.includes('Dirección: Camino Falso 123') && t.includes('Portón verde'), 'asignada → ve la dirección y las indicaciones');
+ok(t.includes('Te asignamos a este evento') && t.includes('Confirmo que voy'), 'y le pide confirmar que va');
+await p.locator('article', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Confirmo que voy' }).click(); await espera(p);
+t = await p.locator('article', { hasText: 'Matrimonio en Pirque' }).innerText();
+ok(t.includes('Asistencia confirmada') && !t.includes('Confirmo que voy') && !t.includes('Te asignamos a este evento'), 'confirma: queda «Asistencia confirmada» y desaparece el pedido');
+ok(!!(await p.evaluate(() => window.__DB.postulaciones.find(x => x.barista_id === 'u-ana').asistencia_confirmada_en)), 'y queda guardada la reconfirmación');
+ok(!(await txt(p)).includes('Familia Secreta'), 'y aun así no ve el nombre del cliente');
+const ancho = await p.evaluate(() => document.documentElement.scrollWidth);
+ok(ancho <= 392, `en el teléfono no hay scroll horizontal (ancho ${ancho}px)`);
+await p.screenshot({ path: path.join(os.tmpdir(), 'sepia-movil-eventos.png'), fullPage: true });
+await p.context().close();
+
+console.log('\n=== C. Administración ===');
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, otraBarista: true });
+ok((await p.getByRole('tab').allInnerTexts()).join('|') === 'Admin: seguimiento|Admin: eventos|Admin: postulantes|Admin: pagos', 've solo las 4 pestañas de administración, con seguimiento primero');
+await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await espera(p);
+t = await txt(p);
+ok(t.includes('Borrador secreto') && t.includes('Cliente: Familia Secreta'), 've borradores y el cliente');
+await p.getByRole('tab', { name: 'Admin: postulantes' }).click(); await espera(p);
+await p.locator('details', { hasText: 'Matrimonio en Pirque' }).locator('summary').click();
+ok((await p.evaluate(() => window.__xss)) === undefined && (await txt(p)).includes('<img src=x'), 'el nombre con HTML aparece como texto, sin ejecutarse');
+await p.locator('details', { hasText: 'Matrimonio en Pirque' }).getByRole('button', { name: 'Confirmar' }).click(); await espera(p);
+ok((await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 'p-otra').estado)) === 'confirmada', 'confirma a la postulante');
+ok((await p.locator('details', { hasText: 'Matrimonio en Pirque' }).innerText()).includes('1 de 2 confirmados'), 'el contador pasa a «1 de 2 confirmados»');
+await p.getByRole('tab', { name: 'Admin: pagos' }).click(); await espera(p);
+t = await txt(p);
+ok(t.includes('Total') && t.includes('$50.000') && t.includes('$58.997') && t.includes('faltan 1'), 'resumen: líquido $50.000, boleta $58.997 y «faltan 1»');
+ok(t.includes('11.111.111-1') && t.includes('Cuenta RUT 11111111'), 'lista a quién transferir, con RUT y cuenta');
+await p.evaluate(() => { window.__DB.baristas[0].nombre = '=HYPERLINK("http://x")'; });
+await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await p.getByRole('tab', { name: 'Admin: pagos' }).click(); await espera(p);
+const [dl] = await Promise.all([p.waitForEvent('download'), pulsa(p, 'Descargar transferencias')]);
+const csv = fs.readFileSync(await dl.path(), 'utf8');
+ok(csv.charCodeAt(0) === 0xFEFF && csv.includes('"Monto líquido a transferir"') && csv.includes('"50000"') && csv.includes('"\'=HYPERLINK'), 'CSV con BOM, montos y fórmula neutralizada');
+
+await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await espera(p);
+await pulsa(p, 'Nuevo evento'); await espera(p);
+await p.fill('form [name=nombre]', 'Evento prueba'); await p.fill('form [name=fecha]', '2030-01-15');
+await p.fill('form [name=hora_inicio]', '10:00'); await p.fill('form [name=hora_fin]', '12:00'); await p.fill('form [name=comuna]', 'Lo Barnechea');
+ok((await txt(p)).includes('Dura 2 h → paga $25.000 líquidos'), 'la vista previa calcula 2 h → $25.000');
+await p.fill('form [name=hora_fin]', '15:30');
+ok((await txt(p)).includes('Dura 5,5 h') && (await txt(p)).includes('$55.000'), '5,5 h → $55.000');
+await p.fill('form [name=hora_fin]', '20:00');
+ok((await txt(p)).includes('Dura 10 h → paga $70.000 líquidos') && (await txt(p)).includes('tope diario de $70.000') && (await txt(p)).includes('sin tope serían $100.000'), '10 h → se recorta a $70.000 y avisa el tope');
+await p.fill('form [name=pago_manual]', '90000');
+ok((await txt(p)).includes('paga $90.000 líquidos') && !(await txt(p)).includes('tope diario'), 'con pago fijo de $90.000 no se recorta');
+await p.fill('form [name=pago_manual]', ''); await p.fill('form [name=hora_fin]', '15:30');
+await p.fill('form [name=direccion]', 'Calle Nueva 45'); await p.fill('form [name=cliente]', 'Cliente Nuevo');
+await pulsa(p, 'Guardar evento'); await espera(p); await espera(p);
+const nuevo = await p.evaluate(() => ({ ev: window.__DB.eventos.find(x => x.nombre === 'Evento prueba'), dir: window.__DB.evento_direcciones.find(x => x.direccion === 'Calle Nueva 45'), priv: window.__DB.evento_privado.find(x => x.cliente === 'Cliente Nuevo') }));
+ok(nuevo.ev && nuevo.ev.estado === 'borrador' && nuevo.dir && nuevo.priv, 'crea el evento como borrador, con su dirección y su cliente aparte');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+console.log('\n=== D. Seguimiento: semáforo, reconfirmación, checklist y cierre ===');
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, seguimiento: true });
+const pestanas = await p.getByRole('tab').allInnerTexts();
+ok(pestanas[0] === 'Admin: seguimiento (2)', `la pestaña avisa 2 alertas → «${pestanas[0]}»`);
+ok((await p.getByRole('tab', { selected: true }).innerText()).startsWith('Admin: seguimiento'), 'y es la que se abre primero');
+t = await txt(p);
+ok(t.includes('2 alertas') && t.includes('Seg A 3 días sin baristas') && t.includes('Faltan 2 baristas por asignar · quedan 3 días'), 'arriba se listan las alertas: faltan baristas a 3 días');
+ok(t.includes('Seg E pasado 10 días') && t.includes('cierre atrasado'), 'y el cierre atrasado');
+const tar = n => p.locator('article', { hasText: n });
+let tx = await tar('Seg A').innerText();
+ok(tx.includes('ALERTA') && tx.includes('Asignados 0 de 2'), 'A (3 días, sin baristas): ALERTA');
+tx = await tar('Seg B').innerText();
+ok(tx.includes('Pendiente') && tx.includes('1 asignado sin reconfirmar') && tx.includes('quedan 10 días'), 'B (10 días, sin reconfirmar): Pendiente, aún hay tiempo');
+tx = await tar('Seg C').innerText();
+ok(tx.includes('OK') && tx.includes('Todo en orden'), 'C (cupos completos y reconfirmado): OK');
+const hrefWa = await tar('Seg B').getByRole('link', { name: 'WhatsApp' }).getAttribute('href');
+ok(/^https:\/\/wa\.me\/56922223333\?text=/.test(hrefWa) && decodeURIComponent(hrefWa).includes('Hola Bea'), 'botón de WhatsApp con el teléfono y el mensaje');
+
+await tar('Seg B').getByRole('button', { name: 'Marcar reconfirmado' }).click(); await espera(p); await espera(p);
+ok(!!(await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 's1').asistencia_confirmada_en)), 'marcar reconfirmado guarda la reconfirmación');
+tx = await tar('Seg B').innerText();
+ok(tx.includes('OK') && tx.includes('Todo en orden'), 'y B pasa a OK');
+
+await p.evaluate(() => { Object.defineProperty(navigator, 'clipboard', { value: { writeText: (x) => { window.__copiado = x; return Promise.resolve(); } }, configurable: true }); });
+await tar('Seg B').getByRole('button', { name: /Copiar teléfonos/ }).click(); await espera(p);
+ok((await p.evaluate(() => window.__copiado)) === 'Bea Prueba: +56922223333' && (await tar('Seg B').innerText()).includes('Teléfonos copiados'), 'copia los teléfonos de los asignados para el grupo de WhatsApp');
+
+tx = await tar('Seg C').innerText();
+ok(tx.includes('Checklist: 0 de 5') && tx.includes('Grupo de WhatsApp creado') && tx.includes('Cliente confirmó hora y lugar'), 'checklist de 5 puntos');
+await tar('Seg C').getByLabel('Grupo de WhatsApp creado').check(); await espera(p);
+ok((await tar('Seg C').innerText()).includes('Checklist: 1 de 5') && (await p.evaluate(() => !!(window.__DB.evento_seguimiento.find(x => x.evento_id === 'e13') || { checklist: {} }).checklist.grupo_whatsapp)), 'marcar un punto lo guarda y actualiza el contador');
+await tar('Seg C').getByLabel('Grupo de WhatsApp creado').uncheck(); await espera(p);
+ok((await tar('Seg C').innerText()).includes('Checklist: 0 de 5') && (await p.evaluate(() => !(window.__DB.evento_seguimiento.find(x => x.evento_id === 'e13') || { checklist: {} }).checklist.grupo_whatsapp)), 'desmarcarlo lo quita');
+
+tx = await tar('Seg D').innerText();
+ok(tx.includes('Por cerrar') && tx.includes('Falta: documento al cliente, 1 boleta de honorarios, 1 pago') && tx.includes('fue hace 3 días') && !tx.includes('cierre atrasado'), 'D (hace 3 días): por cerrar, aún sin atraso, con lo que falta');
+tx = await tar('Seg E').innerText();
+ok(tx.includes('ALERTA') && tx.includes('cierre atrasado'), 'E (hace 10 días): ALERTA, cierre atrasado');
+const cardD = tar('Seg D');
+await cardD.locator('input[name=bol_fecha]').fill('2026-10-18'); await cardD.locator('input[name=bol_folio]').fill('B-77');
+p.once('dialog', d => d.accept());
+await cardD.getByRole('button', { name: 'Marcar pagado' }).click(); await espera(p); await espera(p);
+const hoyChile = await p.evaluate(() => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date()));
+const post3 = await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 's3'));
+ok(post3.boleta_honorarios_folio === 'B-77' && post3.boleta_honorarios_recibida_en === '2026-10-18' && post3.honorarios_pagados_en === hoyChile, '«Marcar pagado» guarda boleta, folio y la fecha de hoy');
+tx = await tar('Seg D').innerText();
+ok(tx.includes('pagado') && tx.includes('Falta: documento al cliente') && !tx.includes('1 boleta'), 'D ahora solo espera el documento al cliente');
+await tar('Seg D').locator('input[name=doc_fecha]').fill('2026-10-19'); await tar('Seg D').locator('input[name=doc_folio]').fill('F-20');
+await tar('Seg D').getByRole('button', { name: 'Guardar documento' }).click(); await espera(p); await espera(p);
+const docD = await p.evaluate(() => window.__DB.evento_seguimiento.find(x => x.evento_id === 'e14'));
+ok(docD && docD.documento_cliente_folio === 'F-20' && docD.documento_cliente_emitido_en === '2026-10-19', 'guarda el documento al cliente con su folio');
+ok((await p.locator('article', { hasText: 'Seg D pasado' }).count()) === 0, 'con todo registrado, D sale de «Por cerrar»');
+ok((await txt(p)).includes('2 eventos ya cerrados'), 'y se cuenta entre los cerrados (2)');
+
+await p.getByRole('tab', { name: 'Admin: pagos' }).click(); await espera(p);
+let tp = await txt(p);
+ok(/Bea Prueba[^\n]*\$120\.000/.test(tp), 'pagos: Bea suma sus 3 eventos ($120.000)');
+await p.getByLabel(/Mostrar solo lo que falta pagar/).check(); await espera(p);
+tp = await txt(p);
+ok(/Bea Prueba[^\n]*\$40\.000/.test(tp) && !/Bea Prueba[^\n]*\$120\.000/.test(tp), 'con «solo lo que falta pagar» Bea baja a $40.000 (solo el evento sin pagar)');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+
+console.log('\n=== E. Barista: después del evento, avisa su boleta y ve el pago ===');
+p = await abrir({ sesion: { id: 'u-ana', email: 'ana@ejemplo.cl' }, perfilPropio: perfil, despues: true });
+t = await txt(p);
+ok(t.includes('Tienes 2 cosas pendientes') && t.includes('Confirma que vas a «Futuro asignado»') && t.includes('Avísanos cuando emitas tu boleta de honorarios de «Pasado sin boleta»'), 'en «Eventos» un aviso lista lo pendiente: reconfirmar y la boleta');
+await pulsa(p, 'Ir a mis postulaciones'); await espera(p);
+const ca = n => p.locator('article', { hasText: n });
+tx = await ca('Pasado sin boleta').innerText();
+ok(tx.includes('Para que te paguemos: tu boleta de honorarios') && tx.includes('por $47.198') && tx.includes('te quedan $40.000') && tx.includes('Ya emití mi boleta de honorarios'), 'después del evento: pide la boleta, con el monto de $47.198');
+tx = await ca('Pasado boleta enviada').innerText();
+ok(tx.includes('Boleta enviada: la estamos revisando') && tx.includes('folio B-5') && !tx.includes('Ya emití'), 'si ya avisó, ve «Boleta enviada» y no el botón');
+tx = await ca('Pasado pagado').innerText();
+ok(tx.includes('Pago recibido') && tx.includes('$40.000 líquidos') && !tx.includes('Ya emití'), 'si ya se pagó, ve «Pago recibido»');
+tx = await ca('Futuro asignado').innerText();
+ok(!tx.includes('boleta de honorarios') || !tx.includes('Ya emití'), 'un evento que aún no pasa no pide la boleta');
+let negado = false; p.once('dialog', d => { negado = true; d.dismiss(); });
+await ca('Pasado sin boleta').locator('input[name=folio]').fill('B-99');
+await ca('Pasado sin boleta').getByRole('button', { name: 'Ya emití mi boleta de honorarios' }).click(); await espera(p);
+ok(negado && (await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 't1').boleta_declarada_en)) === null, 'si cancela el diálogo, no se guarda nada');
+p.once('dialog', d => d.accept());
+await ca('Pasado sin boleta').getByRole('button', { name: 'Ya emití mi boleta de honorarios' }).click(); await espera(p); await espera(p);
+const t1 = await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 't1'));
+ok(!!t1.boleta_declarada_en && t1.boleta_declarada_folio === 'B-99', 'al confirmar, queda declarada con su folio');
+tx = await ca('Pasado sin boleta').innerText();
+ok(tx.includes('Boleta enviada: la estamos revisando') && tx.includes('folio B-99'), 'y la tarjeta cambia a «Boleta enviada»');
+await p.getByRole('tab', { name: 'Eventos' }).click(); await espera(p);
+ok((await txt(p)).includes('Tienes 1 cosa pendiente') && !(await txt(p)).includes('Pasado sin boleta'), 'el aviso baja a 1 pendiente');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+console.log('\n=== F. Administración: boleta declarada, un clic para pagar, eventos por revisar y última lectura ===');
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, cierre: true });
+t = await txt(p);
+ok(t.includes('Calendario leído el ') && t.includes('20 eventos de servicio') && t.includes('nuevos 2, con cambios 1, cancelados 0'), 'arriba dice cuándo se leyó el calendario y qué cambió');
+ok(!t.includes('Hace más de un día'), 'una lectura de hace 3 horas no preocupa');
+ok(t.includes('1 evento espera que revises sus datos'), 'avisa cuántos eventos esperan revisión');
+tx = await tar('Cierre con boleta declarada').innerText();
+ok(tx.includes('boleta declarada: revisar en el SII') && tx.includes('Avisó que emitió su boleta el') && tx.includes('folio B-77') && tx.includes('Revísala en el SII'), 'el cierre muestra que Bea declaró su boleta, con folio');
+const bea = tar('Cierre con boleta declarada').locator('.sb-postulante', { hasText: 'Bea Prueba' });
+const caro = tar('Cierre con boleta declarada').locator('.sb-postulante', { hasText: 'Caro Prueba' });
+ok((await caro.innerText()).includes('falta la boleta'), 'Caro sigue en «falta la boleta»');
+ok((await bea.locator('input[name=bol_folio]').inputValue()) === 'B-77', 'el folio declarado ya viene escrito para guardarlo');
+let confirmaTxt = '';
+p.once('dialog', d => { confirmaTxt = d.message(); d.dismiss(); });
+await bea.getByRole('button', { name: 'Marcar pagado' }).click(); await espera(p);
+ok(confirmaTxt.includes('revisaste la boleta en el SII') && confirmaTxt.includes('$40.000') && confirmaTxt.includes('Bea Prueba') && confirmaTxt.includes('aviso por correo'), 'antes de pagar pide confirmar: SII, monto, nombre y el aviso por correo');
+ok((await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 'q1').honorarios_pagados_en)) === null, 'si cancela, no se registra el pago');
+p.once('dialog', d => d.accept());
+await bea.getByRole('button', { name: 'Marcar pagado' }).click(); await espera(p); await espera(p);
+const hoyCL = await p.evaluate(() => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date()));
+const q1 = await p.evaluate(() => window.__DB.postulaciones.find(x => x.id === 'q1'));
+ok(q1.honorarios_pagados_en === hoyCL && q1.boleta_honorarios_recibida_en === hoyCL && q1.boleta_honorarios_folio === 'B-77', 'un clic: pagado hoy, boleta recibida hoy y folio B-77');
+ok((await tar('Cierre con boleta declarada').locator('.sb-postulante', { hasText: 'Bea Prueba' }).innerText()).includes('pagado'), 'Bea queda «pagado»');
+ok((await tar('Cierre con boleta declarada').locator('.sb-postulante', { hasText: 'Bea Prueba' }).getByRole('button', { name: 'Marcar pagado' }).count()) === 0, 'y ya no ofrece pagar de nuevo');
+// eventos por revisar
+tx = await tar('Servicio de barra · Por confirmar').innerText();
+ok(tx.includes('Por revisar (viene del calendario)') && tx.includes('Falta el lugar en el calendario'), 'el evento del calendario con datos dudosos aparece «Por revisar» con el motivo');
+await tar('Servicio de barra · Por confirmar').getByRole('button', { name: 'Ya lo revisé' }).click(); await espera(p); await espera(p);
+const rev = await p.evaluate(() => window.__DB.evento_seguimiento.find(x => x.evento_id === 'e32'));
+ok(rev.revisar === false && rev.revisar_motivo === null, '«Ya lo revisé» quita la marca');
+ok(!(await txt(p)).includes('espera que revises') && !(await txt(p)).includes('esperan que revises'), 'y el aviso de arriba desaparece');
+await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await espera(p);
+ok(!(await txt(p)).includes('Por revisar'), 'en «Admin: eventos» tampoco queda marcado');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, cierre: true, syncViejo: true, syncAdvertencia: 'El calendario llegó vacío: no se canceló nada.' });
+t = await txt(p);
+ok(t.includes('Hace más de un día que no se lee') && t.includes('Atención: El calendario llegó vacío'), 'si el calendario no se lee hace más de un día, avisa que revise Apps Script; y muestra la advertencia');
+await p.context().close();
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, sinSync: true });
+ok((await txt(p)).includes('El calendario todavía no se ha leído'), 'sin ninguna lectura, lo dice');
+await p.context().close();
+p = await abrir({ sesion: { id: 'u-ana', email: 'ana@ejemplo.cl' }, perfilPropio: perfil, despues: true });
+ok(!(await txt(p)).includes('Calendario leído'), 'una barista no ve nada de la lectura del calendario');
+await p.context().close();
+
+await b.close();
+console.log(`\n${total - fallas} de ${total} comprobaciones pasaron`);
+process.exit(fallas ? 1 : 0);

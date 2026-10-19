@@ -1,0 +1,272 @@
+{
+  "marca": "Sepia Coffee",
+  "sitio": "https://sepiacoffee.cl/",
+  "moneda": "CLP",
+  "pais": "CL",
+  "actualizado": "2026-10-11",
+  "envio": {
+    "gratis_sobre": 50000,
+    "region_metropolitana": 3000,
+    "regiones": 4000,
+    "cobertura": "todo Chile"
+  },
+  "suscripcion": {
+    "descuento_porcentaje": 15,
+    "nota": "aplica a todos los productos"
+  },
+  "productos": [
+    {
+      "id": "sepia-colombia",
+      "nombre": "Colombia",
+      "categoria": "Café en grano",
+      "bajada": "Vainilla, frutos secos y cacao",
+      "descripcion": "Café de especialidad de Colombia, de tueste medio. En taza: vainilla, frutos secos y cacao. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Es el más parejo de los dos: dulce, de cuerpo medio y poca acidez, así que funciona igual de bien en espresso que en filtro. Si recién entras al café de especialidad, parte por acá. Lo eliges en grano o molido para tu método.",
+      "opciones": [
+        {
+          "nombre": "Formato",
+          "valores": [
+            "250 g",
+            "1 kg"
+          ]
+        },
+        {
+          "nombre": "Molienda",
+          "valores": [
+            "En grano",
+            "Molido"
+          ]
+        }
+      ],
+      "variantes": [
+        {
+          "variante": "250 g · En grano",
+          "precio": 11990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "250 g · Molido",
+          "precio": 11990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "1 kg · En grano",
+          "precio": 37990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "1 kg · Molido",
+          "precio": 37990,
+          "precio_confirmado": true
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-colombia",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-colombia.jpg"
+    },
+    {
+      "id": "sepia-bolivia",
+      "nombre": "Bolivia Yungas",
+      "categoria": "Café en grano",
+      "bajada": "Cacao, cítricos, avellana y caramelo",
+      "descripcion": "Café de especialidad de Yungas, Bolivia, de tueste medio ligero. En taza: cacao, cítricos, avellana y caramelo. Los Yungas son la ceja de selva boliviana, donde la cordillera baja hacia el Amazonas: a 1.700 metros el grano madura lento y guarda más acidez. Variedades Caturra, Typica y Catuai, proceso lavado. Lo tostamos nosotros en Santiago, en lotes chicos, y lo despachamos recién tostado. Tiene más acidez que el Colombia y una nota cítrica que se abre sobre todo en filtro, donde más se luce. Lo eliges en grano o molido para tu método.",
+      "opciones": [
+        {
+          "nombre": "Formato",
+          "valores": [
+            "250 g",
+            "1 kg"
+          ]
+        },
+        {
+          "nombre": "Molienda",
+          "valores": [
+            "En grano",
+            "Molido"
+          ]
+        }
+      ],
+      "variantes": [
+        {
+          "variante": "250 g · En grano",
+          "precio": 11990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "250 g · Molido",
+          "precio": 11990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "1 kg · En grano",
+          "precio": 37990,
+          "precio_confirmado": true
+        },
+        {
+          "variante": "1 kg · Molido",
+          "precio": 37990,
+          "precio_confirmado": true
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-bolivia",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-bolivia.jpg"
+    },
+    {
+      "id": "sepia-matcha",
+      "nombre": "Matcha",
+      "categoria": "Matcha",
+      "bajada": "En lata o en sobre de recarga",
+      "descripcion": "Matcha en polvo para batir en casa. La lata de 30 g es la de empezar y la que se ve bien en la repisa; el sobre de 80 g es la recarga, que sale más conveniente por gramo y genera menos envase.",
+      "opciones": [
+        {
+          "nombre": "Formato",
+          "valores": [
+            "30 g en lata",
+            "80 g en sobre"
+          ]
+        }
+      ],
+      "variantes": [
+        {
+          "variante": "30 g en lata",
+          "precio": null,
+          "precio_confirmado": false
+        },
+        {
+          "variante": "80 g en sobre",
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-matcha",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-matcha.jpg"
+    },
+    {
+      "id": "sepia-lata-edicion",
+      "nombre": "Lata edición limitada",
+      "categoria": "Café en grano",
+      "bajada": "200 g · mientras dure",
+      "descripcion": "El mismo café de Colombia en lata de 200 g, con la gráfica de la edición. La lata sirve después para guardar el café del sobre, que es justamente para lo que está pensada. Cuando se acaba la tirada, no vuelve.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-lata-edicion",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-lata-edicion.jpg"
+    },
+    {
+      "id": "sepia-coldbrew-lata",
+      "nombre": "Cold brew en lata",
+      "categoria": "Cold brew",
+      "bajada": "Listo para tomar",
+      "descripcion": "Café de especialidad extraído en frío, sin azúcar y sin endulzantes, en lata. Viene listo: lo sirves con hielo y nada más. Para quien no tiene cafetera o quiere café frío sin prepararlo.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": false,
+      "url": "https://sepiacoffee.cl/#producto-coldbrew-lata",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-coldbrew-lata.jpg"
+    },
+    {
+      "id": "sepia-kit-matcha",
+      "nombre": "Kit matcha",
+      "categoria": "Kits",
+      "bajada": "Todo para partir",
+      "descripcion": "El kit para preparar matcha en casa como corresponde, sin grumos y sin comprar las cosas por separado.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-kit-matcha",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-kit-matcha.jpg"
+    },
+    {
+      "id": "sepia-kit-cafetero",
+      "nombre": "Kit cafetero",
+      "categoria": "Kits",
+      "bajada": "Todo para partir",
+      "descripcion": "El kit para quien recién se mete en el café de especialidad y no sabe por dónde empezar con el equipo.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-kit-cafetero",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-kit-cafetero.jpg"
+    },
+    {
+      "id": "sepia-musette",
+      "nombre": "Musette",
+      "categoria": "Accesorios",
+      "bajada": "Bolso de hombro",
+      "descripcion": "Musette de tela con el caminante de Sepia Coffee. Liviana, de un solo bolsillo y correa larga: la de salir a comprar el pan y volver con el café.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-musette",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-musette.jpg"
+    },
+    {
+      "id": "sepia-polera",
+      "nombre": "Polera",
+      "categoria": "Accesorios",
+      "bajada": "Algodón, con el caminante",
+      "descripcion": "Polera de algodón con el caminante de Sepia Coffee.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-polera",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-polera.jpg"
+    },
+    {
+      "id": "sepia-vaso",
+      "nombre": "Vaso",
+      "categoria": "Accesorios",
+      "bajada": "Reutilizable",
+      "descripcion": "Vaso reutilizable con el caminante de Sepia Coffee. Para el café de la mañana o para el matcha helado de la tarde.",
+      "opciones": [],
+      "variantes": [
+        {
+          "variante": null,
+          "precio": null,
+          "precio_confirmado": false
+        }
+      ],
+      "activo": true,
+      "url": "https://sepiacoffee.cl/#producto-vaso",
+      "imagen": "https://sepiacoffee.cl/assets/fotos/prod-vaso.jpg"
+    }
+  ]
+}

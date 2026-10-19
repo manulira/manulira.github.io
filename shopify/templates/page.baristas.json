@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "sepia-baristas",
+      "settings": {
+        "supabase_url": "",
+        "supabase_key": ""
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

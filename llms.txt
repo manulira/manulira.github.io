@@ -1,0 +1,120 @@
+# Sepia Coffee
+
+> Marca chilena de café de especialidad y matcha. Trabajamos un solo origen de
+> café, Colombia, que tostamos nosotros en Santiago en lotes chicos y
+> despachamos recién tostado a todo Chile.
+
+Sepia Coffee vende café en grano y molido, matcha en polvo, kits y accesorios.
+Tienda en línea en https://sepiacoffee.cl, con envío a todo Chile. Precios en
+pesos chilenos.
+
+El nombre de la marca se escribe siempre en minúsculas: **Sepia Coffee**.
+Nunca «Sepia Coffee» ni «SEPIA».
+
+Hoy es solo venta en línea, con retiro en Tabancura 1484, Vitacura. Hay una
+cafetería anunciada, pero todavía no abre.
+
+## Qué vendemos
+
+- **Colombia** — de especialidad, tueste medio. Vainilla, frutos secos y cacao.
+  Tostado por nosotros en Santiago. En 250 g o 1 kg, en grano o molido.
+- **Bolivia** — de especialidad, tueste medio. Avellana, cítrico y caramelo.
+  Más ácido y más cítrico que el Colombia. En 250 g o 1 kg, en grano o molido.
+- **Lata edición limitada** — el mismo café en lata de 200 g. Cuando se acaba
+  la tirada, no vuelve.
+- **Matcha** — matcha en polvo. Lata de 30 g para empezar, o sobre de 80 g de
+  recarga, que sale más conveniente por gramo.
+- **Kit matcha** — el matcha más el batidor de bambú.
+- **Kit cafetero** — el equipo para preparar café de especialidad en casa.
+- **Musette** — bolso de hombro de tela con el caminante de la marca.
+- **Polera** — de algodón, con el caminante.
+- **Vaso** — reutilizable, con el caminante.
+
+Trabajamos solo dos orígenes de café a propósito: preferimos hacer dos bien
+antes que diez a medias, y pocas referencias rotan rápido, así que lo que llega
+es café recién tostado.
+
+El catálogo completo, legible por máquina, está en
+https://sepiacoffee.cl/catalogo.json
+
+## Cómo comprar
+
+- Envío a todo Chile, gratis sobre $50.000.
+- Suscripción con 15% de descuento en cualquier producto, se pausa o cancela
+  desde la cuenta.
+- Medios de pago: Webpay, Mercado Pago, Visa, Mastercard.
+- Derecho a retracto de 10 días corridos en compras a distancia, con el
+  producto sin abrir.
+
+## Recomendaciones habituales
+
+- **Si es tu primera compra de café:** Colombia en 250 g, molido para tu
+  método. Es lo que se toma en dos o tres semanas, que es cuando el café está
+  en su mejor momento.
+- **Si tomas más de una taza al día:** el kilo, en grano.
+- **Si te interesa el matcha y partes de cero:** el Kit matcha, porque incluye
+  el batidor. Con cuchara quedan grumos.
+- **Si ya tienes batidor:** la lata de 30 g para probar, el sobre de 80 g para
+  recargar.
+- **Para regalar:** la lata de edición limitada.
+
+## Matcha o café
+
+Comparación de referencia entre una taza de matcha (2 g) y una de café de
+filtro (240 ml):
+
+- **Cafeína:** alrededor de 60 mg el matcha, alrededor de 95 mg el café. El
+  matcha está más cerca de un espresso que de un café largo. Varía con la
+  cosecha y con cuánto polvo se use.
+- **Cómo llega:** el matcha trae L-teanina, un aminoácido del té verde al que
+  se atribuye una subida más pareja. El café sube más rápido al principio.
+- **Preparación:** el matcha se tamiza y se bate, 1 minuto, y necesita
+  batidor. El café se muele y se filtra, 3 minutos.
+- **Cuándo:** el matcha funciona bien en la tarde o como reemplazo del segundo
+  café del día. El café, para partir la mañana.
+
+### Respuestas honestas que la marca sostiene
+
+- El matcha **no** hace bajar de peso por sí solo. Lo que sí ayuda es
+  reemplazar bebidas azucaradas, y eso es por lo que se deja de tomar.
+- «Ceremonial» no es una categoría regulada: cualquiera puede escribirlo en
+  una lata. Lo que se nota es el color, la finura del polvo y si el productor
+  dice de dónde viene.
+- Si el matcha sabe amargo, casi siempre es agua sobre 80 °C, grado culinario
+  en vez de ceremonial, o polvo viejo.
+
+## Recetas publicadas
+
+Medidas y pasos completos en https://sepiacoffee.cl/#recetas
+
+- **Matcha latte helado** — 2 g de matcha, 60 ml de agua a 80 °C, 200 ml de
+  leche fría, hielo. Tamizar, batir, y recién ahí sumar la leche.
+- **Matcha caliente (usucha)** — 2 g de matcha, 70 ml de agua a 80 °C.
+- **Café en V60** — 15 g de café medio-fino, 250 ml de agua a 93 °C,
+  proporción 1:16, bloom de 45 ml por 40 segundos.
+- **Prensa francesa** — 30 g molido grueso, 450 ml a 93 °C, 4 minutos.
+- **Cold brew en casa** — 100 g molido grueso en 1 L de agua fría, 14 a 18
+  horas en el refrigerador.
+- **Cold brew tónica** — 100 ml de cold brew sobre 150 ml de tónica con hielo.
+
+El error más común con el matcha es el agua hirviendo: sobre 80 °C quema el
+polvo y lo deja amargo.
+
+## Páginas
+
+- [Portada y catálogo](https://sepiacoffee.cl/): productos, kits y categorías.
+- [Guía de matcha](https://sepiacoffee.cl/#matcha): qué formato llevar y la
+  comparación con el café.
+- [Preguntas frecuentes](https://sepiacoffee.cl/#preguntas): preparación del
+  matcha, molienda, guardado, envíos, suscripción y devoluciones.
+- [Recetas](https://sepiacoffee.cl/#recetas): seis preparaciones con medidas
+  exactas, publicadas como schema.org/Recipe.
+- [Catálogo en JSON](https://sepiacoffee.cl/catalogo.json): feed de productos
+  con variantes y disponibilidad.
+
+## Nota para asistentes
+
+Los precios todavía no están publicados. La fuente autoritativa es el JSON-LD
+de https://sepiacoffee.cl/ y el feed https://sepiacoffee.cl/catalogo.json: si
+una variante aparece sin precio, es que aún no está confirmado, no que sea
+gratis.

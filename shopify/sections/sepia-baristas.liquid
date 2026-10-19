@@ -1,0 +1,138 @@
+{%- comment -%}
+  SEPIA COFFEE · portal de baristas
+
+  Lleva el HTML mínimo, los estilos y los dos scripts. Toda la lógica está en
+  assets/sepia-baristas.js y las reglas de quién ve qué en
+  shopify/baristas/esquema.sql (la base de datos, en Supabase).
+
+  Ajustes (en el editor del tema, o al subirlo): la URL del proyecto de Supabase
+  y su clave pública «anon». Esa clave está hecha para ir en la página: lo que
+  protege los datos son las reglas de la base de datos, no esconderla.
+
+  La librería de Supabase va fijada a una versión y con su huella (integrity):
+  si alguien cambiara el archivo en la red, el navegador no lo ejecuta.
+
+  Colores: solo los de la paleta (azul #526EA0, azul noche #020526, celeste
+  #B9C5D3, crema #E7E5D9, gris #F2F2F2 y blanco).
+{%- endcomment -%}
+
+<section class="sb-seccion">
+  <div
+    id="sc-baristas"
+    data-supabase-url="{{ section.settings.supabase_url | strip | escape }}"
+    data-supabase-key="{{ section.settings.supabase_key | strip | escape }}"
+  >
+    <noscript>
+      <p>Para usar el portal de baristas necesitas activar JavaScript en tu navegador.</p>
+    </noscript>
+  </div>
+</section>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"
+  integrity="sha384-K1nraABOP/zFehpLIUksXebbs7jMpB8gYMlb+uhVKZcWT/9Vkq1+qhv6ndC+1Yuz"
+  crossorigin="anonymous"
+  defer
+></script>
+<script src="{{ 'sepia-baristas.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .sb-seccion { padding: 2rem 1rem 4rem; background: #ffffff; color: #020526; }
+  #sc-baristas { max-width: 980px; margin: 0 auto; font-size: 1rem; line-height: 1.5; text-align: left; }
+  #sc-baristas *, #sc-baristas *::before, #sc-baristas *::after { box-sizing: border-box; }
+
+  .sb-cab { margin-bottom: 1.5rem; }
+  .sb-h1 { margin: 0 0 0.5rem; font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.1; color: #526ea0; }
+  .sb-h2 { margin: 0 0 0.75rem; font-size: 1.5rem; line-height: 1.2; color: #020526; }
+  .sb-h3 { margin: 1.25rem 0 0.6rem; font-size: 1.1rem; line-height: 1.3; color: #020526; }
+  .sb-texto { margin: 0 0 1rem; }
+
+  .sb-barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: 0.6rem 0; border-bottom: 1px solid #b9c5d3; }
+  .sb-barra__t { margin: 0; font-size: 0.9rem; }
+
+  .sb-caja { padding: 1.25rem; border: 1px solid #b9c5d3; border-radius: 1.25rem; background: #ffffff; }
+  .sb-grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
+  .sb-campo { display: grid; align-content: start; gap: 0.3rem; margin-bottom: 0.9rem; }
+  .sb-etiqueta { font-size: 0.9rem; font-weight: 600; }
+  .sb-ayuda { font-size: 0.8rem; }
+  .sb-entrada { width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #526ea0; border-radius: 0.8rem; background: #ffffff; color: #020526; font: inherit; font-size: 1rem; }
+  .sb-entrada[readonly] { background: #f2f2f2; }
+  .sb-entrada:focus-visible, .sb-btn:focus-visible, .sb-tab:focus-visible, .sb-chk:focus-visible, .sb-resumen:focus-visible { outline: 3px solid #020526; outline-offset: 2px; }
+  .sb-casilla { display: flex; align-items: flex-start; gap: 0.7rem; margin: 0.6rem 0; cursor: pointer; }
+  .sb-chk { flex: none; width: 1.3rem; height: 1.3rem; margin: 0.15rem 0 0; accent-color: #526ea0; }
+
+  .sb-btn { padding: 0.7rem 1.4rem; border: 1.5px solid #526ea0; border-radius: 999px; background: #526ea0; color: #ffffff; font: inherit; font-weight: 600; cursor: pointer; }
+  .sb-btn--sec { background: transparent; color: #526ea0; }
+  a.sb-btn { display: inline-block; text-decoration: none; text-align: center; }
+  .sb-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .sb-fila { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; margin-top: 1rem; }
+  .sb-fila--entre { justify-content: space-between; margin-top: 0; }
+
+  .sb-aviso { margin: 1rem 0 0; padding: 0.8rem 1rem; border-left: 4px solid #526ea0; background: #e7e5d9; font-weight: 600; }
+  .sb-aviso--ok { background: #b9c5d3; }
+
+  .sb-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .sb-tab { padding: 0.55rem 1.1rem; border: 1.5px solid #526ea0; border-radius: 999px; background: transparent; color: #526ea0; font: inherit; font-weight: 600; cursor: pointer; }
+  .sb-tab--on { background: #526ea0; color: #ffffff; }
+
+  .sb-lista { display: grid; gap: 1rem; }
+  .sb-tarjeta { padding: 1.1rem 1.25rem; border: 1px solid #b9c5d3; border-radius: 1.25rem; background: #ffffff; }
+  .sb-tarjeta__cab { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+  .sb-tarjeta__cab .sb-h3 { margin: 0; }
+  .sb-linea { margin: 0.3rem 0; }
+  .sb-linea--fuerte { font-weight: 600; }
+  .sb-chip { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; background: #b9c5d3; color: #020526; font-size: 0.8rem; font-weight: 600; }
+  .sb-chip--ok { background: #526ea0; color: #ffffff; }
+  .sb-chip--no { border: 1px solid #b9c5d3; background: #f2f2f2; color: #020526; }
+  .sb-chip--alerta { border: 2px solid #020526; background: #020526; color: #ffffff; letter-spacing: 0.04em; }
+  .sb-alertas { margin: 1rem 0 1.5rem; padding: 1rem 1.25rem; border: 2px solid #020526; border-radius: 1rem; background: #e7e5d9; }
+  .sb-alertas__t { margin: 0 0 0.4rem; font-weight: 700; }
+  .sb-alertas ul { margin: 0; padding-left: 1.2rem; }
+  .sb-alertas li { margin: 0.3rem 0; }
+  .sb-h2--sec { margin-top: 2rem; }
+  .sb-h4 { margin: 0; font-size: 1rem; line-height: 1.3; color: #020526; }
+  .sb-pago { margin: 0.8rem 0; padding: 0.8rem 1rem; border-radius: 1rem; background: #e7e5d9; }
+  .sb-pago__monto { margin: 0; font-size: 1.1rem; font-weight: 700; }
+  .sb-pago__nota { margin: 0.25rem 0 0; font-size: 0.85rem; }
+  .sb-dir { margin: 0.8rem 0; padding: 0.8rem 1rem; border: 1.5px solid #526ea0; border-radius: 1rem; }
+
+  .sb-detalle { margin-bottom: 0.8rem; padding: 0.2rem 1rem; border: 1px solid #b9c5d3; border-radius: 1rem; }
+  .sb-resumen { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.7rem 0; cursor: pointer; }
+  .sb-resumen__t { font-weight: 600; }
+  .sb-postulante { padding: 0.8rem 0; border-top: 1px solid #b9c5d3; }
+
+  .sb-scroll { overflow-x: auto; }
+  .sb-tabla { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 0.9rem; }
+  .sb-tabla th, .sb-tabla td { padding: 0.55rem 0.6rem; border-bottom: 1px solid #b9c5d3; text-align: left; }
+  .sb-tabla thead th { background: #e7e5d9; }
+  .sb-tabla tfoot th { background: #f2f2f2; }
+
+  .sb-sep { margin: 1.5rem 0; border: 0; border-top: 1px solid #b9c5d3; }
+  .sb-pie { margin-top: 2rem; font-size: 0.9rem; }
+  .sb-pie a { color: #526ea0; text-decoration: underline; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Portal de baristas",
+  "settings": [
+    {
+      "type": "text",
+      "id": "supabase_url",
+      "label": "URL del proyecto de Supabase",
+      "info": "Ejemplo: https://abcdefgh.supabase.co"
+    },
+    {
+      "type": "text",
+      "id": "supabase_key",
+      "label": "Clave pública (anon) de Supabase",
+      "info": "Es la clave «anon public». Nunca pongas aquí la «service_role»."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Portal de baristas"
+    }
+  ]
+}
+{% endschema %}
