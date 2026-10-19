@@ -18,15 +18,17 @@ vas a pagar.
 | `apps-script/Codigo.gs` | Google Apps Script (cuenta de la administración) | Lee el calendario, manda los correos de seguimiento |
 
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
-protege los datos son las reglas del `esquema.sql`, que se probaron con 165
-comprobaciones (`pruebas/rls.sql`) más 127 de la automatización (`pruebas/automatizacion.sql`): un barista ve solo lo suyo, la dirección
+protege los datos son las reglas del `esquema.sql`, que se probaron con 184
+comprobaciones (`pruebas/rls.sql`) más 143 de la automatización (`pruebas/automatizacion.sql`): un barista ve solo lo suyo, la dirección
 exacta solo la ven los confirmados en ese evento, y los datos del cliente y los
 de todos los baristas solo los ve la administración.
 
 ## Lo que ve cada uno
 
-- **Barista registrado:** eventos abiertos (fecha, horario, comuna, lugar, cuántos
-  se buscan, pago líquido y monto de su boleta), sus postulaciones y sus datos.
+- **Barista registrado:** los eventos abiertos que faltan **14 días o menos** (fecha, horario,
+  comuna, lugar, cuántos se buscan, pago líquido y monto de su boleta), sus postulaciones y sus
+  datos. Un evento más lejano no lo ve ni puede postular a él, aunque conozca su dirección web:
+  lo decide la base de datos (`config.dias_publicacion`). Los que ya tiene asignados los ve siempre.
   Si lo confirmas, ve además la dirección exacta y las indicaciones.
 - **Administración:** crea y edita eventos, ve a los postulantes, confirma o
   rechaza, y ve el resumen de pagos con la lista de a quién transferir (se baja
@@ -82,7 +84,8 @@ recibe el mismo aviso dos veces.
 
 | Cuándo | Qué pasa | Para quién |
 |---|---|---|
-| Cada día, 6:00 | Lee el calendario; los servicios nuevos quedan **abiertos** para inscribirse. Si hubo novedades, te llega un resumen | Administración |
+| Cada día, 6:00 | Lee el calendario; los servicios nuevos quedan cargados (solo los ves tú). Si hubo novedades, te llega un resumen | Administración |
+| **14 días antes** (`config.dias_publicacion`), 9:00 | El evento **se abre a los baristas**: aparece en el portal y pueden postular. Si quedan cupos, correo «Se abrió un evento» | Baristas que aceptaron avisos |
 | 5 días antes (`config.dias_vacante_cupos`, 0 lo apaga) | Si todavía hay cupos libres: aviso de vacante | Baristas que aceptaron avisos |
 | **7 días antes**, 9:00 | Recordatorio 1: «reconfirma que vas» a cada asignado que no ha confirmado | Barista |
 | 7 días antes | **Estado de la semana**: todos los eventos de los próximos 7 días, con OK / Pendiente / ALERTA y quién falta | Administración |
@@ -94,6 +97,14 @@ recibe el mismo aviso dos veces.
 | Día siguiente al evento (y a los 4 y 8 días) | Pide la boleta de honorarios, con el monto, hasta que la persona avise que la emitió | Barista |
 | Cada día con boletas declaradas por pagar | Resumen para revisar en el SII; también los cierres atrasados | Administración |
 | Al marcar «Pagado» | «Te hicimos la transferencia» | Barista |
+
+En el portal, cada evento tuyo dice si los baristas ya lo ven («Abierto desde el …») o cuándo se
+abre («Todavía no lo ven los baristas: se abre el …»). Para cambiar los 14 días, o apagar el correo
+de «Se abrió un evento» (`config.avisar_eventos_nuevos`):
+```sql
+update public.config set dias_publicacion = 21;            -- 3 semanas
+update public.config set avisar_eventos_nuevos = false;    -- sin ese correo
+```
 
 Los recordatorios salen entre 9:00 y 20:59 (hora de Santiago), uno por día por persona. Si el
 script no corrió unos días, no se amontonan: igual sale uno por día.
@@ -215,16 +226,16 @@ update public.config set retencion = 0.16;   -- 2027
 
 Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inventados.
 
-- **Reglas de acceso y de la automatización (Postgres)**: `pruebas/rls.sql` (165) y
-  `pruebas/automatizacion.sql` (127: recordatorios, vacante, evento OK, grupo, boleta, pago,
+- **Reglas de acceso y de la automatización (Postgres)**: `pruebas/rls.sql` (184) y
+  `pruebas/automatizacion.sql` (143: recordatorios, vacante, evento OK, grupo, boleta, pago,
   sincronización del calendario y sus resguardos). Se corren con `psql` sobre una base vacía:
   primero `pruebas/shim-supabase.sql`, luego `esquema.sql`, luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
-- **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 29
+- **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
-- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 106 comprobaciones en un
+- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 110 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las

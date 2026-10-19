@@ -225,6 +225,27 @@ select t.debe_funcionar('se apaga con dias_vacante_cupos = 0', $q$update public.
 select t.tiene('apagado, no avisa', '2027-02-08 12:00:00+00', 'vacante_cupos:c0000000-0000-0000-0000-0000000000d1', false);
 select t.debe_funcionar('se vuelve a encender', $q$update public.config set dias_vacante_cupos = 5$q$);
 
+-- El evento se abre a la inscripción (14 días antes)
+select t.tiene('a 15 días no se avisa: todavía no se abre', '2027-01-26 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', false);
+select t.tiene('a 14 días se abre: aviso a los baristas', '2027-01-27 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', true);
+select t.valor('llega a quienes aceptaron avisos y no están asignados', $q$select t.para('2027-01-27 12:00:00+00', 'evento_nuevo:%d1')$q$, 'dani@ejemplo.test,fer@ejemplo.test,hilda@ejemplo.test');
+select t.valor('trae cuántos cupos quedan', $q$select t.dato('2027-01-27 12:00:00+00', 'evento_nuevo:%d1', 'vacantes')$q$, '1');
+select t.tiene('un evento lleno no avisa', '2027-01-27 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d2', false);
+select t.tiene('un borrador no avisa', '2027-01-27 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d3', false);
+select t.tiene('antes de las 9 no se manda', '2027-01-27 11:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', false);
+select t.tiene('a 6 días todavía corresponde «se abrió»', '2027-02-04 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', true);
+select t.tiene('a 5 días ya no: toca el aviso de vacante', '2027-02-05 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', false);
+select t.marca('2027-01-27 12:00:00+00', 'evento_nuevo:%');
+select t.tiene('no se repite', '2027-01-28 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000d1', false);
+select t.debe_funcionar('un evento nuevo sin nadie inscrito, para probar el interruptor', $q$
+  insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
+    ('c0000000-0000-0000-0000-0000000000e3', 'Auto Interruptor', '2027-04-20', '18:00', '22:00', 'Santiago', 2, 'abierto')$q$);
+select t.tiene('encendido: avisa', '2027-04-10 14:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000e3', true);
+select t.debe_funcionar('se puede apagar el aviso', $q$update public.config set avisar_eventos_nuevos = false$q$);
+select t.tiene('apagado: no avisa', '2027-04-10 14:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000e3', false);
+select t.debe_funcionar('se vuelve a encender', $q$update public.config set avisar_eventos_nuevos = true$q$);
+select t.tiene('un evento creado a 4 días no manda «se abrió» y la vacante sí', '2027-03-16 12:00:00+00', 'evento_nuevo:c0000000-0000-0000-0000-0000000000e1', false);
+
 -- ---------------------------------------------------------------------------
 -- Sincronización del calendario
 -- ---------------------------------------------------------------------------

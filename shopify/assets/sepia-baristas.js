@@ -75,6 +75,25 @@
     var p = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
     return p;
   }
+  /* Los baristas ven un evento desde N días antes de su fecha (config.dias_publicacion, 14 por defecto). */
+  function diasPublicacion() { return Number(estado.config && estado.config.dias_publicacion) || 14; }
+  function fechaMas(iso, dias) {
+    var d = new Date(iso + 'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate() + dias);
+    return d.toISOString().slice(0, 10);
+  }
+  function diasHasta(iso) {
+    return Math.round((new Date(iso + 'T12:00:00Z') - new Date(hoyISO() + 'T12:00:00Z')) / 864e5);
+  }
+  /* Qué ven los baristas de un evento, para la administración: ya abierto, o cuándo se abre. */
+  function lineaPublicacion(ev) {
+    if (ev.estado !== 'abierto' || ev.fecha < hoyISO()) return null;
+    var falta = diasHasta(ev.fecha) - diasPublicacion();
+    if (falta > 0) {
+      return h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Todavía no lo ven los baristas: se abre el ' + fechaLarga(fechaMas(ev.fecha, -diasPublicacion())).toLowerCase() + ' (en ' + (falta === 1 ? '1 día' : falta + ' días') + ').' });
+    }
+    return h('p', { class: 'sb-linea', text: 'Abierto a los baristas desde el ' + fechaLarga(fechaMas(ev.fecha, -diasPublicacion())).toLowerCase() + '.' });
+  }
   function pct(x) { return (Number(x) * 100).toLocaleString('es-CL', { maximumFractionDigits: 2 }) + ' %'; }
   /* Un timestamp del servidor → «12 nov» y «12 nov, 06:00» en hora de Santiago. */
   function diaCorto(ts) {
@@ -524,6 +543,7 @@
       h('h2', { class: 'sb-h2', text: 'Próximos eventos' }),
       boton('Actualizar', function () { recargar(); }, 'sb-btn--sec')));
     caja.appendChild(msg);
+    caja.appendChild(h('p', { class: 'sb-texto', text: 'Cada evento se abre a la inscripción ' + diasPublicacion() + ' días antes de su fecha.' }));
     var pend = pendientesBarista();
     if (pend.length) {
       caja.appendChild(h('div', { class: 'sb-alertas', role: 'alert' },
@@ -531,7 +551,7 @@
         h('ul', null, pend.map(function (t) { return h('li', { text: t }); })),
         h('div', { class: 'sb-fila' }, boton('Ir a mis postulaciones', function () { estado.pestana = 'mis'; pintar(); }))));
     }
-    if (!proximos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Por ahora no hay eventos abiertos. Vuelve pronto: aquí aparecen apenas los publicamos.' }));
+    if (!proximos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Por ahora no hay eventos abiertos. Aquí aparecen cuando faltan ' + diasPublicacion() + ' días o menos para su fecha: vuelve pronto.' }));
     caja.appendChild(h('div', { class: 'sb-lista' }, proximos.map(function (e) { return tarjetaEvento(e, msg); })));
     return caja;
   }
@@ -578,6 +598,7 @@
         h('p', { class: 'sb-linea', text: [ev.lugar, ev.comuna].filter(Boolean).join(' · ') }),
         priv.cliente ? h('p', { class: 'sb-linea', text: 'Cliente: ' + priv.cliente }) : null,
         bloqueRevisar(ev.id, msg),
+        lineaPublicacion(ev),
         h('p', { class: 'sb-linea', text: 'Necesitas ' + ev.baristas_necesarios + ' · confirmados ' + confirmados + ' · postulados ' + postulados }),
         h('p', { class: 'sb-linea', text: 'Pago ' + clp(ev.pago_liquido) + ' líquidos · boleta ' + clp(ev.monto_boleta)
           + (Number(ev.pago_sin_tope) > Number(ev.pago_liquido) ? ' · tope diario aplicado (sin tope: ' + clp(ev.pago_sin_tope) + ')' : '') }),
@@ -977,6 +998,7 @@
     caja.appendChild(h('p', { class: 'sb-linea', text: 'Asignados ' + s.asignados + ' de ' + s.baristas_necesarios + ' · reconfirmados ' + s.reconfirmados + ' · postulantes sin asignar ' + s.postulantes }));
     caja.appendChild(h('p', { class: 'sb-linea' + (s.semaforo === 'alerta' ? ' sb-linea--fuerte' : ''), text: motivoSeg(s) }));
     añadir(caja, bloqueRevisar(s.evento_id, msg));
+    if (!s.realizado && diasHasta(s.fecha) > diasPublicacion()) añadir(caja, lineaPublicacion(s));
 
     asignados.forEach(function (p) {
       var b = estado.baristas[p.barista_id] || {};

@@ -69,6 +69,8 @@ ok(fila && fila.rut === '11.111.111-1' && fila.telefono === '+56912345678' && fi
 let t = await txt(p);
 ok(t.includes('Matrimonio en Pirque') && t.includes('Coffee break empresa') && t.includes('Cumpleaños'), 've los 3 eventos abiertos y futuros');
 ok(!t.includes('Borrador secreto') && !t.includes('Evento pasado'), 'no ve el borrador ni el evento pasado');
+ok(!t.includes('Evento lejano'), 'no ve el evento de 40 días: todavía no se abre');
+ok(t.includes('Cada evento se abre a la inscripción 14 días antes de su fecha.'), 'le explica que los eventos se abren 14 días antes');
 ok(t.includes('Pago: $50.000 líquidos') && t.includes('boleta de honorarios debe ser por $58.997'), '5 h → $50.000 líquidos y boleta de $58.997');
 ok(t.includes('Pago: $25.000 líquidos') && t.includes('$29.499'), '2 h → $25.000 y boleta de $29.499');
 ok(t.includes('Pago: $40.000 líquidos') && t.includes('$47.198'), '3 h → $40.000 y boleta de $47.198');
@@ -122,6 +124,8 @@ ok((await p.getByRole('tab').allInnerTexts()).join('|') === 'Admin: seguimiento|
 await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await espera(p);
 t = await txt(p);
 ok(t.includes('Borrador secreto') && t.includes('Cliente: Familia Secreta'), 've borradores y el cliente');
+ok(t.includes('Evento lejano') && /Todavía no lo ven los baristas: se abre el .* \(en 26 días\)\./.test(t), 'el evento de 40 días aparece con «Todavía no lo ven los baristas: se abre … (en 26 días)»');
+ok(/Abierto a los baristas desde el /.test(t), 'y los de menos de 14 días dicen desde cuándo están abiertos');
 await p.getByRole('tab', { name: 'Admin: postulantes' }).click(); await espera(p);
 await p.locator('details', { hasText: 'Matrimonio en Pirque' }).locator('summary').click();
 ok((await p.evaluate(() => window.__xss)) === undefined && (await txt(p)).includes('<img src=x'), 'el nombre con HTML aparece como texto, sin ejecutarse');

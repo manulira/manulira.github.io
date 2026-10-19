@@ -18,15 +18,15 @@ insert into public.admins(email) values ('admin@ejemplo.test');
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000001', 'Corto 2h',        current_date + 30, '18:00', '20:00', 'Vitacura', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000002', 'Medio 3h',        current_date + 31, '18:00', '21:00', 'Las Condes', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000003', 'Medio 4h',        current_date + 32, '18:00', '22:00', 'Providencia', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000004', 'Largo 5h',        current_date + 33, '18:00', '23:00', 'Ñuñoa', 3, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000005', 'Borrador',        current_date + 34, '18:00', '20:00', 'Santiago', 1, 'borrador'),
-   ('e0000000-0000-0000-0000-000000000006', 'Cerrado',         current_date + 35, '18:00', '20:00', 'Santiago', 1, 'cerrado'),
+   ('e0000000-0000-0000-0000-000000000001', 'Corto 2h',        current_date + 2, '18:00', '20:00', 'Vitacura', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000002', 'Medio 3h',        current_date + 3, '18:00', '21:00', 'Las Condes', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000003', 'Medio 4h',        current_date + 4, '18:00', '22:00', 'Providencia', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000004', 'Largo 5h',        current_date + 5, '18:00', '23:00', 'Ñuñoa', 3, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000005', 'Borrador',        current_date + 6, '18:00', '20:00', 'Santiago', 1, 'borrador'),
+   ('e0000000-0000-0000-0000-000000000006', 'Cerrado',         current_date + 7, '18:00', '20:00', 'Santiago', 1, 'cerrado'),
    ('e0000000-0000-0000-0000-000000000007', 'Pasado',          current_date - 5,  '18:00', '20:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000008', 'Nocturno 22 a 02', current_date + 36, '22:00', '02:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000009', 'Con pago fijo',   current_date + 37, '18:00', '23:00', 'Santiago', 1, 'abierto')
+   ('e0000000-0000-0000-0000-000000000008', 'Nocturno 22 a 02', current_date + 8, '22:00', '02:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000009', 'Con pago fijo',   current_date + 9, '18:00', '23:00', 'Santiago', 1, 'abierto')
 $q$);
 update public.eventos set pago_manual = 55000 where id = 'e0000000-0000-0000-0000-000000000009';
 select t.debe_funcionar('admin crea datos privados', $q$
@@ -183,13 +183,13 @@ select t.valor('y sus postulaciones se van con él', $q$select count(*)::text fr
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos largos', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000010', 'Tope 7h',  current_date + 40, '12:00', '19:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000011', 'Tope 10h', current_date + 41, '12:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000012', 'Justo en el tope 7h30', current_date + 42, '12:00', '19:30', 'Santiago', 2, 'abierto')
+   ('e0000000-0000-0000-0000-000000000010', 'Tope 7h',  current_date + 10, '12:00', '19:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000011', 'Tope 10h', current_date + 11, '12:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000012', 'Justo en el tope 7h30', current_date + 12, '12:00', '19:30', 'Santiago', 2, 'abierto')
 $q$);
 select t.debe_funcionar('admin crea un pago fijo sobre el tope', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, pago_manual, estado) values
-   ('e0000000-0000-0000-0000-000000000013', 'Fijo sobre el tope', current_date + 43, '12:00', '22:00', 'Santiago', 2, 90000, 'abierto')
+   ('e0000000-0000-0000-0000-000000000013', 'Fijo sobre el tope', current_date + 13, '12:00', '22:00', 'Santiago', 2, 90000, 'abierto')
 $q$);
 select t.valor('5 h sigue en $50.000 (bajo el tope)',  $q$select pago_liquido::text from public.eventos_vista where nombre = 'Largo 5h'$q$, '50000');
 select t.valor('7 h = $70.000, justo en el tope',       $q$select pago_liquido::text from public.eventos_vista where nombre = 'Tope 7h'$q$, '70000');
@@ -316,6 +316,38 @@ select t.debe_fallar('el folio no puede ser larguísimo', $q$update public.postu
 select t.como('00000000-0000-0000-0000-00000000000d', 'dani@ejemplo.test');
 select t.debe_funcionar('Dani se retira del de 10 días', $q$update public.postulaciones set estado = 'retirada' where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
 select t.valor('al retirarse pierde la confirmación', $q$select (asistencia_confirmada_en is null)::text from public.postulaciones where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$, 'true');
+
+-- Ventana de publicación: los baristas ven los eventos desde 14 días antes
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
+select t.debe_funcionar('admin crea eventos lejanos', $q$
+  insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
+   ('e0000000-0000-0000-0000-000000000030', 'Ventana 14', current_date + 14, '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000031', 'Ventana 15', current_date + 15, '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000032', 'Ventana 60', current_date + 60, '18:00', '22:00', 'Santiago', 2, 'abierto')$q$);
+select t.debe_funcionar('y sus direcciones', $q$insert into public.evento_direcciones(evento_id, direccion) select id, 'Calle Lejana 9' from public.eventos where nombre like 'Ventana %'$q$);
+select t.filas('la administración ve los tres', $q$select * from public.eventos_vista where nombre like 'Ventana %'$q$, 3);
+select t.valor('por defecto la ventana es de 14 días', $q$select dias_publicacion::text from public.config$q$, '14');
+select t.debe_fallar('la ventana no puede ser de 0 días', $q$update public.config set dias_publicacion = 0$q$);
+select t.como('00000000-0000-0000-0000-00000000000a', 'ana@ejemplo.test');
+select t.filas('Ana ve el evento de justo 14 días', $q$select * from public.eventos_vista where nombre = 'Ventana 14'$q$, 1);
+select t.filas('no ve el de 15 días', $q$select * from public.eventos_vista where nombre = 'Ventana 15'$q$, 0);
+select t.filas('ni el de 60', $q$select * from public.eventos_vista where nombre = 'Ventana 60'$q$, 0);
+select t.debe_funcionar('Ana postula al de 14 días', $q$insert into public.postulaciones(evento_id, barista_id) values ('e0000000-0000-0000-0000-000000000030','00000000-0000-0000-0000-00000000000a')$q$);
+select t.debe_fallar('Ana no postula al de 15 días aunque conozca su id', $q$insert into public.postulaciones(evento_id, barista_id) values ('e0000000-0000-0000-0000-000000000031','00000000-0000-0000-0000-00000000000a')$q$);
+select t.debe_fallar('ni al de 60', $q$insert into public.postulaciones(evento_id, barista_id) values ('e0000000-0000-0000-0000-000000000032','00000000-0000-0000-0000-00000000000a')$q$);
+select t.filas('sus direcciones siguen ocultas', $q$select * from public.evento_direcciones where evento_id = 'e0000000-0000-0000-0000-000000000032'$q$, 0);
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
+select t.debe_funcionar('la administración asigna a Ana en el de 60 días', $q$insert into public.postulaciones(evento_id, barista_id, estado) values ('e0000000-0000-0000-0000-000000000032','00000000-0000-0000-0000-00000000000a','confirmada')$q$);
+select t.como('00000000-0000-0000-0000-00000000000a', 'ana@ejemplo.test');
+select t.filas('Ana, ya asignada, sí ve el de 60 días', $q$select * from public.eventos_vista where nombre = 'Ventana 60'$q$, 1);
+select t.filas('y su dirección', $q$select * from public.evento_direcciones where evento_id = 'e0000000-0000-0000-0000-000000000032'$q$, 1);
+select t.como('00000000-0000-0000-0000-00000000000c', 'carla@ejemplo.test');
+select t.filas('quien no está registrada no ve ninguno', $q$select * from public.eventos_vista where nombre like 'Ventana %'$q$, 0);
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
+select t.debe_funcionar('la administración amplía la ventana a 30 días', $q$update public.config set dias_publicacion = 30$q$);
+select t.como('00000000-0000-0000-0000-00000000000a', 'ana@ejemplo.test');
+select t.filas('con 30 días Ana ve el de 15', $q$select * from public.eventos_vista where nombre = 'Ventana 15'$q$, 1);
+select t.afecta('Ana no puede cambiar la ventana', $q$update public.config set dias_publicacion = 365$q$, 0);
 
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;

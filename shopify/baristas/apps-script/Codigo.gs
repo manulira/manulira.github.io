@@ -424,6 +424,17 @@ function armarCorreo_(item, dest, portal) {
           { nota: 'Si no puedes ir, entra al portal y retírate del evento: así liberamos el cupo a tiempo.' }],
       };
     }
+    case 'evento_nuevo': {
+      const n = d.vacantes || 1;
+      return {
+        asunto: 'Se abrió un evento: ' + nombre + ' · ' + fechaCorta_(d.fecha),
+        titulo: 'Se abrió la inscripción a un evento',
+        bloques: [{ p: hola }, { p: 'Ya puedes postular a un evento que es en ' + d.dias + ' días. ' + (n > 1 ? 'Hay ' + n + ' cupos.' : 'Hay 1 cupo.') },
+          datosEvento_({ nombre: nombre, fecha: d.fecha, hora_inicio: d.hora_inicio, hora_fin: d.hora_fin, comuna: d.comuna, pago_liquido: d.pago_liquido, monto_boleta: d.monto_boleta }, true),
+          { boton: { texto: 'Postular en el portal', url: portal } },
+          { nota: 'Los eventos se abren a la inscripción ' + (d.dias_publicacion || 14) + ' días antes de su fecha. Recibes este correo porque aceptaste los avisos de Sepia Coffee; puedes desactivarlos en «Mis datos», dentro del portal.' }],
+      };
+    }
     case 'vacante': {
       const n = d.vacantes || 1;
       return {
@@ -782,6 +793,7 @@ function enviarMuestras() {
   const muestras = [
     [{ clave: 'x:1', tipo: 'recordatorio_reconfirmar', datos: Object.assign({ paso: 1, evento: ev.nombre }, ev) }, barista],
     [{ clave: 'x:3', tipo: 'recordatorio_reconfirmar', datos: Object.assign({ paso: 3, evento: ev.nombre }, ev, { dias: 5 }) }, barista],
+    [{ clave: 'n', tipo: 'evento_nuevo', datos: Object.assign({ vacantes: 2, dias: 14 }, ev) }, barista],
     [{ clave: 'v', tipo: 'vacante', datos: Object.assign({ vacantes: 1 }, ev) }, barista],
     [{ clave: 'va', tipo: 'vacante_admin', datos: Object.assign({ sin_reconfirmar: ['Beto Ejemplo'], destinatarios: 6, abierto: true }, ev) }, admin],
     [{ clave: 'e', tipo: 'estado_semana', datos: { eventos: [ev, Object.assign({}, ev, { nombre: 'Cenco · turno de 3 horas', semaforo: 'ok', reconfirmados: 2 })] } }, admin],

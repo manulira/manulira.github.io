@@ -3,7 +3,7 @@
 (function () {
   var S = window.__ESC || {};
   var hoy = new Date(); var iso = function (d) { var x = new Date(hoy.getTime() + d * 864e5); return x.toISOString().slice(0, 10); };
-  var cfg = { id: 1, tarifa_hora: 10000, corto_max_horas: 2, corto_monto: 25000, medio_max_horas: 4, medio_monto: 40000, retencion: 0.1525, tope_dia: 70000, dias_alerta_baristas: 7, dias_alerta_reconfirmar: 4, dias_alerta_cierre: 7,
+  var cfg = { id: 1, tarifa_hora: 10000, corto_max_horas: 2, corto_monto: 25000, medio_max_horas: 4, medio_monto: 40000, retencion: 0.1525, tope_dia: 70000, dias_alerta_baristas: 7, dias_alerta_reconfirmar: 4, dias_alerta_cierre: 7, dias_publicacion: 14,
     checklist_items: [{clave:'grupo_whatsapp',texto:'Grupo de WhatsApp creado'},{clave:'direccion_hora',texto:'Dirección y hora enviadas a los baristas'},{clave:'equipo',texto:'Equipo y materiales listos'},{clave:'transporte',texto:'Transporte y recolección coordinados'},{clave:'cliente_confirmo',texto:'Cliente confirmó hora y lugar'}],
     texto_boleta: 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.',
     texto_privacidad: 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme. Los ve únicamente Sepia Coffee, y puedo pedir que los borre en cualquier momento.' };
@@ -14,8 +14,9 @@
     eventos: [
       { id: 'e1', nombre: 'Matrimonio en Pirque', fecha: iso(10), hora_inicio: '18:00:00', hora_fin: '23:00:00', comuna: 'Pirque', lugar: 'Viña', descripcion: 'Tenida negra', baristas_necesarios: 2, pago_manual: null, estado: 'abierto' },
       { id: 'e2', nombre: 'Coffee break empresa', fecha: iso(12), hora_inicio: '09:00:00', hora_fin: '11:00:00', comuna: 'Las Condes', lugar: null, descripcion: null, baristas_necesarios: 1, pago_manual: null, estado: 'abierto' },
-      { id: 'e3', nombre: 'Cumpleaños', fecha: iso(15), hora_inicio: '16:00:00', hora_fin: '19:00:00', comuna: 'Ñuñoa', lugar: null, descripcion: null, baristas_necesarios: 1, pago_manual: null, estado: 'abierto' },
+      { id: 'e3', nombre: 'Cumpleaños', fecha: iso(14), hora_inicio: '16:00:00', hora_fin: '19:00:00', comuna: 'Ñuñoa', lugar: null, descripcion: null, baristas_necesarios: 1, pago_manual: null, estado: 'abierto' },
       { id: 'e4', nombre: 'Borrador secreto', fecha: iso(20), hora_inicio: '16:00:00', hora_fin: '19:00:00', comuna: 'Santiago', lugar: null, descripcion: null, baristas_necesarios: 1, pago_manual: null, estado: 'borrador' },
+      { id: 'e6', nombre: 'Evento lejano', fecha: iso(40), hora_inicio: '16:00:00', hora_fin: '19:00:00', comuna: 'Colina', lugar: null, descripcion: null, baristas_necesarios: 2, pago_manual: null, estado: 'abierto' },
       { id: 'e5', nombre: 'Evento pasado', fecha: iso(-3), hora_inicio: '16:00:00', hora_fin: '19:00:00', comuna: 'Santiago', lugar: null, descripcion: null, baristas_necesarios: 1, pago_manual: null, estado: 'abierto' }
     ]
   };
@@ -95,7 +96,7 @@
   function visible(t, r) {
     if (esAdmin()) return true;
     if (t === 'baristas') return r.id === uid();
-    if (t === 'eventos' || t === 'eventos_vista') { var perfil = db.baristas.some(function (b) { return b.id === uid(); }); return perfil && r.estado !== 'borrador' && (r.estado === 'abierto' || tienePost(r.id)); }
+    if (t === 'eventos' || t === 'eventos_vista') { var perfil = db.baristas.some(function (b) { return b.id === uid(); }); return perfil && r.estado !== 'borrador' && (tienePost(r.id) || (r.estado === 'abierto' && r.fecha <= iso(cfg.dias_publicacion))); }
     if (t === 'postulaciones') return r.barista_id === uid();
     if (t === 'evento_direcciones') return db.postulaciones.some(function (p) { return p.evento_id === r.evento_id && p.barista_id === uid() && p.estado === 'confirmada'; });
     if (t === 'evento_privado' || t === 'evento_seguimiento' || t === 'seguimiento_vista' || t === 'automatizacion') return false;
@@ -125,7 +126,9 @@
       if (q.op === 'insert') {
         var b = Object.assign({}, q.body);
         if (t === 'baristas') { if (b.id !== uid()) return err('rls'); if (db.baristas.some(function (x) { return x.rut === b.rut; })) return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "baristas_rut_key"' } }; b.acepta_boleta_texto = cfg.texto_boleta; b.aceptado_en = new Date().toISOString(); }
-        if (t === 'postulaciones') { if (!esAdmin() && b.barista_id !== uid()) return err('rls'); b.id = 'p' + (db.postulaciones.length + 1); b.estado = 'postulada'; b.creado_en = new Date().toISOString(); }
+        if (t === 'postulaciones') { if (!esAdmin() && b.barista_id !== uid()) return err('rls');
+          var evx = db.eventos.filter(function (e) { return e.id === b.evento_id; })[0];
+          if (!esAdmin() && !(evx && evx.estado === 'abierto' && evx.fecha >= iso(0) && evx.fecha <= iso(cfg.dias_publicacion))) return err('rls: el evento no está abierto'); b.id = 'p' + (db.postulaciones.length + 1); b.estado = 'postulada'; b.creado_en = new Date().toISOString(); }
         if (t === 'eventos') { if (!esAdmin()) return err('rls'); b.id = 'e' + (db.eventos.length + 1); }
         tabla.push(b); return done([b]);
       }

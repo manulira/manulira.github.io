@@ -105,11 +105,18 @@ test('un evento de punta a punta: calendario → inscripción → recordatorios 
     reloj.ahora = utc('2026-11-08T12:00:00Z'); n = registro.correos.length; ctx.enviarNotificaciones();
     assert.equal(registro.correos.length, n, 'con el grupo creado no se insiste');
 
-    // 9. Pasó el evento: se pide la boleta a los dos, con el monto
+    // 9. Pasó el evento: se pide la boleta a los dos, con el monto. Y justo se abre el evento B (a 14 días)
+    reloj.ahora = utc('2026-11-10T12:00:00Z'); n = registro.correos.length; ctx.enviarNotificaciones();
+    assert.ok(!asuntos(registro, n).some((x) => /Se abrió un evento/.test(x)), 'a 15 días el evento B todavía no se abre');
     reloj.ahora = utc('2026-11-11T12:00:00Z'); n = registro.correos.length; ctx.enviarNotificaciones();
-    assert.deepEqual(para(registro, n).sort(), ['ana@ejemplo.test', 'beto@ejemplo.test']);
-    assert.match(registro.correos[n].body, /Monto de la boleta: \$/);
-    assert.match(registro.correos[n].body, /Retención: 15,25 %/);
+    const nuevos = registro.correos.slice(n);
+    const boletas = nuevos.filter((m) => /Tu boleta de honorarios/.test(m.subject));
+    assert.deepEqual(boletas.map((m) => m.to).sort(), ['ana@ejemplo.test', 'beto@ejemplo.test']);
+    assert.match(boletas[0].body, /Monto de la boleta: \$/);
+    assert.match(boletas[0].body, /Retención: 15,25 %/);
+    const abierto = nuevos.filter((m) => /^Se abrió un evento: /.test(m.subject));
+    assert.deepEqual(abierto.map((m) => m.to).sort(), ['ana@ejemplo.test', 'beto@ejemplo.test', 'cleo@ejemplo.test'], 'a quienes aceptaron avisos y no están asignados a B (Dino no aceptó)');
+    assert.match(abierto[0].body, /Ya puedes postular a un evento que es en 14 días/);
 
     // 10. Ana declara su boleta: la administración recibe el resumen para revisarla en el SII
     base.sql(`update public.postulaciones set boleta_declarada_en = now(), boleta_declarada_folio = 'B-77' where barista_id = '00000000-0000-0000-0000-0000000000a1'`);

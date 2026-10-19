@@ -100,6 +100,8 @@ create table if not exists public.config (
   dias_alerta_reconfirmar int not null default 4 check (dias_alerta_reconfirmar >= 0),
   dias_alerta_cierre int not null default 7 check (dias_alerta_cierre >= 0),
   dias_vacante_cupos int not null default 5 check (dias_vacante_cupos >= 0),
+  dias_publicacion int not null default 14 check (dias_publicacion >= 1),
+  avisar_eventos_nuevos boolean not null default true,
   checklist_items jsonb not null default '[{"clave":"grupo_whatsapp","texto":"Grupo de WhatsApp creado"},{"clave":"direccion_hora","texto":"Dirección y hora enviadas a los baristas"},{"clave":"equipo","texto":"Equipo y materiales listos"},{"clave":"transporte","texto":"Transporte y recolección coordinados"},{"clave":"cliente_confirmo","texto":"Cliente confirmó hora y lugar"}]'::jsonb check (jsonb_typeof(checklist_items) = 'array'),
   texto_boleta text not null default 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.',
   texto_privacidad text not null default 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme. Los ve únicamente Sepia Coffee, y puedo pedir que los borre en cualquier momento.',
@@ -112,6 +114,10 @@ alter table public.config add column if not exists dias_alerta_baristas int not 
 alter table public.config add column if not exists dias_alerta_reconfirmar int not null default 4 check (dias_alerta_reconfirmar >= 0);
 alter table public.config add column if not exists dias_alerta_cierre int not null default 7 check (dias_alerta_cierre >= 0);
 alter table public.config add column if not exists dias_vacante_cupos int not null default 5 check (dias_vacante_cupos >= 0);
+-- Los baristas ven y pueden postular a un evento desde 14 días antes de su fecha. Quienes aceptaron
+-- avisos reciben un correo cuando se abre (avisar_eventos_nuevos).
+alter table public.config add column if not exists dias_publicacion int not null default 14 check (dias_publicacion >= 1);
+alter table public.config add column if not exists avisar_eventos_nuevos boolean not null default true;
 alter table public.config add column if not exists checklist_items jsonb not null default '[{"clave":"grupo_whatsapp","texto":"Grupo de WhatsApp creado"},{"clave":"direccion_hora","texto":"Dirección y hora enviadas a los baristas"},{"clave":"equipo","texto":"Equipo y materiales listos"},{"clave":"transporte","texto":"Transporte y recolección coordinados"},{"clave":"cliente_confirmo","texto":"Cliente confirmó hora y lugar"}]'::jsonb check (jsonb_typeof(checklist_items) = 'array');
 insert into public.config (id) values (1) on conflict (id) do nothing;
 alter table public.config enable row level security;
@@ -365,11 +371,18 @@ language sql stable security definer set search_path = '' as $$
   select exists (select 1 from public.postulaciones p
                  where p.evento_id = ev and p.barista_id = auth.uid() and p.estado = 'confirmada');
 $$;
+-- ¿La fecha ya está dentro de la ventana en que los baristas ven los eventos?
+-- (hasta config.dias_publicacion días hacia adelante; 14 por defecto)
+create or replace function public.dentro_de_publicacion(f date) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select f <= (now() at time zone 'America/Santiago')::date + (select c.dias_publicacion from public.config c where c.id = 1);
+$$;
 create or replace function public.evento_abierto(ev uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (select 1 from public.eventos e
                  where e.id = ev and e.estado = 'abierto'
-                   and e.fecha >= (now() at time zone 'America/Santiago')::date);
+                   and e.fecha >= (now() at time zone 'America/Santiago')::date
+                   and public.dentro_de_publicacion(e.fecha));
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -383,7 +396,8 @@ drop policy if exists eventos_ver on public.eventos;
 create policy eventos_ver on public.eventos for select to authenticated
   using (
     public.es_admin()
-    or (public.es_barista() and estado <> 'borrador' and (estado = 'abierto' or public.tiene_postulacion(id)))
+    or (public.es_barista() and estado <> 'borrador'
+        and (public.tiene_postulacion(id) or (estado = 'abierto' and public.dentro_de_publicacion(fecha))))
   );
 drop policy if exists eventos_admin on public.eventos;
 create policy eventos_admin on public.eventos for all to authenticated
@@ -659,6 +673,10 @@ $$;
 --                             20:00, uno por día).
 --   vacante                   a los baristas que aceptaron avisos, 12 horas después del tercer
 --                             recordatorio sin respuesta (hacia los 4 días y medio).
+--   evento_nuevo              a los baristas que aceptaron avisos y no están asignados: el evento
+--                             se acaba de abrir a la inscripción (a config.dias_publicacion días,
+--                             14 por defecto) y tiene cupos. No sale si quedan config.dias_vacante_cupos
+--                             días o menos: ahí corresponde el aviso de vacante.
 --   vacante_cupos            (tipo vacante) lo mismo cuando los cupos nunca se llenaron: a
 --                             config.dias_vacante_cupos días del evento (5; 0 lo apaga).
 --   vacante_admin             lo mismo, para la administración.
@@ -741,6 +759,24 @@ begin
          x.datos || jsonb_build_object('destinatarios', jsonb_array_length(x.lista), 'abierto', x.estado = 'abierto'),
          x.id, null::uuid
   from base x;
+
+  -- 2a. El evento se abre a la inscripción (entra en la ventana de publicación)
+  return query
+  select ('evento_nuevo:' || s.evento_id)::text, 'evento_nuevo'::text, d.lista,
+         public.json_evento(s.evento_id, ahora) || jsonb_build_object('vacantes', s.faltan, 'dias_publicacion', cfg.dias_publicacion),
+         s.evento_id, null::uuid
+  from public.seguimiento_en(ahora) s
+  cross join public.config cfg
+  cross join lateral (
+    select coalesce(jsonb_agg(jsonb_build_object('email', b.correo, 'nombre', b.nombre)), '[]'::jsonb) as lista
+    from public.baristas b
+    where b.acepta_avisos and not exists (
+      select 1 from public.postulaciones p2
+      where p2.evento_id = s.evento_id and p2.barista_id = b.id and p2.estado = 'confirmada')
+  ) d
+  where ventana and cfg.avisar_eventos_nuevos and s.estado = 'abierto' and s.semaforo is not null and s.faltan > 0
+    and s.dias_restantes between 1 and cfg.dias_publicacion and s.dias_restantes > cfg.dias_vacante_cupos
+    and jsonb_array_length(d.lista) > 0;
 
   -- 2b. Cupos que nunca se llenaron: a config.dias_vacante_cupos días del evento (por defecto 5)
   return query
@@ -1013,8 +1049,10 @@ revoke all on function public.es_barista() from public, anon;
 revoke all on function public.tiene_postulacion(uuid) from public, anon;
 revoke all on function public.esta_confirmado(uuid) from public, anon;
 revoke all on function public.evento_abierto(uuid) from public, anon;
+revoke all on function public.dentro_de_publicacion(date) from public, anon;
 grant execute on function public.es_admin() to authenticated;
 grant execute on function public.es_barista() to authenticated;
 grant execute on function public.tiene_postulacion(uuid) to authenticated;
 grant execute on function public.esta_confirmado(uuid) to authenticated;
 grant execute on function public.evento_abierto(uuid) to authenticated;
+grant execute on function public.dentro_de_publicacion(date) to authenticated;

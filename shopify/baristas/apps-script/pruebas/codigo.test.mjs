@@ -178,6 +178,8 @@ const CASOS = [
   { clave: 'recordatorio:p:1', tipo: 'recordatorio_reconfirmar', datos: { ...EV, paso: 1, evento: EV.nombre } },
   { clave: 'recordatorio:p:2', tipo: 'recordatorio_reconfirmar', datos: { ...EV, paso: 2, evento: EV.nombre, dias: 6 } },
   { clave: 'recordatorio:p:3', tipo: 'recordatorio_reconfirmar', datos: { ...EV, paso: 3, evento: EV.nombre, dias: 5 } },
+  { clave: 'evento_nuevo:e', tipo: 'evento_nuevo', datos: { ...EV, dias: 14, vacantes: 2, dias_publicacion: 14 } },
+  { clave: 'evento_nuevo:e', tipo: 'evento_nuevo', datos: { ...EV, dias: 10, vacantes: 1 } },
   { clave: 'vacante:e', tipo: 'vacante', datos: { ...EV, vacantes: 1, sin_reconfirmar: ['Beto'] } },
   { clave: 'vacante_cupos:e', tipo: 'vacante', datos: { ...EV, vacantes: 2, sin_reconfirmar: [], motivo: 'cupos' } },
   { clave: 'vacante_admin:e', tipo: 'vacante_admin', datos: { ...EV, sin_reconfirmar: ['Beto'], destinatarios: 6, abierto: true } },
@@ -223,22 +225,31 @@ test('los avisos a baristas no llevan la dirección exacta ni datos bancarios', 
 });
 
 test('asuntos y contenido clave', () => {
-  const c = (i) => ctx.armarCorreo_(CASOS[i], { email: 'a@ejemplo.test', nombre: 'Ana Prueba García' }, 'https://x.test');
-  assert.match(c(0).asunto, /^Confirma que vas · /);
-  assert.match(c(1).asunto, /^Recordatorio: confirma tu asistencia/);
-  assert.match(c(2).asunto, /^Último aviso/);
-  assert.match(ctx.bloquesATexto_(c(0).bloques), /^Hola Ana,/);
-  assert.match(c(0).asunto, /sáb 13\/3|sab 13\/3/i);
-  assert.match(ctx.bloquesATexto_(c(0).bloques), /\$70\.000 líquidos · boleta de honorarios por \$82\.596/);
-  assert.match(c(3).asunto, /^Hay un cupo: /);
-  assert.match(c(4).asunto, /^Hay 2 cupos: /);
-  assert.match(ctx.bloquesATexto_(c(7).bloques), /1 OK y 1 por resolver/);
-  assert.match(ctx.bloquesATexto_(c(8).bloques), /Ana Prueba — \+56911110001 \(wa\.me\/56911110001\)/);
-  assert.match(ctx.bloquesATexto_(c(8).bloques), /Beto .* — 911110002 \(wa\.me\/56911110002\)/);
-  assert.match(c(9).asunto, /^Recordatorio 2: crear el grupo de WhatsApp/);
-  assert.match(ctx.bloquesATexto_(c(11).bloques), /Retención: 15,25 %/);
-  assert.match(ctx.bloquesATexto_(c(13).bloques), /Monto: \$70\.000 líquidos/);
-  assert.match(c(14).asunto, /^Cierres pendientes: 1 boletas por revisar, 1 atrasados/);
+  // Cada caso se busca por tipo y clave: agregar casos a la lista no corre los índices.
+  const c = (tipo, clave) => ctx.armarCorreo_(CASOS.find((x) => x.tipo === tipo && (!clave || x.clave === clave)), { email: 'a@ejemplo.test', nombre: 'Ana Prueba García' }, 'https://x.test');
+  const t = (correo) => ctx.bloquesATexto_(correo.bloques);
+  const r1 = c('recordatorio_reconfirmar', 'recordatorio:p:1');
+  assert.match(r1.asunto, /^Confirma que vas · /);
+  assert.match(c('recordatorio_reconfirmar', 'recordatorio:p:2').asunto, /^Recordatorio: confirma tu asistencia/);
+  assert.match(c('recordatorio_reconfirmar', 'recordatorio:p:3').asunto, /^Último aviso/);
+  assert.match(t(r1), /^Hola Ana,/);
+  assert.match(r1.asunto, /sáb 13\/3|sab 13\/3/i);
+  assert.match(t(r1), /\$70\.000 líquidos · boleta de honorarios por \$82\.596/);
+  const nuevo = c('evento_nuevo');
+  assert.match(nuevo.asunto, /^Se abrió un evento: /);
+  assert.match(t(nuevo), /Ya puedes postular a un evento que es en 14 días\. Hay 2 cupos\./);
+  assert.match(t(nuevo), /se abren a la inscripción 14 días antes de su fecha/);
+  assert.match(t(c('evento_nuevo', 'evento_nuevo:e')), /Ya puedes postular/);
+  assert.match(c('vacante', 'vacante:e').asunto, /^Hay un cupo: /);
+  assert.match(c('vacante', 'vacante_cupos:e').asunto, /^Hay 2 cupos: /);
+  assert.match(t(c('estado_semana')), /1 OK y 1 por resolver/);
+  const ok = t(c('evento_ok'));
+  assert.match(ok, /Ana Prueba — \+56911110001 \(wa\.me\/56911110001\)/);
+  assert.match(ok, /Beto .* — 911110002 \(wa\.me\/56911110002\)/);
+  assert.match(c('grupo_wsp').asunto, /^Recordatorio 2: crear el grupo de WhatsApp/);
+  assert.match(t(c('boleta', 'boleta:p:1')), /Retención: 15,25 %/);
+  assert.match(t(c('pago')), /Monto: \$70\.000 líquidos/);
+  assert.match(c('resumen_cierre', 'resumen_cierre:2027-03-18').asunto, /^Cierres pendientes: 1 boletas por revisar, 1 atrasados/);
 });
 
 // ---------------------------------------------------------------------------
@@ -394,6 +405,6 @@ test('los disparadores: calendario cada día a las 6 y correos cada hora; reinst
 test('enviarMuestras manda un ejemplo de cada correo, siempre a EMAIL_PRUEBA', () => {
   const { ctx: c, registro } = cargar({ propiedades: { ...PROPS, MODO_PRUEBA: 'no', EMAIL_PRUEBA: 'yo@ejemplo.test' } });
   c.enviarMuestras();
-  assert.equal(registro.correos.length, 11);
+  assert.equal(registro.correos.length, 12);
   assert.ok(registro.correos.every((m) => m.to === 'yo@ejemplo.test'));
 });
