@@ -12,9 +12,14 @@
 --   evento_privado .. cliente, contacto y notas. SOLO la administración.
 --   evento_direcciones  dirección exacta. La administración y los baristas
 --                     CONFIRMADOS en ese evento. Nadie más.
---   postulaciones ... quién postuló a qué. El barista ve las suyas; confirmar
---                     o rechazar lo hace solo la administración.
---   config .......... tarifas, retención de honorarios y textos legales.
+--   postulaciones ... quién postuló a qué. El barista ve las suyas; asignar o
+--                     rechazar lo hace solo la administración. El barista
+--                     asignado confirma después que va (reconfirmación).
+--   evento_seguimiento  checklist del evento y documento al cliente. Solo la
+--                     administración.
+--   seguimiento_vista .. semáforo de cada evento (ok, pendiente o alerta) y lo
+--                     que falta para cerrarlo. Solo la administración.
+--   config .......... tarifas, retención, plazos de alerta, checklist y textos.
 --   admins .......... correos de la administración. Nadie la lee desde la web.
 --
 -- Después de correr esto, UNA sola vez, agrega tu correo como administrador
@@ -87,12 +92,21 @@ create table if not exists public.config (
   medio_monto int not null default 40000 check (medio_monto >= 0),
   retencion numeric not null default 0.1525 check (retencion >= 0 and retencion < 0.5),
   tope_dia int not null default 70000 check (tope_dia >= 0),
+  dias_alerta_baristas int not null default 7 check (dias_alerta_baristas >= 0),
+  dias_alerta_reconfirmar int not null default 4 check (dias_alerta_reconfirmar >= 0),
+  dias_alerta_cierre int not null default 7 check (dias_alerta_cierre >= 0),
+  checklist_items jsonb not null default '[{"clave":"grupo_whatsapp","texto":"Grupo de WhatsApp creado"},{"clave":"direccion_hora","texto":"Dirección y hora enviadas a los baristas"},{"clave":"equipo","texto":"Equipo y materiales listos"},{"clave":"transporte","texto":"Transporte y recolección coordinados"},{"clave":"cliente_confirmo","texto":"Cliente confirmó hora y lugar"}]'::jsonb check (jsonb_typeof(checklist_items) = 'array'),
   texto_boleta text not null default 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.',
   texto_privacidad text not null default 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme. Los ve únicamente Sepia Coffee, y puedo pedir que los borre en cualquier momento.',
   check (medio_max_horas >= corto_max_horas)
 );
 -- Para bases que ya tenían la tabla sin el tope diario (ver migraciones/).
 alter table public.config add column if not exists tope_dia int not null default 70000 check (tope_dia >= 0);
+-- Plazos de alerta del seguimiento (días) y lista del checklist de cada evento.
+alter table public.config add column if not exists dias_alerta_baristas int not null default 7 check (dias_alerta_baristas >= 0);
+alter table public.config add column if not exists dias_alerta_reconfirmar int not null default 4 check (dias_alerta_reconfirmar >= 0);
+alter table public.config add column if not exists dias_alerta_cierre int not null default 7 check (dias_alerta_cierre >= 0);
+alter table public.config add column if not exists checklist_items jsonb not null default '[{"clave":"grupo_whatsapp","texto":"Grupo de WhatsApp creado"},{"clave":"direccion_hora","texto":"Dirección y hora enviadas a los baristas"},{"clave":"equipo","texto":"Equipo y materiales listos"},{"clave":"transporte","texto":"Transporte y recolección coordinados"},{"clave":"cliente_confirmo","texto":"Cliente confirmó hora y lugar"}]'::jsonb check (jsonb_typeof(checklist_items) = 'array');
 insert into public.config (id) values (1) on conflict (id) do nothing;
 alter table public.config enable row level security;
 revoke all on public.config from anon;
@@ -122,10 +136,14 @@ create table if not exists public.baristas (
   acepta_boleta boolean not null check (acepta_boleta),
   acepta_boleta_texto text not null,
   acepta_privacidad boolean not null check (acepta_privacidad),
+  acepta_avisos boolean not null default false,
   aceptado_en timestamptz not null default now(),
   creado_en timestamptz not null default now(),
   actualizado_en timestamptz not null default now()
 );
+
+-- Permiso (opcional) para avisarle por correo cuando haya cupos disponibles.
+alter table public.baristas add column if not exists acepta_avisos boolean not null default false;
 
 -- El texto que aceptó y la fecha los pone el servidor, no el navegador.
 create or replace function public.t_baristas_antes() returns trigger
@@ -208,6 +226,18 @@ create table if not exists public.evento_direcciones (
   indicaciones text check (indicaciones is null or char_length(indicaciones) <= 500)
 );
 
+-- Solo la administración: checklist del evento y documento emitido al cliente.
+-- checklist guarda {clave: fecha-hora} de cada punto marcado (las claves están en
+-- config.checklist_items).
+create table if not exists public.evento_seguimiento (
+  evento_id uuid primary key references public.eventos (id) on delete cascade,
+  checklist jsonb not null default '{}'::jsonb check (jsonb_typeof(checklist) = 'object'),
+  documento_cliente_emitido_en date,
+  documento_cliente_folio text check (documento_cliente_folio is null or char_length(documento_cliente_folio) <= 40),
+  notas text check (notas is null or char_length(notas) <= 1000),
+  actualizado_en timestamptz not null default now()
+);
+
 -- ---------------------------------------------------------------------------
 -- 5. Postulaciones
 -- ---------------------------------------------------------------------------
@@ -218,37 +248,76 @@ create table if not exists public.postulaciones (
   barista_id uuid not null references public.baristas (id) on delete cascade,
   estado text not null default 'postulada' check (estado in ('postulada', 'confirmada', 'rechazada', 'retirada')),
   mensaje text check (mensaje is null or char_length(mensaje) <= 400),
+  asistencia_confirmada_en timestamptz,
+  boleta_honorarios_recibida_en date,
+  boleta_honorarios_folio text check (boleta_honorarios_folio is null or char_length(boleta_honorarios_folio) <= 40),
+  honorarios_pagados_en date,
   creado_en timestamptz not null default now(),
   actualizado_en timestamptz not null default now(),
   unique (evento_id, barista_id)
 );
+-- asistencia_confirmada_en: el barista asignado confirma que va (la fecha la pone
+--   el servidor). Se borra sola si deja de estar asignado.
+-- boleta_honorarios_* y honorarios_pagados_en: los registra solo la administración.
+alter table public.postulaciones add column if not exists asistencia_confirmada_en timestamptz;
+alter table public.postulaciones add column if not exists boleta_honorarios_recibida_en date;
+alter table public.postulaciones add column if not exists boleta_honorarios_folio text check (boleta_honorarios_folio is null or char_length(boleta_honorarios_folio) <= 40);
+alter table public.postulaciones add column if not exists honorarios_pagados_en date;
 create index if not exists postulaciones_barista_idx on public.postulaciones (barista_id);
 
 create or replace function public.t_postulaciones_antes() returns trigger
 language plpgsql set search_path = '' as $$
+declare
+  admin_o_servicio boolean := (auth.uid() is null) or public.es_admin();   -- editor SQL o administración
 begin
-  if tg_op = 'UPDATE' then
-    if new.evento_id <> old.evento_id or new.barista_id <> old.barista_id then
-      raise exception 'No se puede cambiar el evento ni el barista';
+  if tg_op = 'INSERT' then
+    -- Una postulación nueva nace sin confirmación ni datos de cierre.
+    new.asistencia_confirmada_en := null;
+    if not admin_o_servicio then
+      new.boleta_honorarios_recibida_en := null;
+      new.boleta_honorarios_folio := null;
+      new.honorarios_pagados_en := null;
     end if;
-    new.creado_en := old.creado_en;
-    new.actualizado_en := now();
-    -- Un barista solo puede postular de nuevo o retirarse. Confirmar y
-    -- rechazar lo hace la administración (o el editor SQL, sin sesión).
-    if auth.uid() is not null and not public.es_admin() then
-      if not (
-        old.estado = new.estado
-        or (old.estado in ('postulada', 'retirada') and new.estado in ('postulada', 'retirada'))
-        or (old.estado = 'confirmada' and new.estado = 'retirada')
-      ) then
-        raise exception 'Ese cambio de estado lo hace Sepia Coffee';
-      end if;
+    return new;
+  end if;
+
+  if new.evento_id <> old.evento_id or new.barista_id <> old.barista_id then
+    raise exception 'No se puede cambiar el evento ni el barista';
+  end if;
+  new.creado_en := old.creado_en;
+  new.actualizado_en := now();
+
+  if not admin_o_servicio then
+    -- Un barista solo puede postular de nuevo, retirarse o confirmar su asistencia.
+    -- Asignar y rechazar lo hace la administración.
+    if not (
+      old.estado = new.estado
+      or (old.estado in ('postulada', 'retirada') and new.estado in ('postulada', 'retirada'))
+      or (old.estado = 'confirmada' and new.estado = 'retirada')
+    ) then
+      raise exception 'Ese cambio de estado lo hace Sepia Coffee';
+    end if;
+    if new.boleta_honorarios_recibida_en is distinct from old.boleta_honorarios_recibida_en
+       or new.boleta_honorarios_folio is distinct from old.boleta_honorarios_folio
+       or new.honorarios_pagados_en is distinct from old.honorarios_pagados_en then
+      raise exception 'La boleta y el pago los registra Sepia Coffee';
+    end if;
+  end if;
+
+  -- La confirmación de asistencia solo existe mientras la persona está asignada.
+  if new.estado <> 'confirmada' or old.estado <> 'confirmada' then
+    new.asistencia_confirmada_en := null;
+  elsif new.asistencia_confirmada_en is distinct from old.asistencia_confirmada_en then
+    if new.asistencia_confirmada_en is null then
+      if not admin_o_servicio then raise exception 'No se puede deshacer la confirmación'; end if;
+    else
+      new.asistencia_confirmada_en := now();      -- la fecha la pone el servidor
     end if;
   end if;
   return new;
 end $$;
 drop trigger if exists postulaciones_antes on public.postulaciones;
-create trigger postulaciones_antes before update on public.postulaciones
+create trigger postulaciones_antes before insert or update on public.postulaciones
   for each row execute function public.t_postulaciones_antes();
 
 -- Funciones que usan las políticas (definer, para no depender de otras políticas).
@@ -302,6 +371,13 @@ drop policy if exists direcciones_admin on public.evento_direcciones;
 create policy direcciones_admin on public.evento_direcciones for all to authenticated
   using (public.es_admin()) with check (public.es_admin());
 
+alter table public.evento_seguimiento enable row level security;
+revoke all on public.evento_seguimiento from anon;
+grant select, insert, update, delete on public.evento_seguimiento to authenticated;
+drop policy if exists seguimiento_admin on public.evento_seguimiento;
+create policy seguimiento_admin on public.evento_seguimiento for all to authenticated
+  using (public.es_admin()) with check (public.es_admin());
+
 alter table public.postulaciones enable row level security;
 revoke all on public.postulaciones from anon;
 grant select, insert, update, delete on public.postulaciones to authenticated;
@@ -319,7 +395,7 @@ create policy post_editar on public.postulaciones for update to authenticated
   using (barista_id = auth.uid() and estado <> 'rechazada')
   with check (
     barista_id = auth.uid()
-    and (estado = 'retirada' or (estado = 'postulada' and public.evento_abierto(evento_id)))
+    and (estado in ('retirada', 'confirmada') or (estado = 'postulada' and public.evento_abierto(evento_id)))
   );
 drop policy if exists post_admin on public.postulaciones;
 create policy post_admin on public.postulaciones for all to authenticated
@@ -364,6 +440,69 @@ cross join lateral (
 ) p;
 revoke all on public.eventos_vista from anon;
 grant select on public.eventos_vista to authenticated;
+
+
+-- ---------------------------------------------------------------------------
+-- 8. Seguimiento de cada evento (solo administración)
+-- ---------------------------------------------------------------------------
+-- semaforo (solo eventos futuros, abiertos o cerrados a postulaciones):
+--   alerta    faltan baristas y quedan config.dias_alerta_baristas días o menos
+--             (por defecto 7), o hay asignados sin reconfirmar y quedan
+--             config.dias_alerta_reconfirmar días o menos (por defecto 4).
+--   pendiente faltan baristas o reconfirmaciones, pero aún hay tiempo.
+--   ok        cupos completos y todos reconfirmaron.
+-- por_cerrar: el evento ya pasó y falta el documento al cliente, alguna boleta de
+--   honorarios o algún pago. cierre_atrasado: lleva más de config.dias_alerta_cierre
+--   días así.
+
+create or replace view public.seguimiento_vista with (security_invoker = true) as
+with hoy as (
+  select (now() at time zone 'America/Santiago')::date as d
+), cuenta as (
+  select e.id,
+    count(*) filter (where p.estado = 'confirmada') as asignados,
+    count(*) filter (where p.estado = 'confirmada' and p.asistencia_confirmada_en is not null) as reconfirmados,
+    count(*) filter (where p.estado = 'postulada') as postulantes,
+    count(*) filter (where p.estado = 'confirmada' and p.boleta_honorarios_recibida_en is null) as boletas_pendientes,
+    count(*) filter (where p.estado = 'confirmada' and p.honorarios_pagados_en is null) as pagos_pendientes
+  from public.eventos e
+  left join public.postulaciones p on p.evento_id = e.id
+  group by e.id
+)
+select
+  e.id as evento_id,
+  e.nombre, e.fecha, e.hora_inicio, e.hora_fin, e.estado, e.baristas_necesarios,
+  (e.fecha - hoy.d) as dias_restantes,
+  c.asignados, c.reconfirmados, c.postulantes,
+  greatest(e.baristas_necesarios - c.asignados, 0) as faltan,
+  case
+    when e.estado in ('borrador', 'cancelado') or e.fecha < hoy.d then null
+    when (greatest(e.baristas_necesarios - c.asignados, 0) > 0 and (e.fecha - hoy.d) <= cfg.dias_alerta_baristas)
+      or (c.asignados > c.reconfirmados and (e.fecha - hoy.d) <= cfg.dias_alerta_reconfirmar) then 'alerta'
+    when greatest(e.baristas_necesarios - c.asignados, 0) > 0 or c.asignados > c.reconfirmados then 'pendiente'
+    else 'ok'
+  end as semaforo,
+  (e.fecha < hoy.d) as realizado,
+  case when e.fecha < hoy.d then (hoy.d - e.fecha) end as dias_desde_evento,
+  c.boletas_pendientes, c.pagos_pendientes,
+  (s.documento_cliente_emitido_en is null) as documento_cliente_pendiente,
+  s.documento_cliente_emitido_en, s.documento_cliente_folio,
+  (e.fecha < hoy.d and e.estado <> 'cancelado' and c.asignados > 0
+     and (c.boletas_pendientes > 0 or c.pagos_pendientes > 0 or s.documento_cliente_emitido_en is null)) as por_cerrar,
+  (e.fecha < hoy.d and e.estado <> 'cancelado' and c.asignados > 0
+     and (c.boletas_pendientes > 0 or c.pagos_pendientes > 0 or s.documento_cliente_emitido_en is null)
+     and (hoy.d - e.fecha) > cfg.dias_alerta_cierre) as cierre_atrasado,
+  (select count(*) from jsonb_array_elements(cfg.checklist_items) it
+    where coalesce(s.checklist, '{}'::jsonb) ? (it ->> 'clave')) as checklist_hechos,
+  jsonb_array_length(cfg.checklist_items) as checklist_total
+from public.eventos e
+join cuenta c on c.id = e.id
+left join public.evento_seguimiento s on s.evento_id = e.id
+cross join hoy
+cross join public.config cfg
+where public.es_admin();
+revoke all on public.seguimiento_vista from anon;
+grant select on public.seguimiento_vista to authenticated;
 
 -- Las funciones de las políticas solo las ejecuta quien inició sesión.
 revoke all on function public.es_admin() from public, anon;

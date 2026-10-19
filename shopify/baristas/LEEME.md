@@ -17,7 +17,7 @@ vas a pagar.
 | `templates/page.baristas.json` | tema de Shopify | Plantilla de la página «Baristas» |
 
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
-protege los datos son las reglas del `esquema.sql`, que se probaron con 107
+protege los datos son las reglas del `esquema.sql`, que se probaron con 165
 comprobaciones (`pruebas/rls.sql`): un barista ve solo lo suyo, la dirección
 exacta solo la ven los confirmados en ese evento, y los datos del cliente y los
 de todos los baristas solo los ve la administración.
@@ -31,6 +31,41 @@ de todos los baristas solo los ve la administración.
   rechaza, y ve el resumen de pagos con la lista de a quién transferir (se baja
   en CSV).
 - **Nadie de afuera** ve nada: sin sesión, la base de datos no entrega ni una fila.
+
+## Seguimiento de cada evento
+
+**Dos confirmaciones distintas.** Tú *asignas* a un postulante (queda «Asignado»). Después
+el barista *confirma que va* desde el portal («Confirmo que voy»). Si deja de estar
+asignado o se retira, esa confirmación se borra sola. La fecha de la confirmación la pone
+el servidor, no el navegador.
+
+**Semáforo** (pestaña *Admin: seguimiento*, solo eventos próximos y no borradores):
+
+| Estado | Cuándo |
+|---|---|
+| **ALERTA** | Faltan baristas por asignar y quedan 7 días o menos. O hay asignados sin reconfirmar y quedan 4 días o menos |
+| **Pendiente** | Faltan baristas o reconfirmaciones, pero aún hay tiempo |
+| **OK** | Cupos completos y todos reconfirmaron |
+
+Los plazos (7 y 4 días) están en `config.dias_alerta_baristas` y
+`config.dias_alerta_reconfirmar`. La pestaña muestra cuántas alertas hay.
+
+**Checklist por evento.** Cinco puntos por defecto: grupo de WhatsApp creado, dirección y
+hora enviadas, equipo y materiales listos, transporte y recolección coordinados, cliente
+confirmó hora y lugar. Se cambian en `config.checklist_items`. También hay un botón para
+copiar los teléfonos de los asignados y armar el grupo, y un botón de WhatsApp por barista.
+
+**Cierre.** Cuando el evento ya pasó queda «Por cerrar» hasta registrar: el documento
+emitido al cliente (fecha y folio) y, por cada barista, la boleta de honorarios recibida
+(fecha y folio) y los honorarios pagados (fecha). Pasados `config.dias_alerta_cierre`
+(7) días sin cerrar, pasa a ALERTA. La pestaña *Admin: pagos* puede mostrar solo lo que
+falta pagar.
+
+**Lo que todavía no hace solo (etapa 2):** mandar los correos. La propuesta es un
+recordatorio al barista asignado que no ha confirmado a los 7, 6 y 5 días; después, un
+correo a los demás baristas inscritos que aceptaron recibir avisos (casilla opcional del
+registro, `baristas.acepta_avisos`) para avisar que hay un cupo; y un resumen diario para
+la administración. Requiere una tarea programada en Supabase. Ver «Etapa 2» abajo.
 
 ## Cuánto se paga
 
@@ -85,13 +120,20 @@ update public.config set retencion = 0.16;   -- 2027
 
 ## Probado, y lo que falta probar
 
-- Reglas de acceso: 107 comprobaciones contra un Postgres de prueba. Al romper una
+- Reglas de acceso: 165 comprobaciones contra un Postgres de prueba. Al romper una
   regla a propósito, las pruebas lo detectan.
-- Interfaz: 48 comprobaciones en el navegador contra una simulación de Supabase
+- Interfaz: 77 comprobaciones en el navegador contra una simulación de Supabase
   (registro, validaciones, postular, retirarse, confirmar, resumen, CSV).
 - **Falta**: la prueba de punta a punta con el proyecto real (el envío del código
   por correo, el login y las consultas contra Supabase de verdad). Se hace al
   conectar el proyecto.
+
+## Etapa 2: correos automáticos (pendiente)
+
+Se arma con una tarea diaria dentro de Supabase (una función y un horario) que revisa los
+eventos y manda los correos desde la misma cuenta de envío. Cada correo enviado queda
+anotado para no repetirlo. Se instala pegando el código y guardando la clave del correo
+como secreto. Todavía no está escrita.
 
 ## Ojo
 

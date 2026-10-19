@@ -30,7 +30,7 @@
   var sb = null;
   var estado = {
     sesion: null, perfil: null, admin: false, config: null,
-    eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {},
+    eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {},
     pestana: 'eventos', cargando: true, correoLogin: ''
   };
 
@@ -199,6 +199,12 @@
       var rv = await sb.from('evento_privado').select('*');
       estado.privado = {};
       (rv.data || []).forEach(function (p) { estado.privado[p.evento_id] = p; });
+      var rs = await sb.from('seguimiento_vista').select('*');
+      estado.seg = {};
+      (rs.data || []).forEach(function (s) { estado.seg[s.evento_id] = s; });
+      var rq = await sb.from('evento_seguimiento').select('*');
+      estado.segDatos = {};
+      (rq.data || []).forEach(function (s) { estado.segDatos[s.evento_id] = s; });
     }
     estado.misPosts = {};
     estado.posts.forEach(function (p) { if (p.barista_id === uid) estado.misPosts[p.evento_id] = p; });
@@ -211,7 +217,7 @@
 
   function limpiarEstado() {
     estado.sesion = null; estado.perfil = null; estado.admin = false; estado.config = null;
-    estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {};
+    estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {};
     estado.pestana = 'eventos';
   }
 
@@ -317,6 +323,7 @@
     var textoBoleta = (editando && p.acepta_boleta_texto) || cfg.texto_boleta || 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.';
     f.appendChild(casilla('acepta_boleta', textoBoleta, !!p.acepta_boleta));
     f.appendChild(casilla('acepta_privacidad', cfg.texto_privacidad || 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme.', !!p.acepta_privacidad));
+    f.appendChild(casilla('acepta_avisos', 'Quiero recibir por correo avisos cuando haya cupos disponibles en eventos (opcional).', !!p.acepta_avisos));
 
     var guardar = h('button', { type: 'submit', class: 'sb-btn', text: editando ? 'Guardar cambios' : 'Completar registro' });
     f.appendChild(h('div', { class: 'sb-fila' }, guardar));
@@ -330,7 +337,7 @@
         nombre: v('nombre'), rut: formatoRut(v('rut')), correo: correoSesion, telefono: normalizarTelefono(v('telefono')),
         comuna: v('comuna'), experiencia: v('experiencia') || null, banco: v('banco'), tipo_cuenta: v('tipo_cuenta'),
         numero_cuenta: v('numero_cuenta').replace(/[^\d]/g, ''), cuenta_propia: !!d.get('cuenta_propia'),
-        acepta_boleta: !!d.get('acepta_boleta'), acepta_privacidad: !!d.get('acepta_privacidad')
+        acepta_boleta: !!d.get('acepta_boleta'), acepta_privacidad: !!d.get('acepta_privacidad'), acepta_avisos: !!d.get('acepta_avisos')
       };
       var error = null, enfoque = null;
       if (fila.nombre.length < 3) { error = 'Escribe tu nombre completo.'; enfoque = 'nombre'; }
@@ -409,7 +416,18 @@
     };
 
     if (post && post.estado === 'confirmada') {
-      estadoChip = chip('Confirmado', 'sb-chip--ok');
+      var reconfirmada = !!post.asistencia_confirmada_en;
+      estadoChip = reconfirmada ? chip('Asistencia confirmada', 'sb-chip--ok') : chip('Asignado: falta que confirmes');
+      if (!reconfirmada) {
+        var btnC = boton('Confirmo que voy', function () {
+          conTarea(btnC, async function () {
+            var r = await sb.from('postulaciones').update({ asistencia_confirmada_en: new Date().toISOString() }).eq('id', post.id);
+            if (r.error) throw r.error;
+            await recargar();
+          }).catch(function () { ponerAviso(mensajeEn, 'No pudimos confirmar tu asistencia. Inténtalo de nuevo o escríbenos por WhatsApp.'); });
+        });
+        acciones.appendChild(btnC);
+      }
       var btnR = boton('Retirarme', function () {
         if (!window.confirm('¿Seguro que quieres retirarte? Si es con poco tiempo, avísanos también por WhatsApp.')) return;
         cambiar(btnR, 'retirada', 'No pudimos retirarte. Escríbenos por WhatsApp.');
@@ -437,6 +455,8 @@
       h('p', { class: 'sb-linea', text: 'Buscamos ' + ev.baristas_necesarios + (ev.baristas_necesarios === 1 ? ' barista' : ' baristas') }),
       ev.descripcion ? h('p', { class: 'sb-linea', text: ev.descripcion }) : null,
       bloquePago(ev),
+      post && post.estado === 'confirmada' && !post.asistencia_confirmada_en
+        ? h('p', { class: 'sb-aviso', text: 'Te asignamos a este evento. Confirma que vas para que podamos contar contigo.' }) : null,
       dir ? h('div', { class: 'sb-dir' }, h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Dirección: ' + dir.direccion }),
         dir.indicaciones ? h('p', { class: 'sb-linea', text: dir.indicaciones }) : null) : null,
       acciones);
@@ -644,10 +664,21 @@
         var acc = h('div', { class: 'sb-fila' });
         if (p.estado !== 'confirmada') { var bc = boton('Confirmar', function () { poner(bc, 'confirmada'); }); acc.appendChild(bc); }
         if (p.estado !== 'rechazada') { var br = boton('Rechazar', function () { poner(br, 'rechazada'); }, 'sb-btn--sec'); acc.appendChild(br); }
+        if (p.estado === 'confirmada' && !p.asistencia_confirmada_en) {
+          var bm = boton('Marcar reconfirmado', function () {
+            conTarea(bm, async function () {
+              var r = await sb.from('postulaciones').update({ asistencia_confirmada_en: new Date().toISOString() }).eq('id', p.id);
+              if (r.error) throw r.error;
+              estado.filtroEvento = ev.id;
+              await recargar();
+            }).catch(function () { ponerAviso(msg, 'No pudimos marcar la reconfirmación.'); });
+          }, 'sb-btn--sec');
+          acc.appendChild(bm);
+        }
         if (p.estado === 'confirmada' || p.estado === 'rechazada') { var bp = boton('Dejar como postulada', function () { poner(bp, 'postulada'); }, 'sb-btn--sec'); acc.appendChild(bp); }
         det.appendChild(h('div', { class: 'sb-postulante' },
           h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: b.nombre || 'Barista' }),
-            chip(p.estado, p.estado === 'confirmada' ? 'sb-chip--ok' : (p.estado === 'rechazada' ? 'sb-chip--no' : ''))),
+            chipPostulacion(p)),
           h('p', { class: 'sb-linea', text: [b.telefono, b.comuna, b.correo].filter(Boolean).join(' · ') }),
           b.experiencia ? h('p', { class: 'sb-linea', text: 'Experiencia: ' + b.experiencia }) : null,
           acc));
@@ -681,11 +712,14 @@
     var cuerpo = h('div');
     caja.appendChild(h('h2', { class: 'sb-h2', text: 'Resumen y pagos' }));
     caja.appendChild(h('p', { class: 'sb-texto', text: 'Cuenta solo a los baristas confirmados. Los montos salen de las tarifas y la retención guardadas.' }));
+    var soloPend = h('input', { type: 'checkbox', name: 'solo_pendientes', class: 'sb-chk' });
+    soloPend.checked = !!estado.resumenSoloPendientes;
     caja.appendChild(h('div', { class: 'sb-grilla' }, campo('Desde', desde), campo('Hasta', hasta)));
+    caja.appendChild(h('label', { class: 'sb-casilla' }, soloPend, h('span', { text: 'Mostrar solo lo que falta pagar (sin los honorarios ya pagados)' })));
     caja.appendChild(cuerpo);
 
     var dibujar = function () {
-      estado.resumenDesde = desde.value; estado.resumenHasta = hasta.value;
+      estado.resumenDesde = desde.value; estado.resumenHasta = hasta.value; estado.resumenSoloPendientes = soloPend.checked;
       cuerpo.textContent = '';
       var evs = estado.eventos.filter(function (e) {
         if (e.estado === 'borrador' || e.estado === 'cancelado') return false;
@@ -695,7 +729,9 @@
       });
       var filasEv = [], porBarista = {}, totLiq = 0, totBol = 0, detalle = [];
       evs.forEach(function (ev) {
-        var conf = estado.posts.filter(function (p) { return p.evento_id === ev.id && p.estado === 'confirmada'; });
+        var conf = estado.posts.filter(function (p) {
+          return p.evento_id === ev.id && p.estado === 'confirmada' && !(soloPend.checked && p.honorarios_pagados_en);
+        });
         var liq = conf.length * Number(ev.pago_liquido), bol = conf.length * Number(ev.monto_boleta);
         totLiq += liq; totBol += bol;
         filasEv.push([ev, conf.length, liq, bol]);
@@ -739,7 +775,222 @@
     };
     desde.addEventListener('change', dibujar);
     hasta.addEventListener('change', dibujar);
+    soloPend.addEventListener('change', dibujar);
     dibujar();
+    return caja;
+  }
+
+
+  /* ------------------------------------------------------------------ */
+  /* Administración: seguimiento                                         */
+  /* ------------------------------------------------------------------ */
+
+  function chipPostulacion(p) {
+    if (p.estado === 'confirmada') {
+      return p.asistencia_confirmada_en ? chip('asignado · reconfirmó', 'sb-chip--ok') : chip('asignado · falta reconfirmar');
+    }
+    return chip(p.estado, p.estado === 'rechazada' ? 'sb-chip--no' : '');
+  }
+  function segLista() { return Object.keys(estado.seg).map(function (k) { return estado.seg[k]; }); }
+  function alertasSeg() { return segLista().filter(function (s) { return s.semaforo === 'alerta' || s.cierre_atrasado; }); }
+  function porFecha(a, b) {
+    if (a.fecha !== b.fecha) return a.fecha < b.fecha ? -1 : 1;
+    return a.hora_inicio < b.hora_inicio ? -1 : 1;
+  }
+  function chipSemaforo(s) {
+    if (s === 'ok') return chip('OK', 'sb-chip--ok');
+    if (s === 'alerta') return chip('ALERTA', 'sb-chip--alerta');
+    if (s === 'pendiente') return chip('Pendiente');
+    return null;
+  }
+  function plural(n, uno, varios) { return n + ' ' + (Number(n) === 1 ? uno : varios); }
+  function cuando(d) { return d === 0 ? 'es hoy' : (d === 1 ? 'queda 1 día' : 'quedan ' + d + ' días'); }
+  function motivoSeg(s) {
+    var partes = [], sin = s.asignados - s.reconfirmados;
+    if (s.faltan > 0) partes.push('Faltan ' + plural(s.faltan, 'barista', 'baristas') + ' por asignar');
+    if (sin > 0) partes.push(plural(sin, 'asignado sin reconfirmar', 'asignados sin reconfirmar'));
+    if (!partes.length) return 'Todo en orden: cupos completos y todos reconfirmaron.';
+    return partes.join(' · ') + ' · ' + cuando(s.dias_restantes);
+  }
+  function motivoCierre(s) {
+    var f = [];
+    if (s.documento_cliente_pendiente) f.push('documento al cliente');
+    if (s.boletas_pendientes > 0) f.push(plural(s.boletas_pendientes, 'boleta de honorarios', 'boletas de honorarios'));
+    if (s.pagos_pendientes > 0) f.push(plural(s.pagos_pendientes, 'pago', 'pagos'));
+    return 'Falta: ' + f.join(', ') + ' · fue hace ' + plural(s.dias_desde_evento, 'día', 'días');
+  }
+  function postsAsignados(evId) {
+    return estado.posts.filter(function (p) { return p.evento_id === evId && p.estado === 'confirmada'; });
+  }
+  function enlaceWa(b, texto) {
+    return 'https://wa.me/' + String(b.telefono || '').replace(/\D/g, '') + '?text=' + encodeURIComponent(texto);
+  }
+
+  function bloqueChecklist(s) {
+    var items = (estado.config && estado.config.checklist_items) || [];
+    var datos = estado.segDatos[s.evento_id] || { evento_id: s.evento_id, checklist: {} };
+    var marcado = Object.assign({}, datos.checklist || {});
+    var contador = h('p', { class: 'sb-pago__nota' });
+    var cuenta = function () {
+      var n = items.filter(function (it) { return marcado[it.clave]; }).length;
+      contador.textContent = 'Checklist: ' + n + ' de ' + items.length;
+    };
+    var lista = h('div');
+    items.forEach(function (it) {
+      var c = h('input', { type: 'checkbox', class: 'sb-chk' });
+      c.checked = !!marcado[it.clave];
+      c.addEventListener('change', function () {
+        var antes = marcado[it.clave];
+        if (c.checked) marcado[it.clave] = new Date().toISOString(); else delete marcado[it.clave];
+        cuenta();
+        Promise.resolve(sb.from('evento_seguimiento').upsert({ evento_id: s.evento_id, checklist: marcado, actualizado_en: new Date().toISOString() }))
+          .then(function (r) {
+            if (r.error) throw r.error;
+            estado.segDatos[s.evento_id] = Object.assign({}, datos, { checklist: Object.assign({}, marcado) });
+          })
+          .catch(function () {
+            if (antes) marcado[it.clave] = antes; else delete marcado[it.clave];
+            c.checked = !!antes; cuenta();
+          });
+      });
+      lista.appendChild(h('label', { class: 'sb-casilla' }, c, h('span', { text: it.texto })));
+    });
+    cuenta();
+    return h('div', { class: 'sb-pago' }, h('p', { class: 'sb-pago__monto', text: 'Checklist del evento' }), contador, lista);
+  }
+
+  function copiarTelefonos(asignados, destino) {
+    var texto = asignados.map(function (p) { var b = estado.baristas[p.barista_id] || {}; return (b.nombre || '') + ': ' + (b.telefono || ''); }).join('\n');
+    var mostrar = function () {
+      var ta = h('textarea', { class: 'sb-entrada', rows: String(Math.max(2, asignados.length + 1)), readonly: true });
+      ta.value = texto;
+      destino.textContent = '';
+      destino.appendChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(function () {
+        ponerAviso(destino, 'Teléfonos copiados. Pégalos para armar el grupo de WhatsApp.', 'ok');
+      }, mostrar);
+    } else mostrar();
+  }
+
+  function tarjetaSeg(s, msg) {
+    var asignados = postsAsignados(s.evento_id);
+    var caja = h('article', { class: 'sb-tarjeta' });
+    var zonaCopia = h('div');
+    caja.appendChild(h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: s.nombre }), chipSemaforo(s.semaforo)));
+    caja.appendChild(h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(s.fecha) + ' · ' + hhmm(s.hora_inicio) + ' a ' + hhmm(s.hora_fin) }));
+    caja.appendChild(h('p', { class: 'sb-linea', text: 'Asignados ' + s.asignados + ' de ' + s.baristas_necesarios + ' · reconfirmados ' + s.reconfirmados + ' · postulantes sin asignar ' + s.postulantes }));
+    caja.appendChild(h('p', { class: 'sb-linea' + (s.semaforo === 'alerta' ? ' sb-linea--fuerte' : ''), text: motivoSeg(s) }));
+
+    asignados.forEach(function (p) {
+      var b = estado.baristas[p.barista_id] || {};
+      var acc = h('div', { class: 'sb-fila' });
+      if (!p.asistencia_confirmada_en) {
+        var bm = boton('Marcar reconfirmado', function () {
+          conTarea(bm, async function () {
+            var r = await sb.from('postulaciones').update({ asistencia_confirmada_en: new Date().toISOString() }).eq('id', p.id);
+            if (r.error) throw r.error;
+            await recargar();
+          }).catch(function () { ponerAviso(msg, 'No pudimos marcar la reconfirmación.'); });
+        }, 'sb-btn--sec');
+        acc.appendChild(bm);
+      }
+      acc.appendChild(h('a', { class: 'sb-btn sb-btn--sec', target: '_blank', rel: 'noopener noreferrer', text: 'WhatsApp',
+        href: enlaceWa(b, 'Hola ' + String(b.nombre || '').split(' ')[0] + ', te escribimos de Sepia Coffee: ¿confirmas que vas al evento del ' + fechaLarga(s.fecha) + '?') }));
+      caja.appendChild(h('div', { class: 'sb-postulante' },
+        h('div', { class: 'sb-tarjeta__cab' }, h('h4', { class: 'sb-h4', text: b.nombre || 'Barista' }),
+          p.asistencia_confirmada_en ? chip('reconfirmó', 'sb-chip--ok') : chip('sin reconfirmar')),
+        h('p', { class: 'sb-linea', text: [b.telefono, b.comuna].filter(Boolean).join(' · ') }), acc));
+    });
+
+    var acciones = h('div', { class: 'sb-fila' }, boton('Ver postulantes', function () {
+      estado.pestana = 'postulantes'; estado.filtroEvento = s.evento_id; pintar();
+    }, 'sb-btn--sec'));
+    if (asignados.length) acciones.appendChild(boton('Copiar teléfonos para el grupo de WhatsApp', function () { copiarTelefonos(asignados, zonaCopia); }, 'sb-btn--sec'));
+    caja.appendChild(acciones);
+    caja.appendChild(zonaCopia);
+    caja.appendChild(bloqueChecklist(s));
+    return caja;
+  }
+
+  function tarjetaCierre(s, msg) {
+    var datos = estado.segDatos[s.evento_id] || {};
+    var ev = estado.eventos.filter(function (e) { return e.id === s.evento_id; })[0] || {};
+    var caja = h('article', { class: 'sb-tarjeta' });
+    caja.appendChild(h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: s.nombre }),
+      s.cierre_atrasado ? chip('ALERTA', 'sb-chip--alerta') : chip('Por cerrar')));
+    caja.appendChild(h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(s.fecha) }));
+    caja.appendChild(h('p', { class: 'sb-linea' + (s.cierre_atrasado ? ' sb-linea--fuerte' : ''), text: motivoCierre(s) + (s.cierre_atrasado ? ' · cierre atrasado' : '') }));
+
+    var docFecha = entrada('date', 'doc_fecha', datos.documento_cliente_emitido_en || '');
+    var docFolio = entrada('text', 'doc_folio', datos.documento_cliente_folio || '', { maxlength: '40', placeholder: 'Folio' });
+    var docGuardar = boton('Guardar documento', function () {
+      conTarea(docGuardar, async function () {
+        var r = await sb.from('evento_seguimiento').upsert({ evento_id: s.evento_id, documento_cliente_emitido_en: docFecha.value || null,
+          documento_cliente_folio: docFolio.value.trim() || null, actualizado_en: new Date().toISOString() });
+        if (r.error) throw r.error;
+        await recargar();
+      }).catch(function () { ponerAviso(msg, 'No pudimos guardar el documento.'); });
+    });
+    caja.appendChild(h('div', { class: 'sb-pago' },
+      h('p', { class: 'sb-pago__monto', text: 'Documento al cliente' }),
+      h('p', { class: 'sb-pago__nota', text: datos.documento_cliente_emitido_en ? 'Emitido el ' + datos.documento_cliente_emitido_en : 'Falta emitirlo' }),
+      h('div', { class: 'sb-grilla' }, campo('Fecha de emisión', docFecha), campo('Folio', docFolio)), docGuardar));
+
+    postsAsignados(s.evento_id).forEach(function (p) {
+      var b = estado.baristas[p.barista_id] || {};
+      var fBol = entrada('date', 'bol_fecha', p.boleta_honorarios_recibida_en || '');
+      var fFol = entrada('text', 'bol_folio', p.boleta_honorarios_folio || '', { maxlength: '40', placeholder: 'Folio' });
+      var fPag = entrada('date', 'pagado', p.honorarios_pagados_en || '');
+      var guardar = boton('Guardar', function () {
+        conTarea(guardar, async function () {
+          var r = await sb.from('postulaciones').update({ boleta_honorarios_recibida_en: fBol.value || null,
+            boleta_honorarios_folio: fFol.value.trim() || null, honorarios_pagados_en: fPag.value || null }).eq('id', p.id);
+          if (r.error) throw r.error;
+          await recargar();
+        }).catch(function () { ponerAviso(msg, 'No pudimos guardar los datos de ' + (b.nombre || 'la persona') + '.'); });
+      });
+      var hoy = boton('Pagado hoy', function () { fPag.value = hoyISO(); guardar.click(); }, 'sb-btn--sec');
+      caja.appendChild(h('div', { class: 'sb-postulante' },
+        h('div', { class: 'sb-tarjeta__cab' }, h('h4', { class: 'sb-h4', text: b.nombre || 'Barista' }),
+          p.honorarios_pagados_en ? chip('pagado', 'sb-chip--ok') : (p.boleta_honorarios_recibida_en ? chip('boleta recibida') : chip('falta la boleta'))),
+        h('p', { class: 'sb-linea', text: [b.rut, b.banco, b.tipo_cuenta, b.numero_cuenta].filter(Boolean).join(' · ') }),
+        ev.pago_liquido ? h('p', { class: 'sb-linea', text: 'Transferir ' + clp(ev.pago_liquido) + ' líquidos · boleta de honorarios por ' + clp(ev.monto_boleta) }) : null,
+        h('div', { class: 'sb-grilla' }, campo('Boleta recibida el', fBol), campo('Folio de la boleta', fFol), campo('Honorarios pagados el', fPag)),
+        h('div', { class: 'sb-fila' }, guardar, hoy)));
+    });
+    return caja;
+  }
+
+  function vistaSeguimiento() {
+    var caja = h('div');
+    var msg = h('div');
+    var todos = segLista();
+    var proximos = todos.filter(function (s) { return !s.realizado && s.semaforo; }).sort(porFecha);
+    var porCerrar = todos.filter(function (s) { return s.por_cerrar; }).sort(porFecha);
+    var cerrados = todos.filter(function (s) { return s.realizado && !s.por_cerrar && s.asignados > 0; }).length;
+    var lineas = [];
+    proximos.filter(function (s) { return s.semaforo === 'alerta'; }).forEach(function (s) {
+      lineas.push(h('li', { text: s.nombre + ' (' + fechaLarga(s.fecha) + '): ' + motivoSeg(s) }));
+    });
+    porCerrar.filter(function (s) { return s.cierre_atrasado; }).forEach(function (s) {
+      lineas.push(h('li', { text: s.nombre + ' (' + fechaLarga(s.fecha) + '): cierre atrasado. ' + motivoCierre(s) }));
+    });
+
+    caja.appendChild(h('div', { class: 'sb-fila sb-fila--entre' }, h('h2', { class: 'sb-h2', text: 'Seguimiento' }), boton('Actualizar', function () { recargar(); }, 'sb-btn--sec')));
+    caja.appendChild(msg);
+    if (lineas.length) caja.appendChild(h('div', { class: 'sb-alertas', role: 'alert' }, h('p', { class: 'sb-alertas__t', text: plural(lineas.length, 'alerta', 'alertas') }), h('ul', null, lineas)));
+    else caja.appendChild(aviso('Sin alertas: todo en orden.', 'ok'));
+
+    caja.appendChild(h('h2', { class: 'sb-h2 sb-h2--sec', text: 'Próximos eventos' }));
+    if (!proximos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'No hay eventos próximos abiertos.' }));
+    caja.appendChild(h('div', { class: 'sb-lista' }, proximos.map(function (s) { return tarjetaSeg(s, msg); })));
+
+    caja.appendChild(h('h2', { class: 'sb-h2 sb-h2--sec', text: 'Por cerrar' }));
+    if (!porCerrar.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'No hay eventos pasados con cosas pendientes.' }));
+    caja.appendChild(h('div', { class: 'sb-lista' }, porCerrar.map(function (s) { return tarjetaCierre(s, msg); })));
+    if (cerrados) caja.appendChild(h('p', { class: 'sb-texto', text: plural(cerrados, 'evento ya cerrado', 'eventos ya cerrados') + ' (documento, boletas y pagos al día).' }));
     return caja;
   }
 
@@ -750,7 +1001,11 @@
   function pestanas() {
     var lista = [];
     if (estado.perfil) lista.push(['eventos', 'Eventos'], ['mis', 'Mis postulaciones'], ['datos', 'Mis datos']);
-    if (estado.admin) lista.push(['admin', 'Admin: eventos'], ['postulantes', 'Admin: postulantes'], ['resumen', 'Admin: pagos']);
+    if (estado.admin) {
+      var n = alertasSeg().length;
+      lista.push(['seguimiento', 'Admin: seguimiento' + (n ? ' (' + n + ')' : '')], ['admin', 'Admin: eventos'],
+        ['postulantes', 'Admin: postulantes'], ['resumen', 'Admin: pagos']);
+    }
     return lista;
   }
 
@@ -762,7 +1017,7 @@
         onclick: function () { estado.pestana = t[0]; pintar(); }, text: t[1] });
     }));
     var vista = { eventos: vistaEventos, mis: vistaMisPostulaciones, datos: function () { return vistaFormularioPerfil('editar'); },
-      admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen }[estado.pestana];
+      seguimiento: vistaSeguimiento, admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen }[estado.pestana];
     return h('div', null, nav, h('div', { class: 'sb-panel', role: 'tabpanel' }, vista()));
   }
 
