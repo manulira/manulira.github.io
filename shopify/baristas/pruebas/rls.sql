@@ -237,6 +237,31 @@ select t.debe_funcionar('Beto borra sus propios datos', $q$delete from public.ba
 select t.root();
 select t.valor('y sus postulaciones se van con él', $q$select count(*)::text from public.postulaciones where barista_id = '00000000-0000-0000-0000-00000000000b'$q$, '0');
 
+-- Tope diario de $70.000 (se prueba al final, para no mover los conteos de arriba)
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
+select t.debe_funcionar('admin crea eventos largos', $q$
+  insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
+   ('e0000000-0000-0000-0000-000000000010', 'Tope 7h',  current_date + 40, '12:00', '19:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000011', 'Tope 10h', current_date + 41, '12:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000012', 'Justo en el tope 7h30', current_date + 42, '12:00', '19:30', 'Santiago', 2, 'abierto')
+$q$);
+select t.debe_funcionar('admin crea un pago fijo sobre el tope', $q$
+  insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, pago_manual, estado) values
+   ('e0000000-0000-0000-0000-000000000013', 'Fijo sobre el tope', current_date + 43, '12:00', '22:00', 'Santiago', 2, 90000, 'abierto')
+$q$);
+select t.valor('5 h sigue en $50.000 (bajo el tope)',  $q$select pago_liquido::text from public.eventos_vista where nombre = 'Largo 5h'$q$, '50000');
+select t.valor('7 h = $70.000, justo en el tope',       $q$select pago_liquido::text from public.eventos_vista where nombre = 'Tope 7h'$q$, '70000');
+select t.valor('7 h 30 min se recorta a $70.000',       $q$select pago_liquido::text from public.eventos_vista where nombre = 'Justo en el tope 7h30'$q$, '70000');
+select t.valor('y dice que sin tope eran $75.000',      $q$select pago_sin_tope::text from public.eventos_vista where nombre = 'Justo en el tope 7h30'$q$, '75000');
+select t.valor('10 h se recorta a $70.000',             $q$select pago_liquido::text from public.eventos_vista where nombre = 'Tope 10h'$q$, '70000');
+select t.valor('la boleta se calcula sobre el pago ya recortado', $q$select monto_boleta::text from public.eventos_vista where nombre = 'Tope 10h'$q$, '82596');
+select t.valor('un pago fijo puesto a mano no se recorta', $q$select pago_liquido::text from public.eventos_vista where nombre = 'Fijo sobre el tope'$q$, '90000');
+select t.debe_funcionar('admin sube el tope', $q$update public.config set tope_dia = 80000$q$);
+select t.valor('con tope de $80.000, 10 h sale $80.000', $q$select pago_liquido::text from public.eventos_vista where nombre = 'Tope 10h'$q$, '80000');
+select t.debe_funcionar('admin vuelve el tope a $70.000', $q$update public.config set tope_dia = 70000$q$);
+select t.como('00000000-0000-0000-0000-00000000000b', 'beto@ejemplo.test');
+select t.afecta('una barista no puede cambiar el tope', $q$update public.config set tope_dia = 999999$q$, 0);
+
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;
 select n, nombre, detalle from t.resultados where not ok order by n;

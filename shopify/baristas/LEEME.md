@@ -17,7 +17,7 @@ vas a pagar.
 | `templates/page.baristas.json` | tema de Shopify | Plantilla de la página «Baristas» |
 
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
-protege los datos son las reglas del `esquema.sql`, que se probaron con 94
+protege los datos son las reglas del `esquema.sql`, que se probaron con 107
 comprobaciones (`pruebas/rls.sql`): un barista ve solo lo suyo, la dirección
 exacta solo la ven los confirmados en ese evento, y los datos del cliente y los
 de todos los baristas solo los ve la administración.
@@ -40,9 +40,13 @@ Se guarda en la tabla `config` y se puede cambiar sin tocar código:
 |---|---|
 | hasta 2 horas | $25.000 |
 | más de 2 y hasta 4 horas | $40.000 |
-| más de 4 horas | $10.000 por hora |
+| más de 4 horas | $10.000 por hora, hasta el tope diario |
 
-Un evento puede llevar un pago fijo propio, que manda sobre la tarifa.
+**Tope diario: $70.000 líquidos por barista y por día.** Ningún pago calculado lo pasa
+(una jornada de 10 horas paga $70.000, no $100.000). Si un evento lleva un pago fijo
+propio, ese manda sobre la tarifa y sobre el tope, porque es una decisión puesta a mano.
+Se cambia en `config.tope_dia`. Quien ya había corrido `esquema.sql` antes del tope
+tiene que correr `migraciones/001-tope-diario.sql` una vez.
 
 **Monto de la boleta.** Los baristas pasan boleta de honorarios, y el SII retiene
 un porcentaje (15,25 % en 2026, 16 % en 2027, 17 % desde 2028). Para que a la
@@ -81,7 +85,7 @@ update public.config set retencion = 0.16;   -- 2027
 
 ## Probado, y lo que falta probar
 
-- Reglas de acceso: 94 comprobaciones contra un Postgres de prueba. Al romper una
+- Reglas de acceso: 107 comprobaciones contra un Postgres de prueba. Al romper una
   regla a propósito, las pruebas lo detectan.
 - Interfaz: 48 comprobaciones en el navegador contra una simulación de Supabase
   (registro, validaciones, postular, retirarse, confirmar, resumen, CSV).

@@ -86,10 +86,13 @@ create table if not exists public.config (
   medio_max_horas numeric not null default 4 check (medio_max_horas > 0),
   medio_monto int not null default 40000 check (medio_monto >= 0),
   retencion numeric not null default 0.1525 check (retencion >= 0 and retencion < 0.5),
+  tope_dia int not null default 70000 check (tope_dia >= 0),
   texto_boleta text not null default 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.',
   texto_privacidad text not null default 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme. Los ve únicamente Sepia Coffee, y puedo pedir que los borre en cualquier momento.',
   check (medio_max_horas >= corto_max_horas)
 );
+-- Para bases que ya tenían la tabla sin el tope diario (ver migraciones/).
+alter table public.config add column if not exists tope_dia int not null default 70000 check (tope_dia >= 0);
 insert into public.config (id) values (1) on conflict (id) do nothing;
 alter table public.config enable row level security;
 revoke all on public.config from anon;
@@ -326,8 +329,11 @@ create policy post_admin on public.postulaciones for all to authenticated
 -- 7. Vista de eventos con horas, pago y monto de la boleta ya calculados
 -- ---------------------------------------------------------------------------
 -- pago_liquido: lo que Sepia transfiere a cada barista. Si el evento trae
---   pago_manual, manda ese. Si no: hasta corto_max_horas → corto_monto; hasta
---   medio_max_horas → medio_monto; más largo → tarifa_hora × horas.
+--   pago_manual, manda ese (es una decisión puesta a mano, no se recorta).
+--   Si no: hasta corto_max_horas → corto_monto; hasta medio_max_horas →
+--   medio_monto; más largo → tarifa_hora × horas. El resultado nunca pasa de
+--   tope_dia (por defecto $70.000 líquidos por barista y por día).
+-- pago_sin_tope: lo que habría salido sin el tope, para ver cuándo se aplicó.
 -- monto_boleta: lo que el barista debe poner en su boleta de honorarios para
 --   que, descontada la retención, le queden pago_liquido (líquido ÷ (1 − tasa)).
 
@@ -337,7 +343,8 @@ select
   h.horas,
   p.pago_liquido,
   round(p.pago_liquido / (1 - c.retencion))::int as monto_boleta,
-  c.retencion
+  c.retencion,
+  p.pago_sin_tope
 from public.eventos e
 cross join public.config c
 cross join lateral (
@@ -347,12 +354,13 @@ cross join lateral (
          )) / 3600.0)::numeric as horas
 ) h
 cross join lateral (
-  select coalesce(
-           e.pago_manual,
-           case when h.horas <= c.corto_max_horas then c.corto_monto
-                when h.horas <= c.medio_max_horas then c.medio_monto
-                else round(h.horas * c.tarifa_hora)::int end
-         ) as pago_liquido
+  select case when h.horas <= c.corto_max_horas then c.corto_monto
+              when h.horas <= c.medio_max_horas then c.medio_monto
+              else round(h.horas * c.tarifa_hora)::int end as regla
+) r
+cross join lateral (
+  select coalesce(e.pago_manual, least(r.regla, c.tope_dia)) as pago_liquido,
+         coalesce(e.pago_manual, r.regla) as pago_sin_tope
 ) p;
 revoke all on public.eventos_vista from anon;
 grant select on public.eventos_vista to authenticated;

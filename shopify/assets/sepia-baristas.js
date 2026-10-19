@@ -104,11 +104,14 @@
   /* El mismo cálculo que hace la vista de la base de datos, solo para mostrar
      una vista previa mientras se escribe un evento. Los montos reales los
      entrega la base de datos. */
-  function calcularPago(horas, manual, cfg) {
+  function calcularPago(horas, manual, cfg, sinTope) {
     if (manual !== null && manual !== '' && !isNaN(Number(manual))) return Number(manual);
-    if (horas <= Number(cfg.corto_max_horas)) return Number(cfg.corto_monto);
-    if (horas <= Number(cfg.medio_max_horas)) return Number(cfg.medio_monto);
-    return Math.round(horas * Number(cfg.tarifa_hora));
+    var regla;
+    if (horas <= Number(cfg.corto_max_horas)) regla = Number(cfg.corto_monto);
+    else if (horas <= Number(cfg.medio_max_horas)) regla = Number(cfg.medio_monto);
+    else regla = Math.round(horas * Number(cfg.tarifa_hora));
+    var tope = Number(cfg.tope_dia);
+    return sinTope || cfg.tope_dia === null || cfg.tope_dia === undefined || isNaN(tope) ? regla : Math.min(regla, tope);
   }
   function horasEntre(ini, fin) {
     var a = ini.split(':'), b = fin.split(':');
@@ -495,7 +498,8 @@
         h('p', { class: 'sb-linea', text: [ev.lugar, ev.comuna].filter(Boolean).join(' · ') }),
         priv.cliente ? h('p', { class: 'sb-linea', text: 'Cliente: ' + priv.cliente }) : null,
         h('p', { class: 'sb-linea', text: 'Necesitas ' + ev.baristas_necesarios + ' · confirmados ' + confirmados + ' · postulados ' + postulados }),
-        h('p', { class: 'sb-linea', text: 'Pago ' + clp(ev.pago_liquido) + ' líquidos · boleta ' + clp(ev.monto_boleta) }),
+        h('p', { class: 'sb-linea', text: 'Pago ' + clp(ev.pago_liquido) + ' líquidos · boleta ' + clp(ev.monto_boleta)
+          + (Number(ev.pago_sin_tope) > Number(ev.pago_liquido) ? ' · tope diario aplicado (sin tope: ' + clp(ev.pago_sin_tope) + ')' : '') }),
         h('div', { class: 'sb-fila' },
           boton('Editar', function () { abrirFormulario(ev); }, 'sb-btn--sec'),
           boton('Postulantes', function () { estado.pestana = 'postulantes'; estado.filtroEvento = ev.id; pintar(); }, 'sb-btn--sec'))));
@@ -526,7 +530,9 @@
       if (!ini.value || !fin.value) { vista.textContent = ''; return; }
       var hs = horasEntre(ini.value, fin.value);
       var liq = calcularPago(hs, manual.value, cfg);
-      vista.textContent = 'Dura ' + horasTxt(hs) + ' → paga ' + clp(liq) + ' líquidos a cada barista (boleta de ' + clp(liq / (1 - Number(cfg.retencion))) + ').';
+      var sin = calcularPago(hs, manual.value, cfg, true);
+      vista.textContent = 'Dura ' + horasTxt(hs) + ' → paga ' + clp(liq) + ' líquidos a cada barista (boleta de ' + clp(liq / (1 - Number(cfg.retencion))) + ').'
+        + (sin > liq ? ' Se aplicó el tope diario de ' + clp(cfg.tope_dia) + '; sin tope serían ' + clp(sin) + '.' : '');
     };
     [ini, fin, manual].forEach(function (x) { x.addEventListener('input', actualizarVista); });
     actualizarVista();
