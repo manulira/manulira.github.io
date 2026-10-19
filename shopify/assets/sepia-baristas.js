@@ -30,7 +30,7 @@
   var sb = null;
   var estado = {
     sesion: null, perfil: null, admin: false, config: null,
-    eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {},
+    eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {}, sync: null,
     pestana: 'eventos', cargando: true, correoLogin: ''
   };
 
@@ -76,6 +76,13 @@
     return p;
   }
   function pct(x) { return (Number(x) * 100).toLocaleString('es-CL', { maximumFractionDigits: 2 }) + ' %'; }
+  /* Un timestamp del servidor → «12 nov» y «12 nov, 06:00» en hora de Santiago. */
+  function diaCorto(ts) {
+    return new Date(ts).toLocaleDateString('es-CL', { timeZone: 'America/Santiago', day: 'numeric', month: 'short' }).replace('.', '');
+  }
+  function diaHora(ts) {
+    return new Date(ts).toLocaleString('es-CL', { timeZone: 'America/Santiago', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', '');
+  }
 
   /* RUT: dígito verificador (módulo 11) y formato 12.345.678-5 */
   function limpiarRut(s) { return String(s || '').replace(/[^0-9kK]/g, '').toUpperCase(); }
@@ -205,6 +212,8 @@
       var rq = await sb.from('evento_seguimiento').select('*');
       estado.segDatos = {};
       (rq.data || []).forEach(function (s) { estado.segDatos[s.evento_id] = s; });
+      var ru = await sb.from('automatizacion').select('ultima_sync_en,ultima_sync_resumen').eq('id', 1).maybeSingle();
+      estado.sync = ru.data || null;
     }
     estado.misPosts = {};
     estado.posts.forEach(function (p) { if (p.barista_id === uid) estado.misPosts[p.evento_id] = p; });
@@ -217,7 +226,7 @@
 
   function limpiarEstado() {
     estado.sesion = null; estado.perfil = null; estado.admin = false; estado.config = null;
-    estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {};
+    estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {}; estado.sync = null;
     estado.pestana = 'eventos';
   }
 
@@ -398,6 +407,48 @@
       h('p', { class: 'sb-pago__nota', text: 'Tu boleta de honorarios debe ser por ' + clp(ev.monto_boleta) + ' (con la retención de ' + pct(ev.retencion) + ' te quedan ' + clp(ev.pago_liquido) + ').' }));
   }
 
+  /* Después del evento: la persona avisa que emitió su boleta de honorarios y ve cuándo se le paga. */
+  function bloqueBoleta(ev, post, mensajeEn) {
+    if (!post || post.estado !== 'confirmada' || ev.fecha >= hoyISO()) return null;
+    if (post.honorarios_pagados_en) {
+      return h('div', { class: 'sb-pago' },
+        h('p', { class: 'sb-pago__monto', text: 'Pago recibido' }),
+        h('p', { class: 'sb-pago__nota', text: 'Te transferimos ' + clp(ev.pago_liquido) + ' líquidos el ' + fechaLarga(post.honorarios_pagados_en).toLowerCase() + '. ¡Gracias!' }));
+    }
+    if (post.boleta_declarada_en) {
+      return h('div', { class: 'sb-pago' },
+        h('p', { class: 'sb-pago__monto', text: 'Boleta enviada: la estamos revisando' }),
+        h('p', { class: 'sb-pago__nota', text: 'Nos avisaste el ' + diaCorto(post.boleta_declarada_en) + (post.boleta_declarada_folio ? ' (folio ' + post.boleta_declarada_folio + ')' : '')
+          + '. La revisamos en el SII y, cuando te transfiramos ' + clp(ev.pago_liquido) + ', te avisamos por correo.' }));
+    }
+    var folio = entrada('text', 'folio', '', { maxlength: '40', placeholder: 'Opcional' });
+    var btn = boton('Ya emití mi boleta de honorarios', function () {
+      if (!window.confirm('¿Ya emitiste la boleta de honorarios por ' + clp(ev.monto_boleta) + ' en el SII?')) return;
+      conTarea(btn, async function () {
+        var r = await sb.from('postulaciones').update({ boleta_declarada_en: new Date().toISOString(), boleta_declarada_folio: folio.value.trim() || null }).eq('id', post.id);
+        if (r.error) throw r.error;
+        await recargar();
+      }).catch(function () { ponerAviso(mensajeEn, 'No pudimos guardar el aviso. Inténtalo de nuevo o escríbenos por WhatsApp.'); });
+    });
+    return h('div', { class: 'sb-pago' },
+      h('p', { class: 'sb-pago__monto', text: 'Para que te paguemos: tu boleta de honorarios' }),
+      h('p', { class: 'sb-pago__nota', text: 'Emítela en el SII por ' + clp(ev.monto_boleta) + ' (con la retención de ' + pct(ev.retencion) + ' te quedan ' + clp(ev.pago_liquido) + '). Cuando la tengas, avísanos aquí.' }),
+      campo('Número de folio de la boleta', folio, 'Si lo tienes a mano. No es obligatorio.'),
+      h('div', { class: 'sb-fila' }, btn));
+  }
+
+  /* Lo que la persona todavía tiene que hacer (se muestra arriba en «Eventos»). */
+  function pendientesBarista() {
+    var hoy = hoyISO(), out = [];
+    estado.eventos.forEach(function (ev) {
+      var p = estado.misPosts[ev.id];
+      if (!p || p.estado !== 'confirmada' || ev.estado === 'cancelado') return;
+      if (ev.fecha >= hoy && !p.asistencia_confirmada_en) out.push('Confirma que vas a «' + ev.nombre + '» (' + fechaLarga(ev.fecha) + ').');
+      if (ev.fecha < hoy && !p.boleta_declarada_en && !p.honorarios_pagados_en) out.push('Avísanos cuando emitas tu boleta de honorarios de «' + ev.nombre + '» (por ' + clp(ev.monto_boleta) + ').');
+    });
+    return out;
+  }
+
   function tarjetaEvento(ev, mensajeEn) {
     var post = estado.misPosts[ev.id];
     var dir = estado.dirs[ev.id];
@@ -416,9 +467,9 @@
     };
 
     if (post && post.estado === 'confirmada') {
-      var reconfirmada = !!post.asistencia_confirmada_en;
-      estadoChip = reconfirmada ? chip('Asistencia confirmada', 'sb-chip--ok') : chip('Asignado: falta que confirmes');
-      if (!reconfirmada) {
+      var reconfirmada = !!post.asistencia_confirmada_en, pasado = ev.fecha < hoyISO();
+      estadoChip = reconfirmada ? chip('Asistencia confirmada', 'sb-chip--ok') : (pasado ? chip('Asignado') : chip('Asignado: falta que confirmes'));
+      if (!reconfirmada && !pasado) {
         var btnC = boton('Confirmo que voy', function () {
           conTarea(btnC, async function () {
             var r = await sb.from('postulaciones').update({ asistencia_confirmada_en: new Date().toISOString() }).eq('id', post.id);
@@ -432,7 +483,7 @@
         if (!window.confirm('¿Seguro que quieres retirarte? Si es con poco tiempo, avísanos también por WhatsApp.')) return;
         cambiar(btnR, 'retirada', 'No pudimos retirarte. Escríbenos por WhatsApp.');
       }, 'sb-btn--sec');
-      acciones.appendChild(btnR);
+      if (!pasado) acciones.appendChild(btnR);
     } else if (post && post.estado === 'postulada') {
       estadoChip = chip('Postulaste');
       var btnQ = boton('Retirar postulación', function () { cambiar(btnQ, 'retirada', 'No pudimos retirar tu postulación. Inténtalo de nuevo.'); }, 'sb-btn--sec');
@@ -447,6 +498,7 @@
       estadoChip = chip(ev.estado === 'cancelado' ? 'Cancelado' : 'Cerrado', 'sb-chip--no');
     }
 
+    var cierre = bloqueBoleta(ev, post, mensajeEn);
     return h('article', { class: 'sb-tarjeta' },
       h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: ev.nombre }), estadoChip),
       h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(ev.fecha) }),
@@ -454,11 +506,12 @@
       h('p', { class: 'sb-linea', text: [ev.lugar, ev.comuna].filter(Boolean).join(' · ') }),
       h('p', { class: 'sb-linea', text: 'Buscamos ' + ev.baristas_necesarios + (ev.baristas_necesarios === 1 ? ' barista' : ' baristas') }),
       ev.descripcion ? h('p', { class: 'sb-linea', text: ev.descripcion }) : null,
-      bloquePago(ev),
-      post && post.estado === 'confirmada' && !post.asistencia_confirmada_en
+      cierre ? null : bloquePago(ev),
+      post && post.estado === 'confirmada' && !post.asistencia_confirmada_en && ev.fecha >= hoyISO()
         ? h('p', { class: 'sb-aviso', text: 'Te asignamos a este evento. Confirma que vas para que podamos contar contigo.' }) : null,
       dir ? h('div', { class: 'sb-dir' }, h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Dirección: ' + dir.direccion }),
         dir.indicaciones ? h('p', { class: 'sb-linea', text: dir.indicaciones }) : null) : null,
+      cierre,
       acciones);
   }
 
@@ -471,6 +524,13 @@
       h('h2', { class: 'sb-h2', text: 'Próximos eventos' }),
       boton('Actualizar', function () { recargar(); }, 'sb-btn--sec')));
     caja.appendChild(msg);
+    var pend = pendientesBarista();
+    if (pend.length) {
+      caja.appendChild(h('div', { class: 'sb-alertas', role: 'alert' },
+        h('p', { class: 'sb-alertas__t', text: pend.length === 1 ? 'Tienes 1 cosa pendiente' : 'Tienes ' + pend.length + ' cosas pendientes' }),
+        h('ul', null, pend.map(function (t) { return h('li', { text: t }); })),
+        h('div', { class: 'sb-fila' }, boton('Ir a mis postulaciones', function () { estado.pestana = 'mis'; pintar(); }))));
+    }
     if (!proximos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Por ahora no hay eventos abiertos. Vuelve pronto: aquí aparecen apenas los publicamos.' }));
     caja.appendChild(h('div', { class: 'sb-lista' }, proximos.map(function (e) { return tarjetaEvento(e, msg); })));
     return caja;
@@ -517,6 +577,7 @@
         h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(ev.fecha) + ' · ' + hhmm(ev.hora_inicio) + ' a ' + hhmm(ev.hora_fin) + ' (' + horasTxt(ev.horas) + ')' }),
         h('p', { class: 'sb-linea', text: [ev.lugar, ev.comuna].filter(Boolean).join(' · ') }),
         priv.cliente ? h('p', { class: 'sb-linea', text: 'Cliente: ' + priv.cliente }) : null,
+        bloqueRevisar(ev.id, msg),
         h('p', { class: 'sb-linea', text: 'Necesitas ' + ev.baristas_necesarios + ' · confirmados ' + confirmados + ' · postulados ' + postulados }),
         h('p', { class: 'sb-linea', text: 'Pago ' + clp(ev.pago_liquido) + ' líquidos · boleta ' + clp(ev.monto_boleta)
           + (Number(ev.pago_sin_tope) > Number(ev.pago_liquido) ? ' · tope diario aplicado (sin tope: ' + clp(ev.pago_sin_tope) + ')' : '') }),
@@ -785,6 +846,39 @@
   /* Administración: seguimiento                                         */
   /* ------------------------------------------------------------------ */
 
+  /* Eventos que entraron o cambiaron desde el calendario y esperan que alguien mire sus datos. */
+  function bloqueRevisar(evId, msg) {
+    var d = estado.segDatos[evId];
+    if (!d || !d.revisar) return null;
+    var btn = boton('Ya lo revisé', function () {
+      conTarea(btn, async function () {
+        var r = await sb.from('evento_seguimiento').upsert({ evento_id: evId, revisar: false, revisar_motivo: null, actualizado_en: new Date().toISOString() });
+        if (r.error) throw r.error;
+        await recargar();
+      }).catch(function () { ponerAviso(msg, 'No pudimos quitar la marca de revisión.'); });
+    }, 'sb-btn--sec');
+    return h('div', { class: 'sb-dir' },
+      h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Por revisar' + (d.origen === 'calendario' ? ' (viene del calendario)' : '') }),
+      h('p', { class: 'sb-linea', text: d.revisar_motivo || 'Revisa los datos del evento.' }),
+      h('div', { class: 'sb-fila' }, btn));
+  }
+  function cuantosPorRevisar() {
+    return Object.keys(estado.segDatos).filter(function (k) { return estado.segDatos[k].revisar; }).length;
+  }
+  /* Cuándo se leyó el calendario por última vez, y un aviso si hace demasiado. */
+  function lineaSync() {
+    var s = estado.sync;
+    if (!s || !s.ultima_sync_en) return h('p', { class: 'sb-texto', text: 'El calendario todavía no se ha leído. Cuando la automatización esté instalada, aquí verás la última lectura.' });
+    var r = s.ultima_sync_resumen || {}, n = function (x) { return Array.isArray(x) ? x.length : 0; };
+    var horas = (Date.now() - new Date(s.ultima_sync_en).getTime()) / 36e5;
+    var txt = 'Calendario leído el ' + diaHora(s.ultima_sync_en) + ': ' + plural(r.recibidos || 0, 'evento', 'eventos') + ' de servicio'
+      + (n(r.creados) || n(r.cambiados) || n(r.cancelados) ? ' (nuevos ' + n(r.creados) + ', con cambios ' + n(r.cambiados) + ', cancelados ' + n(r.cancelados) + ')' : '') + '.';
+    if (r.advertencia) txt += ' Atención: ' + r.advertencia;
+    return horas > 36
+      ? h('p', { class: 'sb-aviso', role: 'alert', text: txt + ' Hace más de un día que no se lee: revisa las ejecuciones del script en Google Apps Script.' })
+      : h('p', { class: 'sb-texto', text: txt });
+  }
+
   function chipPostulacion(p) {
     if (p.estado === 'confirmada') {
       return p.asistencia_confirmada_en ? chip('asignado · reconfirmó', 'sb-chip--ok') : chip('asignado · falta reconfirmar');
@@ -882,6 +976,7 @@
     caja.appendChild(h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(s.fecha) + ' · ' + hhmm(s.hora_inicio) + ' a ' + hhmm(s.hora_fin) }));
     caja.appendChild(h('p', { class: 'sb-linea', text: 'Asignados ' + s.asignados + ' de ' + s.baristas_necesarios + ' · reconfirmados ' + s.reconfirmados + ' · postulantes sin asignar ' + s.postulantes }));
     caja.appendChild(h('p', { class: 'sb-linea' + (s.semaforo === 'alerta' ? ' sb-linea--fuerte' : ''), text: motivoSeg(s) }));
+    añadir(caja, bloqueRevisar(s.evento_id, msg));
 
     asignados.forEach(function (p) {
       var b = estado.baristas[p.barista_id] || {};
@@ -941,24 +1036,39 @@
     postsAsignados(s.evento_id).forEach(function (p) {
       var b = estado.baristas[p.barista_id] || {};
       var fBol = entrada('date', 'bol_fecha', p.boleta_honorarios_recibida_en || '');
-      var fFol = entrada('text', 'bol_folio', p.boleta_honorarios_folio || '', { maxlength: '40', placeholder: 'Folio' });
+      var fFol = entrada('text', 'bol_folio', p.boleta_honorarios_folio || p.boleta_declarada_folio || '', { maxlength: '40', placeholder: 'Folio' });
       var fPag = entrada('date', 'pagado', p.honorarios_pagados_en || '');
-      var guardar = boton('Guardar', function () {
+      var guardar = boton('Guardar fechas', function () {
         conTarea(guardar, async function () {
           var r = await sb.from('postulaciones').update({ boleta_honorarios_recibida_en: fBol.value || null,
             boleta_honorarios_folio: fFol.value.trim() || null, honorarios_pagados_en: fPag.value || null }).eq('id', p.id);
           if (r.error) throw r.error;
           await recargar();
         }).catch(function () { ponerAviso(msg, 'No pudimos guardar los datos de ' + (b.nombre || 'la persona') + '.'); });
+      }, 'sb-btn--sec');
+      /* Un clic: revisaste la boleta en el SII y transferiste. Deja la boleta como recibida y le avisa al barista. */
+      var pagar = boton('Marcar pagado', function () {
+        if (!window.confirm('¿Ya revisaste la boleta en el SII y le transferiste ' + clp(ev.pago_liquido) + ' a ' + (b.nombre || 'esta persona') + '? Le llegará un aviso por correo.')) return;
+        conTarea(pagar, async function () {
+          var r = await sb.from('postulaciones').update({
+            honorarios_pagados_en: fPag.value || hoyISO(),
+            boleta_honorarios_recibida_en: fBol.value || hoyISO(),
+            boleta_honorarios_folio: fFol.value.trim() || null
+          }).eq('id', p.id);
+          if (r.error) throw r.error;
+          await recargar();
+        }).catch(function () { ponerAviso(msg, 'No pudimos marcar el pago de ' + (b.nombre || 'la persona') + '.'); });
       });
-      var hoy = boton('Pagado hoy', function () { fPag.value = hoyISO(); guardar.click(); }, 'sb-btn--sec');
+      var estadoCierre = p.honorarios_pagados_en ? chip('pagado', 'sb-chip--ok')
+        : (p.boleta_declarada_en ? chip('boleta declarada: revisar en el SII', 'sb-chip--ok')
+          : (p.boleta_honorarios_recibida_en ? chip('boleta recibida') : chip('falta la boleta')));
       caja.appendChild(h('div', { class: 'sb-postulante' },
-        h('div', { class: 'sb-tarjeta__cab' }, h('h4', { class: 'sb-h4', text: b.nombre || 'Barista' }),
-          p.honorarios_pagados_en ? chip('pagado', 'sb-chip--ok') : (p.boleta_honorarios_recibida_en ? chip('boleta recibida') : chip('falta la boleta'))),
+        h('div', { class: 'sb-tarjeta__cab' }, h('h4', { class: 'sb-h4', text: b.nombre || 'Barista' }), estadoCierre),
         h('p', { class: 'sb-linea', text: [b.rut, b.banco, b.tipo_cuenta, b.numero_cuenta].filter(Boolean).join(' · ') }),
         ev.pago_liquido ? h('p', { class: 'sb-linea', text: 'Transferir ' + clp(ev.pago_liquido) + ' líquidos · boleta de honorarios por ' + clp(ev.monto_boleta) }) : null,
+        p.boleta_declarada_en ? h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Avisó que emitió su boleta el ' + diaCorto(p.boleta_declarada_en) + (p.boleta_declarada_folio ? ' (folio ' + p.boleta_declarada_folio + ')' : '') + '. Revísala en el SII.' }) : null,
         h('div', { class: 'sb-grilla' }, campo('Boleta recibida el', fBol), campo('Folio de la boleta', fFol), campo('Honorarios pagados el', fPag)),
-        h('div', { class: 'sb-fila' }, guardar, hoy)));
+        h('div', { class: 'sb-fila' }, p.honorarios_pagados_en ? null : pagar, guardar)));
     });
     return caja;
   }
@@ -980,8 +1090,11 @@
 
     caja.appendChild(h('div', { class: 'sb-fila sb-fila--entre' }, h('h2', { class: 'sb-h2', text: 'Seguimiento' }), boton('Actualizar', function () { recargar(); }, 'sb-btn--sec')));
     caja.appendChild(msg);
+    caja.appendChild(lineaSync());
     if (lineas.length) caja.appendChild(h('div', { class: 'sb-alertas', role: 'alert' }, h('p', { class: 'sb-alertas__t', text: plural(lineas.length, 'alerta', 'alertas') }), h('ul', null, lineas)));
     else caja.appendChild(aviso('Sin alertas: todo en orden.', 'ok'));
+    var porRev = cuantosPorRevisar();
+    if (porRev) caja.appendChild(aviso(plural(porRev, 'evento espera', 'eventos esperan') + ' que revises sus datos (vienen del calendario o cambiaron). Lo ves marcado en su tarjeta.'));
 
     caja.appendChild(h('h2', { class: 'sb-h2 sb-h2--sec', text: 'Próximos eventos' }));
     if (!proximos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'No hay eventos próximos abiertos.' }));
