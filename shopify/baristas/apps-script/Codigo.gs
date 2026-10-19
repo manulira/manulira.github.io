@@ -568,7 +568,8 @@ function correoSincronizacion_(r, extra, portal) {
 
 function ajustes_() {
   const p = PropertiesService.getScriptProperties();
-  const g = function (k, d) { const v = p.getProperty(k); return v === null || v === '' ? d : v; };
+  // Al pegar desde el celular suelen colarse espacios o saltos de línea al final: se ignoran.
+  const g = function (k, d) { const v = p.getProperty(k); const t = v === null ? '' : String(v).trim(); return t === '' ? d : t; };
   const a = {
     url: String(g('SUPABASE_URL', '')).replace(/\/+$/, ''),
     clave: g('SUPABASE_KEY', ''),

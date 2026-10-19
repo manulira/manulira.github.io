@@ -254,6 +254,14 @@ test('faltan ajustes: el error dice cuáles', () => {
   assert.throws(() => d.ajustes_(), /EMAIL_PRUEBA/);
 });
 
+test('los espacios o saltos de línea que se cuelan al pegar en los ajustes no molestan', () => {
+  const { ctx: c } = cargar({ propiedades: { ...PROPS, SUPABASE_URL: ' https://proyecto.supabase.co/\n', SECRETO: 'clave-larga \n', MODO_PRUEBA: ' no ' } });
+  const a = c.ajustes_();
+  assert.equal(a.secreto, 'clave-larga');
+  assert.equal(a.url, 'https://proyecto.supabase.co');
+  assert.equal(a.modoPrueba, false);
+});
+
 test('el modo de prueba es el que rige si no se dice nada', () => {
   const { ctx: c } = cargar({ propiedades: { ...PROPS, MODO_PRUEBA: '', EMAIL_PRUEBA: 'yo@ejemplo.test' } });
   assert.equal(c.ajustes_().modoPrueba, true);
