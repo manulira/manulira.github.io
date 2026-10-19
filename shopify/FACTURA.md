@@ -1,8 +1,9 @@
 # Factura y boleta electrónica
 
-Estado a 17 de octubre de 2026. El bloque «Necesito factura» está hecho y probado
-en el tema borrador «Sepia Coffee · borrador factura y captcha». Falta elegir la
-app que emite los documentos ante el SII.
+Estado a 19 de octubre de 2026. El bloque «Necesito factura» está publicado en la
+tienda desde el 18 de octubre (tema «Sepia Coffee · borrador factura y captcha») y
+se volvió a probar en vivo: las 8 pruebas del carrito pasan. Falta elegir la app
+que emite los documentos ante el SII.
 
 ## Qué hay en el tema
 
@@ -42,5 +43,3 @@ compra).
    y «Haulmer: Boleta y Factura». Preguntarles si leen los atributos
    `factura_*` del pedido para emitir factura directo en lugar de boleta.
 2. Tener un medio de pago activo: las apps emiten al confirmarse el pago.
-3. Publicar el tema borrador (Tienda online → Temas → Publicar) cuando estén
-   resueltas las preguntas abiertas.
