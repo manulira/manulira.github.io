@@ -11,22 +11,28 @@ insert into auth.users(id, email) values
   ('00000000-0000-0000-0000-00000000000a', 'ana@ejemplo.test'),
   ('00000000-0000-0000-0000-00000000000b', 'beto@ejemplo.test'),
   ('00000000-0000-0000-0000-00000000000c', 'carla@ejemplo.test'),
+  ('00000000-0000-0000-0000-00000000000f', 'zoe@ejemplo.test'),
   ('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 insert into public.admins(email) values ('admin@ejemplo.test');
+-- Accesos (los crea la administración): Zoe tiene cuenta pero NO acceso.
+insert into public.accesos(id, usuario, nombre) values
+  ('00000000-0000-0000-0000-00000000000a', 'ana.prueba', 'Ana Prueba'),
+  ('00000000-0000-0000-0000-00000000000b', 'beto.prueba', 'Beto Prueba'),
+  ('00000000-0000-0000-0000-00000000000c', 'carla.prueba', 'Carla Prueba');
 
 -- Eventos de prueba (como administración)
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000001', 'Corto 2h',        current_date + 2, '18:00', '20:00', 'Vitacura', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000002', 'Medio 3h',        current_date + 3, '18:00', '21:00', 'Las Condes', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000003', 'Medio 4h',        current_date + 4, '18:00', '22:00', 'Providencia', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000004', 'Largo 5h',        current_date + 5, '18:00', '23:00', 'Ñuñoa', 3, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000005', 'Borrador',        current_date + 6, '18:00', '20:00', 'Santiago', 1, 'borrador'),
-   ('e0000000-0000-0000-0000-000000000006', 'Cerrado',         current_date + 7, '18:00', '20:00', 'Santiago', 1, 'cerrado'),
-   ('e0000000-0000-0000-0000-000000000007', 'Pasado',          current_date - 5,  '18:00', '20:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000008', 'Nocturno 22 a 02', current_date + 8, '22:00', '02:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000009', 'Con pago fijo',   current_date + 9, '18:00', '23:00', 'Santiago', 1, 'abierto')
+   ('e0000000-0000-0000-0000-000000000001', 'Corto 2h',        t.hoy() + 2, '18:00', '20:00', 'Vitacura', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000002', 'Medio 3h',        t.hoy() + 3, '18:00', '21:00', 'Las Condes', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000003', 'Medio 4h',        t.hoy() + 4, '18:00', '22:00', 'Providencia', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000004', 'Largo 5h',        t.hoy() + 5, '18:00', '23:00', 'Ñuñoa', 3, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000005', 'Borrador',        t.hoy() + 6, '18:00', '20:00', 'Santiago', 1, 'borrador'),
+   ('e0000000-0000-0000-0000-000000000006', 'Cerrado',         t.hoy() + 7, '18:00', '20:00', 'Santiago', 1, 'cerrado'),
+   ('e0000000-0000-0000-0000-000000000007', 'Pasado',          t.hoy() - 5,  '18:00', '20:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000008', 'Nocturno 22 a 02', t.hoy() + 8, '22:00', '02:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000009', 'Con pago fijo',   t.hoy() + 9, '18:00', '23:00', 'Santiago', 1, 'abierto')
 $q$);
 update public.eventos set pago_manual = 55000 where id = 'e0000000-0000-0000-0000-000000000009';
 select t.debe_funcionar('admin crea datos privados', $q$
@@ -74,8 +80,6 @@ select t.debe_fallar('RUT inválido se rechaza', $q$insert into public.baristas(
   values ('00000000-0000-0000-0000-00000000000c','Carla Prueba','11.111.111-2','carla@ejemplo.test','+56912345678','Vitacura','Banco de Chile','Cuenta vista','12345678',true,true,'x',true)$q$);
 select t.debe_fallar('no puede registrar a otra persona', $q$insert into public.baristas(id,nombre,rut,correo,telefono,comuna,banco,tipo_cuenta,numero_cuenta,cuenta_propia,acepta_boleta,acepta_boleta_texto,acepta_privacidad)
   values ('00000000-0000-0000-0000-00000000000a','Carla Prueba','11.111.111-1','carla@ejemplo.test','+56912345678','Vitacura','Banco de Chile','Cuenta vista','12345678',true,true,'x',true)$q$);
-select t.debe_fallar('no puede usar el correo de otra persona', $q$insert into public.baristas(id,nombre,rut,correo,telefono,comuna,banco,tipo_cuenta,numero_cuenta,cuenta_propia,acepta_boleta,acepta_boleta_texto,acepta_privacidad)
-  values ('00000000-0000-0000-0000-00000000000c','Carla Prueba','11.111.111-1','ana@ejemplo.test','+56912345678','Vitacura','Banco de Chile','Cuenta vista','12345678',true,true,'x',true)$q$);
 select t.debe_fallar('sin declarar la boleta no se registra', $q$insert into public.baristas(id,nombre,rut,correo,telefono,comuna,banco,tipo_cuenta,numero_cuenta,cuenta_propia,acepta_boleta,acepta_boleta_texto,acepta_privacidad)
   values ('00000000-0000-0000-0000-00000000000c','Carla Prueba','11.111.111-1','carla@ejemplo.test','+56912345678','Vitacura','Banco de Chile','Cuenta vista','12345678',true,false,'x',true)$q$);
 select t.debe_fallar('sin aceptar la privacidad no se registra', $q$insert into public.baristas(id,nombre,rut,correo,telefono,comuna,banco,tipo_cuenta,numero_cuenta,cuenta_propia,acepta_boleta,acepta_boleta_texto,acepta_privacidad)
@@ -106,7 +110,7 @@ select t.filas('Ana ve los 7 eventos abiertos (incluye el que ya pasó, que sigu
 select t.filas('Ana no ve el borrador ni el cerrado', $q$select * from public.eventos_vista where estado in ('borrador','cerrado')$q$, 0);
 select t.filas('Ana no ve datos privados del cliente', 'select * from public.evento_privado', 0);
 select t.filas('Ana no ve direcciones sin estar confirmada', 'select * from public.evento_direcciones', 0);
-select t.debe_fallar('Ana no crea eventos', $q$insert into public.eventos(nombre,fecha,hora_inicio,hora_fin,comuna) values ('Falso', current_date+1,'10:00','12:00','X')$q$);
+select t.debe_fallar('Ana no crea eventos', $q$insert into public.eventos(nombre,fecha,hora_inicio,hora_fin,comuna) values ('Falso', t.hoy()+1,'10:00','12:00','X')$q$);
 select t.afecta('Ana no puede editar eventos', $q$update public.eventos set nombre = 'Hackeado'$q$, 0);
 select t.afecta('Ana no puede borrar eventos', $q$delete from public.eventos$q$, 0);
 select t.afecta('Ana no puede cambiar la config', $q$update public.config set tarifa_hora = 1$q$, 0);
@@ -119,7 +123,8 @@ select t.debe_fallar('Ana no postula a nombre de Beto', $q$insert into public.po
 select t.debe_fallar('Ana no se confirma sola al crear', $q$insert into public.postulaciones(evento_id, barista_id, estado) values ('e0000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-00000000000a','confirmada')$q$);
 select t.debe_fallar('Ana no se confirma sola al editar', $q$update public.postulaciones set estado = 'confirmada' where barista_id = '00000000-0000-0000-0000-00000000000a'$q$);
 select t.debe_fallar('Ana no cambia el evento de su postulación', $q$update public.postulaciones set evento_id = 'e0000000-0000-0000-0000-000000000002' where barista_id = '00000000-0000-0000-0000-00000000000a'$q$);
-select t.debe_fallar('Ana no cambia su correo al de otra persona', $q$update public.baristas set correo = 'otra@ejemplo.test' where id = '00000000-0000-0000-0000-00000000000a'$q$);
+select t.debe_funcionar('Ana cambia su correo de contacto (ya no es el de la sesión)', $q$update public.baristas set correo = 'ana.contacto@ejemplo.test' where id = '00000000-0000-0000-0000-00000000000a'$q$);
+select t.debe_funcionar('y lo deja como estaba', $q$update public.baristas set correo = 'ana@ejemplo.test' where id = '00000000-0000-0000-0000-00000000000a'$q$);
 select t.debe_funcionar('Ana actualiza su cuenta bancaria', $q$update public.baristas set numero_cuenta = '55556666' where id = '00000000-0000-0000-0000-00000000000a'$q$);
 select t.afecta('Ana no puede editar el registro de Beto', $q$update public.baristas set nombre = 'Hackeado' where id = '00000000-0000-0000-0000-00000000000b'$q$, 0);
 select t.debe_funcionar('Ana intenta pisar el texto aceptado (se ignora)', $q$update public.baristas set acepta_boleta_texto = 'otro', aceptado_en = '2000-01-01' where id = '00000000-0000-0000-0000-00000000000a'$q$);
@@ -183,13 +188,13 @@ select t.valor('y sus postulaciones se van con él', $q$select count(*)::text fr
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos largos', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000010', 'Tope 7h',  current_date + 10, '12:00', '19:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000011', 'Tope 10h', current_date + 11, '12:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000012', 'Justo en el tope 7h30', current_date + 12, '12:00', '19:30', 'Santiago', 2, 'abierto')
+   ('e0000000-0000-0000-0000-000000000010', 'Tope 7h',  t.hoy() + 10, '12:00', '19:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000011', 'Tope 10h', t.hoy() + 11, '12:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000012', 'Justo en el tope 7h30', t.hoy() + 12, '12:00', '19:30', 'Santiago', 2, 'abierto')
 $q$);
 select t.debe_funcionar('admin crea un pago fijo sobre el tope', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, pago_manual, estado) values
-   ('e0000000-0000-0000-0000-000000000013', 'Fijo sobre el tope', current_date + 13, '12:00', '22:00', 'Santiago', 2, 90000, 'abierto')
+   ('e0000000-0000-0000-0000-000000000013', 'Fijo sobre el tope', t.hoy() + 13, '12:00', '22:00', 'Santiago', 2, 90000, 'abierto')
 $q$);
 select t.valor('5 h sigue en $50.000 (bajo el tope)',  $q$select pago_liquido::text from public.eventos_vista where nombre = 'Largo 5h'$q$, '50000');
 select t.valor('7 h = $70.000, justo en el tope',       $q$select pago_liquido::text from public.eventos_vista where nombre = 'Tope 7h'$q$, '70000');
@@ -211,17 +216,20 @@ select t.root();
 insert into auth.users(id, email) values
   ('00000000-0000-0000-0000-00000000000d', 'dani@ejemplo.test'),
   ('00000000-0000-0000-0000-00000000000e', 'eli@ejemplo.test');
+insert into public.accesos(id, usuario, nombre) values
+  ('00000000-0000-0000-0000-00000000000d', 'dani.prueba', 'Dani Prueba'),
+  ('00000000-0000-0000-0000-00000000000e', 'eli.prueba', 'Eli Prueba');
 
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos de seguimiento', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000020', 'Seg 3 días sin baristas', current_date + 3,  '18:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000021', 'Seg 20 días sin baristas', current_date + 20, '18:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000022', 'Seg 10 días completo',    current_date + 10, '18:00', '22:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000023', 'Seg 3 días sin reconfirmar', current_date + 3, '18:00', '22:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000024', 'Seg pasado reciente',     current_date - 3,  '18:00', '22:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000025', 'Seg pasado viejo',        current_date - 10, '18:00', '22:00', 'Santiago', 1, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000026', 'Seg borrador',            current_date + 2,  '18:00', '22:00', 'Santiago', 1, 'borrador')
+   ('e0000000-0000-0000-0000-000000000020', 'Seg 3 días sin baristas', t.hoy() + 3,  '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000021', 'Seg 20 días sin baristas', t.hoy() + 20, '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000022', 'Seg 10 días completo',    t.hoy() + 10, '18:00', '22:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000023', 'Seg 3 días sin reconfirmar', t.hoy() + 3, '18:00', '22:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000024', 'Seg pasado reciente',     t.hoy() - 3,  '18:00', '22:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000025', 'Seg pasado viejo',        t.hoy() - 10, '18:00', '22:00', 'Santiago', 1, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000026', 'Seg borrador',            t.hoy() + 2,  '18:00', '22:00', 'Santiago', 1, 'borrador')
 $q$);
 
 select t.como('00000000-0000-0000-0000-00000000000d', 'dani@ejemplo.test');
@@ -237,7 +245,7 @@ select t.valor('el permiso de avisos es opcional y parte en falso', $q$select ac
 select t.como('00000000-0000-0000-0000-00000000000d', 'dani@ejemplo.test');
 select t.debe_funcionar('Dani postula al de 10 días', $q$insert into public.postulaciones(evento_id, barista_id) values ('e0000000-0000-0000-0000-000000000022','00000000-0000-0000-0000-00000000000d')$q$);
 select t.debe_funcionar('Dani intenta postular con datos de cierre puestos (se anulan)', $q$insert into public.postulaciones(evento_id, barista_id, honorarios_pagados_en, boleta_honorarios_folio, asistencia_confirmada_en)
-  values ('e0000000-0000-0000-0000-000000000020','00000000-0000-0000-0000-00000000000d', current_date, '999', now())$q$);
+  values ('e0000000-0000-0000-0000-000000000020','00000000-0000-0000-0000-00000000000d', t.hoy(), '999', now())$q$);
 select t.como('00000000-0000-0000-0000-00000000000e', 'eli@ejemplo.test');
 select t.debe_funcionar('Eli postula al de 3 días', $q$insert into public.postulaciones(evento_id, barista_id) values ('e0000000-0000-0000-0000-000000000023','00000000-0000-0000-0000-00000000000e')$q$);
 select t.root();
@@ -273,8 +281,8 @@ select t.como('00000000-0000-0000-0000-00000000000d', 'dani@ejemplo.test');
 select t.debe_funcionar('Dani confirma que va (manda una fecha falsa)', $q$update public.postulaciones set asistencia_confirmada_en = '2000-01-01' where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
 select t.valor('la fecha de confirmación la pone el servidor', $q$select (asistencia_confirmada_en > now() - interval '1 minute')::text from public.postulaciones where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$, 'true');
 select t.debe_fallar('Dani no puede deshacer su confirmación', $q$update public.postulaciones set asistencia_confirmada_en = null where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
-select t.debe_fallar('Dani no puede marcarse el pago', $q$update public.postulaciones set honorarios_pagados_en = current_date where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
-select t.debe_fallar('Dani no puede registrar su boleta', $q$update public.postulaciones set boleta_honorarios_recibida_en = current_date, boleta_honorarios_folio = '1' where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
+select t.debe_fallar('Dani no puede marcarse el pago', $q$update public.postulaciones set honorarios_pagados_en = t.hoy() where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
+select t.debe_fallar('Dani no puede registrar su boleta', $q$update public.postulaciones set boleta_honorarios_recibida_en = t.hoy(), boleta_honorarios_folio = '1' where evento_id = 'e0000000-0000-0000-0000-000000000022'$q$);
 select t.filas('Dani no ve el seguimiento', 'select * from public.seguimiento_vista', 0);
 select t.filas('Dani no ve el checklist ni el cierre del cliente', 'select * from public.evento_seguimiento', 0);
 select t.debe_fallar('Dani no escribe en el seguimiento', $q$insert into public.evento_seguimiento(evento_id) values ('e0000000-0000-0000-0000-000000000022')$q$);
@@ -306,9 +314,9 @@ select t.valor('evento pasado reciente: por cerrar pero no atrasado', $q$select 
 select t.valor('evento pasado hace 10 días: por cerrar y atrasado',   $q$select por_cerrar::text || '/' || cierre_atrasado::text from public.seguimiento_vista where nombre = 'Seg pasado viejo'$q$, 'true/true');
 select t.valor('evento futuro nunca está por cerrar',                  $q$select por_cerrar::text from public.seguimiento_vista where nombre = 'Seg 10 días completo'$q$, 'false');
 select t.valor('pendientes del evento reciente: 1 boleta, 1 pago, documento',  $q$select boletas_pendientes || '/' || pagos_pendientes || '/' || documento_cliente_pendiente from public.seguimiento_vista where nombre = 'Seg pasado reciente'$q$, '1/1/true');
-select t.debe_funcionar('admin registra boleta y pago del barista', $q$update public.postulaciones set boleta_honorarios_recibida_en = current_date, boleta_honorarios_folio = 'B-123', honorarios_pagados_en = current_date where evento_id = 'e0000000-0000-0000-0000-000000000024'$q$);
+select t.debe_funcionar('admin registra boleta y pago del barista', $q$update public.postulaciones set boleta_honorarios_recibida_en = t.hoy(), boleta_honorarios_folio = 'B-123', honorarios_pagados_en = t.hoy() where evento_id = 'e0000000-0000-0000-0000-000000000024'$q$);
 select t.valor('falta solo el documento al cliente', $q$select por_cerrar::text || '/' || boletas_pendientes || '/' || pagos_pendientes from public.seguimiento_vista where nombre = 'Seg pasado reciente'$q$, 'true/0/0');
-select t.debe_funcionar('admin registra el documento al cliente', $q$insert into public.evento_seguimiento(evento_id, documento_cliente_emitido_en, documento_cliente_folio) values ('e0000000-0000-0000-0000-000000000024', current_date, 'F-77')$q$);
+select t.debe_funcionar('admin registra el documento al cliente', $q$insert into public.evento_seguimiento(evento_id, documento_cliente_emitido_en, documento_cliente_folio) values ('e0000000-0000-0000-0000-000000000024', t.hoy(), 'F-77')$q$);
 select t.valor('con todo registrado el evento queda cerrado', $q$select por_cerrar::text || '/' || cierre_atrasado::text from public.seguimiento_vista where nombre = 'Seg pasado reciente'$q$, 'false/false');
 select t.debe_fallar('el folio no puede ser larguísimo', $q$update public.postulaciones set boleta_honorarios_folio = repeat('x', 50) where evento_id = 'e0000000-0000-0000-0000-000000000024'$q$);
 
@@ -321,9 +329,9 @@ select t.valor('al retirarse pierde la confirmación', $q$select (asistencia_con
 select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
 select t.debe_funcionar('admin crea eventos lejanos', $q$
   insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, estado) values
-   ('e0000000-0000-0000-0000-000000000030', 'Ventana 14', current_date + 14, '18:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000031', 'Ventana 15', current_date + 15, '18:00', '22:00', 'Santiago', 2, 'abierto'),
-   ('e0000000-0000-0000-0000-000000000032', 'Ventana 60', current_date + 60, '18:00', '22:00', 'Santiago', 2, 'abierto')$q$);
+   ('e0000000-0000-0000-0000-000000000030', 'Ventana 14', t.hoy() + 14, '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000031', 'Ventana 15', t.hoy() + 15, '18:00', '22:00', 'Santiago', 2, 'abierto'),
+   ('e0000000-0000-0000-0000-000000000032', 'Ventana 60', t.hoy() + 60, '18:00', '22:00', 'Santiago', 2, 'abierto')$q$);
 select t.debe_funcionar('y sus direcciones', $q$insert into public.evento_direcciones(evento_id, direccion) select id, 'Calle Lejana 9' from public.eventos where nombre like 'Ventana %'$q$);
 select t.filas('la administración ve los tres', $q$select * from public.eventos_vista where nombre like 'Ventana %'$q$, 3);
 select t.valor('por defecto la ventana es de 14 días', $q$select dias_publicacion::text from public.config$q$, '14');

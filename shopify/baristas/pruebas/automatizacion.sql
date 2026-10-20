@@ -40,6 +40,10 @@ insert into auth.users(id, email) values
   ('00000000-0000-0000-0000-0000000000f1', 'fer@ejemplo.test'),  ('00000000-0000-0000-0000-0000000000a1', 'gus@ejemplo.test'),
   ('00000000-0000-0000-0000-0000000000b1', 'hilda@ejemplo.test');
 insert into public.admins(email) values ('admin@ejemplo.test');
+insert into public.accesos(id, usuario, nombre) values
+  ('00000000-0000-0000-0000-0000000000d1', 'dani.prueba', 'Dani Prueba'), ('00000000-0000-0000-0000-0000000000e1', 'eli.prueba', 'Eli Prueba'),
+  ('00000000-0000-0000-0000-0000000000f1', 'fer.prueba', 'Fer Prueba'), ('00000000-0000-0000-0000-0000000000a1', 'gus.prueba', 'Gus Prueba'),
+  ('00000000-0000-0000-0000-0000000000b1', 'hilda.prueba', 'Hilda Prueba');
 update public.automatizacion set secreto_hash = encode(sha256(convert_to('clave-de-prueba', 'UTF8')), 'hex');
 insert into public.baristas(id, nombre, rut, correo, telefono, comuna, banco, tipo_cuenta, numero_cuenta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad, acepta_avisos) values
   ('00000000-0000-0000-0000-0000000000d1', 'Dani Prueba',  '11.111.111-1', 'dani@ejemplo.test',  '+56911110001', 'Ñuñoa', 'BCI', 'Cuenta vista', '11110001', true, true, 'x', true, true),

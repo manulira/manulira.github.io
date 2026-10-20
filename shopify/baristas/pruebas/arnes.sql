@@ -61,3 +61,5 @@ begin
   insert into t.resultados(nombre, ok, detalle) values (nombre, v is not distinct from esperado, 'valor=' || coalesce(v, 'null') || ' esperado=' || esperado);
 end $$;
 
+-- La fecha de hoy en Santiago (la base usa esa, no la de UTC: de noche difieren).
+create function t.hoy() returns date language sql stable as $$ select (now() at time zone 'America/Santiago')::date $$;

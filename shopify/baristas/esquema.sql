@@ -4,8 +4,12 @@
 -- Se puede volver a correr sin romper nada ni borrar datos.
 --
 -- Qué guarda y quién lo ve:
---   baristas ........ datos personales y bancarios. Cada barista ve SOLO los
---                     suyos. Los ve también la persona administradora.
+--   accesos ......... el ID y la clave de cada barista (los crea la administración).
+--                     Cada barista ve solo el suyo.
+--   baristas ........ datos personales y bancarios, talla de camisa, camioneta y
+--                     foto. Cada barista ve SOLO los suyos. Los ve también la
+--                     persona administradora. El equipo ve de los demás solo
+--                     nombre y foto (ranking y equipo de cada evento).
 --   eventos ......... nombre, fecha, horario, comuna, lugar y pago. Lo ven los
 --                     baristas ya registrados (solo eventos abiertos o en los
 --                     que postularon).
@@ -118,6 +122,9 @@ alter table public.config add column if not exists dias_vacante_cupos int not nu
 -- avisos reciben un correo cuando se abre (avisar_eventos_nuevos).
 alter table public.config add column if not exists dias_publicacion int not null default 14 check (dias_publicacion >= 1);
 alter table public.config add column if not exists avisar_eventos_nuevos boolean not null default true;
+-- Traslado con camioneta (reembolso aparte, no son honorarios): bencina = km ÷ rendimiento × precio.
+alter table public.config add column if not exists rendimiento_km_l numeric not null default 10 check (rendimiento_km_l > 0);
+alter table public.config add column if not exists precio_litro int not null default 1400 check (precio_litro >= 0);
 alter table public.config add column if not exists checklist_items jsonb not null default '[{"clave":"grupo_whatsapp","texto":"Grupo de WhatsApp creado"},{"clave":"direccion_hora","texto":"Dirección y hora enviadas a los baristas"},{"clave":"equipo","texto":"Equipo y materiales listos"},{"clave":"transporte","texto":"Transporte y recolección coordinados"},{"clave":"cliente_confirmo","texto":"Cliente confirmó hora y lugar"}]'::jsonb check (jsonb_typeof(checklist_items) = 'array');
 insert into public.config (id) values (1) on conflict (id) do nothing;
 alter table public.config enable row level security;
@@ -128,6 +135,34 @@ create policy config_ver on public.config for select to authenticated using (tru
 drop policy if exists config_editar on public.config;
 create policy config_editar on public.config for update to authenticated
   using (public.es_admin()) with check (public.es_admin());
+
+-- ---------------------------------------------------------------------------
+-- 2b. Accesos: ID y clave de cada barista
+-- ---------------------------------------------------------------------------
+-- Los baristas entran con un ID (por ejemplo camila.perez) y una clave. La administración los
+-- crea (crear_acceso, más abajo) y entrega una clave temporal que la persona cambia al entrar.
+-- Por dentro el ID es un «correo» inventado (id@equipo.sepiacoffee.cl) que no recibe mensajes.
+-- Sin una fila activa acá nadie es barista: aunque alguien se cree una cuenta por su lado, no ve nada.
+create table if not exists public.accesos (
+  id uuid primary key references auth.users (id) on delete cascade,
+  usuario text not null unique check (usuario ~ '^[a-z0-9][a-z0-9._-]{2,29}$'),
+  nombre text not null check (char_length(btrim(nombre)) between 3 and 100),
+  activo boolean not null default true,
+  debe_cambiar_clave boolean not null default true,
+  creado_en timestamptz not null default now(),
+  clave_cambiada_en timestamptz
+);
+alter table public.accesos enable row level security;
+revoke all on public.accesos from anon, authenticated;
+grant select on public.accesos to authenticated;
+drop policy if exists accesos_ver on public.accesos;
+create policy accesos_ver on public.accesos for select to authenticated
+  using (id = auth.uid() or public.es_admin());
+
+create or replace function public.tiene_acceso_activo() returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.accesos a where a.id = auth.uid() and a.activo);
+$$;
 
 -- ---------------------------------------------------------------------------
 -- 3. Baristas
@@ -156,10 +191,22 @@ create table if not exists public.baristas (
 
 -- Permiso (opcional) para avisarle por correo cuando haya cupos disponibles.
 alter table public.baristas add column if not exists acepta_avisos boolean not null default false;
+-- Perfil del equipo: talla de camisa, si tiene camioneta para llevar el carrito, foto (opcional,
+-- en el almacenamiento «perfiles», siempre dentro de su propia carpeta) y los turnos que ya tenía
+-- antes del portal (los pone la administración: cuentan en el ranking acumulado).
+alter table public.baristas add column if not exists talla_camisa text check (talla_camisa is null or talla_camisa in ('XS', 'S', 'M', 'L', 'XL', 'XXL'));
+alter table public.baristas add column if not exists tiene_camioneta boolean not null default false;
+alter table public.baristas add column if not exists foto_path text;
+alter table public.baristas add column if not exists turnos_previos int not null default 0 check (turnos_previos between 0 and 5000);
+alter table public.baristas drop constraint if exists baristas_foto_path_check;
+alter table public.baristas add constraint baristas_foto_path_check
+  check (foto_path is null or foto_path ~ ('^' || id::text || '/[A-Za-z0-9._-]{1,80}$'));
 
 -- El texto que aceptó y la fecha los pone el servidor, no el navegador.
 create or replace function public.t_baristas_antes() returns trigger
 language plpgsql set search_path = '' as $$
+declare
+  admin_o_servicio boolean := (auth.uid() is null) or public.es_admin();   -- editor SQL o administración
 begin
   new.correo := lower(new.correo);
   new.rut := public.rut_formato(new.rut);
@@ -168,8 +215,10 @@ begin
     new.aceptado_en := now();
     new.creado_en := now();
     new.actualizado_en := now();
+    if not admin_o_servicio then new.turnos_previos := 0; end if;
   else
     if new.id <> old.id then raise exception 'No se puede cambiar el id'; end if;
+    if not admin_o_servicio then new.turnos_previos := old.turnos_previos; end if;
     new.acepta_boleta_texto := old.acepta_boleta_texto;
     new.aceptado_en := old.aceptado_en;
     new.creado_en := old.creado_en;
@@ -181,9 +230,11 @@ drop trigger if exists baristas_antes on public.baristas;
 create trigger baristas_antes before insert or update on public.baristas
   for each row execute function public.t_baristas_antes();
 
+-- Es barista quien tiene su perfil Y su acceso está activo (si se desactiva, deja de ver todo).
 create or replace function public.es_barista() returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.baristas b where b.id = auth.uid());
+  select exists (select 1 from public.baristas b join public.accesos a on a.id = b.id
+                 where b.id = auth.uid() and a.activo);
 $$;
 
 alter table public.baristas enable row level security;
@@ -192,14 +243,18 @@ grant select, insert, update, delete on public.baristas to authenticated;
 
 drop policy if exists baristas_ver on public.baristas;
 create policy baristas_ver on public.baristas for select to authenticated
-  using (id = auth.uid() or public.es_admin());
+  using ((id = auth.uid() and public.tiene_acceso_activo()) or public.es_admin());
 drop policy if exists baristas_crear on public.baristas;
 create policy baristas_crear on public.baristas for insert to authenticated
-  with check (id = auth.uid() and correo = lower(coalesce(auth.jwt() ->> 'email', '')));
+  with check (id = auth.uid() and public.tiene_acceso_activo());
 drop policy if exists baristas_editar on public.baristas;
 create policy baristas_editar on public.baristas for update to authenticated
-  using (id = auth.uid())
-  with check (id = auth.uid() and correo = lower(coalesce(auth.jwt() ->> 'email', '')));
+  using (id = auth.uid() and public.tiene_acceso_activo())
+  with check (id = auth.uid());
+-- La administración corrige datos del equipo (por ejemplo, los turnos previos al portal).
+drop policy if exists baristas_admin_editar on public.baristas;
+create policy baristas_admin_editar on public.baristas for update to authenticated
+  using (public.es_admin()) with check (public.es_admin());
 drop policy if exists baristas_borrar on public.baristas;
 create policy baristas_borrar on public.baristas for delete to authenticated
   using (id = auth.uid() or public.es_admin());
@@ -223,12 +278,23 @@ create table if not exists public.eventos (
   creado_en timestamptz not null default now()
 );
 
+-- ¿El evento necesita a alguien que lleve el carrito en camioneta? (lo ven todos los baristas)
+alter table public.eventos add column if not exists requiere_camioneta boolean not null default false;
+
 -- Solo la administración: cliente, contacto y notas internas.
 create table if not exists public.evento_privado (
   evento_id uuid primary key references public.eventos (id) on delete cascade,
   cliente text check (cliente is null or char_length(cliente) <= 120),
   contacto text check (contacto is null or char_length(contacto) <= 200),
   notas text check (notas is null or char_length(notas) <= 1000)
+);
+
+-- Solo la administración: kilómetros del recorrido (ida y vuelta) y TAG/peajes estimados, para calcular
+-- el reembolso de la camioneta. El conductor ve únicamente su monto (función traslados()).
+create table if not exists public.evento_traslado (
+  evento_id uuid primary key references public.eventos (id) on delete cascade,
+  km numeric check (km is null or (km >= 0 and km <= 3000)),
+  tag int check (tag is null or (tag >= 0 and tag <= 1000000))
 );
 
 -- Dirección exacta: administración y baristas confirmados en ese evento.
@@ -292,7 +358,15 @@ alter table public.postulaciones add column if not exists honorarios_pagados_en 
 --   día del evento). La fecha la pone el servidor. La administración la revisa en el SII.
 alter table public.postulaciones add column if not exists boleta_declarada_en timestamptz;
 alter table public.postulaciones add column if not exists boleta_declarada_folio text check (boleta_declarada_folio is null or char_length(boleta_declarada_folio) <= 40);
+-- Registro de la administración después del evento: si la persona asistió (cuenta en el ranking),
+-- y si fue la conductora de la camioneta (solo una por evento y con camioneta declarada), con el
+-- estacionamiento que se agrega al reembolso y la fecha en que se le pagó.
+alter table public.postulaciones add column if not exists asistio boolean;
+alter table public.postulaciones add column if not exists conductor boolean not null default false;
+alter table public.postulaciones add column if not exists traslado_estacionamiento int check (traslado_estacionamiento is null or (traslado_estacionamiento >= 0 and traslado_estacionamiento <= 1000000));
+alter table public.postulaciones add column if not exists traslado_pagado_en date;
 create index if not exists postulaciones_barista_idx on public.postulaciones (barista_id);
+create unique index if not exists postulaciones_conductor_idx on public.postulaciones (evento_id) where conductor;
 
 create or replace function public.t_postulaciones_antes() returns trigger
 language plpgsql set search_path = '' as $$
@@ -308,6 +382,10 @@ begin
       new.honorarios_pagados_en := null;
       new.boleta_declarada_en := null;
       new.boleta_declarada_folio := null;
+      new.asistio := null;
+      new.conductor := false;
+      new.traslado_estacionamiento := null;
+      new.traslado_pagado_en := null;
     end if;
     return new;
   end if;
@@ -333,6 +411,11 @@ begin
        or new.honorarios_pagados_en is distinct from old.honorarios_pagados_en then
       raise exception 'La boleta y el pago los registra Sepia Coffee';
     end if;
+    if new.asistio is distinct from old.asistio or new.conductor is distinct from old.conductor
+       or new.traslado_estacionamiento is distinct from old.traslado_estacionamiento
+       or new.traslado_pagado_en is distinct from old.traslado_pagado_en then
+      raise exception 'La asistencia y el traslado los registra Sepia Coffee';
+    end if;
     -- El barista puede avisar que emitió su boleta, solo asignado y desde el día del evento.
     if new.boleta_declarada_en is distinct from old.boleta_declarada_en
        or new.boleta_declarada_folio is distinct from old.boleta_declarada_folio then
@@ -343,6 +426,14 @@ begin
       if new.boleta_declarada_en is null then raise exception 'No se puede deshacer la declaración de la boleta'; end if;
       if new.boleta_declarada_en is distinct from old.boleta_declarada_en then new.boleta_declarada_en := now(); end if;
     end if;
+  end if;
+
+  -- Conductor: solo alguien asignado que declaró camioneta.
+  if new.estado <> 'confirmada' then
+    new.conductor := false;
+    new.asistio := null;
+  elsif new.conductor and not coalesce((select b.tiene_camioneta from public.baristas b where b.id = new.barista_id), false) then
+    raise exception 'Esa persona no declaró tener camioneta';
   end if;
 
   -- La confirmación de asistencia solo existe mientras la persona está asignada.
@@ -432,7 +523,7 @@ revoke all on public.postulaciones from anon;
 grant select, insert, update, delete on public.postulaciones to authenticated;
 drop policy if exists post_ver on public.postulaciones;
 create policy post_ver on public.postulaciones for select to authenticated
-  using (barista_id = auth.uid() or public.es_admin());
+  using ((barista_id = auth.uid() and public.es_barista()) or public.es_admin());
 drop policy if exists post_crear on public.postulaciones;
 create policy post_crear on public.postulaciones for insert to authenticated
   with check (
@@ -462,7 +553,9 @@ create policy post_admin on public.postulaciones for all to authenticated
 -- monto_boleta: lo que el barista debe poner en su boleta de honorarios para
 --   que, descontada la retención, le queden pago_liquido (líquido ÷ (1 − tasa)).
 
-create or replace view public.eventos_vista with (security_invoker = true) as
+-- Se vuelve a crear en cada corrida: así toma las columnas nuevas de eventos.
+drop view if exists public.eventos_vista;
+create view public.eventos_vista with (security_invoker = true) as
 select
   e.*,
   h.horas,
@@ -747,7 +840,7 @@ begin
     cross join lateral (
       select coalesce(jsonb_agg(jsonb_build_object('email', b.correo, 'nombre', b.nombre)), '[]'::jsonb) as lista
       from public.baristas b
-      where b.acepta_avisos and not exists (
+      where b.acepta_avisos and exists (select 1 from public.accesos ac where ac.id = b.id and ac.activo) and not exists (
         select 1 from public.postulaciones p2
         where p2.evento_id = e.id and p2.barista_id = b.id and p2.estado = 'confirmada')
     ) d
@@ -770,7 +863,7 @@ begin
   cross join lateral (
     select coalesce(jsonb_agg(jsonb_build_object('email', b.correo, 'nombre', b.nombre)), '[]'::jsonb) as lista
     from public.baristas b
-    where b.acepta_avisos and not exists (
+    where b.acepta_avisos and exists (select 1 from public.accesos ac where ac.id = b.id and ac.activo) and not exists (
       select 1 from public.postulaciones p2
       where p2.evento_id = s.evento_id and p2.barista_id = b.id and p2.estado = 'confirmada')
   ) d
@@ -789,7 +882,7 @@ begin
   cross join lateral (
     select coalesce(jsonb_agg(jsonb_build_object('email', b.correo, 'nombre', b.nombre)), '[]'::jsonb) as lista
     from public.baristas b
-    where b.acepta_avisos and not exists (
+    where b.acepta_avisos and exists (select 1 from public.accesos ac where ac.id = b.id and ac.activo) and not exists (
       select 1 from public.postulaciones p2
       where p2.evento_id = s.evento_id and p2.barista_id = b.id and p2.estado = 'confirmada')
   ) d
@@ -1056,3 +1149,223 @@ grant execute on function public.tiene_postulacion(uuid) to authenticated;
 grant execute on function public.esta_confirmado(uuid) to authenticated;
 grant execute on function public.evento_abierto(uuid) to authenticated;
 grant execute on function public.dentro_de_publicacion(date) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 10. Accesos con ID y clave, equipo, ranking y traslados
+-- ---------------------------------------------------------------------------
+-- Las funciones de acceso las puede ejecutar solo la administración (o el editor SQL de Supabase).
+-- El ID se convierte en el «correo» id@equipo.sepiacoffee.cl; ese dominio está también en
+-- assets/sepia-baristas.js (DOMINIO_ACCESO): si lo cambias, cámbialo en los dos lados.
+-- La clave se guarda con bcrypt, igual que lo hace Supabase Auth.
+
+create or replace function public.clave_temporal() returns text
+language plpgsql security definer set search_path = '' as $$
+declare
+  alfabeto constant text := 'abcdefghjkmnpqrstuvwxyz23456789';   -- sin letras que se confunden
+  b bytea := extensions.gen_random_bytes(12);
+  s text := '';
+  i int;
+begin
+  for i in 0..11 loop
+    s := s || substr(alfabeto, 1 + (get_byte(b, i) % 31), 1);
+    if i in (3, 7) then s := s || '-'; end if;
+  end loop;
+  return s;
+end $$;
+
+create or replace function public.crear_acceso(p_usuario text, p_nombre text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  u text := lower(btrim(coalesce(p_usuario, '')));
+  n text := btrim(coalesce(p_nombre, ''));
+  uid uuid := gen_random_uuid();
+  clave text := public.clave_temporal();
+  correo text;
+  cols text := 'instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at';
+  vals text;
+  c text;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración crea accesos' using errcode = '42501';
+  end if;
+  if u !~ '^[a-z0-9][a-z0-9._-]{2,29}$' then
+    raise exception 'El ID debe tener de 3 a 30 caracteres: letras sin tilde, números, punto, guion o guion bajo.';
+  end if;
+  if char_length(n) < 3 or char_length(n) > 100 then
+    raise exception 'Escribe el nombre de la persona.';
+  end if;
+  correo := u || '@equipo.sepiacoffee.cl';
+  if exists (select 1 from public.accesos a where a.usuario = u) or exists (select 1 from auth.users x where x.email = correo) then
+    raise exception 'Ese ID ya existe. Prueba con otro.';
+  end if;
+  vals := format('%L, %L, %L, %L, %L, %L, now(), %L::jsonb, %L::jsonb, now(), now()',
+    '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', correo,
+    extensions.crypt(clave, extensions.gen_salt('bf')),
+    '{"provider":"email","providers":["email"]}', jsonb_build_object('usuario', u, 'nombre', n)::text);
+  -- Columnas de tokens: Supabase Auth necesita texto vacío (no NULL) para poder entrar.
+  foreach c in array array['confirmation_token', 'recovery_token', 'email_change_token_new', 'email_change',
+                           'email_change_token_current', 'phone_change', 'phone_change_token', 'reauthentication_token'] loop
+    if exists (select 1 from information_schema.columns where table_schema = 'auth' and table_name = 'users' and column_name = c) then
+      cols := cols || ', ' || c;
+      vals := vals || ', ''''';
+    end if;
+  end loop;
+  execute format('insert into auth.users (%s) values (%s)', cols, vals);
+  insert into auth.identities (user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at)
+  values (uid, jsonb_build_object('sub', uid::text, 'email', correo, 'email_verified', true, 'phone_verified', false),
+          'email', uid::text, now(), now(), now());
+  insert into public.accesos (id, usuario, nombre) values (uid, u, n);
+  return jsonb_build_object('id', uid, 'usuario', u, 'clave', clave);
+end $$;
+
+create or replace function public.restablecer_clave(p_acceso uuid) returns text
+language plpgsql security definer set search_path = '' as $$
+declare clave text := public.clave_temporal();
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración restablece claves' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.accesos a where a.id = p_acceso) then raise exception 'No existe ese acceso'; end if;
+  update auth.users set encrypted_password = extensions.crypt(clave, extensions.gen_salt('bf')), updated_at = now() where id = p_acceso;
+  update public.accesos set debe_cambiar_clave = true where id = p_acceso;
+  delete from auth.sessions where user_id = p_acceso;          -- cierra sus sesiones abiertas
+  return clave;
+end $$;
+
+create or replace function public.cambiar_estado_acceso(p_acceso uuid, p_activo boolean) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración cambia accesos' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.accesos a where a.id = p_acceso) then raise exception 'No existe ese acceso'; end if;
+  update public.accesos set activo = p_activo where id = p_acceso;
+  update auth.users set banned_until = case when p_activo then null else now() + interval '100 years' end where id = p_acceso;
+  if not p_activo then delete from auth.sessions where user_id = p_acceso; end if;
+end $$;
+
+-- Borra a la persona y todos sus datos (acceso, perfil y postulaciones).
+create or replace function public.eliminar_acceso(p_acceso uuid) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración elimina accesos' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.accesos a where a.id = p_acceso) then raise exception 'No existe ese acceso'; end if;
+  delete from auth.users where id = p_acceso;                  -- borra en cascada acceso, perfil y postulaciones
+end $$;
+
+-- La persona avisa que ya cambió su clave temporal (el cambio en sí lo hace Supabase Auth).
+create or replace function public.acceso_clave_cambiada() returns void
+language sql security definer set search_path = '' as $$
+  update public.accesos set debe_cambiar_clave = false, clave_cambiada_en = now() where id = auth.uid();
+$$;
+
+-- Equipo de un evento: nombre y foto de los asignados. Lo ven la administración y los asignados al mismo evento.
+create or replace function public.equipo_evento(p_evento uuid)
+returns table (barista_id uuid, nombre text, foto_path text, conductor boolean)
+language sql stable security definer set search_path = '' as $$
+  select b.id, b.nombre, b.foto_path, p.conductor
+  from public.postulaciones p
+  join public.baristas b on b.id = p.barista_id
+  where p.evento_id = p_evento and p.estado = 'confirmada'
+    and (public.es_admin() or (public.es_barista() and exists (
+          select 1 from public.postulaciones m
+          where m.evento_id = p_evento and m.barista_id = auth.uid() and m.estado = 'confirmada')))
+  order by b.nombre;
+$$;
+
+-- Ranking de turnos: asistencias registradas por la administración (más los turnos previos al portal en el acumulado).
+-- Los empates comparten puesto. Lo ven los baristas activos y la administración.
+create or replace function public.ranking_equipo(p_desde date default null, p_hasta date default null)
+returns table (puesto int, barista_id uuid, nombre text, foto_path text, turnos int)
+language sql stable security definer set search_path = '' as $$
+  with cuenta as (
+    select b.id, b.nombre, b.foto_path,
+           (case when p_desde is null and p_hasta is null then b.turnos_previos else 0 end)
+           + (count(p.id) filter (where p.estado = 'confirmada' and p.asistio is true and e.estado <> 'cancelado'
+                                    and (p_desde is null or e.fecha >= p_desde) and (p_hasta is null or e.fecha <= p_hasta)))::int as turnos
+    from public.baristas b
+    join public.accesos a on a.id = b.id and a.activo
+    left join public.postulaciones p on p.barista_id = b.id
+    left join public.eventos e on e.id = p.evento_id
+    group by b.id
+  )
+  select (rank() over (order by c.turnos desc))::int, c.id, c.nombre, c.foto_path, c.turnos
+  from cuenta c
+  where public.es_barista() or public.es_admin()
+  order by 1, c.nombre;
+$$;
+
+-- Reembolso de la camioneta del conductor: bencina = km ÷ rendimiento × precio del litro, más TAG y
+-- estacionamiento. Es un pago aparte de los honorarios. La administración ve todos; cada conductor, el suyo.
+create or replace function public.traslados()
+returns table (postulacion_id uuid, evento_id uuid, barista_id uuid, km numeric, tag int, bencina int,
+               estacionamiento int, total int, pagado_en date, completo boolean)
+language sql stable security definer set search_path = '' as $$
+  select p.id, p.evento_id, p.barista_id, t.km, t.tag,
+         case when t.km is null then null else round(t.km / c.rendimiento_km_l * c.precio_litro)::int end,
+         coalesce(p.traslado_estacionamiento, 0),
+         case when t.km is null or t.tag is null then null
+              else round(t.km / c.rendimiento_km_l * c.precio_litro)::int + t.tag + coalesce(p.traslado_estacionamiento, 0) end,
+         p.traslado_pagado_en,
+         (t.km is not null and t.tag is not null)
+  from public.postulaciones p
+  left join public.evento_traslado t on t.evento_id = p.evento_id
+  cross join public.config c
+  where p.conductor and p.estado = 'confirmada'
+    and (public.es_admin() or (p.barista_id = auth.uid() and public.es_barista()));
+$$;
+
+alter table public.evento_traslado enable row level security;
+revoke all on public.evento_traslado from anon;
+grant select, insert, update, delete on public.evento_traslado to authenticated;
+drop policy if exists traslado_admin on public.evento_traslado;
+create policy traslado_admin on public.evento_traslado for all to authenticated
+  using (public.es_admin()) with check (public.es_admin());
+
+revoke all on function public.clave_temporal() from public, anon, authenticated;
+revoke all on function public.crear_acceso(text, text) from public, anon;
+revoke all on function public.restablecer_clave(uuid) from public, anon;
+revoke all on function public.cambiar_estado_acceso(uuid, boolean) from public, anon;
+revoke all on function public.eliminar_acceso(uuid) from public, anon;
+revoke all on function public.acceso_clave_cambiada() from public, anon;
+revoke all on function public.equipo_evento(uuid) from public, anon;
+revoke all on function public.ranking_equipo(date, date) from public, anon;
+revoke all on function public.traslados() from public, anon;
+revoke all on function public.tiene_acceso_activo() from public, anon;
+grant execute on function public.crear_acceso(text, text) to authenticated;
+grant execute on function public.restablecer_clave(uuid) to authenticated;
+grant execute on function public.cambiar_estado_acceso(uuid, boolean) to authenticated;
+grant execute on function public.eliminar_acceso(uuid) to authenticated;
+grant execute on function public.acceso_clave_cambiada() to authenticated;
+grant execute on function public.equipo_evento(uuid) to authenticated;
+grant execute on function public.ranking_equipo(date, date) to authenticated;
+grant execute on function public.traslados() to authenticated;
+grant execute on function public.tiene_acceso_activo() to authenticated;
+
+-- Fotos de perfil: almacenamiento privado «perfiles», una carpeta por persona (su id).
+-- Las ven los baristas activos y la administración; cada uno sube, cambia y borra solo la suya.
+do $storage$
+begin
+  if exists (select 1 from information_schema.schemata where schema_name = 'storage') then
+    insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+    values ('perfiles', 'perfiles', false, 2097152, array['image/jpeg', 'image/png', 'image/webp'])
+    on conflict (id) do update set public = false, file_size_limit = 2097152,
+      allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp'];
+
+    drop policy if exists perfiles_ver on storage.objects;
+    create policy perfiles_ver on storage.objects for select to authenticated
+      using (bucket_id = 'perfiles' and (public.es_barista() or public.es_admin()));
+    drop policy if exists perfiles_subir on storage.objects;
+    create policy perfiles_subir on storage.objects for insert to authenticated
+      with check (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text and public.es_barista());
+    drop policy if exists perfiles_cambiar on storage.objects;
+    create policy perfiles_cambiar on storage.objects for update to authenticated
+      using (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text and public.es_barista())
+      with check (bucket_id = 'perfiles' and (storage.foldername(name))[1] = auth.uid()::text);
+    drop policy if exists perfiles_borrar on storage.objects;
+    create policy perfiles_borrar on storage.objects for delete to authenticated
+      using (bucket_id = 'perfiles' and ((storage.foldername(name))[1] = auth.uid()::text or public.es_admin()));
+  end if;
+end $storage$;
