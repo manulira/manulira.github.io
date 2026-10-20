@@ -1,16 +1,17 @@
 # Portal de baristas
 
-Una página, `sepiacoffee.cl/pages/baristas`, donde los baristas entran con su
-correo, se registran (datos personales, datos bancarios y la declaración de que
-pueden emitir boleta de honorarios), ven los eventos y postulan. Tú confirmas a
-quién va a cada evento y ves cuántos baristas necesitas, los horarios y lo que
-vas a pagar.
+Una página, `sepiacoffee.cl/pages/baristas`, donde cada barista entra con un **ID y una
+clave** que le das tú, completa su perfil (foto, talla de camisa, camioneta, datos personales y
+bancarios, y la declaración de que puede emitir boleta de honorarios), ve los eventos, postula,
+mira el ranking del equipo y sus ganancias. Tú confirmas a quién va a cada evento, asignas quién
+lleva la camioneta y ves cuántos baristas necesitas, los horarios y lo que vas a pagar. La
+administración entra con su correo y un código (no con clave).
 
 ## Cómo está armado
 
 | Pieza | Dónde vive | Qué hace |
 |---|---|---|
-| Base de datos y login | Supabase (plan gratis) | Guarda todo y decide quién ve qué |
+| Base de datos y login | Supabase (plan gratis) | Guarda todo (incluidas las fotos de perfil) y decide quién ve qué |
 | `esquema.sql` | este repo | Crea las tablas y las reglas de acceso |
 | `assets/sepia-baristas.js` | tema de Shopify | Dibuja el portal y manda las consultas |
 | `sections/sepia-baristas.liquid` | tema de Shopify | Estilos y los dos scripts |
@@ -19,21 +20,60 @@ vas a pagar.
 
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
 protege los datos son las reglas del `esquema.sql`, que se probaron con 184
-comprobaciones (`pruebas/rls.sql`) más 143 de la automatización (`pruebas/automatizacion.sql`): un barista ve solo lo suyo, la dirección
+comprobaciones (`pruebas/rls.sql`), 143 de la automatización (`pruebas/automatizacion.sql`) y 143 de los accesos,
+equipo, ranking y traslados (`pruebas/accesos.sql`): un barista ve solo lo suyo, la dirección
 exacta solo la ven los confirmados en ese evento, y los datos del cliente y los
 de todos los baristas solo los ve la administración.
 
 ## Lo que ve cada uno
 
-- **Barista registrado:** los eventos abiertos que faltan **14 días o menos** (fecha, horario,
+- **Barista con acceso:** los eventos abiertos que faltan **14 días o menos** (fecha, horario,
   comuna, lugar, cuántos se buscan, pago líquido y monto de su boleta), sus postulaciones y sus
   datos. Un evento más lejano no lo ve ni puede postular a él, aunque conozca su dirección web:
   lo decide la base de datos (`config.dias_publicacion`). Los que ya tiene asignados los ve siempre.
-  Si lo confirmas, ve además la dirección exacta y las indicaciones.
+  Si lo confirmas, ve además la dirección exacta y las indicaciones, con quién va en su equipo
+  (nombre y foto) y, si hay camioneta, quién la lleva.
 - **Administración:** crea y edita eventos, ve a los postulantes, confirma o
   rechaza, y ve el resumen de pagos con la lista de a quién transferir (se baja
   en CSV).
 - **Nadie de afuera** ve nada: sin sesión, la base de datos no entrega ni una fila.
+
+## Accesos, perfil, ranking, ganancias y traslados
+
+**Entrar con ID y clave.** En la pestaña *Admin: accesos* escribes el nombre de la persona y el
+portal sugiere un ID (`camila.perez`: letras sin tilde, números, punto o guion). Al crear el
+acceso aparece **una sola vez** la clave temporal (`xxxx-xxxx-xxxx`), con botones para copiarla o
+mandarla por WhatsApp. En el primer ingreso el portal obliga a cambiarla (mínimo 8 caracteres, sin
+repetir el ID) y a completar el perfil. Si alguien la olvida, *Restablecer clave* genera otra y
+cierra sus sesiones abiertas. *Desactivar acceso* le quita la entrada sin borrar su historial
+(deja de ver eventos y de recibir avisos); *Eliminar* borra el acceso y todos sus datos. Los
+baristas ya no necesitan correo: el que ponen en el perfil es solo de contacto y para los avisos.
+
+**Perfil.** Foto (se recorta cuadrada y se achica antes de subirla; JPG, PNG o WebP, hasta 2 MB;
+es privada: solo la ve el equipo con sesión iniciada), talla de camisa, si tiene camioneta, y los
+datos personales y bancarios de siempre. Tiene un botón «Pegar datos desde mi banco» que lee el
+texto que entrega la app del banco y rellena banco, tipo y número de cuenta.
+
+**Ranking.** Ordena al equipo por turnos con asistencia registrada (acumulado o por mes; los
+empates comparten puesto). Una postulación o una foto no suman: suma cuando tú marcas
+**Asistió** en *Admin: seguimiento* (aparece una vez pasada la fecha del evento). El acumulado
+incluye los *turnos de antes del portal* que anotas en la ficha de cada persona (*Admin: accesos →
+Datos privados*). Los baristas ven el ranking completo pero no los datos privados de nadie.
+
+**Mis ganancias.** Cada barista ve sus turnos, lo pagado y lo pendiente, y los reembolsos de
+camioneta aparte. Solo ella y la administración ven esos montos.
+
+**Traslados con camioneta.** En el evento marcas «Requiere camioneta» y, si quieres, los
+kilómetros y el TAG/peajes (solo los ve la administración). En *Admin: seguimiento* asignas como
+**conductor** a un asignado que declaró tener camioneta (uno por evento). El reembolso es
+`km ÷ rendimiento × precio del litro + TAG + estacionamiento`, con 10 km/l y $1.400/l por defecto;
+se cambian en *Admin: eventos → Ajustes de traslado con camioneta* (o `config.rendimiento_km_l`,
+`config.precio_litro`). El estacionamiento lo ingresas tú al cierre. En *Admin: pagos →
+Reembolsos de camioneta* registras que ya lo pagaste (no transfiere dinero). **No son honorarios
+ni van en la boleta**, y no cuentan para el tope diario.
+
+**Quien ya se había registrado con correo** (pruebas anteriores) pierde el acceso: hay que
+crearle un ID y clave desde *Admin: accesos* y que vuelva a completar su perfil.
 
 ## Seguimiento de cada evento
 
@@ -207,41 +247,53 @@ update public.config set retencion = 0.16;   -- 2027
 3. **Declararte administrador.** En otra consulta, con tu correo real:
    `insert into public.admins (email) values ('tu-correo@ejemplo.cl');`
    (no lo escribas en el repositorio: es público).
-4. **Correo de salida.** En *Authentication* → *SMTP Settings* activa un SMTP
-   propio. El de Supabase por defecto solo manda a unas pocas direcciones y no
-   sirve para baristas. Con Google Workspace: host `smtp.gmail.com`, puerto 587,
-   usuario tu correo y una *contraseña de aplicación* (se crea en
-   myaccount.google.com/apppasswords; pide tener la verificación en dos pasos).
+4. **Correo de salida (solo para tu código de administración).** En *Authentication* → *SMTP
+   Settings* activa un SMTP propio, porque el de Supabase por defecto manda a muy pocas
+   direcciones. Con Google Workspace: host `smtp.gmail.com`, puerto 587, usuario tu correo y una
+   *contraseña de aplicación* (myaccount.google.com/apppasswords; pide la verificación en dos
+   pasos). Los baristas ya no reciben códigos: entran con ID y clave.
 5. **Texto del correo con el código.** En *Authentication* → *Email Templates*,
    en las plantillas *Magic Link* y *Confirm signup*, deja como asunto
    `Tu código de Baristas Sepia` y como mensaje:
    `Tu código para entrar es {{ .Token }}. Vale por una hora. Si no lo pediste, ignora este correo.`
    Sin `{{ .Token }}` el correo llega con un enlace y no con el código.
+   Además, en *Authentication → Sign In / Providers → Email*, sube el largo mínimo de la
+   contraseña a 8 o más (el portal ya lo exige, pero así queda también del lado de Supabase).
 6. **Pasarme dos datos.** En *Project Settings* → *API* copia la *Project URL* y la
    clave *anon public*. **Nunca** la `service_role`.
 7. **Entrar tú primero.** Antes de que se publique el portal, entra con tu correo
-   de administración para dejar tu cuenta creada.
+   de administración (botón «Soy administración») para dejar tu cuenta creada: ese botón no crea
+   cuentas nuevas, solo deja entrar a una que ya existe.
+8. **Crear el primer acceso.** En *Admin: accesos* crea el de una barista y pruébalo en otra
+   ventana. Los IDs usan el dominio interno `equipo.sepiacoffee.cl` (constante `DOMINIO_ACCESO` en
+   `assets/sepia-baristas.js` y en `crear_acceso()` de `esquema.sql`: si lo cambias, cámbialo en
+   los dos). El `esquema.sql` también crea el almacén de fotos `perfiles` (privado, 2 MB).
 
 ## Probado, y lo que falta probar
 
 Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inventados.
 
-- **Reglas de acceso y de la automatización (Postgres)**: `pruebas/rls.sql` (184) y
+- **Reglas de acceso y de la automatización (Postgres)**: `pruebas/rls.sql` (184),
   `pruebas/automatizacion.sql` (143: recordatorios, vacante, evento OK, grupo, boleta, pago,
-  sincronización del calendario y sus resguardos). Se corren con `psql` sobre una base vacía:
+  sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
+  desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos). Se corren con `psql` sobre una base vacía:
   primero `pruebas/shim-supabase.sql`, luego `esquema.sql`, luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
 - **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
-- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 110 comprobaciones en un
+- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 216 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las
   consultas de una barista (20 comprobaciones).
 - **Falta**: correr el `esquema.sql` nuevo en el proyecto real, instalar el script de Google y
-  hacer las pruebas del paso 5 con los permisos reales (calendario y correo).
+  hacer las pruebas del paso 5 con los permisos reales (calendario y correo). Los accesos con ID y
+  clave crean el usuario directamente en las tablas internas de Supabase Auth y la foto usa el
+  almacén de Supabase: ninguna de las dos cosas se puede probar en una base local, así que hay
+  que probarlas una vez en el proyecto real (crear un acceso de prueba, entrar con su clave,
+  cambiarla y subir una foto).
 
 ## Ojo
 

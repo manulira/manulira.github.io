@@ -2,13 +2,17 @@
 // seguridad reales se prueban aparte, en Postgres (pruebas/rls.sql).
 (function () {
   var S = window.__ESC || {};
-  var hoy = new Date(); var iso = function (d) { var x = new Date(hoy.getTime() + d * 864e5); return x.toISOString().slice(0, 10); };
-  var cfg = { id: 1, tarifa_hora: 10000, corto_max_horas: 2, corto_monto: 25000, medio_max_horas: 4, medio_monto: 40000, retencion: 0.1525, tope_dia: 70000, dias_alerta_baristas: 7, dias_alerta_reconfirmar: 4, dias_alerta_cierre: 7, dias_publicacion: 14,
+  // Las fechas se cuentan desde «hoy» en Santiago, como hace la base y el portal (de noche difiere de la de UTC).
+  var iso = function (d) {
+    var base = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    var x = new Date(base + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + d); return x.toISOString().slice(0, 10);
+  };
+  var cfg = { id: 1, tarifa_hora: 10000, corto_max_horas: 2, corto_monto: 25000, medio_max_horas: 4, medio_monto: 40000, retencion: 0.1525, tope_dia: 70000, dias_alerta_baristas: 7, dias_alerta_reconfirmar: 4, dias_alerta_cierre: 7, dias_publicacion: 14, rendimiento_km_l: 10, precio_litro: 1400,
     checklist_items: [{clave:'grupo_whatsapp',texto:'Grupo de WhatsApp creado'},{clave:'direccion_hora',texto:'Dirección y hora enviadas a los baristas'},{clave:'equipo',texto:'Equipo y materiales listos'},{clave:'transporte',texto:'Transporte y recolección coordinados'},{clave:'cliente_confirmo',texto:'Cliente confirmó hora y lugar'}],
     texto_boleta: 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.',
     texto_privacidad: 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme. Los ve únicamente Sepia Coffee, y puedo pedir que los borre en cualquier momento.' };
   var db = window.__DB = {
-    config: [cfg], baristas: [], postulaciones: [], evento_privado: [], evento_direcciones: [], evento_seguimiento: [],
+    config: [cfg], baristas: [], postulaciones: [], evento_privado: [], evento_direcciones: [], evento_seguimiento: [], accesos: [], evento_traslado: [],
     automatizacion: [{ id: 1, ultima_sync_en: S.sinSync ? null : new Date(Date.now() - (S.syncViejo ? 80 : 3) * 36e5).toISOString(),
       ultima_sync_resumen: S.sinSync ? null : { recibidos: 20, creados: ['a', 'b'], cambiados: ['c'], cancelados: [], por_revisar: [], errores: [], advertencia: S.syncAdvertencia || null } }],
     eventos: [
@@ -62,10 +66,47 @@
     db.eventos.push({ id: 'e32', nombre: 'Servicio de barra · Por confirmar', fecha: iso(30), hora_inicio: '18:00:00', hora_fin: '23:30:00', comuna: 'Por confirmar', lugar: null, descripcion: null, baristas_necesarios: 2, pago_manual: null, estado: 'abierto' });
     db.evento_seguimiento.push({ evento_id: 'e32', checklist: {}, origen: 'calendario', revisar: true, revisar_motivo: 'Falta el lugar en el calendario. No se reconoció la comuna', gcal_id: 'g32' });
   }
+  var baseB = { acepta_boleta: true, acepta_boleta_texto: cfg.texto_boleta, acepta_privacidad: true, cuenta_propia: true, aceptado_en: new Date().toISOString(), experiencia: null, talla_camisa: 'M', tiene_camioneta: false, foto_path: null, turnos_previos: 0 };
+  var PX = function (id, ev, bar, extra) { db.postulaciones.push(Object.assign({ id: id, evento_id: ev, barista_id: bar, estado: 'confirmada', creado_en: new Date().toISOString(), asistencia_confirmada_en: new Date().toISOString(), boleta_honorarios_recibida_en: null, boleta_honorarios_folio: null, honorarios_pagados_en: null, boleta_declarada_en: null, boleta_declarada_folio: null, asistio: null, conductor: false, traslado_estacionamiento: null, traslado_pagado_en: null }, extra || {})); };
+  if (S.equipo) {       // la barista de la sesión (u-ana): equipo en un evento, conductora en otro, ranking con otras dos personas
+    var evq = { lugar: 'Salón', descripcion: null, pago_manual: null, estado: 'abierto', comuna: 'Santiago', hora_inicio: '18:00:00', hora_fin: '22:00:00', baristas_necesarios: 3 };
+    [['e41', 'Evento con equipo', 5, false], ['e42', 'Evento con camioneta', 7, true], ['e43', 'Pasado uno', -10, false], ['e44', 'Pasado dos', -20, false], ['e45', 'Pasado tres', -40, false]].forEach(function (x) {
+      db.eventos.push(Object.assign({}, evq, { id: x[0], nombre: x[1], fecha: iso(x[2]), requiere_camioneta: x[3] }));
+    });
+    if (!S.perfilPropio) db.baristas.push(Object.assign({}, baseB, { id: 'u-ana', nombre: 'Ana Prueba', rut: '11.111.111-1', correo: 'ana@ejemplo.cl', telefono: '+56911110001', comuna: 'Vitacura', banco: 'BCI', tipo_cuenta: 'Cuenta vista', numero_cuenta: '11110001', tiene_camioneta: true }));
+    db.baristas.push(Object.assign({}, baseB, { id: 'u-bea', nombre: 'Bea Prueba', rut: '12.345.678-5', correo: 'bea@ejemplo.cl', telefono: '+56922223333', comuna: 'Ñuñoa', banco: 'BCI', tipo_cuenta: 'Cuenta vista', numero_cuenta: '22223333', foto_path: 'u-bea/foto.jpg', tiene_camioneta: true, turnos_previos: 0 }));
+    db.baristas.push(Object.assign({}, baseB, { id: 'u-caro', nombre: 'Caro Prueba', rut: '10.000.013-K', correo: 'caro@ejemplo.cl', telefono: '+56944445555', comuna: 'Providencia', banco: 'Banco Estado', tipo_cuenta: 'Cuenta RUT', numero_cuenta: '44445555', turnos_previos: 12 }));
+    PX('x1', 'e41', 'u-ana'); PX('x2', 'e41', 'u-bea'); PX('x3', 'e41', 'u-caro');
+    PX('x4', 'e42', 'u-ana', { conductor: true, traslado_estacionamiento: 2000 }); PX('x5', 'e42', 'u-bea');
+    PX('x6', 'e43', 'u-ana', { asistio: true }); PX('x7', 'e43', 'u-bea', { asistio: true }); PX('x8', 'e43', 'u-caro', { asistio: true });
+    PX('x9', 'e44', 'u-ana', { asistio: true }); PX('x10', 'e44', 'u-bea', { asistio: true });
+    PX('x11', 'e45', 'u-ana', { asistio: true }); PX('x12', 'e45', 'u-bea', { asistio: false });
+    db.evento_traslado.push({ evento_id: 'e42', km: 40, tag: 3500 });
+  }
+  if (S.accesosAdmin) { // administración: accesos en distintos estados
+    db.accesos.push({ id: 'u-camila', usuario: 'camila.perez', nombre: 'Camila Pérez González', activo: true, debe_cambiar_clave: true });
+    db.accesos.push({ id: 'u-bea', usuario: 'bea.prueba', nombre: 'Bea Prueba', activo: true, debe_cambiar_clave: false });
+    db.baristas.push(Object.assign({}, baseB, { id: 'u-bea', nombre: 'Bea Prueba', rut: '12.345.678-5', correo: 'bea@ejemplo.cl', telefono: '+56922223333', comuna: 'Ñuñoa', banco: 'BCI', tipo_cuenta: 'Cuenta vista', numero_cuenta: '22223333', tiene_camioneta: true, turnos_previos: 4 }));
+    db.accesos.push({ id: 'u-caro', usuario: 'caro.prueba', nombre: 'Caro Prueba', activo: false, debe_cambiar_clave: false });
+    db.accesos.push({ id: 'u-dani', usuario: 'dani.prueba', nombre: 'Dani Prueba', activo: true, debe_cambiar_clave: false });
+  }
   var sesion = S.sesion ? { user: { id: S.sesion.id, email: S.sesion.email } } : null;
   if (S.perfilPropio) db.baristas.push(Object.assign({ id: S.sesion.id, correo: S.sesion.email, acepta_boleta: true, acepta_boleta_texto: cfg.texto_boleta, acepta_privacidad: true, cuenta_propia: true, aceptado_en: new Date().toISOString() }, S.perfilPropio));
+  // Todo barista tiene un acceso activo (salvo que el escenario ya lo definió). Y los usuarios de ID y clave de la prueba.
+  var slug = function (n) { return n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z ]/g, '').trim().replace(/\s+/g, '.'); };
+  db.baristas.forEach(function (b) {
+    if (!db.accesos.some(function (a) { return a.id === b.id; })) db.accesos.push({ id: b.id, usuario: slug(b.nombre) || b.id, nombre: b.nombre, activo: true, debe_cambiar_clave: false });
+  });
+  var usuarios = window.__USUARIOS = [];
+  (S.usuarios || []).forEach(function (u) {
+    var id = u.id || 'u-' + u.usuario;
+    usuarios.push({ usuario: u.usuario, clave: u.clave, id: id });
+    if (!db.accesos.some(function (a) { return a.id === id; })) db.accesos.push({ id: id, usuario: u.usuario, nombre: u.nombre, activo: u.activo !== false, debe_cambiar_clave: u.debeCambiar !== false });
+  });
   var uid = function () { return sesion && sesion.user.id; };
   var esAdmin = function () { return !!(S.admin && sesion); };
+  var accesoActivo = function () { return db.accesos.some(function (a) { return a.id === uid() && a.activo; }); };
+  var esBarista = function () { return accesoActivo() && db.baristas.some(function (b) { return b.id === uid(); }); };
   var tienePost = function (ev) { return db.postulaciones.some(function (p) { return p.evento_id === ev && p.barista_id === uid(); }); };
   var calc = function (e) {
     var a = e.hora_inicio.split(':'), b = e.hora_fin.split(':'); var m = (b[0] * 60 + +b[1]) - (a[0] * 60 + +a[1]); if (m <= 0) m += 1440; var horas = m / 60;
@@ -95,11 +136,12 @@
   window.__log = [];
   function visible(t, r) {
     if (esAdmin()) return true;
-    if (t === 'baristas') return r.id === uid();
-    if (t === 'eventos' || t === 'eventos_vista') { var perfil = db.baristas.some(function (b) { return b.id === uid(); }); return perfil && r.estado !== 'borrador' && (tienePost(r.id) || (r.estado === 'abierto' && r.fecha <= iso(cfg.dias_publicacion))); }
-    if (t === 'postulaciones') return r.barista_id === uid();
+    if (t === 'baristas') return r.id === uid() && accesoActivo();
+    if (t === 'accesos') return r.id === uid();
+    if (t === 'eventos' || t === 'eventos_vista') { var perfil = esBarista(); return perfil && r.estado !== 'borrador' && (tienePost(r.id) || (r.estado === 'abierto' && r.fecha <= iso(cfg.dias_publicacion))); }
+    if (t === 'postulaciones') return r.barista_id === uid() && esBarista();
     if (t === 'evento_direcciones') return db.postulaciones.some(function (p) { return p.evento_id === r.evento_id && p.barista_id === uid() && p.estado === 'confirmada'; });
-    if (t === 'evento_privado' || t === 'evento_seguimiento' || t === 'seguimiento_vista' || t === 'automatizacion') return false;
+    if (t === 'evento_privado' || t === 'evento_seguimiento' || t === 'seguimiento_vista' || t === 'automatizacion' || t === 'evento_traslado') return false;
     return true;
   }
   function from(t) {
@@ -125,7 +167,7 @@
       }
       if (q.op === 'insert') {
         var b = Object.assign({}, q.body);
-        if (t === 'baristas') { if (b.id !== uid()) return err('rls'); if (db.baristas.some(function (x) { return x.rut === b.rut; })) return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "baristas_rut_key"' } }; b.acepta_boleta_texto = cfg.texto_boleta; b.aceptado_en = new Date().toISOString(); }
+        if (t === 'baristas') { if (b.id !== uid() || !accesoActivo()) return err('rls'); b.turnos_previos = 0; b.foto_path = null; if (db.baristas.some(function (x) { return x.rut === b.rut; })) return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "baristas_rut_key"' } }; b.acepta_boleta_texto = cfg.texto_boleta; b.aceptado_en = new Date().toISOString(); }
         if (t === 'postulaciones') { if (!esAdmin() && b.barista_id !== uid()) return err('rls');
           var evx = db.eventos.filter(function (e) { return e.id === b.evento_id; })[0];
           if (!esAdmin() && !(evx && evx.estado === 'abierto' && evx.fecha >= iso(0) && evx.fecha <= iso(cfg.dias_publicacion))) return err('rls: el evento no está abierto'); b.id = 'p' + (db.postulaciones.length + 1); b.estado = 'postulada'; b.creado_en = new Date().toISOString(); }
@@ -133,7 +175,7 @@
         tabla.push(b); return done([b]);
       }
       if (q.op === 'upsert') {
-        var k = t === 'evento_privado' || t === 'evento_direcciones' || t === 'evento_seguimiento' ? 'evento_id' : 'id'; var ex = tabla.filter(function (r) { return r[k] === q.body[k]; })[0];
+        var k = t === 'evento_privado' || t === 'evento_direcciones' || t === 'evento_seguimiento' || t === 'evento_traslado' ? 'evento_id' : 'id'; var ex = tabla.filter(function (r) { return r[k] === q.body[k]; })[0];
         if (!esAdmin()) return err('rls'); if (ex) Object.assign(ex, q.body); else tabla.push(Object.assign({}, q.body)); return done([q.body]);
       }
       if (q.op === 'update') {
@@ -143,10 +185,18 @@
           var evp = db.eventos.filter(function (e) { return e.id === r.evento_id; })[0];
           return r.estado !== 'confirmada' || evp.fecha > iso(0);
         })) return err('La boleta se declara desde el día del evento, estando asignado');
+        if (t === 'baristas' && !esAdmin() && q.body.foto_path && String(q.body.foto_path).indexOf(uid() + '/') !== 0) return err('la foto tiene que estar en tu carpeta');
+        if (t === 'postulaciones' && esAdmin() && q.body.conductor === true) {      // como el trigger y el índice único
+          var malo = filas.filter(function (r) { var bb = db.baristas.filter(function (x) { return x.id === r.barista_id; })[0]; return !bb || !bb.tiene_camioneta; })[0];
+          if (malo) return err('Esa persona no declaró tener camioneta');
+          if (filas.some(function (r) { return db.postulaciones.some(function (o) { return o.evento_id === r.evento_id && o.conductor && o.id !== r.id; }); })) return err('duplicate key: ya hay conductor en el evento');
+        }
         filas.forEach(function (r) {
           var b = Object.assign({}, q.body);
+          if (t === 'baristas' && !esAdmin()) delete b.turnos_previos;
           if (t === 'postulaciones') {
-            if (!esAdmin()) { delete b.boleta_honorarios_recibida_en; delete b.boleta_honorarios_folio; delete b.honorarios_pagados_en; }
+            if (!esAdmin()) { delete b.boleta_honorarios_recibida_en; delete b.boleta_honorarios_folio; delete b.honorarios_pagados_en; delete b.asistio; delete b.conductor; delete b.traslado_estacionamiento; delete b.traslado_pagado_en; }
+            if (b.estado && b.estado !== 'confirmada') { b.conductor = false; b.asistio = null; }
             if (b.asistencia_confirmada_en) b.asistencia_confirmada_en = new Date().toISOString();
             if (b.boleta_declarada_en) b.boleta_declarada_en = new Date().toISOString();
             var nuevoEstado = b.estado || r.estado;
@@ -172,19 +222,136 @@
     }
     return api;
   }
+  // ---- funciones de la base (las mismas reglas que esquema.sql, en pequeño) ----
+  var fallo = function (m) { return { data: null, error: { message: m } }; };
+  var evPorId = function (id) { return db.eventos.filter(function (e) { return e.id === id; })[0]; };
+  window.__rpc = [];
+  var RPC = {
+    es_admin: function () { return esAdmin(); },
+    acceso_clave_cambiada: function () { var a = db.accesos.filter(function (x) { return x.id === uid(); })[0]; if (a) a.debe_cambiar_clave = false; return null; },
+    crear_acceso: function (a) {
+      if (!esAdmin()) return fallo('Solo la administración crea accesos');
+      var u = String(a.p_usuario || '').toLowerCase().trim();
+      if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(u)) return fallo('El ID debe tener de 3 a 30 caracteres: letras sin tilde, números, punto, guion o guion bajo.');
+      if (db.accesos.some(function (x) { return x.usuario === u; })) return fallo('Ese ID ya existe. Prueba con otro.');
+      var id = 'u-' + u;
+      db.accesos.push({ id: id, usuario: u, nombre: a.p_nombre, activo: true, debe_cambiar_clave: true });
+      usuarios.push({ usuario: u, clave: 'abcd-efgh-jkmn', id: id });
+      return { id: id, usuario: u, clave: 'abcd-efgh-jkmn' };
+    },
+    restablecer_clave: function (a) {
+      if (!esAdmin()) return fallo('Solo la administración restablece claves');
+      var ac = db.accesos.filter(function (x) { return x.id === a.p_acceso; })[0]; if (!ac) return fallo('No existe ese acceso');
+      ac.debe_cambiar_clave = true;
+      usuarios.forEach(function (u) { if (u.id === ac.id) u.clave = 'wxyz-2345-mnpq'; });
+      if (!usuarios.some(function (u) { return u.id === ac.id; })) usuarios.push({ usuario: ac.usuario, clave: 'wxyz-2345-mnpq', id: ac.id });
+      return 'wxyz-2345-mnpq';
+    },
+    cambiar_estado_acceso: function (a) {
+      if (!esAdmin()) return fallo('Solo la administración cambia accesos');
+      var ac = db.accesos.filter(function (x) { return x.id === a.p_acceso; })[0]; if (!ac) return fallo('No existe ese acceso');
+      ac.activo = !!a.p_activo; return null;
+    },
+    eliminar_acceso: function (a) {
+      if (!esAdmin()) return fallo('Solo la administración elimina accesos');
+      db.accesos = db.accesos.filter(function (x) { return x.id !== a.p_acceso; });
+      db.baristas = db.baristas.filter(function (x) { return x.id !== a.p_acceso; });
+      db.postulaciones = db.postulaciones.filter(function (x) { return x.barista_id !== a.p_acceso; });
+      return null;
+    },
+    equipo_evento: function (a) {
+      var yoAsignado = db.postulaciones.some(function (p) { return p.evento_id === a.p_evento && p.barista_id === uid() && p.estado === 'confirmada'; });
+      if (!(esAdmin() || (esBarista() && yoAsignado))) return [];
+      return db.postulaciones.filter(function (p) { return p.evento_id === a.p_evento && p.estado === 'confirmada'; }).map(function (p) {
+        var b = db.baristas.filter(function (x) { return x.id === p.barista_id; })[0] || {};
+        return { barista_id: p.barista_id, nombre: b.nombre, foto_path: b.foto_path || null, conductor: !!p.conductor };
+      }).sort(function (x, y) { return String(x.nombre).localeCompare(String(y.nombre), 'es'); });
+    },
+    ranking_equipo: function (a) {
+      if (!(esBarista() || esAdmin())) return [];
+      var desde = a.p_desde || null, hasta = a.p_hasta || null;
+      var filas = db.baristas.filter(function (b) { return db.accesos.some(function (x) { return x.id === b.id && x.activo; }); }).map(function (b) {
+        var n = (!desde && !hasta) ? (b.turnos_previos || 0) : 0;
+        db.postulaciones.forEach(function (p) {
+          if (p.barista_id !== b.id || p.estado !== 'confirmada' || p.asistio !== true) return;
+          var e = evPorId(p.evento_id); if (!e || e.estado === 'cancelado') return;
+          if ((desde && e.fecha < desde) || (hasta && e.fecha > hasta)) return;
+          n++;
+        });
+        return { barista_id: b.id, nombre: b.nombre, foto_path: b.foto_path || null, turnos: n };
+      });
+      filas.forEach(function (f) { f.puesto = 1 + filas.filter(function (o) { return o.turnos > f.turnos; }).length; });
+      return filas.sort(function (x, y) { return x.puesto - y.puesto || String(x.nombre).localeCompare(String(y.nombre), 'es'); });
+    },
+    traslados: function () {
+      return db.postulaciones.filter(function (p) { return p.conductor && p.estado === 'confirmada' && (esAdmin() || (p.barista_id === uid() && esBarista())); }).map(function (p) {
+        var t = db.evento_traslado.filter(function (x) { return x.evento_id === p.evento_id; })[0] || {};
+        var benc = t.km == null ? null : Math.round(t.km / cfg.rendimiento_km_l * cfg.precio_litro);
+        return { postulacion_id: p.id, evento_id: p.evento_id, barista_id: p.barista_id, km: t.km == null ? null : t.km, tag: t.tag == null ? null : t.tag, bencina: benc,
+          estacionamiento: p.traslado_estacionamiento || 0, total: (benc == null || t.tag == null) ? null : benc + t.tag + (p.traslado_estacionamiento || 0),
+          pagado_en: p.traslado_pagado_en || null, completo: t.km != null && t.tag != null };
+      });
+    }
+  };
+  var PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  window.__STORAGE = {};
   window.supabase = { createClient: function () {
     return {
       from: from,
-      rpc: function (n) { return Promise.resolve({ data: n === 'es_admin' ? esAdmin() : null, error: null }); },
+      rpc: function (n, args) {
+        return Promise.resolve().then(function () {
+          window.__rpc.push(n);
+          var f = RPC[n]; var r = f ? f(args || {}) : null;
+          return r && r.error ? r : { data: r, error: null };
+        });
+      },
+      storage: { from: function (bucket) {
+        return {
+          upload: function (ruta, blob, opciones) {
+            return Promise.resolve().then(function () {
+              if (!esBarista() || ruta.indexOf(uid() + '/') !== 0) return { data: null, error: { message: 'new row violates row-level security policy' } };
+              if (blob.size > 2 * 1024 * 1024) return { data: null, error: { message: 'The object exceeded the maximum allowed size' } };
+              window.__STORAGE[ruta] = { size: blob.size, type: (opciones && opciones.contentType) || blob.type };
+              return { data: { path: ruta }, error: null };
+            });
+          },
+          createSignedUrls: function (rutas) {
+            return Promise.resolve({ data: rutas.map(function (r) { return { path: r, signedUrl: PNG, error: null }; }), error: null });
+          },
+          remove: function (rutas) {
+            rutas.forEach(function (r) { delete window.__STORAGE[r]; });
+            return Promise.resolve({ data: rutas.map(function (r) { return { name: r }; }), error: null });
+          }
+        };
+      } },
       auth: {
         getSession: function () { return Promise.resolve({ data: { session: sesion }, error: null }); },
         onAuthStateChange: function () { return { data: { subscription: { unsubscribe: function () {} } } }; },
-        signInWithOtp: function (a) { window.__otp = a; return Promise.resolve({ error: /limite/.test(a.email) ? { message: 'email rate limit exceeded' } : null }); },
+        signInWithPassword: function (a) {
+          window.__signIn = (window.__signIn || []).concat([a]);
+          var usuario = String(a.email || '').split('@')[0], dominio = String(a.email || '').split('@')[1];
+          var u = dominio === 'equipo.sepiacoffee.cl' ? usuarios.filter(function (x) { return x.usuario === usuario; })[0] : (sesion && sesion.user.email === a.email ? usuarios.filter(function (x) { return x.id === sesion.user.id; })[0] : null);
+          if (!u || u.clave !== a.password) return Promise.resolve({ data: {}, error: { message: 'Invalid login credentials' } });
+          var ac = db.accesos.filter(function (x) { return x.id === u.id; })[0];
+          if (ac && !ac.activo) return Promise.resolve({ data: {}, error: { message: 'User is banned' } });
+          sesion = { user: { id: u.id, email: u.usuario + '@equipo.sepiacoffee.cl' } };
+          return Promise.resolve({ data: { session: sesion }, error: null });
+        },
+        updateUser: function (a) {
+          if (!sesion) return Promise.resolve({ data: {}, error: { message: 'Auth session missing!' } });
+          var u = usuarios.filter(function (x) { return x.id === sesion.user.id; })[0];
+          if (a.password && a.password.length < 6) return Promise.resolve({ data: {}, error: { message: 'Password should be at least 6 characters.' } });
+          if (u && a.password === u.clave) return Promise.resolve({ data: {}, error: { message: 'New password should be different from the old password.' } });
+          if (u) u.clave = a.password;
+          window.__claveCambiada = a.password;
+          return Promise.resolve({ data: { user: sesion.user }, error: null });
+        },
+        signInWithOtp: function (a) { window.__otp = a; return Promise.resolve({ error: /limite/.test(a.email) ? { message: 'email rate limit exceeded' } : (/sinacceso/.test(a.email) ? { message: 'Signups not allowed for otp' } : null) }); },
         verifyOtp: function (a) {
           if (a.token !== '123456') return Promise.resolve({ data: {}, error: { message: 'Token has expired or is invalid' } });
           sesion = { user: { id: S.nuevoId || 'u-nuevo', email: a.email } }; return Promise.resolve({ data: { session: sesion }, error: null });
         },
-        signOut: function () { sesion = null; return Promise.resolve({ error: null }); }
+        signOut: function (o) { window.__signOut = o || { scope: 'global' }; if (!o || o.scope !== 'others') sesion = null; return Promise.resolve({ error: null }); }
       }
     };
   } };

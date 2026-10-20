@@ -1,8 +1,10 @@
 /* SEPIA COFFEE · portal de baristas
  *
- * Una sola página: entrar con el correo (código, sin contraseña), registrarse
- * con datos personales y bancarios, ver los eventos y postular. Quien está en
- * la tabla `admins` ve además las pestañas de administración.
+ * Una sola página. Los baristas entran con un ID y una clave que les entrega la
+ * administración (la primera vez crean su clave personal y completan su perfil),
+ * ven los eventos, postulan, miran el ranking del equipo y sus ganancias. Quien
+ * está en la tabla `admins` entra con un código por correo y ve además las
+ * pestañas de administración (accesos, eventos, postulantes, pagos).
  *
  * Todo lo que decide quién ve qué vive en la base de datos (shopify/baristas/
  * esquema.sql). Este archivo solo dibuja y manda las consultas: aunque alguien
@@ -19,6 +21,10 @@
   var SB_URL = raiz.getAttribute('data-supabase-url') || '';
   var SB_KEY = raiz.getAttribute('data-supabase-key') || '';
   var WHATSAPP = 'https://wa.me/56979284400';
+  /* Cada ID se convierte en id@DOMINIO_ACCESO (un «correo» inventado que no recibe nada).
+     Es el mismo dominio de crear_acceso() en esquema.sql: si cambia, cambia en los dos. */
+  var DOMINIO_ACCESO = 'equipo.sepiacoffee.cl';
+  var TALLAS = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   var BANCOS = ['Banco de Chile', 'Banco Estado', 'Banco Santander', 'BCI', 'Scotiabank', 'Banco Itaú',
     'Banco Falabella', 'Banco Security', 'Banco BICE', 'Banco Ripley', 'Banco Consorcio', 'Coopeuch',
@@ -31,7 +37,8 @@
   var estado = {
     sesion: null, perfil: null, admin: false, config: null,
     eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {}, sync: null,
-    pestana: 'eventos', cargando: true, correoLogin: ''
+    acceso: null, accesos: [], fotos: {}, equipos: {}, traslados: [], trasladoEv: {}, fotoPendiente: null, ultimoAcceso: null,
+    pestana: 'eventos', cargando: true, correoLogin: '', usuarioLogin: ''
   };
 
   /* ------------------------------------------------------------------ */
@@ -149,6 +156,11 @@
   function mensajeError(e, porDefecto) {
     var txt = (e && (e.message || e.msg || '')) + '';
     if (e && e.code === '23505' && /rut/i.test(txt)) return 'Ese RUT ya está registrado con otro correo. Escríbenos por WhatsApp y lo resolvemos.';
+    if (/invalid login credentials|invalid_credentials/i.test(txt)) return 'ID o clave incorrectos. Revisa que no lleven espacios de más.';
+    if (/banned/i.test(txt)) return 'Tu acceso está desactivado. Escríbele a Manuel.';
+    if (/signups? not allowed|user not found/i.test(txt)) return 'Ese correo no tiene acceso de administración.';
+    if (/same password|different from the old/i.test(txt)) return 'La clave nueva tiene que ser distinta de la que ya tenías.';
+    if (/password/i.test(txt) && /(short|least|weak|characters)/i.test(txt)) return 'Esa clave es muy corta o muy fácil de adivinar. Usa al menos 8 caracteres.';
     if (/rate limit|too many|over_email_send_rate_limit/i.test(txt)) return 'Pediste muchos códigos seguidos. Espera un minuto e inténtalo de nuevo.';
     if (/expired|invalid/i.test(txt) && /token|otp|code/i.test(txt)) return 'El código no es válido o ya venció. Pide uno nuevo.';
     return porDefecto;
@@ -206,6 +218,10 @@
     estado.perfil = rp.data;
     var ra = await sb.rpc('es_admin');
     estado.admin = ra.data === true;
+    var rac = await sb.from('accesos').select('*');
+    var accesos = rac.data || [];
+    estado.acceso = accesos.filter(function (a) { return a.id === uid; })[0] || null;
+    estado.accesos = estado.admin ? accesos : [];
     if (estado.perfil || estado.admin) await cargarEventos();
   }
 
@@ -233,9 +249,25 @@
       (rq.data || []).forEach(function (s) { estado.segDatos[s.evento_id] = s; });
       var ru = await sb.from('automatizacion').select('ultima_sync_en,ultima_sync_resumen').eq('id', 1).maybeSingle();
       estado.sync = ru.data || null;
+      var rt = await sb.from('evento_traslado').select('*');
+      estado.trasladoEv = {};
+      (rt.data || []).forEach(function (t) { estado.trasladoEv[t.evento_id] = t; });
     }
+    var rtr = await sb.rpc('traslados');
+    estado.traslados = rtr.data || [];
     estado.misPosts = {};
     estado.posts.forEach(function (p) { if (p.barista_id === uid) estado.misPosts[p.evento_id] = p; });
+    // El equipo de cada evento donde estoy asignado (nombre y foto de quienes van conmigo).
+    estado.equipos = {};
+    var asignados = estado.posts.filter(function (p) { return p.barista_id === uid && p.estado === 'confirmada'; });
+    await Promise.all(asignados.map(async function (p) {
+      var re2 = await sb.rpc('equipo_evento', { p_evento: p.evento_id });
+      estado.equipos[p.evento_id] = re2.data || [];
+    }));
+    var rutas = [];
+    Object.keys(estado.equipos).forEach(function (k) { estado.equipos[k].forEach(function (m) { if (m.foto_path) rutas.push(m.foto_path); }); });
+    if (estado.perfil && estado.perfil.foto_path) rutas.push(estado.perfil.foto_path);
+    try { await firmarFotos(rutas); } catch (e) { /* sin fotos se ven las iniciales */ }
   }
 
   async function recargar() {
@@ -246,15 +278,65 @@
   function limpiarEstado() {
     estado.sesion = null; estado.perfil = null; estado.admin = false; estado.config = null;
     estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {}; estado.sync = null;
+    estado.acceso = null; estado.accesos = []; estado.fotos = {}; estado.equipos = {}; estado.traslados = []; estado.trasladoEv = {};
+    estado.fotoPendiente = null; estado.ultimoAcceso = null;
     estado.pestana = 'eventos';
   }
 
   /* ------------------------------------------------------------------ */
-  /* Entrar con el correo                                                */
+  /* Entrar: ID y clave (baristas) o código por correo (administración)  */
   /* ------------------------------------------------------------------ */
+
+  async function entrarAlPortal() {
+    estado.cargando = true; pintar();
+    try { await cargarTodo(); } catch (e) { /* se muestra lo que haya */ }
+    estado.cargando = false;
+    pintar();
+  }
+
+  function campoClave(etiqueta, nombre, autocompletar, id) {
+    var clave = entrada('password', nombre, '', { id: id, autocomplete: autocompletar, required: true, maxlength: '100', autocapitalize: 'none', spellcheck: 'false' });
+    var ver = boton('Mostrar', function () {
+      var mostrar = clave.type === 'password';
+      clave.type = mostrar ? 'text' : 'password';
+      ver.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+    }, 'sb-btn--sec sb-btn--chico');
+    ver.setAttribute('aria-label', 'Mostrar u ocultar ' + etiqueta.toLowerCase());
+    var caja = h('div', { class: 'sb-campo' }, h('label', { class: 'sb-etiqueta', for: id, text: etiqueta }), h('div', { class: 'sb-clave' }, clave, ver));
+    caja.entrada = clave;
+    return caja;
+  }
 
   function vistaLogin() {
     var caja = h('div', { class: 'sb-caja' });
+    var pasoClave = function () {
+      caja.textContent = '';
+      var usuario = entrada('text', 'usuario', estado.usuarioLogin, { id: 'sb-usuario', autocomplete: 'username', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false', required: true, maxlength: '40' });
+      var claveCampo = campoClave('Clave', 'clave', 'current-password', 'sb-clave');
+      var msg = h('div');
+      var entrar = boton('Iniciar sesión', function () {
+        var u = usuario.value.trim().toLowerCase();
+        estado.usuarioLogin = u;
+        if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(u)) { ponerAviso(msg, 'Revisa tu ID: va sin espacios ni @. Por ejemplo, camila.perez.'); usuario.focus(); return; }
+        if (!claveCampo.entrada.value) { ponerAviso(msg, 'Escribe tu clave.'); claveCampo.entrada.focus(); return; }
+        ponerAviso(msg, '');
+        conTarea(entrar, async function () {
+          var r = await sb.auth.signInWithPassword({ email: u + '@' + DOMINIO_ACCESO, password: claveCampo.entrada.value });
+          if (r.error) throw r.error;
+          estado.sesion = r.data.session;
+        }).then(entrarAlPortal, function (e) { ponerAviso(msg, mensajeError(e, 'No pudimos entrar. Inténtalo de nuevo en un momento.')); });
+      });
+      caja.appendChild(h('h2', { class: 'sb-h2', text: 'Bienvenido al equipo' }));
+      caja.appendChild(h('p', { class: 'sb-texto', text: 'Ingresa con el ID y la clave que te entregó Sepia.' }));
+      caja.appendChild(campo('ID de usuario', usuario));
+      caja.appendChild(claveCampo);
+      caja.appendChild(h('div', { class: 'sb-fila' }, entrar));
+      caja.appendChild(msg);
+      caja.appendChild(h('p', { class: 'sb-ayuda', text: '¿Olvidaste tu clave? Escríbele a Manuel para que te dé una nueva.' }));
+      caja.appendChild(h('hr', { class: 'sb-sep' }));
+      caja.appendChild(boton('Soy administración: entrar con un código por correo', pasoCorreo, 'sb-btn--sec'));
+      [usuario, claveCampo.entrada].forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); entrar.click(); } }); });
+    };
     var pasoCorreo = function () {
       caja.textContent = '';
       var correo = entrada('email', 'correo', estado.correoLogin, { autocomplete: 'email', required: true, placeholder: 'tucorreo@ejemplo.cl', inputmode: 'email' });
@@ -264,16 +346,16 @@
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { ponerAviso(msg, 'Escribe un correo válido.'); correo.focus(); return; }
         ponerAviso(msg, '');
         conTarea(enviar, async function () {
-          var r = await sb.auth.signInWithOtp({ email: v, options: { shouldCreateUser: true } });
+          var r = await sb.auth.signInWithOtp({ email: v, options: { shouldCreateUser: false } });
           if (r.error) throw r.error;
           estado.correoLogin = v;
           pasoCodigo();
         }).catch(function (e) { ponerAviso(msg, mensajeError(e, 'No pudimos enviar el código. Revisa el correo e inténtalo de nuevo en un minuto.')); });
       });
-      caja.appendChild(h('h2', { class: 'sb-h2', text: 'Entra con tu correo' }));
-      caja.appendChild(h('p', { class: 'sb-texto', text: 'Te enviamos un código de un solo uso. No hay contraseña que recordar.' }));
+      caja.appendChild(h('h2', { class: 'sb-h2', text: 'Administración' }));
+      caja.appendChild(h('p', { class: 'sb-texto', text: 'Te enviamos un código de un solo uso al correo de administración. No hay clave que recordar.' }));
       caja.appendChild(campo('Correo electrónico', correo));
-      caja.appendChild(enviar);
+      caja.appendChild(h('div', { class: 'sb-fila' }, enviar, boton('Volver', pasoClave, 'sb-btn--sec')));
       caja.appendChild(msg);
       correo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviar.click(); } });
     };
@@ -289,12 +371,7 @@
           var r = await sb.auth.verifyOtp({ email: estado.correoLogin, token: v, type: 'email' });
           if (r.error) throw r.error;
           estado.sesion = r.data.session;
-        }).then(async function () {
-          estado.cargando = true; pintar();
-          try { await cargarTodo(); } catch (e) { /* se muestra lo que haya */ }
-          estado.cargando = false;
-          pintar();
-        }, function (e) { ponerAviso(msg, mensajeError(e, 'El código no es válido o ya venció. Pide uno nuevo.')); });
+        }).then(entrarAlPortal, function (e) { ponerAviso(msg, mensajeError(e, 'El código no es válido o ya venció. Pide uno nuevo.')); });
       });
       var reenviar = boton('Pedir otro código', function () { pasoCorreo(); }, 'sb-btn--sec');
       caja.appendChild(h('h2', { class: 'sb-h2', text: 'Revisa tu correo' }));
@@ -305,42 +382,290 @@
       codigo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); entrar.click(); } });
       codigo.focus();
     };
-    pasoCorreo();
+    pasoClave();
+    return caja;
+  }
+
+  function vistaSinAcceso() {
+    return h('div', { class: 'sb-caja' },
+      h('h2', { class: 'sb-h2', text: 'Tu cuenta no tiene acceso' }),
+      h('p', { class: 'sb-texto', text: estado.acceso && !estado.acceso.activo
+        ? 'Tu acceso está desactivado. Escríbele a Manuel si crees que es un error.'
+        : 'Esta cuenta no está autorizada como barista. Pídele a Manuel que te cree un acceso.' }));
+  }
+
+  /* Crear la clave personal: obligatorio la primera vez (cambia la temporal), y voluntario desde «Mis datos». */
+  function vistaCambiarClave(obligatoria) {
+    var f = h('form', { class: obligatoria ? 'sb-caja' : 'sb-sub', novalidate: true });
+    var msg = h('div');
+    var actual = obligatoria ? null : campoClave('Clave actual', 'actual', 'current-password', 'sb-clave-actual');
+    var nueva = campoClave('Clave nueva', 'nueva', 'new-password', 'sb-clave-nueva');
+    var repetir = campoClave('Repite la clave nueva', 'repetir', 'new-password', 'sb-clave-repetir');
+    var guardar = h('button', { type: 'submit', class: 'sb-btn', text: 'Guardar clave' });
+    f.appendChild(h(obligatoria ? 'h2' : 'h3', { class: obligatoria ? 'sb-h2' : 'sb-h3', text: obligatoria ? 'Crea tu clave personal' : 'Cambiar mi clave' }));
+    f.appendChild(h('p', { class: 'sb-texto', text: obligatoria
+      ? 'Antes de continuar, cambia la clave temporal que recibiste.'
+      : 'Al cambiar tu clave se cierran las sesiones de otros dispositivos.' }));
+    if (actual) f.appendChild(actual);
+    f.appendChild(nueva); f.appendChild(repetir);
+    f.appendChild(h('p', { class: 'sb-ayuda', text: 'Usa al menos 8 caracteres. Puede ser una frase fácil de recordar.' }));
+    f.appendChild(h('div', { class: 'sb-fila' }, guardar));
+    f.appendChild(msg);
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var n1 = nueva.entrada.value, n2 = repetir.entrada.value;
+      var usuarioId = estado.acceso ? estado.acceso.usuario : '';
+      var error = null;
+      if (actual && !actual.entrada.value) error = 'Escribe tu clave actual.';
+      else if (n1.length < 8) error = 'La clave nueva tiene que tener al menos 8 caracteres.';
+      else if (n1 !== n2) error = 'Las dos claves nuevas no son iguales.';
+      else if (usuarioId && n1.toLowerCase().indexOf(usuarioId) >= 0) error = 'La clave no puede llevar tu ID.';
+      if (error) { ponerAviso(msg, error); return; }
+      ponerAviso(msg, '');
+      conTarea(guardar, async function () {
+        if (actual) {
+          var v = await sb.auth.signInWithPassword({ email: estado.sesion.user.email, password: actual.entrada.value });
+          if (v.error) throw new Error('clave actual');
+        }
+        var r = await sb.auth.updateUser({ password: n1 });
+        if (r.error) throw r.error;
+        var r2 = await sb.rpc('acceso_clave_cambiada');
+        if (r2.error) throw r2.error;
+        await sb.auth.signOut({ scope: 'others' });
+        if (estado.acceso) estado.acceso.debe_cambiar_clave = false;
+        if (obligatoria) { await entrarAlPortal(); return; }
+        [actual, nueva, repetir].forEach(function (c) { if (c) c.entrada.value = ''; });
+        ponerAviso(msg, 'Listo, cambiamos tu clave. Las otras sesiones se cerraron.', 'ok');
+      }).catch(function (e) {
+        ponerAviso(msg, /clave actual/.test((e && e.message) || '') ? 'La clave actual no es correcta.' : mensajeError(e, 'No pudimos cambiar la clave. Inténtalo de nuevo.'));
+      });
+    });
+    return f;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Fotos de perfil                                                     */
+  /* ------------------------------------------------------------------ */
+
+  function iniciales(nombre) {
+    var p = String(nombre || '').trim().split(/\s+/);
+    return ((p[0] || '').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase() || '?';
+  }
+
+  /* Las fotos son privadas: se piden con un enlace firmado que dura una hora. */
+  async function firmarFotos(paths) {
+    var faltan = (paths || []).filter(function (x, i, a) { return x && !estado.fotos[x] && a.indexOf(x) === i; });
+    if (!faltan.length) return;
+    var r = await sb.storage.from('perfiles').createSignedUrls(faltan, 3600);
+    (r.data || []).forEach(function (x) { if (x && x.signedUrl && !x.error) estado.fotos[x.path] = x.signedUrl; });
+  }
+
+  function avatar(nombre, ruta, clase) {
+    var caja = h('span', { class: 'sb-avatar' + (clase ? ' ' + clase : ''), 'aria-hidden': 'true' });
+    var poner = function (url) { caja.textContent = ''; caja.appendChild(h('img', { src: url, alt: '' })); };
+    if (ruta && estado.fotos[ruta]) poner(estado.fotos[ruta]);
+    else {
+      caja.textContent = iniciales(nombre);
+      if (ruta) firmarFotos([ruta]).then(function () { if (estado.fotos[ruta]) poner(estado.fotos[ruta]); }, function () { /* quedan las iniciales */ });
+    }
+    return caja;
+  }
+
+  /* Recorta al centro en un cuadrado de 512 px y la guarda como JPG liviano. */
+  function prepararFoto(archivo) {
+    return new Promise(function (ok, no) {
+      if (!/^image\/(jpeg|png|webp)$/.test(archivo.type)) { no(new Error('tipo')); return; }
+      if (archivo.size > 20 * 1024 * 1024) { no(new Error('pesada')); return; }
+      var url = window.URL.createObjectURL(archivo), img = new Image();
+      img.onload = function () {
+        window.URL.revokeObjectURL(url);
+        var w = img.naturalWidth, hh = img.naturalHeight, lado = Math.min(w, hh);
+        if (!lado || w * hh > 80e6) { no(new Error('imagen')); return; }
+        var c = document.createElement('canvas'), tam = Math.min(512, lado);
+        c.width = tam; c.height = tam;
+        c.getContext('2d').drawImage(img, (w - lado) / 2, (hh - lado) / 2, lado, lado, 0, 0, tam, tam);
+        c.toBlob(function (b) { if (b && b.size <= 2 * 1024 * 1024) ok(b); else no(new Error('pesada')); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { window.URL.revokeObjectURL(url); no(new Error('imagen')); };
+      img.src = url;
+    });
+  }
+
+  async function subirFoto(blob) {
+    var uid = estado.sesion.user.id, ruta = uid + '/foto-' + Date.now() + '.jpg';
+    var anterior = estado.perfil && estado.perfil.foto_path;
+    var r = await sb.storage.from('perfiles').upload(ruta, blob, { contentType: 'image/jpeg', upsert: false });
+    if (r.error) throw r.error;
+    var u = await sb.from('baristas').update({ foto_path: ruta }).eq('id', uid).select('*').single();
+    if (u.error) { await sb.storage.from('perfiles').remove([ruta]); throw u.error; }
+    estado.perfil = u.data;
+    try { await firmarFotos([ruta]); } catch (e) { /* se verá en la próxima carga */ }
+    if (anterior) { try { await sb.storage.from('perfiles').remove([anterior]); } catch (e) { /* queda huérfana, no pasa nada */ } }
+  }
+
+  async function quitarFoto() {
+    var uid = estado.sesion.user.id, anterior = estado.perfil && estado.perfil.foto_path;
+    var u = await sb.from('baristas').update({ foto_path: null }).eq('id', uid).select('*').single();
+    if (u.error) throw u.error;
+    estado.perfil = u.data;
+    if (anterior) { try { await sb.storage.from('perfiles').remove([anterior]); } catch (e) { /* queda huérfana */ } }
+  }
+
+  /* Bloque de foto del formulario. Sin perfil todavía, la foto queda lista y se sube al completar el registro. */
+  function bloqueFoto(editando) {
+    var caja = h('div', { class: 'sb-foto' });
+    var msg = h('div');
+    var archivo = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'sb-oculto', 'aria-label': 'Elegir foto de perfil' });
+    var vista = h('div');
+    var subir = boton('Subir foto de perfil', function () { archivo.click(); }, 'sb-btn--sec');
+    var quitar = boton('Quitar foto', function () {
+      if (!editando) { estado.fotoPendiente = null; pintarFoto(); return; }
+      conTarea(quitar, quitarFoto).then(function () { pintarFoto(); ponerAviso(msg, 'Foto de perfil quitada.', 'ok'); }, function () { ponerAviso(msg, 'No pudimos quitar la foto. Inténtalo de nuevo.'); });
+    }, 'sb-btn--sec');
+    var pintarFoto = function () {
+      vista.textContent = '';
+      var nombre = (estado.perfil && estado.perfil.nombre) || (estado.acceso && estado.acceso.nombre) || '';
+      var ruta = estado.perfil && estado.perfil.foto_path;
+      var tiene = !!estado.fotoPendiente || !!ruta;
+      var av = h('span', { class: 'sb-avatar sb-avatar--grande', 'aria-hidden': 'true' });
+      if (estado.fotoPendiente) {
+        if (estado.fotoPendienteUrl) window.URL.revokeObjectURL(estado.fotoPendienteUrl);
+        estado.fotoPendienteUrl = window.URL.createObjectURL(estado.fotoPendiente);
+        av.appendChild(h('img', { src: estado.fotoPendienteUrl, alt: '' }));
+      } else av = avatar(nombre, ruta, 'sb-avatar--grande');
+      vista.appendChild(h('div', { class: 'sb-foto__fila' }, av,
+        h('div', null, h('div', { class: 'sb-fila sb-fila--chica' }, subir, tiene ? quitar : null),
+          h('p', { class: 'sb-ayuda', text: 'JPG, PNG o WebP. Se muestra junto a tu nombre al equipo. Es opcional.' }))));
+      subir.textContent = tiene ? 'Cambiar foto' : 'Subir foto de perfil';
+    };
+    archivo.addEventListener('change', function () {
+      var f = archivo.files && archivo.files[0];
+      archivo.value = '';
+      if (!f) return;
+      ponerAviso(msg, '');
+      prepararFoto(f).then(function (blob) {
+        if (!editando) { estado.fotoPendiente = blob; pintarFoto(); return; }
+        return conTarea(subir, function () { return subirFoto(blob); }).then(function () { pintarFoto(); ponerAviso(msg, 'Listo, guardamos tu foto.', 'ok'); });
+      }).catch(function (e) {
+        var t = (e && e.message) || '';
+        ponerAviso(msg, t === 'tipo' ? 'Usa una foto JPG, PNG o WebP. Si está en HEIC, expórtala como JPG.'
+          : t === 'pesada' ? 'La foto pesa demasiado. Elige una más liviana.'
+          : t === 'imagen' ? 'No pudimos abrir esa imagen. Prueba con otra foto.' : 'No pudimos guardar la foto. Inténtalo de nuevo.');
+      });
+    });
+    pintarFoto();
+    caja.appendChild(h('h3', { class: 'sb-h3', text: 'Foto de perfil' }));
+    caja.appendChild(vista); caja.appendChild(archivo); caja.appendChild(msg);
     return caja;
   }
 
   /* ------------------------------------------------------------------ */
-  /* Registro y «Mis datos»                                              */
+  /* Completar el perfil y «Mis datos»                                   */
   /* ------------------------------------------------------------------ */
+
+  function sinTildes(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+
+  var ALIAS_BANCOS = [
+    [/banco\s*de\s*chile|banco\s*chile|\bbchile\b|edwards/, 'Banco de Chile'], [/banco\s*estado|bancoestado/, 'Banco Estado'],
+    [/santander/, 'Banco Santander'], [/\bbci\b|banco\s*de\s*credito/, 'BCI'], [/scotia/, 'Scotiabank'], [/\bitau\b/, 'Banco Itaú'],
+    [/falabella/, 'Banco Falabella'], [/security/, 'Banco Security'], [/\bbice\b/, 'Banco BICE'], [/ripley/, 'Banco Ripley'],
+    [/consorcio/, 'Banco Consorcio'], [/coopeuch/, 'Coopeuch'], [/mercado\s*pago/, 'Mercado Pago'], [/tenpo/, 'Tenpo'], [/\bmach\b/, 'Mach']
+  ];
+
+  /* Lee los «datos para transferencias» que entrega un banco (pegados como texto) y devuelve lo que reconoce.
+     Todo ocurre en el dispositivo: el texto no se envía a ninguna parte. */
+  function leerDatosBanco(texto) {
+    var t = String(texto || ''), plano = sinTildes(t), r = {};
+    var rut = null;
+    (t.match(/\b\d{1,2}(?:\.\d{3}){2}-[\dkK]\b|\b\d{7,8}-[\dkK]\b/g) || []).forEach(function (x) { if (!rut && rutValido(x)) rut = x; });
+    if (rut) r.rut = formatoRut(rut);
+    var mail = t.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+    if (mail) r.correo = mail[0].toLowerCase();
+    var nom = t.match(/^\s*(?:nombre(?:\s+completo)?|titular|a\s+nombre\s+de)\s*[:\-]\s*(.+?)\s*$/im);
+    if (nom && nom[1].length >= 3 && nom[1].length <= 100) r.nombre = nom[1];
+    for (var i = 0; i < ALIAS_BANCOS.length; i++) { if (ALIAS_BANCOS[i][0].test(plano)) { r.banco = ALIAS_BANCOS[i][1]; break; } }
+    if (/cuenta\s*rut|cuentarut|cta\.?\s*rut|chequera\s*electronica/.test(plano)) r.tipo_cuenta = 'Cuenta RUT';
+    else if (/vista/.test(plano)) r.tipo_cuenta = 'Cuenta vista';
+    else if (/corriente|cta\.?\s*cte|\bcc\b/.test(plano)) r.tipo_cuenta = 'Cuenta corriente';
+    else if (/ahorro/.test(plano)) r.tipo_cuenta = 'Cuenta de ahorro';
+    var num = t.match(/(?:n[°ºo.]?\s*(?:de\s*)?cuenta|n[uú]mero\s*(?:de\s*)?cuenta|nro\.?\s*(?:de\s*)?cuenta|cuenta\s*n[°º]?)\s*[:\-]?\s*([0-9][0-9\s.\-]{3,24})/i);
+    var digitos = num ? num[1].replace(/[^\d]/g, '') : '';
+    if (!/^\d{4,20}$/.test(digitos)) {
+      var sinRut = t.replace(/\b\d{1,2}(?:\.\d{3}){2}-[\dkK]\b|\b\d{7,8}-[\dkK]\b/g, ' ').replace(/\+?56\s?9[\s\d]{8,10}/g, ' ');
+      digitos = (sinRut.match(/\d{6,20}/g) || []).sort(function (a, b) { return b.length - a.length; })[0] || '';
+    }
+    if (/^\d{4,20}$/.test(digitos)) r.numero_cuenta = digitos;
+    else if (r.tipo_cuenta === 'Cuenta RUT' && r.rut) r.numero_cuenta = limpiarRut(r.rut).slice(0, -1);
+    return r;
+  }
+
+  function bloquePegarBanco(f, msg) {
+    var ta = h('textarea', { class: 'sb-entrada', rows: '4', maxlength: '800', 'aria-label': 'Datos de transferencia pegados', placeholder: 'Pega aquí los datos de tu banco' });
+    var rellenar = boton('Rellenar datos', function () {
+      var r = leerDatosBanco(ta.value);
+      var pon = function (nombre, valor, siempre) {
+        var el = f.elements[nombre];
+        if (el && valor && (siempre || !el.value.trim())) el.value = valor;
+      };
+      var hay = Object.keys(r).length > 0;
+      if (hay) {
+        pon('banco', r.banco, true); pon('tipo_cuenta', r.tipo_cuenta, true); pon('numero_cuenta', r.numero_cuenta, true);
+        pon('rut', r.rut); pon('nombre', r.nombre); pon('correo', r.correo);
+      }
+      ta.value = '';
+      ponerAviso(msg, hay ? 'Listo. Revisa los datos antes de guardar.' : 'No reconocimos los datos. Completa los campos manualmente.', hay ? 'ok' : '');
+    }, 'sb-btn--sec');
+    return h('details', { class: 'sb-detalle sb-detalle--chico' },
+      h('summary', { class: 'sb-resumen' }, h('span', { class: 'sb-resumen__t', text: 'Pegar datos desde mi banco' })),
+      h('p', { class: 'sb-ayuda', text: 'Pega los datos para transferencias que te da tu banco. Se leen en tu dispositivo y no se envían a ninguna parte. No pegues claves ni códigos.' }),
+      ta, h('div', { class: 'sb-fila' }, rellenar));
+  }
 
   function vistaFormularioPerfil(modo) {
     var p = estado.perfil || {};
     var editando = modo === 'editar';
     var cfg = estado.config || {};
-    var correoSesion = (estado.sesion.user.email || '').toLowerCase();
     var f = h('form', { class: 'sb-caja', novalidate: true });
     var msg = h('div');
+    var msgBanco = h('div');
 
     var banco = entrada('text', 'banco', p.banco || '', { list: 'sb-bancos', autocomplete: 'off', required: true, maxlength: '60', placeholder: 'Elige o escribe tu banco' });
     var lista = h('datalist', { id: 'sb-bancos' }, BANCOS.map(function (b) { return h('option', { value: b }); }));
     var tipo = h('select', { name: 'tipo_cuenta', class: 'sb-entrada', required: true },
       h('option', { value: '', text: 'Elige el tipo' }), TIPOS_CUENTA.map(function (t) { return h('option', { value: t, text: t }); }));
     tipo.value = p.tipo_cuenta || '';
+    var talla = h('select', { name: 'talla_camisa', class: 'sb-entrada', required: true },
+      h('option', { value: '', text: 'Elige tu talla' }), TALLAS.map(function (t) { return h('option', { value: t, text: t }); }));
+    talla.value = p.talla_camisa || '';
     var exp = h('textarea', { name: 'experiencia', class: 'sb-entrada', rows: '3', maxlength: '600', placeholder: 'Por ejemplo: dos años de barra, latte art, eventos…' });
     exp.value = p.experiencia || '';
+    var opcion = function (valor, titulo, detalle, marcada) {
+      var r = h('input', { type: 'radio', name: 'camioneta', value: valor, class: 'sb-chk' });
+      r.checked = marcada;
+      return h('label', { class: 'sb-opcion' }, r, h('span', null, h('strong', { text: titulo }), h('small', { text: detalle })));
+    };
+    var camioneta = h('fieldset', { class: 'sb-campo sb-fieldset' }, h('legend', { class: 'sb-etiqueta', text: '¿Tienes camioneta disponible para transportar el carrito?' }),
+      h('div', { class: 'sb-opciones' },
+        opcion('si', 'Tengo camioneta', 'Disponible para transportar el carrito', editando && p.tiene_camioneta === true),
+        opcion('no', 'No tengo camioneta', 'Postulo como barista sin camioneta', editando && p.tiene_camioneta === false)));
 
-    f.appendChild(h('h2', { class: 'sb-h2', text: editando ? 'Mis datos' : 'Regístrate como barista' }));
-    if (!editando) f.appendChild(h('p', { class: 'sb-texto', text: 'Completa esto una sola vez. Con tu registro puedes ver los eventos y postular.' }));
+    f.appendChild(h('h2', { class: 'sb-h2', text: editando ? 'Mis datos' : 'Completa tu perfil' }));
+    if (!editando) f.appendChild(h('p', { class: 'sb-texto', text: 'Bienvenido al equipo. Completa esto una sola vez para ver los eventos y postular. Tus datos personales y bancarios solo los ven tú y la administración.' }));
     f.appendChild(h('h3', { class: 'sb-h3', text: 'Tus datos' }));
     f.appendChild(h('div', { class: 'sb-grilla' },
-      campo('Nombre completo', entrada('text', 'nombre', p.nombre || '', { autocomplete: 'name', required: true, maxlength: '100' })),
+      campo('Nombre completo', entrada('text', 'nombre', p.nombre || (estado.acceso && estado.acceso.nombre) || '', { autocomplete: 'name', required: true, maxlength: '100' })),
       campo('RUT', entrada('text', 'rut', p.rut || '', { autocomplete: 'off', required: true, maxlength: '12', placeholder: '12.345.678-5', autocapitalize: 'characters' })),
       campo('Teléfono (WhatsApp)', entrada('tel', 'telefono', p.telefono || '', { autocomplete: 'tel', required: true, maxlength: '16', placeholder: '9 1234 5678' })),
+      campo('Correo de contacto', entrada('email', 'correo', p.correo || '', { autocomplete: 'email', required: true, maxlength: '120', placeholder: 'tucorreo@ejemplo.cl', inputmode: 'email' }), 'Aquí te llegan los avisos de Sepia. No es con lo que entras.'),
       campo('Comuna donde vives', entrada('text', 'comuna', p.comuna || '', { autocomplete: 'address-level2', required: true, maxlength: '60' })),
-      campo('Correo', entrada('email', 'correo', correoSesion, { readonly: true }), 'Es el correo con el que entraste.')));
+      campo('Talla de camisa', talla)));
+    f.appendChild(camioneta);
     f.appendChild(campo('Experiencia (opcional)', exp));
+    f.appendChild(bloqueFoto(editando));
 
     f.appendChild(h('h3', { class: 'sb-h3', text: 'Datos para transferirte' }));
+    f.appendChild(bloquePegarBanco(f, msgBanco));
+    f.appendChild(msgBanco);
     f.appendChild(h('div', { class: 'sb-grilla' },
       campo('Banco', banco), lista,
       campo('Tipo de cuenta', tipo),
@@ -351,9 +676,9 @@
     var textoBoleta = (editando && p.acepta_boleta_texto) || cfg.texto_boleta || 'Declaro que puedo emitir boleta de honorarios electrónica por los servicios que preste en los eventos de Sepia Coffee.';
     f.appendChild(casilla('acepta_boleta', textoBoleta, !!p.acepta_boleta));
     f.appendChild(casilla('acepta_privacidad', cfg.texto_privacidad || 'Sepia Coffee usa mis datos solo para coordinar los eventos y pagarme.', !!p.acepta_privacidad));
-    f.appendChild(casilla('acepta_avisos', 'Quiero recibir por correo avisos cuando haya cupos disponibles en eventos (opcional).', !!p.acepta_avisos));
+    f.appendChild(casilla('acepta_avisos', 'Quiero recibir por correo avisos cuando se abra un evento o haya cupos disponibles (opcional).', !!p.acepta_avisos));
 
-    var guardar = h('button', { type: 'submit', class: 'sb-btn', text: editando ? 'Guardar cambios' : 'Completar registro' });
+    var guardar = h('button', { type: 'submit', class: 'sb-btn', text: editando ? 'Guardar cambios' : 'Completar perfil' });
     f.appendChild(h('div', { class: 'sb-fila' }, guardar));
     f.appendChild(msg);
 
@@ -362,8 +687,9 @@
       var d = new FormData(f);
       var v = function (k) { return String(d.get(k) || '').trim(); };
       var fila = {
-        nombre: v('nombre'), rut: formatoRut(v('rut')), correo: correoSesion, telefono: normalizarTelefono(v('telefono')),
-        comuna: v('comuna'), experiencia: v('experiencia') || null, banco: v('banco'), tipo_cuenta: v('tipo_cuenta'),
+        nombre: v('nombre'), rut: formatoRut(v('rut')), correo: v('correo').toLowerCase(), telefono: normalizarTelefono(v('telefono')),
+        comuna: v('comuna'), talla_camisa: v('talla_camisa'), tiene_camioneta: v('camioneta') === 'si',
+        experiencia: v('experiencia') || null, banco: v('banco'), tipo_cuenta: v('tipo_cuenta'),
         numero_cuenta: v('numero_cuenta').replace(/[^\d]/g, ''), cuenta_propia: !!d.get('cuenta_propia'),
         acepta_boleta: !!d.get('acepta_boleta'), acepta_privacidad: !!d.get('acepta_privacidad'), acepta_avisos: !!d.get('acepta_avisos')
       };
@@ -371,19 +697,22 @@
       if (fila.nombre.length < 3) { error = 'Escribe tu nombre completo.'; enfoque = 'nombre'; }
       else if (!rutValido(fila.rut)) { error = 'Revisa el RUT: está incompleto o el dígito verificador no calza.'; enfoque = 'rut'; }
       else if (!fila.telefono) { error = 'Escribe un teléfono válido, por ejemplo 9 1234 5678.'; enfoque = 'telefono'; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(fila.correo)) { error = 'Escribe un correo de contacto válido.'; enfoque = 'correo'; }
       else if (fila.comuna.length < 2) { error = 'Escribe tu comuna.'; enfoque = 'comuna'; }
+      else if (TALLAS.indexOf(fila.talla_camisa) < 0) { error = 'Elige tu talla de camisa.'; enfoque = 'talla_camisa'; }
+      else if (v('camioneta') !== 'si' && v('camioneta') !== 'no') { error = 'Indica si tienes camioneta.'; enfoque = null; }
       else if (fila.banco.length < 2) { error = 'Escribe tu banco.'; enfoque = 'banco'; }
       else if (!fila.tipo_cuenta) { error = 'Elige el tipo de cuenta.'; enfoque = 'tipo_cuenta'; }
       else if (!/^\d{4,20}$/.test(fila.numero_cuenta)) { error = 'El número de cuenta debe tener solo números (entre 4 y 20).'; enfoque = 'numero_cuenta'; }
       else if (!fila.cuenta_propia) { error = 'Para transferirte, la cuenta tiene que estar a tu nombre y con tu RUT.'; enfoque = 'cuenta_propia'; }
       else if (!fila.acepta_boleta) { error = 'Para registrarte tienes que poder emitir boleta de honorarios. Marca la declaración.'; enfoque = 'acepta_boleta'; }
       else if (!fila.acepta_privacidad) { error = 'Marca que aceptas el uso de tus datos para poder registrarte.'; enfoque = 'acepta_privacidad'; }
-      if (error) { ponerAviso(msg, error); var el = f.elements[enfoque]; if (el) el.focus(); return; }
+      if (error) { ponerAviso(msg, error); var el = enfoque && f.elements[enfoque]; if (el) el.focus(); return; }
       ponerAviso(msg, '');
       conTarea(guardar, async function () {
         var r;
         if (editando) {
-          var cambios = Object.assign({}, fila); delete cambios.correo; delete cambios.acepta_boleta; delete cambios.acepta_privacidad; delete cambios.cuenta_propia;
+          var cambios = Object.assign({}, fila); delete cambios.acepta_boleta; delete cambios.acepta_privacidad; delete cambios.cuenta_propia;
           r = await sb.from('baristas').update(cambios).eq('id', estado.sesion.user.id).select('*').single();
         } else {
           fila.id = estado.sesion.user.id;
@@ -392,8 +721,13 @@
         }
         if (r.error) throw r.error;
         estado.perfil = r.data;
-        if (!editando) { await cargarEventos(); estado.pestana = 'eventos'; pintar(); }
-        else ponerAviso(msg, 'Listo, guardamos tus datos.', 'ok');
+        if (!editando) {
+          if (estado.fotoPendiente) {      // la foto elegida antes de existir el perfil
+            try { await subirFoto(estado.fotoPendiente); } catch (e) { /* se puede subir después desde «Mis datos» */ }
+            estado.fotoPendiente = null;
+          }
+          await cargarEventos(); estado.pestana = 'eventos'; pintar();
+        } else ponerAviso(msg, 'Listo, guardamos tus datos.', 'ok');
       }).catch(function (e) { ponerAviso(msg, mensajeError(e, 'No pudimos guardar. Revisa los datos e inténtalo de nuevo.')); });
     });
 
@@ -401,7 +735,7 @@
       f.appendChild(h('hr', { class: 'sb-sep' }));
       f.appendChild(h('p', { class: 'sb-texto', text: 'Aceptaste la declaración de boleta y el uso de tus datos el ' + new Date(p.aceptado_en).toLocaleDateString('es-CL') + '.' }));
       var borrar = boton('Borrar mis datos', function () {
-        if (!window.confirm('Vamos a borrar tu registro y tus postulaciones. ¿Seguro?')) return;
+        if (!window.confirm('Vamos a borrar tu perfil y tus postulaciones. Tu acceso sigue activo y tendrás que completar el perfil de nuevo. ¿Seguro?')) return;
         conTarea(borrar, async function () {
           var r = await sb.from('baristas').delete().eq('id', estado.sesion.user.id);
           if (r.error) throw r.error;
@@ -454,6 +788,56 @@
       h('p', { class: 'sb-pago__nota', text: 'Emítela en el SII por ' + clp(ev.monto_boleta) + ' (con la retención de ' + pct(ev.retencion) + ' te quedan ' + clp(ev.pago_liquido) + '). Cuando la tengas, avísanos aquí.' }),
       campo('Número de folio de la boleta', folio, 'Si lo tienes a mano. No es obligatorio.'),
       h('div', { class: 'sb-fila' }, btn));
+  }
+
+  /* Quiénes van al evento (nombre y foto), para quienes ya están asignados. */
+  function bloqueEquipo(ev, post) {
+    var miembros = estado.equipos[ev.id];
+    if (!post || post.estado !== 'confirmada' || !miembros || !miembros.length) return null;
+    var yo = estado.sesion.user.id;
+    return h('div', { class: 'sb-equipo' },
+      h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Tu equipo en este evento' }),
+      h('ul', { class: 'sb-equipo__lista' }, miembros.map(function (m) {
+        return h('li', null, avatar(m.nombre, m.foto_path),
+          h('span', { class: 'sb-equipo__nombre', text: m.nombre + (m.barista_id === yo ? ' (tú)' : '') }),
+          m.conductor ? chip('Conductor con camioneta', 'sb-chip--ok') : null);
+      })));
+  }
+
+  /* El reembolso de la camioneta, solo para quien fue asignado de conductor. */
+  function filaTraslado(t) {
+    var partes = [];
+    if (t.km != null) partes.push(String(t.km).replace('.', ',') + ' km');
+    partes.push('bencina ' + (t.bencina == null ? 'pendiente de calcular' : clp(t.bencina)));
+    partes.push('TAG y peajes ' + (t.tag == null ? 'pendiente de calcular' : clp(t.tag)));
+    if (Number(t.estacionamiento) > 0) partes.push('estacionamiento ' + clp(t.estacionamiento));
+    return partes.join(' · ');
+  }
+  function bloqueTraslado(ev) {
+    var yo = estado.sesion.user.id;
+    var t = estado.traslados.filter(function (x) { return x.evento_id === ev.id && x.barista_id === yo; })[0];
+    if (!t) return null;
+    return h('div', { class: 'sb-pago' },
+      h('p', { class: 'sb-pago__monto', text: 'Traslado con camioneta: ' + (t.total == null ? 'por calcular' : clp(t.total)) }),
+      h('p', { class: 'sb-pago__nota', text: filaTraslado(t) }),
+      h('p', { class: 'sb-pago__nota', text: t.pagado_en ? 'Reembolso pagado el ' + fechaLarga(t.pagado_en).toLowerCase() + '.'
+        : 'Es un reembolso aparte de tus honorarios, no va en la boleta. El estacionamiento se agrega al cierre si corresponde. Estimación sujeta a ruta y horario.' }));
+  }
+
+  function tarjetaProximoTurno() {
+    var hoy = hoyISO();
+    var prox = estado.eventos.filter(function (e) {
+      var p = estado.misPosts[e.id];
+      return p && p.estado === 'confirmada' && e.estado !== 'cancelado' && e.fecha >= hoy;
+    }).sort(porFecha)[0];
+    var caja = h('section', { class: 'sb-proximo' }, h('p', { class: 'sb-eyebrow', text: 'MI PRÓXIMO TURNO' }));
+    if (!prox) { caja.appendChild(h('p', { class: 'sb-linea', text: 'Aún no tienes un turno confirmado. Elige uno de los eventos de abajo.' })); return caja; }
+    var p = estado.misPosts[prox.id];
+    caja.appendChild(h('h3', { class: 'sb-h3', text: prox.nombre }));
+    caja.appendChild(h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(prox.fecha) + ' · ' + hhmm(prox.hora_inicio) + ' a ' + hhmm(prox.hora_fin) }));
+    caja.appendChild(h('p', { class: 'sb-linea', text: [prox.lugar, prox.comuna].filter(Boolean).join(' · ') }));
+    caja.appendChild(p.asistencia_confirmada_en ? chip('Asistencia confirmada', 'sb-chip--ok') : chip('Falta que confirmes'));
+    return caja;
   }
 
   /* Lo que la persona todavía tiene que hacer (se muestra arriba en «Eventos»). */
@@ -520,6 +904,7 @@
     var cierre = bloqueBoleta(ev, post, mensajeEn);
     return h('article', { class: 'sb-tarjeta' },
       h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: ev.nombre }), estadoChip),
+      ev.requiere_camioneta ? h('p', { class: 'sb-linea' }, chip('Necesita camioneta')) : null,
       h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(ev.fecha) }),
       h('p', { class: 'sb-linea', text: hhmm(ev.hora_inicio) + ' a ' + hhmm(ev.hora_fin) + ' · ' + horasTxt(ev.horas) }),
       h('p', { class: 'sb-linea', text: [ev.lugar, ev.comuna].filter(Boolean).join(' · ') }),
@@ -530,6 +915,8 @@
         ? h('p', { class: 'sb-aviso', text: 'Te asignamos a este evento. Confirma que vas para que podamos contar contigo.' }) : null,
       dir ? h('div', { class: 'sb-dir' }, h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Dirección: ' + dir.direccion }),
         dir.indicaciones ? h('p', { class: 'sb-linea', text: dir.indicaciones }) : null) : null,
+      bloqueEquipo(ev, post),
+      bloqueTraslado(ev),
       cierre,
       acciones);
   }
@@ -543,6 +930,7 @@
       h('h2', { class: 'sb-h2', text: 'Próximos eventos' }),
       boton('Actualizar', function () { recargar(); }, 'sb-btn--sec')));
     caja.appendChild(msg);
+    caja.appendChild(tarjetaProximoTurno());
     caja.appendChild(h('p', { class: 'sb-texto', text: 'Cada evento se abre a la inscripción ' + diasPublicacion() + ' días antes de su fecha.' }));
     var pend = pendientesBarista();
     if (pend.length) {
@@ -564,6 +952,116 @@
     caja.appendChild(msg);
     if (!mias.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Todavía no postulas a ningún evento.' }));
     caja.appendChild(h('div', { class: 'sb-lista' }, mias.map(function (e) { return tarjetaEvento(e, msg); })));
+    return caja;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Ranking del equipo y «Mis ganancias»                                */
+  /* ------------------------------------------------------------------ */
+
+  function periodosRanking() {
+    var hoy = hoyISO(), a = Number(hoy.slice(0, 4)), m = Number(hoy.slice(5, 7)), out = [['acum', 'Acumulado']];
+    for (var i = 0; i < 6; i++) {
+      var d = new Date(Date.UTC(a, m - 1 - i, 1));
+      var etiqueta = d.toLocaleDateString('es-CL', { timeZone: 'UTC', month: 'long', year: 'numeric' });
+      var y = d.getUTCFullYear(), mm = ('0' + (d.getUTCMonth() + 1)).slice(-2), ultimo = new Date(Date.UTC(y, d.getUTCMonth() + 1, 0)).getUTCDate();
+      out.push([y + '-' + mm + '|' + y + '-' + mm + '-' + ('0' + ultimo).slice(-2), etiqueta.charAt(0).toUpperCase() + etiqueta.slice(1)]);
+    }
+    return out;
+  }
+
+  function vistaRanking() {
+    var caja = h('div');
+    var msg = h('div');
+    var yo = estado.sesion.user.id;
+    var opciones = periodosRanking();
+    var periodo = h('select', { name: 'periodo', class: 'sb-entrada', id: 'sb-periodo' }, opciones.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
+    var buscar = entrada('search', 'buscar', '', { id: 'sb-buscar', placeholder: 'Buscar en el equipo…', autocomplete: 'off', maxlength: '60' });
+    var cuerpo = h('div');
+    var filas = [];
+    caja.appendChild(h('p', { class: 'sb-eyebrow', text: 'CADA TURNO CUENTA' }));
+    caja.appendChild(h('h2', { class: 'sb-h2', text: 'Ranking del equipo' }));
+    caja.appendChild(h('p', { class: 'sb-texto', text: 'Reconocemos la experiencia que construimos evento a evento. Una participación suma un turno cuando Sepia registra tu asistencia.' }));
+    caja.appendChild(h('div', { class: 'sb-grilla' },
+      h('div', { class: 'sb-campo' }, h('label', { class: 'sb-etiqueta', for: 'sb-periodo', text: 'Período del ranking' }), periodo),
+      h('div', { class: 'sb-campo' }, h('label', { class: 'sb-etiqueta', for: 'sb-buscar', text: 'Buscar barista' }), buscar)));
+    caja.appendChild(msg); caja.appendChild(cuerpo);
+
+    var dibujar = function () {
+      cuerpo.textContent = '';
+      var q = sinTildes(buscar.value.trim());
+      var vistas = filas.filter(function (r) { return !q || sinTildes(r.nombre).indexOf(q) >= 0; });
+      var total = filas.reduce(function (n, r) { return n + Number(r.turnos); }, 0);
+      cuerpo.appendChild(h('p', { class: 'sb-texto', text: plural(filas.length, 'barista en el equipo', 'baristas en el equipo') + ' · ' + plural(total, 'participación registrada', 'participaciones registradas') }));
+      if (!vistas.length) { cuerpo.appendChild(h('p', { class: 'sb-texto', text: filas.length ? 'No encontramos ese nombre. Prueba con otra búsqueda.' : 'Aún no hay baristas en el equipo.' })); return; }
+      cuerpo.appendChild(h('ol', { class: 'sb-ranking' }, vistas.map(function (r) {
+        var soy = r.barista_id === yo;
+        return h('li', { class: 'sb-ranking__fila' + (soy ? ' sb-ranking__fila--yo' : '') },
+          h('span', { class: 'sb-ranking__puesto', text: String(r.puesto) }),
+          avatar(r.nombre, r.foto_path),
+          h('span', { class: 'sb-ranking__nombre', text: r.nombre + (soy ? ' (tú)' : '') }),
+          h('span', { class: 'sb-ranking__turnos' }, h('strong', { text: String(r.turnos) }), ' ' + (Number(r.turnos) === 1 ? 'turno' : 'turnos')));
+      })));
+      cuerpo.appendChild(h('p', { class: 'sb-ayuda', text: 'Los empates comparten puesto. Una postulación o una foto no suman. El acumulado incluye los turnos de antes del portal; los meses cuentan solo lo registrado en ese período.' }));
+    };
+    var cargar = function () {
+      ponerAviso(msg, '');
+      var partes = periodo.value === 'acum' ? null : periodo.value.split('|');
+      var args = partes ? { p_desde: partes[0] + '-01', p_hasta: partes[1] } : {};
+      cuerpo.textContent = ''; cuerpo.appendChild(h('p', { class: 'sb-texto', role: 'status', text: 'Cargando el ranking del equipo…' }));
+      Promise.resolve(sb.rpc('ranking_equipo', args)).then(function (r) {
+        if (r.error) throw r.error;
+        filas = r.data || [];
+        return firmarFotos(filas.map(function (x) { return x.foto_path; })).catch(function () { /* iniciales */ });
+      }).then(dibujar, function () { cuerpo.textContent = ''; ponerAviso(msg, 'No pudimos consultar el ranking. Inténtalo de nuevo.'); });
+    };
+    periodo.addEventListener('change', cargar);
+    buscar.addEventListener('input', dibujar);
+    cargar();
+    return caja;
+  }
+
+  function vistaGanancias() {
+    var caja = h('div');
+    var hoy = hoyISO(), yo = estado.sesion.user.id;
+    var mios = estado.eventos.map(function (e) { return [e, estado.misPosts[e.id]]; }).filter(function (x) {
+      return x[1] && x[1].estado === 'confirmada' && x[0].estado !== 'cancelado' && x[1].asistio !== false;
+    });
+    var pasados = mios.filter(function (x) { return x[0].fecha < hoy; }).sort(function (a, b) { return a[0].fecha < b[0].fecha ? 1 : -1; });
+    var futuros = mios.filter(function (x) { return x[0].fecha >= hoy; });
+    var pagado = 0, pendiente = 0, turnos = Number((estado.perfil && estado.perfil.turnos_previos) || 0);
+    pasados.forEach(function (x) {
+      if (x[1].honorarios_pagados_en) pagado += Number(x[0].pago_liquido); else pendiente += Number(x[0].pago_liquido);
+      if (x[1].asistio === true) turnos += 1;
+    });
+    var mt = estado.traslados.filter(function (t) { return t.barista_id === yo && t.total != null; });
+    var rePagado = mt.filter(function (t) { return t.pagado_en; }).reduce(function (n, t) { return n + Number(t.total); }, 0);
+    var rePend = mt.filter(function (t) { return !t.pagado_en; }).reduce(function (n, t) { return n + Number(t.total); }, 0);
+    var dato = function (etiqueta, valor) { return h('div', { class: 'sb-dato' }, h('span', { class: 'sb-dato__e', text: etiqueta }), h('strong', { class: 'sb-dato__v', text: valor })); };
+
+    caja.appendChild(h('p', { class: 'sb-eyebrow', text: 'RESUMEN PRIVADO' }));
+    caja.appendChild(h('h2', { class: 'sb-h2', text: 'Mis turnos y ganancias' }));
+    caja.appendChild(h('p', { class: 'sb-texto', text: 'Solo tú y la administración pueden ver estos montos.' }));
+    caja.appendChild(h('div', { class: 'sb-datos' },
+      dato('Turnos registrados', String(turnos)), dato('Próximos turnos', String(futuros.length)),
+      dato('Pagado por Sepia', clp(pagado)), dato('Pendiente de pago', clp(pendiente))));
+    if (mt.length) {
+      caja.appendChild(h('div', { class: 'sb-pago' },
+        h('p', { class: 'sb-pago__monto', text: 'Reembolsos de camioneta: ' + clp(rePagado) + ' pagados · ' + clp(rePend) + ' pendientes' }),
+        h('p', { class: 'sb-pago__nota', text: 'Bencina, TAG y estacionamiento se muestran aparte; no son honorarios ni van en tu boleta.' })));
+    }
+    caja.appendChild(h('h3', { class: 'sb-h3', text: 'Eventos trabajados' }));
+    if (!pasados.length) { caja.appendChild(h('p', { class: 'sb-texto', text: 'Aún no hay turnos terminados. Cuando trabajes un evento aparecerá aquí.' })); return caja; }
+    caja.appendChild(h('div', { class: 'sb-scroll' }, h('table', { class: 'sb-tabla sb-tabla--chica' },
+      h('thead', null, h('tr', null, ['Evento', 'Líquido', 'Estado'].map(function (x) { return h('th', { scope: 'col', text: x }); }))),
+      h('tbody', null, pasados.map(function (x) {
+        var p = x[1];
+        var est = p.honorarios_pagados_en ? 'Pagado el ' + fechaLarga(p.honorarios_pagados_en).toLowerCase()
+          : p.boleta_declarada_en ? 'Boleta en revisión' : 'Falta tu boleta';
+        return h('tr', null, h('td', null, x[0].nombre, h('br'), h('small', { text: fechaLarga(x[0].fecha) })),
+          h('td', { text: clp(x[0].pago_liquido) }), h('td', { text: est }));
+      })))));
+    caja.appendChild(h('p', { class: 'sb-ayuda', text: 'Es lo que Sepia te transfiere. La boleta de honorarios va por un monto mayor, por la retención de ' + pct(estado.config.retencion) + '. La app no hace transferencias: registra lo que Sepia ya pagó.' }));
     return caja;
   }
 
@@ -599,6 +1097,7 @@
         priv.cliente ? h('p', { class: 'sb-linea', text: 'Cliente: ' + priv.cliente }) : null,
         bloqueRevisar(ev.id, msg),
         lineaPublicacion(ev),
+        ev.requiere_camioneta ? h('p', { class: 'sb-linea' }, chip('Necesita camioneta'), estado.trasladoEv[ev.id] && estado.trasladoEv[ev.id].km != null ? ' ' + String(estado.trasladoEv[ev.id].km).replace('.', ',') + ' km' : '') : null,
         h('p', { class: 'sb-linea', text: 'Necesitas ' + ev.baristas_necesarios + ' · confirmados ' + confirmados + ' · postulados ' + postulados }),
         h('p', { class: 'sb-linea', text: 'Pago ' + clp(ev.pago_liquido) + ' líquidos · boleta ' + clp(ev.monto_boleta)
           + (Number(ev.pago_sin_tope) > Number(ev.pago_liquido) ? ' · tope diario aplicado (sin tope: ' + clp(ev.pago_sin_tope) + ')' : '') }),
@@ -608,7 +1107,30 @@
     });
     if (!estado.eventos.length) lista.appendChild(h('p', { class: 'sb-texto', text: 'Aún no hay eventos. Crea el primero con «Nuevo evento».' }));
     caja.appendChild(lista);
+    caja.appendChild(bloqueAjustesTraslado(msg));
     return caja;
+  }
+
+  function bloqueAjustesTraslado(msg) {
+    var cfg = estado.config || {};
+    var rend = entrada('number', 'rendimiento_km_l', cfg.rendimiento_km_l != null ? cfg.rendimiento_km_l : 10, { min: '1', max: '50', step: '0.1', inputmode: 'decimal', id: 'sb-rend' });
+    var precio = entrada('number', 'precio_litro', cfg.precio_litro != null ? cfg.precio_litro : 1400, { min: '0', max: '10000', step: '10', inputmode: 'numeric', id: 'sb-precio' });
+    var guardar = boton('Guardar ajustes', function () {
+      var r1 = parseFloat(rend.value), p1 = parseInt(precio.value, 10);
+      if (!(r1 > 0)) { ponerAviso(msg, 'El rendimiento tiene que ser mayor que 0.'); return; }
+      if (!(p1 >= 0)) { ponerAviso(msg, 'El precio del litro no puede ser negativo.'); return; }
+      conTarea(guardar, async function () {
+        var r = await sb.from('config').update({ rendimiento_km_l: r1, precio_litro: p1 }).eq('id', 1).select('*').single();
+        if (r.error) throw r.error;
+        estado.config = r.data;
+        ponerAviso(msg, 'Listo, guardamos los ajustes. Los eventos nuevos usan estos valores.', 'ok');
+      }).catch(function () { ponerAviso(msg, 'No pudimos guardar los ajustes.'); });
+    });
+    return h('details', { class: 'sb-detalle' },
+      h('summary', { class: 'sb-resumen' }, h('span', { class: 'sb-resumen__t', text: 'Ajustes de traslado con camioneta' })),
+      h('p', { class: 'sb-ayuda', text: 'La bencina se estima como kilómetros ÷ rendimiento × precio del litro. El TAG se anota a mano en cada evento. Todo el traslado es un reembolso aparte de los honorarios.' }),
+      h('div', { class: 'sb-grilla' }, campo('Rendimiento de la camioneta (km por litro)', rend), campo('Precio del litro (CLP)', precio)),
+      h('div', { class: 'sb-fila' }, guardar));
   }
 
   function formularioEvento(ev, cerrar, msgPagina) {
@@ -624,6 +1146,20 @@
     var notas = h('textarea', { name: 'notas', class: 'sb-entrada', rows: '2', maxlength: '1000' });
     notas.value = priv.notas || '';
     var vista = h('p', { class: 'sb-pago__nota' });
+    var trasl = (ev && estado.trasladoEv[ev.id]) || {};
+    var km = entrada('number', 'km', trasl.km != null ? trasl.km : '', { min: '0', max: '3000', step: '0.1', inputmode: 'decimal', id: 'sb-km' });
+    var tag = entrada('number', 'tag', trasl.tag != null ? trasl.tag : '', { min: '0', max: '1000000', step: '100', inputmode: 'numeric', id: 'sb-tag' });
+    var vistaTraslado = h('p', { class: 'sb-pago__nota' });
+    var actualizarTraslado = function () {
+      var k = parseFloat(km.value), t = parseInt(tag.value, 10);
+      if (!(k >= 0)) { vistaTraslado.textContent = ''; return; }
+      var rend = Number(cfg.rendimiento_km_l) || 10, precio = Number(cfg.precio_litro) || 0;
+      var bencina = Math.round(k / rend * precio);
+      vistaTraslado.textContent = 'Bencina = ' + String(k).replace('.', ',') + ' km ÷ ' + String(rend).replace('.', ',') + ' km/l × ' + clp(precio) + '/l = ' + clp(bencina)
+        + (t >= 0 ? '. Reembolso estimado: ' + clp(bencina + t) + ' (el estacionamiento se agrega al cierre).' : '. Falta el TAG para el total.');
+    };
+    [km, tag].forEach(function (x) { x.addEventListener('input', actualizarTraslado); });
+    actualizarTraslado();
 
     var ini = entrada('time', 'hora_inicio', ev ? hhmm(ev.hora_inicio) : '', { required: true });
     var fin = entrada('time', 'hora_fin', ev ? hhmm(ev.hora_fin) : '', { required: true });
@@ -650,6 +1186,7 @@
       campo('Baristas necesarios', entrada('number', 'baristas_necesarios', ev ? ev.baristas_necesarios : 1, { min: '1', max: '50', required: true })),
       campo('Pago líquido fijo (opcional)', manual, 'Déjalo vacío para usar las tarifas.'),
       campo('Estado', estadoSel)));
+    f.appendChild(casilla('requiere_camioneta', 'Este evento necesita a alguien que lleve el carrito en camioneta.', !!(ev && ev.requiere_camioneta)));
     f.appendChild(vista);
     f.appendChild(campo('Descripción', desc));
     f.appendChild(h('h3', { class: 'sb-h3', text: 'Dirección exacta (solo los baristas confirmados)' }));
@@ -661,6 +1198,10 @@
       campo('Cliente', entrada('text', 'cliente', priv.cliente || '', { maxlength: '120' })),
       campo('Contacto del cliente', entrada('text', 'contacto', priv.contacto || '', { maxlength: '200' }))));
     f.appendChild(campo('Notas internas', notas));
+    f.appendChild(h('h3', { class: 'sb-h3', text: 'Traslado con camioneta (solo tú, opcional)' }));
+    f.appendChild(h('p', { class: 'sb-ayuda', text: 'Kilómetros del recorrido completo, ida y vuelta, desde la oficina hasta el evento. El reembolso es solo para quien lleve la camioneta, se paga aparte de la boleta y no se multiplica por la cantidad de baristas.' }));
+    f.appendChild(h('div', { class: 'sb-grilla' }, campo('Kilómetros totales', km), campo('TAG y peajes estimados (CLP)', tag, 'En tarifa baja.')));
+    f.appendChild(vistaTraslado);
 
     var guardar = h('button', { type: 'submit', class: 'sb-btn', text: 'Guardar evento' });
     var acciones = h('div', { class: 'sb-fila' }, guardar, boton('Cancelar', cerrar, 'sb-btn--sec'));
@@ -685,8 +1226,10 @@
       var fila = {
         nombre: v('nombre'), fecha: v('fecha'), hora_inicio: v('hora_inicio'), hora_fin: v('hora_fin'), comuna: v('comuna'),
         lugar: v('lugar') || null, descripcion: v('descripcion') || null, baristas_necesarios: parseInt(v('baristas_necesarios'), 10),
-        pago_manual: v('pago_manual') === '' ? null : parseInt(v('pago_manual'), 10), estado: v('estado')
+        pago_manual: v('pago_manual') === '' ? null : parseInt(v('pago_manual'), 10), estado: v('estado'),
+        requiere_camioneta: !!d.get('requiere_camioneta')
       };
+      var kmV = v('km') === '' ? null : parseFloat(v('km')), tagV = v('tag') === '' ? null : parseInt(v('tag'), 10);
       var error = null;
       if (fila.nombre.length < 3) error = 'Escribe el nombre del evento.';
       else if (!fila.fecha) error = 'Elige la fecha.';
@@ -694,6 +1237,8 @@
       else if (fila.hora_inicio === fila.hora_fin) error = 'La hora de inicio y la de término no pueden ser iguales.';
       else if (fila.comuna.length < 2) error = 'Escribe la comuna.';
       else if (!(fila.baristas_necesarios >= 1)) error = 'Indica cuántos baristas necesitas.';
+      else if (kmV !== null && !(kmV >= 0 && kmV <= 3000)) error = 'Los kilómetros van entre 0 y 3.000.';
+      else if (tagV !== null && !(tagV >= 0)) error = 'El TAG no puede ser negativo.';
       if (error) { ponerAviso(msg, error); return; }
       ponerAviso(msg, '');
       conTarea(guardar, async function () {
@@ -707,6 +1252,10 @@
           ? await sb.from('evento_direcciones').upsert({ evento_id: id, direccion: v('direccion'), indicaciones: v('indicaciones') || null })
           : await sb.from('evento_direcciones').delete().eq('evento_id', id);
         if (r3.error) throw r3.error;
+        var r4 = (kmV !== null || tagV !== null)
+          ? await sb.from('evento_traslado').upsert({ evento_id: id, km: kmV, tag: tagV })
+          : await sb.from('evento_traslado').delete().eq('evento_id', id);
+        if (r4.error) throw r4.error;
         await recargar();
       }).catch(function (err) { ponerAviso(msg, mensajeError(err, 'No pudimos guardar el evento. Revisa los datos.')); });
     });
@@ -716,6 +1265,43 @@
   /* ------------------------------------------------------------------ */
   /* Administración: postulantes                                         */
   /* ------------------------------------------------------------------ */
+
+  /* Después del evento: la administración registra si cada persona asistió (cuenta en el ranking). */
+  function botonesAsistencia(p, ev, msg) {
+    if (p.estado !== 'confirmada' || ev.fecha >= hoyISO()) return null;
+    var fila = h('div', { class: 'sb-fila' });
+    var estadoAsistencia = p.asistio === true ? chip('Asistió', 'sb-chip--ok') : (p.asistio === false ? chip('No asistió', 'sb-chip--no') : chip('Asistencia sin registrar'));
+    var poner = function (btn, valor) {
+      conTarea(btn, async function () {
+        var r = await sb.from('postulaciones').update({ asistio: valor }).eq('id', p.id);
+        if (r.error) throw r.error;
+        estado.filtroEvento = ev.id;
+        await recargar();
+      }).catch(function () { ponerAviso(msg, 'No pudimos registrar la asistencia.'); });
+    };
+    if (p.asistio !== true) { var bs = boton('Asistió', function () { poner(bs, true); }, 'sb-btn--sec'); fila.appendChild(bs); }
+    if (p.asistio !== false) { var bn = boton('No asistió', function () { poner(bn, false); }, 'sb-btn--sec'); fila.appendChild(bn); }
+    return h('div', null, h('p', { class: 'sb-linea' }, estadoAsistencia), fila);
+  }
+
+  /* Un solo conductor por evento, y solo si declaró camioneta. */
+  function botonConductor(p, ev, msg) {
+    var b = estado.baristas[p.barista_id] || {};
+    if (p.estado !== 'confirmada' || !b.tiene_camioneta) return null;
+    var btn = boton(p.conductor ? 'Quitar de conductor' : 'Asignar como conductor', function () {
+      conTarea(btn, async function () {
+        if (!p.conductor) {
+          var r0 = await sb.from('postulaciones').update({ conductor: false }).eq('evento_id', ev.id).eq('conductor', true);
+          if (r0.error) throw r0.error;
+        }
+        var r = await sb.from('postulaciones').update({ conductor: !p.conductor }).eq('id', p.id);
+        if (r.error) throw r.error;
+        estado.filtroEvento = ev.id;
+        await recargar();
+      }).catch(function () { ponerAviso(msg, 'No pudimos cambiar el conductor.'); });
+    }, 'sb-btn--sec');
+    return btn;
+  }
 
   function vistaPostulantes() {
     var caja = h('div');
@@ -758,11 +1344,14 @@
           acc.appendChild(bm);
         }
         if (p.estado === 'confirmada' || p.estado === 'rechazada') { var bp = boton('Dejar como postulada', function () { poner(bp, 'postulada'); }, 'sb-btn--sec'); acc.appendChild(bp); }
+        añadir(acc, botonConductor(p, ev, msg));
         det.appendChild(h('div', { class: 'sb-postulante' },
-          h('div', { class: 'sb-tarjeta__cab' }, h('h3', { class: 'sb-h3', text: b.nombre || 'Barista' }),
-            chipPostulacion(p)),
+          h('div', { class: 'sb-tarjeta__cab' }, h('div', { class: 'sb-persona' }, avatar(b.nombre, b.foto_path), h('h3', { class: 'sb-h3', text: b.nombre || 'Barista' })),
+            h('span', null, chipPostulacion(p), p.conductor ? ' ' : null, p.conductor ? chip('Conductor', 'sb-chip--ok') : null)),
           h('p', { class: 'sb-linea', text: [b.telefono, b.comuna, b.correo].filter(Boolean).join(' · ') }),
+          h('p', { class: 'sb-linea', text: [b.talla_camisa ? 'Talla ' + b.talla_camisa : null, b.tiene_camioneta ? 'Tiene camioneta' : 'Sin camioneta'].filter(Boolean).join(' · ') }),
           b.experiencia ? h('p', { class: 'sb-linea', text: 'Experiencia: ' + b.experiencia }) : null,
+          botonesAsistencia(p, ev, msg),
           acc));
       });
       caja.appendChild(det);
@@ -859,6 +1448,52 @@
     hasta.addEventListener('change', dibujar);
     soloPend.addEventListener('change', dibujar);
     dibujar();
+    caja.appendChild(bloqueReembolsos());
+    return caja;
+  }
+
+  /* Reembolso de la camioneta: lo paga Manuel aparte de los honorarios. Acá solo se registra. */
+  function bloqueReembolsos() {
+    var caja = h('div');
+    var msg = h('div');
+    caja.appendChild(h('h3', { class: 'sb-h3 sb-h2--sec', text: 'Reembolsos de camioneta' }));
+    caja.appendChild(h('p', { class: 'sb-texto', text: 'Bencina, TAG y estacionamiento del conductor. No son honorarios ni van en la boleta. Registrar el pago no transfiere dinero.' }));
+    caja.appendChild(msg);
+    var filas = estado.traslados.slice().sort(function (a, b) {
+      var ea = estado.eventos.filter(function (e) { return e.id === a.evento_id; })[0] || {}, eb = estado.eventos.filter(function (e) { return e.id === b.evento_id; })[0] || {};
+      return (a.pagado_en ? 1 : 0) - (b.pagado_en ? 1 : 0) || String(ea.fecha).localeCompare(String(eb.fecha));
+    });
+    if (!filas.length) { caja.appendChild(h('p', { class: 'sb-texto', text: 'Todavía no hay conductores asignados.' })); return caja; }
+    filas.forEach(function (t) {
+      var ev = estado.eventos.filter(function (e) { return e.id === t.evento_id; })[0] || {};
+      var b = estado.baristas[t.barista_id] || {};
+      var est = entrada('number', 'estacionamiento', t.estacionamiento || 0, { min: '0', max: '1000000', step: '100', inputmode: 'numeric', 'aria-label': 'Estacionamiento (CLP)' });
+      var guardar = boton('Guardar estacionamiento', function () {
+        var n = parseInt(est.value, 10);
+        if (!(n >= 0)) { ponerAviso(msg, 'El estacionamiento no puede ser negativo.'); return; }
+        conTarea(guardar, async function () {
+          var r = await sb.from('postulaciones').update({ traslado_estacionamiento: n }).eq('id', t.postulacion_id);
+          if (r.error) throw r.error;
+          await recargar();
+        }).catch(function () { ponerAviso(msg, 'No pudimos guardar el estacionamiento.'); });
+      }, 'sb-btn--sec');
+      var pagar = boton(t.pagado_en ? 'Deshacer pago' : 'Registrar reembolso pagado', function () {
+        if (!t.pagado_en && !window.confirm('¿Ya le transferiste ' + clp(t.total) + ' a ' + (b.nombre || 'la persona') + '? Este botón no transfiere dinero.')) return;
+        conTarea(pagar, async function () {
+          var r = await sb.from('postulaciones').update({ traslado_pagado_en: t.pagado_en ? null : hoyISO() }).eq('id', t.postulacion_id);
+          if (r.error) throw r.error;
+          await recargar();
+        }).catch(function () { ponerAviso(msg, 'No pudimos registrar el pago.'); });
+      }, t.pagado_en ? 'sb-btn--sec' : '', t.total == null && !t.pagado_en ? { disabled: true } : null);
+      caja.appendChild(h('article', { class: 'sb-tarjeta' },
+        h('div', { class: 'sb-tarjeta__cab' }, h('h4', { class: 'sb-h4', text: (b.nombre || 'Conductor') + ' · ' + (ev.nombre || '') }),
+          t.pagado_en ? chip('pagado', 'sb-chip--ok') : (t.total == null ? chip('por calcular') : chip('pendiente'))),
+        h('p', { class: 'sb-linea', text: ev.fecha ? fechaLarga(ev.fecha) : '' }),
+        h('p', { class: 'sb-linea', text: filaTraslado(t) }),
+        h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Total ' + (t.total == null ? 'pendiente: falta ' + (t.km == null ? 'los kilómetros' : 'el TAG') + ' en el evento' : clp(t.total)) }),
+        h('div', { class: 'sb-fila' }, h('label', { class: 'sb-etiqueta', text: 'Estacionamiento' }), est, guardar),
+        h('div', { class: 'sb-fila' }, pagar)));
+    });
     return caja;
   }
 
@@ -997,6 +1632,12 @@
     caja.appendChild(h('p', { class: 'sb-linea sb-linea--fuerte', text: fechaLarga(s.fecha) + ' · ' + hhmm(s.hora_inicio) + ' a ' + hhmm(s.hora_fin) }));
     caja.appendChild(h('p', { class: 'sb-linea', text: 'Asignados ' + s.asignados + ' de ' + s.baristas_necesarios + ' · reconfirmados ' + s.reconfirmados + ' · postulantes sin asignar ' + s.postulantes }));
     caja.appendChild(h('p', { class: 'sb-linea' + (s.semaforo === 'alerta' ? ' sb-linea--fuerte' : ''), text: motivoSeg(s) }));
+    var evSeg = estado.eventos.filter(function (e) { return e.id === s.evento_id; })[0];
+    if (evSeg && evSeg.requiere_camioneta) {
+      var cond = asignados.filter(function (p) { return p.conductor; })[0];
+      var bc = cond && estado.baristas[cond.barista_id];
+      caja.appendChild(h('p', { class: 'sb-linea' + (cond ? '' : ' sb-linea--fuerte'), text: cond ? 'Camioneta: ' + ((bc && bc.nombre) || 'conductor asignado') : 'Necesita camioneta: falta asignar al conductor (en Admin: postulantes).' }));
+    }
     añadir(caja, bloqueRevisar(s.evento_id, msg));
     if (!s.realizado && diasHasta(s.fecha) > diasPublicacion()) añadir(caja, lineaPublicacion(s));
 
@@ -1075,7 +1716,8 @@
           var r = await sb.from('postulaciones').update({
             honorarios_pagados_en: fPag.value || hoyISO(),
             boleta_honorarios_recibida_en: fBol.value || hoyISO(),
-            boleta_honorarios_folio: fFol.value.trim() || null
+            boleta_honorarios_folio: fFol.value.trim() || null,
+            asistio: p.asistio === false ? false : true      // pagarle es reconocer que trabajó; si ya dijiste que no asistió, se respeta
           }).eq('id', p.id);
           if (r.error) throw r.error;
           await recargar();
@@ -1089,6 +1731,7 @@
         h('p', { class: 'sb-linea', text: [b.rut, b.banco, b.tipo_cuenta, b.numero_cuenta].filter(Boolean).join(' · ') }),
         ev.pago_liquido ? h('p', { class: 'sb-linea', text: 'Transferir ' + clp(ev.pago_liquido) + ' líquidos · boleta de honorarios por ' + clp(ev.monto_boleta) }) : null,
         p.boleta_declarada_en ? h('p', { class: 'sb-linea sb-linea--fuerte', text: 'Avisó que emitió su boleta el ' + diaCorto(p.boleta_declarada_en) + (p.boleta_declarada_folio ? ' (folio ' + p.boleta_declarada_folio + ')' : '') + '. Revísala en el SII.' }) : null,
+        botonesAsistencia(p, ev, msg),
         h('div', { class: 'sb-grilla' }, campo('Boleta recibida el', fBol), campo('Folio de la boleta', fFol), campo('Honorarios pagados el', fPag)),
         h('div', { class: 'sb-fila' }, p.honorarios_pagados_en ? null : pagar, guardar)));
     });
@@ -1130,16 +1773,169 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Administración: accesos del equipo                                  */
+  /* ------------------------------------------------------------------ */
+
+  function sugerirUsuario(nombre) {
+    var partes = sinTildes(nombre).replace(/[^a-z\s]/g, ' ').trim().split(/\s+/).filter(Boolean);
+    if (!partes.length) return '';
+    var base = partes.length === 1 ? partes[0] : partes[0] + '.' + (partes.length >= 3 ? partes[partes.length - 2] : partes[1]);
+    base = base.slice(0, 26);
+    var usados = estado.accesos.map(function (a) { return a.usuario; }), id = base, n = 2;
+    while (usados.indexOf(id) >= 0) { id = base + n; n++; }
+    return id;
+  }
+
+  function textoAcceso(a) {
+    var url = window.location.origin + window.location.pathname;
+    return 'Hola ' + String(a.nombre || '').trim().split(/\s+/)[0] + ', te di acceso al portal de baristas de Sepia: ' + url + '\n'
+      + 'ID: ' + a.usuario + '\nClave temporal: ' + a.clave + '\nAl entrar te pedirá crear tu clave personal.';
+  }
+
+  async function recargarAccesos() {
+    var rac = await sb.from('accesos').select('*');
+    estado.accesos = rac.data || [];
+    await cargarEventos();
+    pintar();
+  }
+
+  /* Tarjeta con el ID y la clave temporal: se muestra una sola vez. */
+  function tarjetaClaveTemporal() {
+    var a = estado.ultimoAcceso;
+    if (!a) return null;
+    var msg = h('div');
+    var texto = textoAcceso(a);
+    var copiar = boton('Copiar mensaje', function () {
+      var mostrar = function () {
+        var ta = h('textarea', { class: 'sb-entrada', rows: '5', readonly: true }); ta.value = texto;
+        msg.textContent = ''; msg.appendChild(ta); ta.focus(); ta.select();
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(function () { ponerAviso(msg, 'Mensaje copiado. Pégalo en WhatsApp.', 'ok'); }, mostrar);
+      } else mostrar();
+    });
+    return h('div', { class: 'sb-caja sb-caja--clave', role: 'status' },
+      h('h3', { class: 'sb-h3', text: a.tipo === 'restablecida' ? 'Clave restablecida: ' + a.nombre : 'Acceso creado: ' + a.nombre }),
+      h('p', { class: 'sb-texto', text: 'Entrega estos datos por privado. Se muestran una sola vez y la persona tendrá que cambiar la clave al entrar.' }),
+      h('p', { class: 'sb-linea' }, 'ID: ', h('strong', { class: 'sb-mono', text: a.usuario })),
+      h('p', { class: 'sb-linea' }, 'Clave temporal: ', h('strong', { class: 'sb-mono', text: a.clave })),
+      h('div', { class: 'sb-fila' }, copiar,
+        h('a', { class: 'sb-btn sb-btn--sec', target: '_blank', rel: 'noopener noreferrer', text: 'Abrir WhatsApp', href: 'https://wa.me/?text=' + encodeURIComponent(texto) }),
+        boton('Ya guardé los datos', function () { estado.ultimoAcceso = null; pintar(); }, 'sb-btn--sec')),
+      msg);
+  }
+
+  function formularioNuevoAcceso(msg) {
+    var f = h('form', { class: 'sb-caja', novalidate: true });
+    var nombre = entrada('text', 'nombre', '', { id: 'sb-na-nombre', required: true, maxlength: '100', autocomplete: 'off', placeholder: 'Ej.: Camila Pérez González' });
+    var usuario = entrada('text', 'usuario', '', { id: 'sb-na-usuario', required: true, maxlength: '30', autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false', placeholder: 'camila.perez' });
+    var editado = false;
+    nombre.addEventListener('input', function () { if (!editado) usuario.value = sugerirUsuario(nombre.value); });
+    usuario.addEventListener('input', function () { editado = usuario.value !== ''; });
+    var crear = h('button', { type: 'submit', class: 'sb-btn', text: 'Crear acceso' });
+    f.appendChild(h('h3', { class: 'sb-h3', text: 'Crear acceso de barista' }));
+    f.appendChild(h('p', { class: 'sb-texto', text: 'Entrégale su ID y la clave temporal por privado. No necesita correo para entrar.' }));
+    f.appendChild(h('div', { class: 'sb-grilla' }, campo('Nombre completo', nombre), campo('ID de usuario', usuario, 'Letras sin tilde, números, punto o guion. Se sugiere solo.')));
+    f.appendChild(h('div', { class: 'sb-fila' }, crear));
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var u = usuario.value.trim().toLowerCase(), n = nombre.value.trim();
+      if (n.length < 3) { ponerAviso(msg, 'Escribe el nombre completo.'); nombre.focus(); return; }
+      if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(u)) { ponerAviso(msg, 'El ID debe tener de 3 a 30 caracteres: letras sin tilde, números, punto o guion.'); usuario.focus(); return; }
+      ponerAviso(msg, '');
+      conTarea(crear, async function () {
+        var r = await sb.rpc('crear_acceso', { p_usuario: u, p_nombre: n });
+        if (r.error) throw r.error;
+        estado.ultimoAcceso = { usuario: r.data.usuario, clave: r.data.clave, nombre: n, tipo: 'creada' };
+        await recargarAccesos();
+      }).catch(function (err) { ponerAviso(msg, /ya existe/i.test((err && err.message) || '') ? 'Ese ID ya existe. Prueba con otro.' : mensajeError(err, 'No pudimos crear el acceso. Revisa los datos.')); });
+    });
+    return f;
+  }
+
+  function tarjetaAcceso(a, msg) {
+    var b = estado.baristas[a.id];
+    var chipEstado = !a.activo ? chip('Desactivado', 'sb-chip--no') : a.debe_cambiar_clave ? chip('Aún no entra') : !b ? chip('Falta completar el perfil') : chip('Perfil completo', 'sb-chip--ok');
+    var acciones = h('div', { class: 'sb-fila' });
+    var restablecer = boton('Restablecer clave', function () {
+      if (!window.confirm('Se genera una clave temporal nueva para ' + a.nombre + ' y se cierran sus sesiones. ¿Seguro?')) return;
+      conTarea(restablecer, async function () {
+        var r = await sb.rpc('restablecer_clave', { p_acceso: a.id });
+        if (r.error) throw r.error;
+        estado.ultimoAcceso = { usuario: a.usuario, clave: r.data, nombre: a.nombre, tipo: 'restablecida' };
+        await recargarAccesos();
+      }).catch(function () { ponerAviso(msg, 'No pudimos restablecer la clave.'); });
+    }, 'sb-btn--sec');
+    var estadoBtn = boton(a.activo ? 'Desactivar acceso' : 'Restaurar acceso', function () {
+      if (a.activo && !window.confirm(a.nombre + ' no podrá entrar ni ver nada hasta que restaures su acceso. ¿Seguro?')) return;
+      conTarea(estadoBtn, async function () {
+        var r = await sb.rpc('cambiar_estado_acceso', { p_acceso: a.id, p_activo: !a.activo });
+        if (r.error) throw r.error;
+        await recargarAccesos();
+      }).catch(function () { ponerAviso(msg, 'No pudimos cambiar el acceso.'); });
+    }, 'sb-btn--sec');
+    var eliminar = boton('Eliminar', function () {
+      if (!window.confirm('Se borra el acceso de ' + a.nombre + ', su perfil y todas sus postulaciones. No se puede deshacer. ¿Seguro?')) return;
+      conTarea(eliminar, async function () {
+        var r = await sb.rpc('eliminar_acceso', { p_acceso: a.id });
+        if (r.error) throw r.error;
+        await recargarAccesos();
+      }).catch(function () { ponerAviso(msg, 'No pudimos eliminar el acceso.'); });
+    }, 'sb-btn--sec');
+    acciones.appendChild(restablecer); acciones.appendChild(estadoBtn); acciones.appendChild(eliminar);
+
+    var caja = h('article', { class: 'sb-tarjeta' },
+      h('div', { class: 'sb-tarjeta__cab' }, h('div', { class: 'sb-persona' }, avatar(a.nombre, b && b.foto_path), h('div', null, h('h3', { class: 'sb-h3', text: a.nombre }), h('p', { class: 'sb-linea sb-mono', text: a.usuario }))), chipEstado));
+    if (b) {
+      var previos = entrada('number', 'turnos_previos', b.turnos_previos || 0, { min: '0', max: '5000', step: '1', inputmode: 'numeric', 'aria-label': 'Turnos previos al portal' });
+      var guardarPrevios = boton('Guardar', function () {
+        var n = parseInt(previos.value, 10);
+        if (!(n >= 0 && n <= 5000)) { ponerAviso(msg, 'Los turnos previos son un número entre 0 y 5000.'); return; }
+        conTarea(guardarPrevios, async function () {
+          var r = await sb.from('baristas').update({ turnos_previos: n }).eq('id', a.id);
+          if (r.error) throw r.error;
+          await recargarAccesos();
+        }).catch(function () { ponerAviso(msg, 'No pudimos guardar los turnos previos.'); });
+      }, 'sb-btn--sec');
+      caja.appendChild(h('details', { class: 'sb-detalle sb-detalle--chico' },
+        h('summary', { class: 'sb-resumen' }, h('span', { class: 'sb-resumen__t', text: 'Datos privados de contacto y pago' })),
+        h('dl', { class: 'sb-dl' },
+          [['Teléfono', b.telefono], ['Correo de contacto', b.correo], ['RUT', b.rut], ['Comuna', b.comuna], ['Talla de camisa', b.talla_camisa || 'Sin informar'],
+            ['Camioneta', b.tiene_camioneta ? 'Sí' : 'No'], ['Banco', b.banco], ['Cuenta', b.tipo_cuenta + ' ' + b.numero_cuenta],
+            ['Avisos por correo', b.acepta_avisos ? 'Sí' : 'No']].map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })),
+        h('div', { class: 'sb-fila' }, h('label', { class: 'sb-etiqueta', text: 'Turnos de antes del portal' }), previos, guardarPrevios)));
+    } else if (a.activo) {
+      caja.appendChild(h('p', { class: 'sb-linea', text: a.debe_cambiar_clave ? 'Todavía no entra al portal.' : 'Ya cambió su clave y falta que complete su perfil.' }));
+    }
+    caja.appendChild(acciones);
+    return caja;
+  }
+
+  function vistaAccesos() {
+    var caja = h('div');
+    var msg = h('div');
+    caja.appendChild(h('h2', { class: 'sb-h2', text: 'Accesos del equipo' }));
+    caja.appendChild(msg);
+    añadir(caja, tarjetaClaveTemporal());
+    caja.appendChild(formularioNuevoAcceso(msg));
+    caja.appendChild(h('h3', { class: 'sb-h3', text: plural(estado.accesos.length, 'persona en el equipo', 'personas en el equipo') }));
+    if (!estado.accesos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Aún no hay accesos. Crea el primero con el formulario de arriba.' }));
+    var orden = estado.accesos.slice().sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
+    caja.appendChild(h('div', { class: 'sb-lista' }, orden.map(function (a) { return tarjetaAcceso(a, msg); })));
+    return caja;
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Armado de la página                                                 */
   /* ------------------------------------------------------------------ */
 
   function pestanas() {
     var lista = [];
-    if (estado.perfil) lista.push(['eventos', 'Eventos'], ['mis', 'Mis postulaciones'], ['datos', 'Mis datos']);
+    if (estado.perfil) lista.push(['eventos', 'Eventos'], ['mis', 'Mis postulaciones'], ['ranking', 'Ranking'], ['ganancias', 'Mis ganancias'], ['datos', 'Mis datos']);
     if (estado.admin) {
       var n = alertasSeg().length;
       lista.push(['seguimiento', 'Admin: seguimiento' + (n ? ' (' + n + ')' : '')], ['admin', 'Admin: eventos'],
-        ['postulantes', 'Admin: postulantes'], ['resumen', 'Admin: pagos']);
+        ['postulantes', 'Admin: postulantes'], ['resumen', 'Admin: pagos'], ['accesos', 'Admin: accesos'], ['ranking', 'Ranking']);
     }
     return lista;
   }
@@ -1151,32 +1947,37 @@
       return h('button', { type: 'button', role: 'tab', class: 'sb-tab' + (t[0] === estado.pestana ? ' sb-tab--on' : ''), 'aria-selected': t[0] === estado.pestana ? 'true' : 'false',
         onclick: function () { estado.pestana = t[0]; pintar(); }, text: t[1] });
     }));
-    var vista = { eventos: vistaEventos, mis: vistaMisPostulaciones, datos: function () { return vistaFormularioPerfil('editar'); },
-      seguimiento: vistaSeguimiento, admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen }[estado.pestana];
+    var vista = { eventos: vistaEventos, mis: vistaMisPostulaciones,
+      datos: function () { return h('div', null, vistaFormularioPerfil('editar'), h('div', { class: 'sb-caja sb-caja--aparte' }, vistaCambiarClave(false))); },
+      ranking: vistaRanking, ganancias: vistaGanancias,
+      seguimiento: vistaSeguimiento, admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen, accesos: vistaAccesos }[estado.pestana];
     return h('div', null, nav, h('div', { class: 'sb-panel', role: 'tabpanel' }, vista()));
   }
 
   function barraSuperior() {
     return h('div', { class: 'sb-barra' },
-      h('p', { class: 'sb-barra__t', text: 'Sesión: ' + (estado.sesion.user.email || '') }),
-      boton('Salir', async function () { await sb.auth.signOut(); limpiarEstado(); pintar(); }, 'sb-btn--sec'));
+      h('p', { class: 'sb-barra__t', text: 'Sesión: ' + (estado.acceso && !estado.admin ? estado.acceso.nombre + ' (' + estado.acceso.usuario + ')' : (estado.sesion.user.email || '')) }),
+      boton('Salir', async function () { await sb.auth.signOut({ scope: 'local' }); limpiarEstado(); pintar(); }, 'sb-btn--sec'));
   }
 
   function pintar() {
     raiz.textContent = '';
     raiz.appendChild(h('header', { class: 'sb-cab' },
       h('h1', { class: 'sb-h1', text: 'Baristas Sepia' }),
-      h('p', { class: 'sb-texto', text: 'Trabaja con nosotros en eventos: regístrate, mira las fechas y postula.' })));
+      h('p', { class: 'sb-texto', text: 'Mira los eventos, postula y sigue tus turnos y ganancias.' })));
     if (estado.cargando) { raiz.appendChild(h('p', { class: 'sb-texto', role: 'status', text: 'Cargando…' })); return; }
     if (!estado.sesion) { raiz.appendChild(vistaLogin()); raiz.appendChild(pie()); return; }
     raiz.appendChild(barraSuperior());
-    if (!estado.perfil && !estado.admin) raiz.appendChild(vistaFormularioPerfil('crear'));
+    if (estado.admin) raiz.appendChild(vistaApp());
+    else if (!estado.acceso || !estado.acceso.activo) raiz.appendChild(vistaSinAcceso());
+    else if (estado.acceso.debe_cambiar_clave) raiz.appendChild(vistaCambiarClave(true));
+    else if (!estado.perfil) raiz.appendChild(vistaFormularioPerfil('crear'));
     else raiz.appendChild(vistaApp());
     raiz.appendChild(pie());
   }
 
   function pie() {
-    return h('p', { class: 'sb-pie' }, '¿Problemas para entrar o registrarte? ', h('a', { href: WHATSAPP, target: '_blank', rel: 'noopener noreferrer', text: 'Escríbenos por WhatsApp' }), '.');
+    return h('p', { class: 'sb-pie' }, '¿Problemas para entrar? ', h('a', { href: WHATSAPP, target: '_blank', rel: 'noopener noreferrer', text: 'Escríbenos por WhatsApp' }), '.');
   }
 
   /* ------------------------------------------------------------------ */

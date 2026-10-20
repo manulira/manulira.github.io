@@ -33,6 +33,9 @@ test('un evento de punta a punta: calendario → inscripción → recordatorios 
         ('00000000-0000-0000-0000-0000000000a1', 'ana@ejemplo.test'), ('00000000-0000-0000-0000-0000000000b1', 'beto@ejemplo.test'),
         ('00000000-0000-0000-0000-0000000000c1', 'cleo@ejemplo.test'), ('00000000-0000-0000-0000-0000000000d1', 'dino@ejemplo.test');
       insert into public.admins(email) values ('admin@ejemplo.test');
+      insert into public.accesos(id, usuario, nombre) values
+        ('00000000-0000-0000-0000-0000000000a1', 'ana.prueba', 'Ana Prueba'), ('00000000-0000-0000-0000-0000000000b1', 'beto.prueba', 'Beto Prueba'),
+        ('00000000-0000-0000-0000-0000000000c1', 'cleo.prueba', 'Cleo Prueba'), ('00000000-0000-0000-0000-0000000000d1', 'dino.prueba', 'Dino Prueba');
       update public.automatizacion set secreto_hash = encode(sha256(convert_to('clave-larga', 'UTF8')), 'hex');
       insert into public.baristas(id, nombre, rut, correo, telefono, comuna, banco, tipo_cuenta, numero_cuenta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad, acepta_avisos) values
         ('00000000-0000-0000-0000-0000000000a1', 'Ana Prueba', '11.111.111-1', 'ana@ejemplo.test', '+56911110001', 'Ñuñoa', 'BCI', 'Cuenta vista', '11110001', true, true, 'x', true, true),
