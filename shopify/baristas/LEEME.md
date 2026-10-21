@@ -318,7 +318,8 @@ los mismos eventos y postulaciones (la sesión incluso se comparte: quien entra 
 | `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) con las imágenes optimizadas (de 5,7 MB a 0,5 MB) |
 | `equipo/construir.py` | Hace los cambios de texto y de rutas (cada uno anotado con su motivo) y deja `assets/sepia-equipo-v1-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
 | `assets/sepia-equipo-api.js` | El «servidor»: intercepta lo que la interfaz le pide a `/api/*` y lo traduce a Supabase (sesión, funciones `eq_*`, fotos en el almacenamiento privado) |
-| `templates/page.equipo.liquid` | La página, sin el diseño de la tienda. Lleva `SUPABASE_URL` y `SUPABASE_CLAVE` como marcadores: reemplázalos antes de subirla (`construir.py --salida … --url … --clave …` deja una copia lista) |
+| `templates/page.equipo.liquid` | La página, sin el diseño de la tienda |
+| `snippets/sepia-equipo-conexion.liquid` | La URL y la clave pública de Supabase. En el repo lleva los marcadores `SUPABASE_URL` y `SUPABASE_CLAVE`: reemplázalos antes de subirlo (`construir.py --salida … --url … --clave …` deja una copia lista) |
 | `equipo/pruebas/` | Pruebas de punta a punta en un navegador real (ver más abajo) |
 
 **Reglas** (las de Jorge, aplicadas por la base de datos y no por la pantalla): se postula con confirmación inmediata, por
@@ -343,7 +344,7 @@ correo y su clave (si la activó en el portal); sin clave, entra por el portal d
 
 **Puesta en marcha**: (1) en Supabase, correr `esquema.sql` de nuevo (cambió una regla) y después `equipo.sql`; (2) crear la
 página «Equipo» (`/pages/equipo`, plantilla `equipo`) y subir al tema los archivos `assets/sepia-equipo-*`, `assets/sepia-equipo-api.js`
-y `templates/page.equipo.liquid` (con la URL y la clave públicas de Supabase); (3) probar en la vista previa del tema y publicarlo. Si cambias algo
+`templates/page.equipo.liquid` y `snippets/sepia-equipo-conexion.liquid` (con la URL y la clave públicas de Supabase); (3) probar en la vista previa del tema y publicarlo. Si cambias algo
 de `fuente/` o de `construir.py`, sube `VERSION` en `construir.py` para que los navegadores no usen copias viejas.
 
 ## Probado, y lo que falta probar

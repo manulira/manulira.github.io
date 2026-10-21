@@ -11,8 +11,9 @@ const TEMA = path.join(AQUI, '..', '..');
 const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8' };
 
 /* Un «Liquid» mínimo, solo para esta plantilla: quita las etiquetas de control y resuelve asset_url. */
-export function renderizar(plantilla, url, clave) {
+export function renderizar(plantilla, url, clave, snippet = '') {
   let t = plantilla
+    .replace(/\{%\s*render 'sepia-equipo-conexion'\s*%\}/g, () => snippet)
     .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '')
     .replace(/\{%\s*layout none\s*%\}/g, '')
     .replace(/\{%\s*(end)?raw\s*%\}/g, '')
@@ -26,7 +27,9 @@ export function renderizar(plantilla, url, clave) {
 
 export function servir(puerto, { url, clave }) {
   const plantilla = fs.readFileSync(path.join(TEMA, 'templates', 'page.equipo.liquid'), 'utf8');
-  const html = renderizar(plantilla, url, clave);
+  const snippet = fs.readFileSync(path.join(TEMA, 'snippets', 'sepia-equipo-conexion.liquid'), 'utf8')
+    .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '');
+  const html = renderizar(plantilla, url, clave, snippet);
   const peticiones = [];
   const servidor = http.createServer((req, res) => {
     const u = new URL(req.url, 'http://x');

@@ -6,6 +6,7 @@ ya optimizadas), le hace unos pocos cambios de texto y de rutas, y deja:
 
   assets/sepia-equipo-<versión>-*.js|css|png|jpg|json   la interfaz, en la carpeta plana de assets del tema
   templates/page.equipo.liquid                           la plantilla de la página /pages/equipo
+  snippets/sepia-equipo-conexion.liquid                  la URL y la clave pública de Supabase (en el repo, marcadores)
 
 El adaptador que la conecta a Supabase es assets/sepia-equipo-api.js (a mano, no se genera).
 
@@ -13,7 +14,7 @@ Uso:
   python3 construir.py                      # deja todo en el repo (shopify/assets y shopify/templates)
   python3 construir.py --salida DIR --url https://xxxx.supabase.co --clave sb_publishable_...
                                             # además deja una copia lista para subir, con la conexión escrita
-                                            # (el repo lleva marcadores en su lugar)
+                                            # (el repo lleva marcadores en el snippet de la conexión)
 
 Cada cambio al código compilado se anota abajo con su motivo. Si el texto a cambiar no está EXACTAMENTE
 las veces esperadas, el armado se detiene: así un cambio de la fuente no pasa inadvertido.
@@ -146,7 +147,7 @@ def extraer_html():
     return boot, inline
 
 
-def plantilla(url, clave):
+def plantilla():
     boot, inline = extraer_html()
     archivos = {}
     for nombre in JS + CSS:
@@ -170,8 +171,8 @@ def plantilla(url, clave):
   La interfaz del equipo (turnos, perfil, ranking, administración), conectada a la misma base de datos
   Supabase del portal de baristas. No usa el diseño de la tienda: es una página completa.
   Los archivos están en assets/sepia-equipo-*; el «servidor» es assets/sepia-equipo-api.js.
-  Se arma con equipo/construir.py. Antes de subirla, reemplaza SUPABASE_URL y SUPABASE_CLAVE por los de tu
-  proyecto (la clave pública «anon»/«publishable»: está hecha para ir en la página; lo protege la base de datos).
+  Se arma con equipo/construir.py. La conexión con Supabase (URL y clave pública) está en
+  snippets/sepia-equipo-conexion.liquid: reemplaza ahí SUPABASE_URL y SUPABASE_CLAVE antes de subirlo.
 {%%- endcomment -%%}
 <!doctype html>
 <html lang="es-CL">
@@ -187,19 +188,18 @@ def plantilla(url, clave):
 <link rel="icon" href="{{ '%(p)sicon-64.png' | asset_url }}">
 <link rel="apple-touch-icon" href="{{ '%(p)sicon-180.png' | asset_url }}">
 <link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url }}">
-<link rel="preconnect" href="%(url)s" crossorigin>
+{%% render 'sepia-equipo-conexion' %%}
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url }}" data-precedence="vite-rsc/importer-resources">
 %(pre)s
 <script>
   window.SEPIA_EQUIPO = {
-    url: "%(url)s",
-    key: "%(clave)s",
     portal: "/pages/baristas",
     files: {
 %(mapa)s
     }
   };
+  Object.assign(window.SEPIA_EQUIPO, window.SEPIA_EQUIPO_CONEXION);
 </script>
 <script
   src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"
@@ -214,7 +214,16 @@ def plantilla(url, clave):
 </head>
 <body>%(boot)s<script type="module" src="{{ '%(entrada)s' | asset_url }}"></script></body>
 </html>
-''' % {'p': PREFIJO, 'url': url, 'clave': clave, 'pre': pre, 'mapa': mapa, 'bloques': bloques, 'boot': boot, 'entrada': entrada}
+''' % {'p': PREFIJO, 'pre': pre, 'mapa': mapa, 'bloques': bloques, 'boot': boot, 'entrada': entrada}
+
+
+def conexion(url, clave):
+    """El snippet con la conexión a Supabase: la clave pública (anon/publishable) está hecha para ir en la página;
+    lo que protege los datos son las reglas de la base. En el repo lleva marcadores."""
+    return '''{%%- comment -%%} Conexión de Sepia Equipo con Supabase (URL del proyecto y clave pública). {%%- endcomment -%%}
+<link rel="preconnect" href="%s" crossorigin>
+<script>window.SEPIA_EQUIPO_CONEXION = { url: "%s", key: "%s" };</script>
+''' % (url, url, clave)
 
 
 def escribir(ruta, contenido):
@@ -231,10 +240,11 @@ def main():
     a = ap.parse_args()
 
     js = armar_js()
-    destinos = [(os.path.join(REPO_SHOPIFY, 'assets'), os.path.join(REPO_SHOPIFY, 'templates'), 'SUPABASE_URL', 'SUPABASE_CLAVE')]
+    destinos = [(REPO_SHOPIFY, 'SUPABASE_URL', 'SUPABASE_CLAVE')]
     if a.salida:
-        destinos.append((os.path.join(a.salida, 'assets'), os.path.join(a.salida, 'templates'), a.url, a.clave))
-    for carpeta_assets, carpeta_plantillas, url, clave in destinos:
+        destinos.append((a.salida, a.url, a.clave))
+    for raiz, url, clave in destinos:
+        carpeta_assets, carpeta_plantillas = os.path.join(raiz, 'assets'), os.path.join(raiz, 'templates')
         for nombre, texto in js.items():
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), texto)
         for nombre in CSS:
@@ -242,8 +252,9 @@ def main():
         for origen, destino in IMAGENES.items():
             shutil.copyfile(os.path.join(FUENTE, 'imagenes', origen), os.path.join(carpeta_assets, PREFIJO + destino))
         escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json'), MANIFIESTO)
-        escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla(url, clave))
-    print('Listo: %d archivos de interfaz + plantilla.' % (len(js) + len(CSS) + len(IMAGENES) + 1))
+        escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
+        escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
+    print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + 1))
 
 
 if __name__ == '__main__':

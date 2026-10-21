@@ -502,11 +502,9 @@ try {
     const sinDesborde = async () => (await pg.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
     ok(await sinDesborde(), 'la entrada cabe en el ancho del celular');
     await captura(pg, 'F1-entrada-celular');
-    await iniciarSesion(pg, 'ana.prueba', 'otra frase segura 2').catch(() => {});
-    if (/Bienvenido al equipo/.test(await texto(pg))) await iniciarSesion(pg, 'ana.prueba', 'mi frase segura 1');
-    if (/Bienvenido al equipo/.test(await texto(pg))) await iniciarSesion(pg, 'ana.prueba', claves['ana.prueba']);
+    await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
     await espera(pg, 800);
-    ok(/Hola, Ana/.test(await texto(pg)), 'entra desde el celular');
+    ok(/Hola, Beto/.test(await texto(pg)), 'entra desde el celular');
     ok(await sinDesborde(), 'el inicio cabe en el ancho del celular');
     await captura(pg, 'F2-inicio-celular');
     await pg.getByRole('button', { name: 'Ranking' }).last().click(); await espera(pg, 1200);
