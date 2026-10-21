@@ -39,11 +39,10 @@ const rut = n => {
 };
 
 const nueva = async (ancho = 1100) => { const pg = await abrir(navegador, p, ORIGEN, ancho); await pg.goto(PAGINA); await entrarSiHaySplash(pg); return pg; };
+/* Espera a que la interfaz arme la entrada (o el inicio, si ya hay sesión). */
 async function entrarSiHaySplash(pg) {
-  await pg.waitForSelector('.boot-screen, .startup-screen, .required-profile, .app-shell, button:has-text("Entrar")', { timeout: 15000 });
-  await espera(pg, 800);
-  const entrar = pg.getByRole('button', { name: /^Entrar/ });
-  if (await entrar.count()) { await entrar.first().click(); await espera(pg, 500); }
+  await pg.waitForSelector('.required-profile, .app-shell', { timeout: 15000 });
+  await espera(pg, 300);
 }
 const pulsa = (pg, nombre, opciones = {}) => pg.getByRole('button', { name: nombre, ...opciones }).first().click();
 const clave = (pg, nombre) => pg.getByRole('textbox', { name: nombre, exact: true });
@@ -103,6 +102,7 @@ try {
     const pg = await nueva();
     let t = await texto(pg);
     ok(/Bienvenido al equipo/.test(t) && /Contacta a Manuel/.test(t), 'sin sesión se ve la entrada con ID y clave (y el contacto es Manuel)');
+    ok(await pg.locator('[inert], [aria-hidden=true]:not(svg)').count() === 0, 'la página no queda bloqueada ni oculta (no hay pantalla de bienvenida)');
     await captura(pg, 'A1-entrada');
     await iniciarSesion(pg, 'ana.prueba', 'clave equivocada');
     t = await texto(pg);
@@ -142,7 +142,7 @@ try {
 
   /* ====================================================================== */
   if (corre('B')) {
-    console.log('\n=== B. Eventos: qué se ve, postular con camioneta, ver el evento, pedir ayuda y ver al equipo ===');
+    console.log('\n=== B. Eventos: qué se ve, postular con camioneta, ver el evento, cancelar y ver al equipo ===');
     const pg = await nueva();
     await iniciarSesion(pg, 'ana.prueba', 'mi frase segura 1');
     let t = await texto(pg);
@@ -166,30 +166,8 @@ try {
     ok(/Cómo llegar/.test(t) && await pg.locator('a[href*="google.com/maps/dir"]').count() > 0, 'trae el enlace «Cómo llegar»');
     await captura(pg, 'B2-detalle');
 
-    await pulsa(pg, 'Necesito ayuda'); await espera(pg, 900);
-    t = await texto(pg);
-    ok(/Con quién quieres hablar/.test(t) && /Manuel Lira/.test(t), '«Necesito ayuda» muestra el contacto de Manuel');
-    const wsp = await pg.locator('a[href*="wa.me/56979284400"]').count();
-    ok(wsp === 1, 'con el enlace a su WhatsApp, con el evento en el mensaje');
-    await pulsa(pg, 'Cerrar contactos de ayuda').catch(() => {});
-
-    /* Registro fotográfico: tres etapas */
-    const foto = path.join(os.tmpdir(), 'sepia-eq-foto.png');
-    fs.writeFileSync(foto, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
-    await pg.locator('input[type=file]').nth(1).setInputFiles(foto); await espera(pg, 1500);
-    t = await texto(pg);
-    ok(/Revisa tu foto antes de guardarla/.test(t), 'al elegir una foto, la muestra para revisarla antes de guardar');
-    await pulsa(pg, 'Guardar foto'); await espera(pg, 2000);
-    t = await texto(pg);
-    ok(/Foto guardada en el registro privado del evento/.test(t) && /1\/3/.test(t), 'la foto queda guardada y el avance sube a 1 de 3');
-    ok(db(`select count(*) || '|' || min(etapa) from public.evento_fotos`) === '1|loaded', 'en la base: una foto de la etapa «auto cargado»');
-    ok(db(`select count(*) from storage.objects where bucket_id = 'eventos-fotos'`) === '1', 'y un archivo en el almacenamiento privado');
-    ok(await pg.locator('.photo-gallery img').count() === 1 && /^data:image/.test(await pg.locator('.photo-gallery img').first().getAttribute('src')), 'se ve en la galería con su dirección firmada');
-    await captura(pg, 'B3-fotos');
-    await pg.locator('.photo-delete').first().click(); await espera(pg, 400);
-    await pulsa(pg, 'Eliminar', { exact: true }); await espera(pg, 1500);
-    ok(/Foto eliminada del registro/.test(await texto(pg)), 'se puede eliminar la foto propia');
-    ok(db(`select (select count(*) from public.evento_fotos) || '|' || (select count(*) from storage.objects where bucket_id = 'eventos-fotos')`) === '0|0', 'y desaparece de la base y del almacenamiento');
+    ok(!/Necesito ayuda/.test(t) && !/Tareas del turno/.test(t) && await pg.locator('input[type=file]').count() === 0, 'sin «Necesito ayuda» ni fotos del turno (se dejaron fuera)');
+    ok(!/Boleta y pago de este turno/.test(t), 'ni accesos a boletas y pagos desde el evento');
 
     /* Cancelar con tiempo */
     await pulsa(pg, 'Cancelar mi turno'); await espera(pg, 500);
@@ -483,8 +461,9 @@ try {
     await pg.getByText('Ver detalle de mis turnos registrados en la app (1)').click(); await espera(pg, 500);
     t = await texto(pg);
     ok(/Pendiente de pago/.test(t) && /Evento Pasado/.test(t), 'con el detalle del turno y su estado de pago');
-    await tile(/^Boletas y pagos/).click(); await espera(pg, 800);
-    ok(await pg.locator('a[href="/pages/baristas"]').count() === 1, '«Boletas y pagos» lleva al portal de baristas, donde se gestionan');
+    await pulsa(pg, 'Administrar'); await espera(pg, 600);
+    t = await texto(pg);
+    ok(!/Boletas/.test(t) && await pg.locator('.admin-menu-card').count() === 5, 'el panel tiene cinco accesos (eventos abiertos, preparar, equipo, ganancias y crear) y ninguno de boletas');
 
     /* Vista barista */
     await pulsa(pg, 'Vista barista'); await espera(pg, 1500);
@@ -512,15 +491,80 @@ try {
     await captura(pg, 'F3-ranking-celular');
     await pg.getByRole('button', { name: 'Mi Perfil' }).last().click(); await espera(pg, 1000);
     ok(await sinDesborde(), 'el perfil cabe en el ancho del celular');
-    await pg.getByRole('button', { name: 'Sepia' }).last().click(); await espera(pg, 1000);
-    ok(await sinDesborde() && /Somos Sepia/.test(await texto(pg)), 'y la historia de Sepia, con sus fotos optimizadas, también');
-    await captura(pg, 'F4-sepia-celular');
+    ok(await pg.getByRole('button', { name: 'Sepia', exact: true }).count() === 0 && !/Somos Sepia/.test(await texto(pg)), 'la historia de Sepia y «quiénes somos» quedaron fuera de la página');
     await pg.getByRole('button', { name: 'Eventos' }).last().click(); await espera(pg, 800);
     await pg.getByRole('button', { name: 'Ver evento' }).first().click(); await espera(pg, 1000);
     ok(await sinDesborde(), 'el detalle de un evento cabe en el ancho del celular');
     await captura(pg, 'F5-evento-celular');
     ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
     await pg.context().close();
+  }
+
+  /* ====================================================================== */
+  if (corre('G')) {
+    console.log('\n=== G. Colores: solo los de la paleta de Sepia (azul, azul noche, celeste, crema, gris y blanco) ===');
+    const PALETA = ['82,110,160', '2,5,38', '185,197,211', '231,229,217', '242,242,242', '255,255,255'];
+    /* Revisa todo lo que está en pantalla: textos, fondos, bordes, líneas, íconos, sombras y degradados. */
+    const fuera = pg => pg.evaluate(paleta => {
+      const props = ['color', 'backgroundColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'outlineColor',
+                     'fill', 'stroke', 'textDecorationColor', 'caretColor', 'boxShadow', 'backgroundImage', 'accentColor'];
+      const malos = new Map();
+      const revisar = (el, pseudo) => {
+        const cs = getComputedStyle(el, pseudo || null);
+        for (const prop of props) {
+          const v = cs[prop];
+          if (!v || v === 'none' || v === 'auto') continue;
+          if ((prop === 'fill' || prop === 'stroke') && !(el instanceof SVGElement)) continue;   // solo cuentan en los íconos
+          for (const m of v.matchAll(/rgba?\(([^)]*)\)/g)) {
+            const partes = m[1].split(/[ ,\/]+/).filter(Boolean);
+            const alfa = partes.length > 3 ? parseFloat(partes[3]) : 1;
+            if (alfa === 0) continue;
+            const rgb = partes.slice(0, 3).map(n => Math.round(parseFloat(n))).join(',');
+            if (!paleta.includes(rgb)) {
+              const llave = prop + ' ' + rgb;
+              if (!malos.has(llave)) malos.set(llave, (el.className && el.className.baseVal === undefined ? '.' + String(el.className).split(' ')[0] : el.tagName.toLowerCase()) + (pseudo || ''));
+            }
+          }
+        }
+      };
+      for (const el of document.querySelectorAll('body *')) { revisar(el); revisar(el, '::before'); revisar(el, '::after'); }
+      return [...malos].map(([k, v]) => k + ' en ' + v);
+    }, PALETA);
+    const revisa = async (pg, donde) => { await captura(pg, 'G-' + donde.replace(/[^a-z]+/gi, '-')); const f = await fuera(pg); ok(f.length === 0, donde + ' usa solo colores de la paleta' + (f.length ? ': ' + f.slice(0, 8).join(' · ') : '')); };
+
+    const pg = await nueva();
+    await revisa(pg, 'la entrada');
+    await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
+    await revisa(pg, 'el inicio');
+    await pg.getByRole('button', { name: 'Postular' }).first().click(); await espera(pg, 700);
+    await revisa(pg, 'la ventana para postular');
+    await pulsa(pg, 'Cerrar ventana').catch(() => {}); await espera(pg, 300);
+    await pg.getByRole('button', { name: 'Ranking' }).first().click(); await espera(pg, 1200);
+    await revisa(pg, 'el ranking');
+    await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 1000);
+    await pg.locator('.profile-section-menu summary').click(); await espera(pg, 400);
+    await revisa(pg, 'el perfil');
+    await pg.locator('.crew-notices summary').click(); await espera(pg, 500);
+    await revisa(pg, 'la campana de avisos');
+    await pg.context().close();
+
+    const adm = await nueva();
+    await iniciarSesion(adm, 'admin@ejemplo.test', 'claveadmin1');
+    await revisa(adm, 'el inicio de administración');
+    await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 900);
+    await revisa(adm, 'el panel de administración');
+    await adm.locator('button', { hasText: /^Crear evento/ }).first().click(); await espera(adm, 800);
+    await revisa(adm, 'el formulario de eventos');
+    await pg.context().close().catch(() => {});
+    await adm.keyboard.press('Escape'); await espera(adm, 300);
+    await adm.locator('button', { hasText: /^Equipo/ }).first().click(); await espera(adm, 900);
+    await revisa(adm, 'la lista del equipo');
+    await adm.locator('button', { hasText: /^Turnos y ganancias/ }).first().click(); await espera(adm, 1200);
+    await revisa(adm, 'turnos y ganancias');
+    await adm.locator('button', { hasText: /^Eventos abiertos/ }).first().click(); await espera(adm, 900);
+    await adm.getByRole('button', { name: 'Ver equipo' }).first().click(); await espera(adm, 1200);
+    await revisa(adm, 'la ventana del equipo de un evento');
+    await adm.context().close();
   }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();

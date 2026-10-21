@@ -12,7 +12,6 @@
 --   eq_accion(accion, ..)  las acciones: perfil, postular, cancelar, guardar evento, asignar, etc.
 --   eq_ranking()           ranking del equipo (historial + turnos con asistencia)
 --   eq_equipo_evento(..)   quiénes van a un evento
---   eq_ayuda(..)           contactos de ayuda («Necesito ayuda»)
 --   eq_avisos(), eq_avisos_leer(..)   avisos dentro de la app (recordatorio del día anterior, 18:00)
 --
 -- Reglas del equipo (las de la app de Jorge):
@@ -40,10 +39,6 @@ alter table public.eventos add column if not exists regreso_oficina timestamptz;
 
 alter table public.evento_traslado add column if not exists nota text check (nota is null or char_length(nota) <= 300);
 alter table public.evento_traslado add column if not exists ida_vuelta boolean not null default true;
-
--- Teléfonos de «Necesito ayuda»: [{"id":"manuel","name":"Manuel Lira","phone":"56979284400"}]
-alter table public.config add column if not exists contactos_ayuda jsonb not null default
-  '[{"id":"manuel","name":"Manuel Lira","phone":"56979284400"}]'::jsonb check (jsonb_typeof(contactos_ayuda) = 'array');
 
 -- Avisos dentro de la app. «clave» evita repetir el mismo aviso (por ejemplo recordatorio:<evento>).
 create table if not exists public.avisos (
@@ -280,7 +275,7 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- 6. Ranking, equipo de un evento, ayuda y avisos
+-- 6. Ranking, equipo de un evento y avisos
 -- ---------------------------------------------------------------------------
 create or replace function public.eq_ranking() returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
@@ -333,13 +328,6 @@ begin
     where p.evento_id = p_evento
       and (p.estado = 'confirmada' or (adm and p.estado in ('postulada', 'rechazada', 'retirada')))
   ), '[]'::jsonb));
-end $$;
-
-create or replace function public.eq_ayuda(p_evento uuid default null) returns jsonb
-language plpgsql stable security definer set search_path = '' as $$
-begin
-  if auth.uid() is null or not (public.es_admin() or public.es_barista()) then raise exception 'Acceso no autorizado.'; end if;
-  return jsonb_build_object('contacts', (select c.contactos_ayuda from public.config c where c.id = 1));
 end $$;
 
 drop function if exists public.eq_avisos();
@@ -714,106 +702,6 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- 9. Registro fotográfico de cada evento (tres etapas)
--- ---------------------------------------------------------------------------
--- Las fotos viven en el almacenamiento privado «eventos-fotos», en <evento>/<persona>/<archivo>. Las ve quien
--- está confirmado en ese evento y la administración; cada persona sube y borra solo las suyas.
-create table if not exists public.evento_fotos (
-  id uuid primary key default gen_random_uuid(),
-  evento_id uuid not null references public.eventos (id) on delete cascade,
-  etapa text not null check (etapa in ('loaded', 'mounted', 'returned')),
-  barista_id uuid not null references public.baristas (id) on delete cascade,
-  ruta text not null unique check (char_length(ruta) <= 200),
-  creado_en timestamptz not null default now()
-);
-create index if not exists evento_fotos_evento on public.evento_fotos (evento_id);
-alter table public.evento_fotos enable row level security;
-revoke all on public.evento_fotos from anon, authenticated;     -- solo por las funciones eq_foto*
-
--- ¿La persona que consulta está confirmada en ese evento (dado su id como texto)?
-create or replace function public.eq_confirmado_en(p_evento text) returns boolean
-language sql stable security definer set search_path = '' as $$
-  select p_evento ~ '^[0-9a-f-]{36}$' and exists (
-    select 1 from public.postulaciones p join public.eventos e on e.id = p.evento_id
-    where p.evento_id = p_evento::uuid and p.barista_id = auth.uid() and p.estado = 'confirmada' and e.estado <> 'cancelado')
-$$;
-
-do $storage$
-begin
-  if exists (select 1 from information_schema.schemata where schema_name = 'storage') then
-    insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-    values ('eventos-fotos', 'eventos-fotos', false, 5242880, array['image/jpeg'])
-    on conflict (id) do update set public = false, file_size_limit = 5242880, allowed_mime_types = array['image/jpeg'];
-
-    drop policy if exists eventos_fotos_ver on storage.objects;
-    create policy eventos_fotos_ver on storage.objects for select to authenticated
-      using (bucket_id = 'eventos-fotos' and (public.es_admin() or public.eq_confirmado_en((storage.foldername(name))[1])));
-    drop policy if exists eventos_fotos_subir on storage.objects;
-    create policy eventos_fotos_subir on storage.objects for insert to authenticated
-      with check (bucket_id = 'eventos-fotos' and (storage.foldername(name))[2] = auth.uid()::text
-                  and public.eq_confirmado_en((storage.foldername(name))[1]));
-    drop policy if exists eventos_fotos_borrar on storage.objects;
-    create policy eventos_fotos_borrar on storage.objects for delete to authenticated
-      using (bucket_id = 'eventos-fotos' and ((storage.foldername(name))[2] = auth.uid()::text or public.es_admin()));
-  end if;
-end $storage$;
-
--- Las fotos de un evento. «canDelete»: las propias (la administración puede borrar cualquiera).
-create or replace function public.eq_fotos_evento(p_evento uuid) returns jsonb
-language plpgsql stable security definer set search_path = '' as $$
-declare adm boolean := public.es_admin();
-begin
-  if auth.uid() is null or not (adm or public.eq_confirmado_en(p_evento::text)) then
-    raise exception 'Solo quienes están confirmados en el evento ven su registro fotográfico.';
-  end if;
-  return jsonb_build_object('photos', coalesce((
-    select jsonb_agg(jsonb_build_object('id', f.id, 'stage', f.etapa, 'path', f.ruta, 'uploadedAt', f.creado_en,
-                                        'author', b.nombre, 'canDelete', (adm or f.barista_id = auth.uid())) order by f.creado_en)
-    from public.evento_fotos f join public.baristas b on b.id = f.barista_id
-    where f.evento_id = p_evento), '[]'::jsonb), 'cursor', null);
-end $$;
-
--- Anota una foto que ya se subió al almacenamiento (la ruta tiene que ser <evento>/<persona>/<archivo> y existir).
-create or replace function public.eq_foto_registrar(p_evento uuid, p_etapa text, p_ruta text) returns jsonb
-language plpgsql security definer set search_path = '' as $$
-declare
-  uid uuid := auth.uid();
-  f public.evento_fotos;
-  autor text;
-begin
-  if uid is null or not public.eq_confirmado_en(p_evento::text) then
-    raise exception 'Solo quienes están confirmados en el evento suben fotos.';
-  end if;
-  if p_etapa not in ('loaded', 'mounted', 'returned') then raise exception 'Elige la etapa de la foto.'; end if;
-  if p_ruta is null or p_ruta !~ ('^' || p_evento::text || '/' || uid::text || '/[A-Za-z0-9._-]{1,80}$') then
-    raise exception 'La foto no corresponde a este evento.';
-  end if;
-  if exists (select 1 from information_schema.schemata where schema_name = 'storage')
-     and not exists (select 1 from storage.objects o where o.bucket_id = 'eventos-fotos' and o.name = p_ruta) then
-    raise exception 'No encontramos la foto subida. Vuelve a intentarlo.';
-  end if;
-  if (select count(*) from public.evento_fotos x where x.evento_id = p_evento and x.barista_id = uid and x.etapa = p_etapa) >= 10 then
-    raise exception 'Ya subiste 10 fotos en esta etapa. Elimina alguna para subir otra.';
-  end if;
-  insert into public.evento_fotos (evento_id, etapa, barista_id, ruta) values (p_evento, p_etapa, uid, p_ruta) returning * into f;
-  select b.nombre into autor from public.baristas b where b.id = uid;
-  return jsonb_build_object('photo', jsonb_build_object('id', f.id, 'stage', f.etapa, 'path', f.ruta, 'uploadedAt', f.creado_en,
-                                                         'author', autor, 'canDelete', true));
-end $$;
-
--- Borra el registro de una foto y devuelve su ruta (la interfaz quita luego el archivo).
-create or replace function public.eq_foto_borrar(p_id uuid) returns text
-language plpgsql security definer set search_path = '' as $$
-declare f public.evento_fotos;
-begin
-  select * into f from public.evento_fotos where id = p_id;
-  if f.id is null then raise exception 'No encontramos esa foto.'; end if;
-  if not (public.es_admin() or f.barista_id = auth.uid()) then raise exception 'Solo puedes eliminar tus propias fotos.'; end if;
-  delete from public.evento_fotos where id = p_id;
-  return f.ruta;
-end $$;
-
--- ---------------------------------------------------------------------------
 -- Permisos
 -- ---------------------------------------------------------------------------
 revoke all on function public.eq_hhmm(time) from public, anon;
@@ -826,13 +714,11 @@ revoke all on function public.eq_evento_json(uuid, boolean) from public, anon;
 revoke all on function public.eq_estado(text) from public, anon;
 revoke all on function public.eq_ranking() from public, anon;
 revoke all on function public.eq_equipo_evento(uuid) from public, anon;
-revoke all on function public.eq_ayuda(uuid) from public, anon;
 revoke all on function public.eq_avisos(timestamptz) from public, anon;
 revoke all on function public.eq_avisos_leer(uuid) from public, anon;
 grant execute on function public.eq_estado(text) to authenticated;
 grant execute on function public.eq_ranking() to authenticated;
 grant execute on function public.eq_equipo_evento(uuid) to authenticated;
-grant execute on function public.eq_ayuda(uuid) to authenticated;
 grant execute on function public.eq_avisos(timestamptz) to authenticated;
 grant execute on function public.eq_avisos_leer(uuid) to authenticated;
 revoke all on function public.eq_perfil_guardar(jsonb) from public, anon, authenticated;
@@ -846,11 +732,3 @@ revoke all on function public.eq_ganancias(uuid) from public, anon;
 grant execute on function public.eq_ganancias(uuid) to authenticated;
 revoke all on function public.eq_integraciones() from public, anon;
 grant execute on function public.eq_integraciones() to authenticated;
-revoke all on function public.eq_confirmado_en(text) from public, anon;
-grant execute on function public.eq_confirmado_en(text) to authenticated;
-revoke all on function public.eq_fotos_evento(uuid) from public, anon;
-grant execute on function public.eq_fotos_evento(uuid) to authenticated;
-revoke all on function public.eq_foto_registrar(uuid, text, text) from public, anon;
-grant execute on function public.eq_foto_registrar(uuid, text, text) to authenticated;
-revoke all on function public.eq_foto_borrar(uuid) from public, anon;
-grant execute on function public.eq_foto_borrar(uuid) to authenticated;

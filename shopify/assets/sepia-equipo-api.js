@@ -4,8 +4,8 @@
  * Acá ese servidor es Supabase. Este archivo se pone ANTES de la interfaz e intercepta esas llamadas:
  *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth)
  *   · /api/crew     → funciones eq_estado y eq_accion (equipo.sql): eventos, postulaciones, perfil, administración
- *   · /api/ranking, /api/events/…/team, /api/support, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
- *   · /api/profile/photo y /api/events/…/photos → almacenamiento privado (perfiles y eventos-fotos)
+ *   · /api/ranking, /api/events/…/team, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
+ *   · /api/profile/photo → almacenamiento privado de las fotos de perfil
  *   · /api/admin/accounts → crear_acceso y restablecer_clave (esquema.sql)
  *
  * Las reglas (quién ve qué, cupos, camioneta, plazos) las aplica la base de datos; acá solo se traducen
@@ -21,7 +21,6 @@
   var realFetch = window.fetch.bind(window);
   var sb = null;
   var BUCKET_PERFIL = 'perfiles';
-  var BUCKET_EVENTOS = 'eventos-fotos';
 
   /* ------------------------------------------------------------------ */
   /* Ayudas para la interfaz (se usan en los archivos de assets/sepia-equipo-*)  */
@@ -93,7 +92,7 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Fotos: perfil (las firmadas se piden de a muchas) y eventos          */
+  /* Fotos de perfil (las firmadas se piden de a muchas)                  */
   /* ------------------------------------------------------------------ */
 
   var cacheFotos = {};            // id de persona → { url (o null si no tiene foto), hasta (ms) }
@@ -204,22 +203,6 @@
     return ok({ ok: true });
   }
 
-  async function firmarFotosEvento(fotos) {
-    if (!fotos.length) return [];
-    var f = await sb.storage.from(BUCKET_EVENTOS).createSignedUrls(fotos.map(function (x) { return x.path; }), 3600);
-    if (f.error) throw f.error;
-    var por = {};
-    (f.data || []).forEach(function (x) { if (x && x.signedUrl && x.path) por[x.path] = x.signedUrl; });
-    return fotos.map(function (x) {
-      return { id: x.id, stage: x.stage, url: por[x.path] || '', uploadedAt: x.uploadedAt, author: x.author, canDelete: x.canDelete };
-    });
-  }
-
-  function nuevoNombre() {
-    var azar = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
-    return azar.replace(/[^A-Za-z0-9-]/g, '') + '.jpg';
-  }
-
   /* ------------------------------------------------------------------ */
   /* Rutas                                                               */
   /* ------------------------------------------------------------------ */
@@ -284,10 +267,6 @@
       await exigirSesion();
       return ok(await rpc('eq_equipo_evento', { p_evento: m[1] }));
     }
-    if (ruta === '/api/support' && metodo === 'GET') {
-      await exigirSesion();
-      return ok(await rpc('eq_ayuda', { p_evento: u.searchParams.get('eventId') || null }));
-    }
     if (ruta === '/api/notifications' && metodo === 'GET') {
       await exigirSesion();
       return ok(await rpc('eq_avisos'));
@@ -333,34 +312,6 @@
       if (metodo === 'GET' && u.searchParams.get('meta')) { var fp = await fotoPropia(); return ok({ hasPhoto: fp.hasPhoto }); }
       if (metodo === 'POST') return subirFotoPerfil(init.body);
       if (metodo === 'DELETE') return quitarFotoPerfil();
-    }
-
-    /* ----- Registro fotográfico del evento ----- */
-    if ((m = /^\/api\/events\/([0-9a-f-]{36})\/photos$/.exec(ruta))) {
-      var s2 = await exigirSesion();
-      if (metodo === 'GET') {
-        var lista = await rpc('eq_fotos_evento', { p_evento: m[1] });
-        return ok({ photos: await firmarFotosEvento(lista.photos || []), cursor: null });
-      }
-      if (metodo === 'POST') {
-        var forma = init.body, etapa = forma && forma.get && forma.get('stage'), archivo = forma && forma.get && forma.get('photo');
-        if (!archivo || !etapa) return falla(400, 'Elige la etapa y la foto.');
-        if (archivo.size > 5 * 1024 * 1024) return falla(400, 'La foto supera los 5 MB.');
-        var destino = m[1] + '/' + s2.user.id + '/' + nuevoNombre();
-        var sube = await sb.storage.from(BUCKET_EVENTOS).upload(destino, archivo, { contentType: 'image/jpeg', upsert: false });
-        if (sube.error) throw sube.error;
-        var reg;
-        try { reg = await rpc('eq_foto_registrar', { p_evento: m[1], p_etapa: String(etapa), p_ruta: destino }); }
-        catch (e) { await sb.storage.from(BUCKET_EVENTOS).remove([destino]); throw e; }
-        var una = await firmarFotosEvento([reg.photo]);
-        return ok({ photo: una[0] });
-      }
-    }
-    if ((m = /^\/api\/events\/([0-9a-f-]{36})\/photos\/([0-9a-f-]{36})$/.exec(ruta)) && metodo === 'DELETE') {
-      await exigirSesion();
-      var quitada = await rpc('eq_foto_borrar', { p_id: m[2] });
-      if (quitada) { try { await sb.storage.from(BUCKET_EVENTOS).remove([quitada]); } catch (e) { /* queda huérfana */ } }
-      return ok({ ok: true });
     }
 
     return falla(404, 'Esta función no está disponible en la web de Sepia.');

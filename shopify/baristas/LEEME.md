@@ -305,19 +305,26 @@ update public.config set retencion = 0.16;   -- 2027
    `assets/sepia-baristas.js` y en `crear_acceso()` de `esquema.sql`: si lo cambias, cámbialo en
    los dos). El `esquema.sql` también crea el almacén de fotos `perfiles` (privado, 2 MB).
 
-## Sepia Equipo: la interfaz de Jorge, sobre esta misma base de datos
+## Sepia Equipo: la navegación y la forma de la interfaz de Jorge, con tus colores y esta misma base de datos
 
-Una segunda página, `sepiacoffee.cl/pages/equipo`, con **el diseño y los flujos de «Sepia Equipo»**, la app que armó
-Jorge (eventos con cupos con y sin camioneta, ranking, perfil, administración), pero conectada a la base de datos de
-este portal en vez de al servidor de Jorge (Cloudflare). Las dos páginas conviven: son las mismas cuentas, la misma clave,
-los mismos eventos y postulaciones (la sesión incluso se comparte: quien entra en una, entra en la otra).
+Una segunda página, `sepiacoffee.cl/pages/equipo`, con la **navegación y la forma** de «Sepia Equipo», la app que armó Jorge
+(barra de navegación, tarjetas de evento con cupos «con camioneta» y «sin camioneta», «Mi próximo turno», pestañas
+Disponibles / Mis turnos / Eventos listos, perfil por secciones, campana de avisos, ranking con podio, y para la administración un
+panel con accesos directos, «Ver equipo» de cada evento y el botón «Vista barista»). **Pintada solo con la paleta de Sepia** (azul
+#526EA0, azul noche #020526, celeste #B9C5D3, crema #E7E5D9, gris #F2F2F2 y blanco), la misma del portal de baristas. Funciona con la misma
+base de datos de este portal: mismas cuentas, misma clave, mismos eventos y postulaciones (la sesión incluso se comparte). Las
+cuentas, los IDs y las claves temporales se siguen creando y restableciendo como hasta ahora, desde el portal de baristas o desde
+«Equipo» en esta página.
+
+**Lo que se dejó fuera, a pedido**: la historia del café y «quiénes somos» (la pestaña «Sepia»), la pantalla de bienvenida con granos de
+café, las fotos del turno (tres por evento), el botón «Necesito ayuda» y las boletas y pagos (siguen en el portal de baristas).
 
 | Pieza | Qué hace |
 |---|---|
-| `equipo.sql` | Se corre **después** de `esquema.sql`. Funciones `eq_*` que arman los datos en la forma que la interfaz espera y aplican las reglas: eventos y postulaciones, perfil, cupos, camioneta, cancelación, ranking, equipo, ayuda, avisos, ganancias, fotos de eventos |
-| `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) con las imágenes optimizadas (de 5,7 MB a 0,5 MB) |
-| `equipo/construir.py` | Hace los cambios de texto y de rutas (cada uno anotado con su motivo) y deja `assets/sepia-equipo-v1-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
-| `assets/sepia-equipo-api.js` | El «servidor»: intercepta lo que la interfaz le pide a `/api/*` y lo traduce a Supabase (sesión, funciones `eq_*`, fotos en el almacenamiento privado) |
+| `equipo.sql` | Se corre **después** de `esquema.sql`. Funciones `eq_*` que arman los datos en la forma que la interfaz espera y aplican las reglas: eventos y postulaciones, perfil, cupos, camioneta, cancelación, ranking, equipo de un evento, avisos y ganancias |
+| `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) y los íconos |
+| `equipo/construir.py` | Hace los cambios de texto y de rutas (cada uno anotado con su motivo), **pinta todo con la paleta** (cada color de Jorge pasa al de la paleta que cumple su papel) y deja `assets/sepia-equipo-v2-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
+| `assets/sepia-equipo-api.js` | El «servidor»: intercepta lo que la interfaz le pide a `/api/*` y lo traduce a Supabase (sesión, funciones `eq_*`, fotos de perfil en el almacenamiento privado) |
 | `templates/page.equipo.liquid` | La página, sin el diseño de la tienda |
 | `snippets/sepia-equipo-conexion.liquid` | La URL y la clave pública de Supabase. En el repo lleva los marcadores `SUPABASE_URL` y `SUPABASE_CLAVE`: reemplázalos antes de subirlo (`construir.py --salida … --url … --clave …` deja una copia lista) |
 | `equipo/pruebas/` | Pruebas de punta a punta en un navegador real (ver más abajo) |
@@ -329,23 +336,18 @@ cancelar hasta 24 horas antes; los baristas ven los eventos desde 14 días antes
 cliente nunca; la administración asigna, confirma y saca gente a mano. El recordatorio del turno llega a la campana desde las
 18:00 (hora de Chile) del día anterior.
 
-**Lo que se cambió respecto de la app de Jorge**: el contacto para restablecer la clave es Manuel; el ranking mensual
-es el mes en curso (antes era siempre octubre); el formulario de eventos pide además la comuna o zona (la ve todo el equipo; antes
-quedaba «Por confirmar»); un evento de un solo cupo se puede tomar sin camioneta; al completar el perfil se avisa que se
-aceptan el uso de los datos y la declaración de boleta (la base lo exige); el patrón del ID de acceso era inválido en los navegadores
-nuevos; la pestaña **Boletas** de la administración muestra un enlace al portal de baristas.
-
-**Lo que no está** (y por qué): las **boletas y los pagos** (en la app de Jorge el barista sube su boleta en PDF; acá se
-siguen gestionando en el portal de baristas, donde ya existen), el cálculo de rutas y TAG con proveedores externos (los traslados
-son manuales: kilómetros y TAG que anota la administración), el correo y el WhatsApp automáticos, y el «service worker» de la app
-instalable (la página se puede agregar a la pantalla de inicio, pero no funciona sin internet). «Mis turnos y ganancias» lo ve solo la
-administración, como en la app de Jorge; cada barista ve sus ganancias en el portal de baristas. La administración entra con su
-correo y su clave (si la activó en el portal); sin clave, entra por el portal de baristas con el código por correo.
+**Lo que se cambió respecto de la app de Jorge** (además de los colores y de lo que se dejó fuera): el contacto para restablecer la clave
+es Manuel; el ranking mensual es el mes en curso (antes era siempre octubre); el formulario de eventos pide además la comuna o zona (la
+ve todo el equipo; antes quedaba «Por confirmar»); un evento de un solo cupo se puede tomar sin camioneta; al completar el perfil se avisa
+que se aceptan el uso de los datos y la declaración de boleta (la base lo exige); el patrón del ID de acceso era inválido en los
+navegadores nuevos. «Mis turnos y ganancias» lo ve solo la administración, como en la app de Jorge; cada barista ve sus ganancias en el portal.
+La administración entra con su correo y su clave (si la activó en el portal); sin clave, entra por el portal de baristas con el código por correo.
 
 **Puesta en marcha**: (1) en Supabase, correr `esquema.sql` de nuevo (cambió una regla) y después `equipo.sql`; (2) crear la
-página «Equipo» (`/pages/equipo`, plantilla `equipo`) y subir al tema los archivos `assets/sepia-equipo-*`, `assets/sepia-equipo-api.js`
-`templates/page.equipo.liquid` y `snippets/sepia-equipo-conexion.liquid` (con la URL y la clave públicas de Supabase); (3) probar en la vista previa del tema y publicarlo. Si cambias algo
-de `fuente/` o de `construir.py`, sube `VERSION` en `construir.py` para que los navegadores no usen copias viejas.
+página «Equipo» (`/pages/equipo`, plantilla `equipo`) y subir al tema los archivos `assets/sepia-equipo-*`, `assets/sepia-equipo-api.js`,
+`templates/page.equipo.liquid` y `snippets/sepia-equipo-conexion.liquid` (con la URL y la clave públicas de Supabase); (3) probar en la
+vista previa del tema y publicarlo. Si cambias algo de `fuente/` o de `construir.py`, sube `VERSION` en `construir.py` para que los
+navegadores no usen copias viejas.
 
 ## Probado, y lo que falta probar
 
@@ -356,7 +358,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
   desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
   `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
-  `pruebas/admin-clave.sql` (38: entrada de la administración con clave o código) y `pruebas/equipo.sql` (169: las funciones de
+  `pruebas/admin-clave.sql` (38: entrada de la administración con clave o código) y `pruebas/equipo.sql` (145: las funciones de
   Sepia Equipo). Se corren con `psql` sobre una base vacía: primero `pruebas/shim-supabase.sql`, luego `esquema.sql` (y `equipo.sql`
   para las pruebas de Sepia Equipo), luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
@@ -368,10 +370,10 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
-  de pruebas) → 103 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de pruebas) → 109 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
   de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
-  postular con y sin camioneta, cupos, cancelar (24 horas), fotos de cada evento y de perfil, ranking, avisos, cambio de clave, salir,
-  toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias) y el celular. La página se
+  postular con y sin camioneta, cupos, cancelar (24 horas), foto de perfil, ranking, avisos, cambio de clave, salir,
+  toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias) el celular y que **toda pantalla use solo los colores de la paleta**. La página se
   sirve como la sirve la tienda (con `?v=` en las direcciones). `SECCION=A` (o `E`, etc.) corre solo una parte.
 - **Probado en la tienda real**: la página en la vista previa del tema carga, muestra la entrada y un intento de entrar con datos
   falsos llega a Supabase y vuelve con «ID o clave incorrectos». Entrar de verdad necesita correr `equipo.sql` en Supabase.

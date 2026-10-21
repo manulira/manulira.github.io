@@ -1,5 +1,5 @@
 -- Pruebas de las funciones de «Sepia Equipo» (equipo.sql): el paquete de datos, el perfil, postular con
--- cupos y camioneta, cancelar, administración de eventos, ranking, equipo, ayuda y avisos.
+-- cupos y camioneta, cancelar, administración de eventos, ranking, equipo y avisos.
 -- Correr DESPUÉS de shim-supabase.sql, esquema.sql y equipo.sql, en una base vacía de pruebas.
 
 begin;
@@ -13,7 +13,6 @@ begin
   r := 11 - (suma % 11);
   return public.eq_formato_rut(s || case r when 11 then '0' when 10 then 'K' else r::text end);
 end $$;
-create function t.id_foto(et text) returns uuid language sql security definer as $$ select id from public.evento_fotos where etapa = et limit 1 $$;
 create function t.cupos(ev uuid) returns int language sql security definer as $$ select asignados from public.eq_cupos(ev) $$;
 create function t.n_avisos(u uuid, solo_leidos boolean) returns int language sql security definer as $$ select count(*)::int from public.avisos where barista_id = u and (not solo_leidos or leido_en is not null) $$;
 create function t.id_aviso(u uuid) returns uuid language sql security definer as $$ select id from public.avisos where barista_id = u limit 1 $$;
@@ -278,7 +277,7 @@ select t.debe_fallar('un evento cancelado no se reabre', $q$select public.eq_acc
   'id', 'e1000000-0000-0000-0000-000000000001', 'title', 'Matrimonio Tres Cupos', 'date', t.hoy() + 6, 'start', '18:00', 'end', '23:00', 'slots', 3, 'status', 'published', 'location', 'Viña, Pirque', 'compensation', '{"mode":"fixed","pay":50000}'::jsonb)))$q$);
 
 -- ---------------------------------------------------------------------------
--- Ranking, equipo, ayuda y avisos
+-- Ranking, equipo y avisos
 -- ---------------------------------------------------------------------------
 select t.root();
 insert into public.historial_turnos (nombre, fecha, evento, horas, acceso_id) values
@@ -298,9 +297,7 @@ select t.debe_fallar('sin sesión tampoco', 'select public.eq_ranking()');
 select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
 select t.valor('«Ver equipo» de un evento: solo los confirmados (Gus y Carla en el de mañana temprano, la conductora primero)', $q$select string_agg((m ->> 'name') || ':' || (m ->> 'vehicle_mode'), ', ') from jsonb_array_elements(public.eq_equipo_evento('e1000000-0000-0000-0000-000000000007')->'team') m$q$, 'Gus Prueba:pickup, Carla Soto:none');
 select t.debe_fallar('de un borrador, no', $q$select public.eq_equipo_evento('e1000000-0000-0000-0000-000000000003')$q$);
-select t.valor('la ayuda trae el teléfono de contacto', $q$select (public.eq_ayuda('e1000000-0000-0000-0000-000000000007')->'contacts'->0->>'phone')$q$, '56979284400');
 select t.como('00000000-0000-0000-0000-0000000000a4', 'zoe@ejemplo.test');
-select t.debe_fallar('y solo para quien es del equipo', $q$select public.eq_ayuda()$q$);
 
 -- Avisos: el recordatorio del turno de mañana, desde las 18:00 de hoy (hora de Chile)
 select t.como('00000000-0000-0000-0000-0000000000a2', 'gus@equipo.sepiacoffee.cl');
@@ -316,7 +313,7 @@ select t.debe_funcionar('Ana intenta marcar como leído el aviso de Gus', $q$sel
 select t.valor('y no lo logra: el aviso de Gus ya estaba leído por él, pero el de otra persona nunca se toca desde otra cuenta', $q$select t.n_avisos('00000000-0000-0000-0000-0000000000a2', true)::text$q$, '1');
 
 -- ---------------------------------------------------------------------------
--- Ganancias, conexiones, fotos de perfil y fotos de eventos
+-- Ganancias, conexiones y fotos de perfil
 -- ---------------------------------------------------------------------------
 select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
 select t.valor('«Mis turnos y ganancias»: Beto ve solo lo suyo (un turno trabajado de $40.000 pendiente de pago)', $q$select (public.eq_ganancias()->'profiles') -> 0 ->> 'name' || ' ' || jsonb_array_length(public.eq_ganancias()->'profiles') || ' ' || ((public.eq_ganancias()->'profiles') -> 0 ->> 'worked') || ' ' || ((public.eq_ganancias()->'profiles') -> 0 ->> 'earned') || ' ' || ((public.eq_ganancias()->'profiles') -> 0 ->> 'pending') || ' ' || ((public.eq_ganancias()->'profiles') -> 0 ->> 'paid')$q$, 'Beto Prueba 1 1 40000 40000 0');
@@ -346,50 +343,6 @@ select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.c
 select t.valor('un barista ve las rutas de las fotos que existen', $q$select (select count(*) from jsonb_object_keys(public.eq_fotos_perfil(array['00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-0000000000b1']::uuid[])))::text$q$, '2');
 select t.como('00000000-0000-0000-0000-0000000000a4', 'zoe@ejemplo.test');
 select t.debe_fallar('y quien no es del equipo no ve ninguna', $q$select public.eq_fotos_perfil(array['00000000-0000-0000-0000-0000000000a2']::uuid[])$q$);
-
--- Registro fotográfico del evento de mañana (confirmados: Gus y Carla)
-select t.root();
-insert into storage.objects (bucket_id, name, owner) values
-  ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/uno.jpg', '00000000-0000-0000-0000-0000000000a2'),
-  ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/dos.jpg', '00000000-0000-0000-0000-0000000000a2'),
-  ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000c1/otra.jpg', '00000000-0000-0000-0000-0000000000c1');
-select t.como('00000000-0000-0000-0000-0000000000a2', 'gus@equipo.sepiacoffee.cl');
-select t.valor('Gus registra su foto de «auto cargado» y queda con su nombre, para borrarla', $q$select (public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'loaded', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/uno.jpg')->'photo'->>'author') || ' ' || (public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'mounted', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/dos.jpg')->'photo'->>'canDelete')$q$, 'Gus Prueba true');
-select t.debe_fallar('no se anota una foto que no existe', $q$select public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'loaded', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/fantasma.jpg')$q$);
-select t.debe_fallar('ni una con la ruta de otra persona', $q$select public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'loaded', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000c1/otra.jpg')$q$);
-select t.debe_fallar('ni con una etapa inventada', $q$select public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'cualquiera', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/uno.jpg')$q$);
-select t.valor('ve las fotos del evento (las suyas, borrables)', $q$select jsonb_array_length(public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos') || ' ' || (public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos'->0->>'canDelete')$q$, '2 true');
-select t.como('00000000-0000-0000-0000-0000000000c1', 'carla@equipo.sepiacoffee.cl');
-select t.valor('Carla, confirmada en el mismo evento, ve las fotos de Gus pero no puede borrarlas', $q$select jsonb_array_length(public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos') || ' ' || (public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos'->0->>'canDelete')$q$, '2 false');
-select t.debe_fallar('Carla no borra la foto de Gus', $q$select public.eq_foto_borrar(t.id_foto('loaded'))$q$);
-select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
-select t.debe_fallar('Beto, que no va a ese evento, no ve las fotos', $q$select public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')$q$);
-select t.debe_fallar('ni sube fotos', $q$select public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'loaded', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000b1/x.jpg')$q$);
-select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
-select t.valor('la administración ve las fotos de cualquier evento', $q$select jsonb_array_length(public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos')::text$q$, '2');
-
--- Almacenamiento: las mismas reglas, aplicadas por la base a los archivos
-select t.como('00000000-0000-0000-0000-0000000000a2', 'gus@equipo.sepiacoffee.cl');
-select t.valor('Gus ve los archivos de su evento', $q$select count(*)::text from storage.objects where bucket_id = 'eventos-fotos'$q$, '3');
-select t.debe_funcionar('y sube uno nuevo en su carpeta', $q$insert into storage.objects (bucket_id, name, owner) values ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/tres.jpg', '00000000-0000-0000-0000-0000000000a2')$q$);
-select t.debe_fallar('pero no en la carpeta de otra persona', $q$insert into storage.objects (bucket_id, name, owner) values ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000c1/falsa.jpg', '00000000-0000-0000-0000-0000000000a2')$q$);
-select t.debe_fallar('ni en un evento al que no va', $q$insert into storage.objects (bucket_id, name, owner) values ('eventos-fotos', 'e1000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-0000000000a2/x.jpg', '00000000-0000-0000-0000-0000000000a2')$q$);
-select t.afecta('borra su propio archivo', $q$delete from storage.objects where bucket_id = 'eventos-fotos' and name = 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/tres.jpg'$q$, 1);
-select t.afecta('pero no el de Carla', $q$delete from storage.objects where bucket_id = 'eventos-fotos' and name = 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000c1/otra.jpg'$q$, 0);
-select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
-select t.valor('Beto no ve ningún archivo de eventos', $q$select count(*)::text from storage.objects where bucket_id = 'eventos-fotos'$q$, '0');
-select t.debe_fallar('y no sube', $q$insert into storage.objects (bucket_id, name, owner) values ('eventos-fotos', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000b1/x.jpg', '00000000-0000-0000-0000-0000000000b1')$q$);
-select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
-select t.afecta('la administración borra cualquiera', $q$delete from storage.objects where bucket_id = 'eventos-fotos' and name = 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000c1/otra.jpg'$q$, 1);
-
--- Borrar el registro
-select t.como('00000000-0000-0000-0000-0000000000a2', 'gus@equipo.sepiacoffee.cl');
-select t.valor('Gus borra su foto y recibe la ruta del archivo para quitarlo', $q$select public.eq_foto_borrar(t.id_foto('loaded'))$q$, 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/uno.jpg');
-select t.valor('queda una', $q$select jsonb_array_length(public.eq_fotos_evento('e1000000-0000-0000-0000-000000000007')->'photos')::text$q$, '1');
-select t.root();
-update public.eventos set estado = 'cancelado' where id = 'e1000000-0000-0000-0000-000000000007';
-select t.como('00000000-0000-0000-0000-0000000000a2', 'gus@equipo.sepiacoffee.cl');
-select t.debe_fallar('si el evento se cancela, ya no se suben fotos', $q$select public.eq_foto_registrar('e1000000-0000-0000-0000-000000000007', 'returned', 'e1000000-0000-0000-0000-000000000007/00000000-0000-0000-0000-0000000000a2/dos.jpg')$q$);
 
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;

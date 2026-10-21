@@ -20,24 +20,23 @@ Cada cambio al código compilado se anota abajo con su motivo. Si el texto a cam
 las veces esperadas, el armado se detiene: así un cambio de la fuente no pasa inadvertido.
 """
 import argparse
+import colorsys
 import os
 import re
-import shutil
 import sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v1'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v2'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
       'index-B0KDm-6B.js', 'client-app-3nlm5eU_.js', 'BrandStory-CKBrxk2p.js']
 CSS = ['index.DiFSpdfw.css']
-# nombre en la fuente → nombre armado (las imágenes se optimizaron; dos cambiaron de PNG a JPG)
-IMAGENES = {'coffee-bean-real.png': 'coffee-bean-real.png', 'espresso-martini.jpg': 'espresso-martini.jpg',
-            'colombia.jpg': 'colombia.jpg', 'bolivia.jpg': 'bolivia.jpg',
-            'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png'}
+# nombre en la fuente → nombre armado (solo los íconos de la página: la historia de Sepia y la pantalla de bienvenida
+# con sus fotos quedaron fuera)
+IMAGENES = {'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png'}
 
 # Direcciones que los datos de arranque de la interfaz piden en la raíz del sitio → archivo armado
 RUTAS_ARRANQUE = {'/_next/static/css/index.DiFSpdfw.css': 'index.DiFSpdfw.css',
@@ -51,8 +50,8 @@ MANIFIESTO = '''{
   "short_name": "Sepia",
   "description": "Tu equipo, tus turnos y la historia detrás de cada café.",
   "lang": "es-CL",
-  "theme_color": "#33271f",
-  "background_color": "#f7f5f0",
+  "theme_color": "#020526",
+  "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/pages/equipo",
   "scope": "/pages/",
@@ -61,6 +60,48 @@ MANIFIESTO = '''{
   ]
 }
 ''' % PREFIJO
+
+
+# ---------------------------------------------------------------------------
+# Colores: solo los de la paleta de Sepia (los mismos del portal de baristas)
+# ---------------------------------------------------------------------------
+PALETA = {'azul': (0x52, 0x6e, 0xa0), 'noche': (0x02, 0x05, 0x26), 'celeste': (0xb9, 0xc5, 0xd3),
+          'crema': (0xe7, 0xe5, 0xd9), 'gris': (0xf2, 0xf2, 0xf2), 'blanco': (0xff, 0xff, 0xff)}
+ESPECIALES = {(0x40, 0x5b, 0x8b): 'noche'}      # el azul «al pasar el mouse» de los botones
+
+
+def a_paleta(r, g, b):
+    """El color de la paleta que reemplaza a (r, g, b). La interfaz de Jorge usaba además naranja y muchos beige y
+    marrones; acá cada uno pasa al color de la paleta que cumple su papel: fondos claros → blanco, gris o crema;
+    líneas y bordes → celeste; acentos y textos suaves → azul; textos y fondos oscuros → azul noche."""
+    for nombre, v in PALETA.items():
+        if (r, g, b) == v:
+            return nombre
+    if (r, g, b) in ESPECIALES:
+        return ESPECIALES[(r, g, b)]
+    h, l, sat = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+    calido = sat >= 0.10 and 10 <= h * 360 <= 75
+    if l >= 0.955:
+        return 'blanco'
+    if calido:
+        return 'crema' if l >= 0.84 else 'celeste' if l >= 0.70 else 'azul' if l >= 0.30 else 'noche'
+    return 'gris' if l >= 0.915 else 'celeste' if l >= 0.70 else 'azul' if l >= 0.30 else 'noche'
+
+
+def recolorear(texto):
+    """Cambia cada color «#…» de un CSS por uno de la paleta (conservando la transparencia)."""
+    def uno(m):
+        h = m.group(0)[1:]
+        if len(h) in (3, 4):
+            h = ''.join(c * 2 for c in h)
+        if len(h) not in (6, 8):
+            return m.group(0)
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        alfa = h[6:8]
+        if alfa == '00':
+            return m.group(0)                      # transparente: queda igual
+        return '#%02x%02x%02x%s' % (PALETA[a_paleta(r, g, b)] + (alfa,))
+    return re.sub(r'#[0-9a-fA-F]{3,8}\b', uno, texto)
 
 
 def cambiar(texto, antes, despues, veces=1, donde=''):
@@ -94,8 +135,6 @@ def armar_js():
             t = cambiar(t, 'await fetch(`/api/auth/logout`,{method:`POST`}),location.assign(`/`)',
                         'await fetch(`/api/auth/logout`,{method:`POST`}),location.reload()', 1, nombre)
             t = cambiar(t, 'href:`/`,target:`_top`', 'href:location.href,target:`_top`', 2, nombre)
-            # La animación de granos de café.
-            t = cambiar(t, '`/images/coffee-bean-real.png`', 'window.SEPIA_EQUIPO.file(`coffee-bean-real.png`)', 2, nombre)
             # Ahora quien administra es Manuel.
             t = cambiar(t, 'Jorge o Manuel', 'Manuel', 2, nombre)
             # Un evento de un solo cupo se puede tomar «sin camioneta» (la base de datos lo permite).
@@ -116,22 +155,27 @@ def armar_js():
             t = cambiar(t, 'pattern:`[A-Za-z0-9-]{3,40}`', 'pattern:`[A-Za-z0-9][A-Za-z0-9._\\\\-]{2,29}`', 1, nombre)
             # Sin «service worker» (no hay archivo para él en la tienda).
             t = cambiar(t, 'navigator.serviceWorker.register(`/sw.js`).catch(()=>{})', '0', 1, nombre)
-            # «Boletas y pagos»: la gestión de boletas y pagos sigue en el portal de baristas.
-            t = cambiar(
-                t, 'function Qe({admin:e=!1}){let[t,n]',
-                'function Qe(){return(0,W.jsxs)(`section`,{className:`ops-card`,children:['
-                '(0,W.jsx)(`div`,{className:`eyebrow`,children:`CIERRE DE TURNOS`}),'
-                '(0,W.jsx)(`h1`,{children:`Boletas y pagos.`}),'
-                '(0,W.jsx)(`p`,{children:`Las boletas de honorarios, los pagos y los reembolsos de camioneta se gestionan en el portal de baristas de Sepia Coffee.`}),'
-                '(0,W.jsx)(`a`,{className:`primary-btn`,href:window.SEPIA_EQUIPO.portal||`/pages/baristas`,children:`Ir al portal de baristas`})]})}'
-                'function Qe_original({admin:e=!1}){let[t,n]', 1, nombre)
+            # ---- Lo que se dejó fuera (decisión de Manuel) ----
+            # La historia de Sepia y «quiénes somos» (la pestaña «Sepia»).
+            t = cambiar(t, '[`sepia`,`Sepia`,_],', '', 1, nombre)
+            t = cambiar(t, ':b===`sepia`?(0,W.jsx)(S,{})', '', 1, nombre)
+            # Las boletas y los pagos se gestionan en el portal de baristas: ni la pestaña ni el acceso directo.
+            t = cambiar(t, '...e?.admin?[[`pagos`,`Boletas`,c]]:[],', '', 1, nombre)
+            t = cambiar(t, '[`billing`,`Boletas y pagos`,`Revisar documentos`,c,null,()=>l(`billing`)],', '', 1, nombre)
+            t = cambiar(t, ',(0,W.jsx)(`button`,{className:`secondary-btn`,onClick:()=>{O(null),L(`pagos`)},children:`Boleta y pago de este turno`})', '', 1, nombre)
+            # «Necesito ayuda» (el WhatsApp de Manuel) y las fotos del turno.
+            t = cambiar(t, '(0,W.jsx)(le,{event:U,name:e.user.name},U.id),', '', 1, nombre)
+            t = cambiar(t, ',(e.admin||z.some(t=>t.event_id===U.id&&t.member_id===e.memberId&&[`approved`,`completed`].includes(t.status)))&&(0,W.jsx)(st,{eventId:U.id})', '', 1, nombre)
+            # La pantalla de bienvenida con granos de café cayendo. Mientras se mostraba, el resto de la página quedaba
+            # «inerte» (sin poder tocarse): hay que apagarla también, no solo dejar de dibujarla.
+            t = cambiar(t, 'r(!0);let n=()=>{e&&(a(e=>e+1),r(!0))};', 'let n=()=>{};', 1, nombre)
+            t = cambiar(t, 'n&&(0,W.jsx)(vt,{onComplete:o},i)', 'null', 1, nombre)
+            # El fondo de las fotos de perfil con transparencia, en blanco de la paleta.
+            t = cambiar(t, '`#f6f0e5`', '`#ffffff`', 1, nombre)
 
         if nombre == 'BrandStory-CKBrxk2p.js':
             # Los datos de la demostración de Jorge (un ID y una clave de ejemplo) no se usan acá: no se publican.
             t = cambiar(t, 'de=`SEPIA-001`,fe=`Sepia2026!`', 'de=``,fe=``', 1, nombre)
-            t = cambiar(t, '`/images/espresso-martini.png`', 'window.SEPIA_EQUIPO.file(`espresso-martini.jpg`)', 1, nombre)
-            t = cambiar(t, '`/images/colombia.png`', 'window.SEPIA_EQUIPO.file(`colombia.jpg`)', 1, nombre)
-            t = cambiar(t, '`/images/bolivia.jpg`', 'window.SEPIA_EQUIPO.file(`bolivia.jpg`)', 1, nombre)
 
         salida[nombre] = t
     return salida
@@ -183,7 +227,7 @@ def plantilla():
 <title>Sepia Coffee · Equipo</title>
 <meta name="description" content="El espacio del equipo Sepia: turnos, nuestra historia y registro fotográfico de cada evento.">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#33271f">
+<meta name="theme-color" content="#020526">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="sepia-shell" content="v2">
 <link rel="icon" href="{{ '%(p)sicon-64.png' | asset_url | split: '?' | first }}">
@@ -249,9 +293,12 @@ def main():
         for nombre, texto in js.items():
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), texto)
         for nombre in CSS:
-            shutil.copyfile(os.path.join(FUENTE, nombre), os.path.join(carpeta_assets, PREFIJO + nombre))
+            escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)))
         for origen, destino in IMAGENES.items():
-            shutil.copyfile(os.path.join(FUENTE, 'imagenes', origen), os.path.join(carpeta_assets, PREFIJO + destino))
+            with open(os.path.join(FUENTE, 'imagenes', origen), 'rb') as f:
+                datos = f.read()
+            with open(os.path.join(carpeta_assets, PREFIJO + destino), 'wb') as f:
+                f.write(datos)
         escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json.liquid'), MANIFIESTO)
         escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
