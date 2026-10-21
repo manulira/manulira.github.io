@@ -130,6 +130,12 @@ select t.debe_funcionar('Beto postula sin camioneta y queda confirmado al tiro',
 select t.valor('su postulación queda confirmada, sin conductor y con la reconfirmación puesta', $q$select estado || ' ' || conductor || ' ' || (asistencia_confirmada_en is not null) from public.postulaciones where barista_id = auth.uid() and evento_id = 'e1000000-0000-0000-0000-000000000001'$q$, 'confirmada false true');
 select t.debe_fallar('no puede postular dos veces', $q$select public.eq_accion('apply', '{"eventId":"e1000000-0000-0000-0000-000000000001","vehicleMode":"none"}')$q$);
 select t.valor('ahora Beto ve la dirección del evento (ya está confirmado) y la indicación', $q$select (e ->> 'address') || ' | ' || (e ->> 'notes') from jsonb_array_elements(public.eq_estado()->'events') e where e ->> 'title' = 'Matrimonio Tres Cupos'$q$, E'Camino Falso 123 | Tenida negra\nIndicaciones: Portón verde');
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test');
+select t.valor('la administración ve la descripción tal cual (sin las indicaciones agregadas, que son para el equipo)', $q$select e ->> 'notes' from jsonb_array_elements(public.eq_estado()->'events') e where e ->> 'title' = 'Matrimonio Tres Cupos'$q$, 'Tenida negra');
+select t.debe_funcionar('y guardar un evento tal como lo recibió no cambia nada', $q$select public.eq_accion('saveEvent', jsonb_build_object('event', (select e from jsonb_array_elements(public.eq_estado()->'events') e where e ->> 'title' = 'Matrimonio Tres Cupos')))$q$);
+select t.debe_funcionar('y guardarlo otra vez tampoco', $q$select public.eq_accion('saveEvent', jsonb_build_object('event', (select e from jsonb_array_elements(public.eq_estado()->'events') e where e ->> 'title' = 'Matrimonio Tres Cupos')))$q$);
+select t.valor('la descripción sigue igual: las indicaciones no se duplican', $q$select descripcion from public.eventos where nombre = 'Matrimonio Tres Cupos'$q$, 'Tenida negra');
+select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
 select t.como('00000000-0000-0000-0000-0000000000e1', 'eli@equipo.sepiacoffee.cl');
 select t.debe_funcionar('Eli postula sin camioneta (segundo cupo sin camioneta)', $q$select public.eq_accion('apply', '{"eventId":"e1000000-0000-0000-0000-000000000001","vehicleMode":"none"}')$q$);
 select t.como('00000000-0000-0000-0000-0000000000f1', 'fer@equipo.sepiacoffee.cl');

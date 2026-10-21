@@ -1,0 +1,14 @@
+{
+  "name": "Sepia Coffee · Equipo",
+  "short_name": "Sepia",
+  "description": "Tu equipo, tus turnos y la historia detrás de cada café.",
+  "lang": "es-CL",
+  "theme_color": "#33271f",
+  "background_color": "#f7f5f0",
+  "display": "standalone",
+  "start_url": "/pages/equipo",
+  "scope": "/pages/",
+  "icons": [
+    { "src": "sepia-equipo-v1-icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

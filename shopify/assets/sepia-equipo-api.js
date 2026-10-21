@@ -1,0 +1,403 @@
+/* SEPIA COFFEE · Sepia Equipo — el «servidor» de la interfaz del equipo.
+ *
+ * La interfaz (assets/sepia-equipo/*) fue hecha para hablar con un servidor propio: le pide todo a /api/*.
+ * Acá ese servidor es Supabase. Este archivo se pone ANTES de la interfaz e intercepta esas llamadas:
+ *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth)
+ *   · /api/crew     → funciones eq_estado y eq_accion (equipo.sql): eventos, postulaciones, perfil, administración
+ *   · /api/ranking, /api/events/…/team, /api/support, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
+ *   · /api/profile/photo y /api/events/…/photos → almacenamiento privado (perfiles y eventos-fotos)
+ *   · /api/admin/accounts → crear_acceso y restablecer_clave (esquema.sql)
+ *
+ * Las reglas (quién ve qué, cupos, camioneta, plazos) las aplica la base de datos; acá solo se traducen
+ * las llamadas y los mensajes. La sesión es la misma del portal de baristas (misma llave en el navegador).
+ *
+ * Configuración: window.SEPIA_EQUIPO = { url, key } (lo escribe la plantilla de la página).
+ */
+(function () {
+  'use strict';
+
+  var CFG = window.SEPIA_EQUIPO || {};
+  var DOMINIO_ACCESO = 'equipo.sepiacoffee.cl';          // el mismo de crear_acceso() en esquema.sql
+  var realFetch = window.fetch.bind(window);
+  var sb = null;
+  var BUCKET_PERFIL = 'perfiles';
+  var BUCKET_EVENTOS = 'eventos-fotos';
+
+  /* ------------------------------------------------------------------ */
+  /* Ayudas para la interfaz (se usan en los archivos de assets/sepia-equipo-*)  */
+  /* ------------------------------------------------------------------ */
+
+  /* Dirección de un archivo de la interfaz (precargas, imágenes): están en la carpeta de assets del tema. */
+  CFG.file = function (ruta) {
+    var nombre = String(ruta).split('/').pop();
+    return (CFG.files && CFG.files[nombre]) || '/' + ruta;
+  };
+
+  /* El mes en curso en Chile, para el ranking mensual: { key: '2026-10', name: 'Octubre' }. */
+  CFG.mes = function () {
+    var ahora = new Date();
+    var partes = new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit' }).formatToParts(ahora);
+    var anio = partes.filter(function (p) { return p.type === 'year'; })[0].value;
+    var mes = partes.filter(function (p) { return p.type === 'month'; })[0].value;
+    var nombre = new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', month: 'long' }).format(ahora);
+    return { key: anio + '-' + mes, name: nombre.charAt(0).toUpperCase() + nombre.slice(1) };
+  };
+  window.SEPIA_EQUIPO = CFG;
+
+  /* ------------------------------------------------------------------ */
+  /* Respuestas y errores                                                */
+  /* ------------------------------------------------------------------ */
+
+  function ok(json, status) { return { status: status || 200, json: json }; }
+  function falla(status, mensaje) { return { status: status, json: { error: mensaje } }; }
+
+  /* Traduce un error de Supabase (Auth, base de datos o red) a un mensaje para la persona. */
+  function mensajeError(e, porDefecto) {
+    var txt = (e && (e.message || e.msg || '')) + '';
+    if (e && e.code === 'sin-sesion') return 'Tu sesión terminó. Vuelve a iniciar sesión.';
+    if (/invalid login credentials|invalid_credentials/i.test(txt)) return 'ID o clave incorrectos. Revisa que no lleven espacios de más.';
+    if (/banned/i.test(txt)) return 'Tu acceso está desactivado. Escríbele a Manuel.';
+    if (/same password|different from the old/i.test(txt)) return 'La clave nueva tiene que ser distinta de la que ya tenías.';
+    if (/password/i.test(txt) && /(short|least|weak|characters)/i.test(txt)) return 'Esa clave es muy corta o muy fácil de adivinar. Usa al menos 8 caracteres.';
+    if (/rate limit|too many/i.test(txt)) return 'Hubo muchos intentos seguidos. Espera un minuto e inténtalo de nuevo.';
+    if (/failed to fetch|networkerror|load failed|network request failed/i.test(txt)) return 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
+    if (e && e.code === '42501') return txt && !/permission denied|row-level security/i.test(txt) ? txt : 'No tienes permiso para hacer esto.';
+    if (e && e.code === 'P0001' && txt) return txt;            // «raise exception» de la base: ya viene en español
+    return porDefecto || 'No pudimos completar la acción. Inténtalo de nuevo en un momento.';
+  }
+
+  function aFalla(e, porDefecto) {
+    var estado = e && e.code === 'sin-sesion' ? 401 : (e && e.code === '42501') ? 403 : /invalid login|invalid_credentials/i.test((e && e.message) || '') ? 401 : 400;
+    return falla(estado, mensajeError(e, porDefecto));
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Sesión y llamadas a la base                                         */
+  /* ------------------------------------------------------------------ */
+
+  async function sesion() {
+    var r = await sb.auth.getSession();
+    return (r && r.data && r.data.session) || null;
+  }
+
+  async function exigirSesion() {
+    var s = await sesion();
+    if (!s) { var e = new Error('sin sesión'); e.code = 'sin-sesion'; throw e; }
+    return s;
+  }
+
+  async function rpc(nombre, args) {
+    var r = await sb.rpc(nombre, args || {});
+    if (r.error) throw r.error;
+    return r.data;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Fotos: perfil (las firmadas se piden de a muchas) y eventos          */
+  /* ------------------------------------------------------------------ */
+
+  var cacheFotos = {};            // id de persona → { url (o null si no tiene foto), hasta (ms) }
+  var colaFotos = null;           // { ids: {id: [resolvedores]}, timer }
+
+  function limpiarFotos() { cacheFotos = {}; }
+
+  function pedirFotoPerfil(id) {
+    var c = cacheFotos[id];
+    if (c && c.hasta > Date.now()) return Promise.resolve(c.url);
+    return new Promise(function (resolver) {
+      if (!colaFotos) {
+        colaFotos = { ids: {}, timer: setTimeout(vaciarColaFotos, 25) };
+      }
+      (colaFotos.ids[id] = colaFotos.ids[id] || []).push(resolver);
+    });
+  }
+
+  async function vaciarColaFotos() {
+    var cola = colaFotos; colaFotos = null;
+    var ids = Object.keys(cola.ids);
+    var urls = {};
+    try {
+      var rutas = await rpc('eq_fotos_perfil', { p_ids: ids });
+      var lista = Object.keys(rutas || {}).map(function (k) { return rutas[k]; }).filter(Boolean);
+      var firmadas = {};
+      if (lista.length) {
+        var f = await sb.storage.from(BUCKET_PERFIL).createSignedUrls(lista, 3600);
+        if (f.error) throw f.error;
+        (f.data || []).forEach(function (x) { if (x && x.signedUrl && x.path) firmadas[x.path] = x.signedUrl; });
+      }
+      ids.forEach(function (id) { urls[id] = rutas && rutas[id] ? (firmadas[rutas[id]] || null) : null; });
+    } catch (e) {
+      ids.forEach(function (id) { urls[id] = null; });
+      ids = [];                  // sin respuesta confiable: no se guarda en la memoria, se reintenta después
+    }
+    ids.forEach(function (id) { cacheFotos[id] = { url: urls[id], hasta: Date.now() + 50 * 60 * 1000 }; });
+    Object.keys(cola.ids).forEach(function (id) { cola.ids[id].forEach(function (r) { r(urls[id] || null); }); });
+  }
+
+  /* Las fotos de perfil se piden con <img src="/api/profile/photo?memberId=…">: cambia el src por una dirección
+     firmada del almacenamiento privado. Sin foto, deja que la imagen falle y la interfaz muestra las iniciales. */
+  function interceptarImagenes() {
+    var original = Element.prototype.setAttribute;
+    var descriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    function esFoto(v) { return typeof v === 'string' && v.indexOf('/api/profile/photo') === 0; }
+    function resolver(img, valor, poner) {
+      img.__sepiaFoto = valor;
+      var u = new URL(valor, location.href);
+      var quien = u.searchParams.get('memberId');
+      var listo = quien ? Promise.resolve(quien) : sesion().then(function (s) { return s ? s.user.id : null; });
+      listo.then(function (id) { return id ? pedirFotoPerfil(id) : null; }).then(function (url) {
+        if (img.__sepiaFoto !== valor) return;             // la interfaz ya pidió otra
+        poner(img, url || 'data:,');
+      }, function () { if (img.__sepiaFoto === valor) poner(img, 'data:,'); });
+    }
+    Element.prototype.setAttribute = function (nombre, valor) {
+      if (this instanceof HTMLImageElement && String(nombre).toLowerCase() === 'src' && esFoto(valor)) {
+        resolver(this, valor, function (img, url) { original.call(img, 'src', url); });
+        return;
+      }
+      return original.apply(this, arguments);
+    };
+    if (descriptor && descriptor.set) {
+      Object.defineProperty(HTMLImageElement.prototype, 'src', {
+        configurable: true, enumerable: descriptor.enumerable, get: descriptor.get,
+        set: function (v) {
+          if (esFoto(v)) { resolver(this, v, function (img, url) { descriptor.set.call(img, url); }); return; }
+          descriptor.set.call(this, v);
+        }
+      });
+    }
+  }
+
+  async function fotoPropia(meta) {
+    var s = await exigirSesion();
+    var r = await sb.from('baristas').select('foto_path').eq('id', s.user.id).maybeSingle();
+    if (r.error) throw r.error;
+    return { hasPhoto: !!(r.data && r.data.foto_path), path: r.data && r.data.foto_path, uid: s.user.id, meta: meta };
+  }
+
+  async function subirFotoPerfil(blob) {
+    var s = await exigirSesion();
+    if (!blob || !blob.size) return falla(400, 'No recibimos la foto.');
+    if (blob.size > 2 * 1024 * 1024) return falla(400, 'La foto supera los 2 MB. Elige una más liviana.');
+    var anterior = (await fotoPropia()).path;
+    var ruta = s.user.id + '/foto-' + Date.now() + '.jpg';
+    var up = await sb.storage.from(BUCKET_PERFIL).upload(ruta, blob, { contentType: 'image/jpeg', upsert: false });
+    if (up.error) throw up.error;
+    var u = await sb.from('baristas').update({ foto_path: ruta }).eq('id', s.user.id).select('id');
+    if (u.error || !u.data || !u.data.length) {
+      await sb.storage.from(BUCKET_PERFIL).remove([ruta]);
+      if (u.error) throw u.error;
+      return falla(400, 'Completa tu perfil antes de subir tu foto.');
+    }
+    limpiarFotos();
+    if (anterior) { try { await sb.storage.from(BUCKET_PERFIL).remove([anterior]); } catch (e) { /* queda huérfana */ } }
+    return ok({ ok: true });
+  }
+
+  async function quitarFotoPerfil() {
+    var s = await exigirSesion();
+    var anterior = (await fotoPropia()).path;
+    var u = await sb.from('baristas').update({ foto_path: null }).eq('id', s.user.id).select('id');
+    if (u.error) throw u.error;
+    limpiarFotos();
+    if (anterior) { try { await sb.storage.from(BUCKET_PERFIL).remove([anterior]); } catch (e) { /* queda huérfana */ } }
+    return ok({ ok: true });
+  }
+
+  async function firmarFotosEvento(fotos) {
+    if (!fotos.length) return [];
+    var f = await sb.storage.from(BUCKET_EVENTOS).createSignedUrls(fotos.map(function (x) { return x.path; }), 3600);
+    if (f.error) throw f.error;
+    var por = {};
+    (f.data || []).forEach(function (x) { if (x && x.signedUrl && x.path) por[x.path] = x.signedUrl; });
+    return fotos.map(function (x) {
+      return { id: x.id, stage: x.stage, url: por[x.path] || '', uploadedAt: x.uploadedAt, author: x.author, canDelete: x.canDelete };
+    });
+  }
+
+  function nuevoNombre() {
+    var azar = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+    return azar.replace(/[^A-Za-z0-9-]/g, '') + '.jpg';
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Rutas                                                               */
+  /* ------------------------------------------------------------------ */
+
+  async function manejar(metodo, u, init) {
+    var ruta = u.pathname.replace(/\/+$/, '');
+    var m;
+
+    /* ----- Sesión ----- */
+    if (ruta === '/api/auth/login' && metodo === 'POST') {
+      var d = JSON.parse(init.body || '{}');
+      var id = String(d.id || '').trim().toLowerCase();
+      var clave = String(d.password || '');
+      if (!id || !clave) return falla(400, 'Escribe tu ID y tu clave.');
+      var correo = id.indexOf('@') >= 0 ? id : id + '@' + DOMINIO_ACCESO;     // la administración entra con su correo
+      var r = await sb.auth.signInWithPassword({ email: correo, password: clave });
+      if (r.error) throw r.error;
+      limpiarFotos();
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/auth/logout' && metodo === 'POST') {
+      try { await sb.auth.signOut({ scope: 'local' }); } catch (e) { /* ya no había sesión */ }
+      limpiarFotos();
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/auth/password' && metodo === 'POST') {
+      var s = await exigirSesion();
+      var p = JSON.parse(init.body || '{}');
+      var actual = String(p.current || ''), nueva = String(p.password || ''), repetida = String(p.confirm || '');
+      var yo = String((s.user.email || '').split('@')[0] || '').toLowerCase();
+      if (!actual) return falla(400, 'Escribe tu clave actual.');
+      if (nueva.length < 8) return falla(400, 'La clave nueva tiene que tener al menos 8 caracteres.');
+      if (nueva !== repetida) return falla(400, 'Las dos claves nuevas no son iguales.');
+      if (nueva === actual) return falla(400, 'La clave nueva tiene que ser distinta de la que ya tenías.');
+      if (yo.length >= 3 && s.user.email.indexOf('@' + DOMINIO_ACCESO) > 0 && nueva.toLowerCase().indexOf(yo) >= 0) return falla(400, 'La clave no puede llevar tu ID.');
+      var v = await sb.auth.signInWithPassword({ email: s.user.email, password: actual });
+      if (v.error) return falla(400, 'La clave actual no es correcta.');
+      var a = await sb.auth.updateUser({ password: nueva });
+      if (a.error) throw a.error;
+      await rpc('acceso_clave_cambiada');                           // deja de pedirle el cambio
+      await sb.auth.signOut({ scope: 'others' });                  // cierra las sesiones de otros aparatos
+      return ok({ ok: true });
+    }
+
+    /* ----- Datos del equipo ----- */
+    if (ruta === '/api/crew' && metodo === 'GET') {
+      if (!(await sesion())) return ok({ signedIn: false });
+      return ok(await rpc('eq_estado', { p_vista: u.searchParams.get('view') || null }));
+    }
+    if (ruta === '/api/crew' && metodo === 'POST') {
+      await exigirSesion();
+      var c = JSON.parse(init.body || '{}');
+      var accion = c.action; delete c.action;
+      var res = await rpc('eq_accion', { p_accion: String(accion || ''), p_datos: c });
+      return ok(res || { ok: true });
+    }
+    if (ruta === '/api/ranking' && metodo === 'GET') {
+      await exigirSesion();
+      return ok(await rpc('eq_ranking'));
+    }
+    if ((m = /^\/api\/events\/([0-9a-f-]{36})\/team$/.exec(ruta)) && metodo === 'GET') {
+      await exigirSesion();
+      return ok(await rpc('eq_equipo_evento', { p_evento: m[1] }));
+    }
+    if (ruta === '/api/support' && metodo === 'GET') {
+      await exigirSesion();
+      return ok(await rpc('eq_ayuda', { p_evento: u.searchParams.get('eventId') || null }));
+    }
+    if (ruta === '/api/notifications' && metodo === 'GET') {
+      await exigirSesion();
+      return ok(await rpc('eq_avisos'));
+    }
+    if (ruta === '/api/notifications' && metodo === 'POST') {
+      await exigirSesion();
+      var n = JSON.parse(init.body || '{}');
+      await rpc('eq_avisos_leer', { p_id: n.id });
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/earnings' && metodo === 'GET') {
+      await exigirSesion();
+      return ok(await rpc('eq_ganancias', { p_barista: u.searchParams.get('memberId') || null }));
+    }
+    if (ruta === '/api/integrations' && (metodo === 'GET' || metodo === 'POST')) {
+      await exigirSesion();
+      return ok(await rpc('eq_integraciones'));
+    }
+    if (ruta.indexOf('/api/billing') === 0) {
+      return falla(501, 'Las boletas y los pagos se gestionan en el portal de baristas de Sepia Coffee.');
+    }
+
+    /* ----- Administración de cuentas ----- */
+    if (ruta === '/api/admin/accounts' && metodo === 'POST') {
+      await exigirSesion();
+      var q = JSON.parse(init.body || '{}');
+      if (q.action === 'create') {
+        var nuevo = await rpc('crear_acceso', { p_usuario: String(q.id || '').trim(), p_nombre: String(q.name || '').trim() });
+        return ok({ id: nuevo.usuario, password: nuevo.clave });
+      }
+      if (q.action === 'reset') {
+        var cuenta = await sb.from('accesos').select('usuario').eq('id', q.memberId).maybeSingle();
+        if (cuenta.error) throw cuenta.error;
+        if (!cuenta.data) return falla(404, 'No encontramos esa cuenta.');
+        var temporal = await rpc('restablecer_clave', { p_acceso: q.memberId });
+        return ok({ id: cuenta.data.usuario, password: temporal });
+      }
+      return falla(400, 'Acción no reconocida.');
+    }
+
+    /* ----- Foto de perfil ----- */
+    if (ruta === '/api/profile/photo') {
+      if (metodo === 'GET' && u.searchParams.get('meta')) { var fp = await fotoPropia(); return ok({ hasPhoto: fp.hasPhoto }); }
+      if (metodo === 'POST') return subirFotoPerfil(init.body);
+      if (metodo === 'DELETE') return quitarFotoPerfil();
+    }
+
+    /* ----- Registro fotográfico del evento ----- */
+    if ((m = /^\/api\/events\/([0-9a-f-]{36})\/photos$/.exec(ruta))) {
+      var s2 = await exigirSesion();
+      if (metodo === 'GET') {
+        var lista = await rpc('eq_fotos_evento', { p_evento: m[1] });
+        return ok({ photos: await firmarFotosEvento(lista.photos || []), cursor: null });
+      }
+      if (metodo === 'POST') {
+        var forma = init.body, etapa = forma && forma.get && forma.get('stage'), archivo = forma && forma.get && forma.get('photo');
+        if (!archivo || !etapa) return falla(400, 'Elige la etapa y la foto.');
+        if (archivo.size > 5 * 1024 * 1024) return falla(400, 'La foto supera los 5 MB.');
+        var destino = m[1] + '/' + s2.user.id + '/' + nuevoNombre();
+        var sube = await sb.storage.from(BUCKET_EVENTOS).upload(destino, archivo, { contentType: 'image/jpeg', upsert: false });
+        if (sube.error) throw sube.error;
+        var reg;
+        try { reg = await rpc('eq_foto_registrar', { p_evento: m[1], p_etapa: String(etapa), p_ruta: destino }); }
+        catch (e) { await sb.storage.from(BUCKET_EVENTOS).remove([destino]); throw e; }
+        var una = await firmarFotosEvento([reg.photo]);
+        return ok({ photo: una[0] });
+      }
+    }
+    if ((m = /^\/api\/events\/([0-9a-f-]{36})\/photos\/([0-9a-f-]{36})$/.exec(ruta)) && metodo === 'DELETE') {
+      await exigirSesion();
+      var quitada = await rpc('eq_foto_borrar', { p_id: m[2] });
+      if (quitada) { try { await sb.storage.from(BUCKET_EVENTOS).remove([quitada]); } catch (e) { /* queda huérfana */ } }
+      return ok({ ok: true });
+    }
+
+    return falla(404, 'Esta función no está disponible en la web de Sepia.');
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Arranque                                                            */
+  /* ------------------------------------------------------------------ */
+
+  function iniciar() {
+    if (!window.supabase || !window.supabase.createClient || !CFG.url || !CFG.key) { return false; }
+    sb = window.supabase.createClient(CFG.url, CFG.key, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'sepia-baristas-auth' },
+      global: { fetch: realFetch }
+    });
+    window.fetch = function (entrada, init) {
+      var direccion;
+      try { direccion = new URL(typeof entrada === 'string' ? entrada : (entrada && entrada.url) || String(entrada), location.href); }
+      catch (e) { return realFetch(entrada, init); }
+      if (direccion.origin !== location.origin || direccion.pathname.indexOf('/api/') !== 0) return realFetch(entrada, init);
+      var metodo = String((init && init.method) || (entrada && entrada.method) || 'GET').toUpperCase();
+      return manejar(metodo, direccion, init || {}).catch(function (e) { return aFalla(e); }).then(function (r) {
+        return new Response(JSON.stringify(r.json), { status: r.status, headers: { 'Content-Type': 'application/json' } });
+      });
+    };
+    interceptarImagenes();
+    return true;
+  }
+
+  if (!iniciar()) {
+    /* Sin la librería o sin configuración, la interfaz mostraría «no pudimos conectar»; dejamos el motivo a la vista. */
+    window.fetch = function (entrada, init) {
+      var direccion = typeof entrada === 'string' ? entrada : (entrada && entrada.url) || '';
+      if (/^\/api\//.test(direccion) || /\/api\//.test(direccion.replace(location.origin, ''))) {
+        return Promise.resolve(new Response(JSON.stringify({ error: 'No pudimos conectar con Sepia. Recarga la página.' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
+      }
+      return realFetch(entrada, init);
+    };
+  }
+})();

@@ -1,0 +1,44 @@
+// Sirve la página del equipo como la serviría la tienda: la plantilla (page.equipo.liquid) con sus
+// archivos de assets. No hay ningún /api: si la interfaz llamara a un servidor propio, fallaría (404);
+// todo tiene que pasar por el adaptador y la base de datos.
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const AQUI = path.dirname(fileURLToPath(import.meta.url));
+const TEMA = path.join(AQUI, '..', '..');
+const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8' };
+
+/* Un «Liquid» mínimo, solo para esta plantilla: quita las etiquetas de control y resuelve asset_url. */
+export function renderizar(plantilla, url, clave) {
+  let t = plantilla
+    .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '')
+    .replace(/\{%\s*layout none\s*%\}/g, '')
+    .replace(/\{%\s*(end)?raw\s*%\}/g, '')
+    .replace(/\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\|\s*json\s*\}\}/g, (_, n) => JSON.stringify('/assets/' + n))
+    .replace(/\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\}\}/g, (_, n) => '/assets/' + n)
+    .replaceAll('SUPABASE_URL', url).replaceAll('SUPABASE_CLAVE', clave);
+  const resto = t.match(/\{\{|\{%/g);
+  if (resto) throw new Error('La plantilla trae Liquid que el armado de pruebas no entiende: ' + t.slice(t.search(/\{\{|\{%/), 80));
+  return t;
+}
+
+export function servir(puerto, { url, clave }) {
+  const plantilla = fs.readFileSync(path.join(TEMA, 'templates', 'page.equipo.liquid'), 'utf8');
+  const html = renderizar(plantilla, url, clave);
+  const peticiones = [];
+  const servidor = http.createServer((req, res) => {
+    const u = new URL(req.url, 'http://x');
+    peticiones.push(req.method + ' ' + u.pathname);
+    if (u.pathname === '/pages/equipo') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end(html); return; }
+    if (u.pathname === '/pages/baristas') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end('<h1>Portal de baristas</h1>'); return; }
+    if (u.pathname.startsWith('/assets/')) {
+      const f = path.join(TEMA, 'assets', path.basename(u.pathname));
+      if (fs.existsSync(f)) { res.writeHead(200, { 'content-type': tipos[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res); return; }
+    }
+    res.writeHead(404); res.end('no');
+  }).listen(puerto);
+  servidor.peticiones = peticiones;
+  return servidor;
+}

@@ -161,7 +161,8 @@ begin
                         where p.evento_id = p_evento and p.barista_id = auth.uid() and p.estado = 'confirmada');
   ver_dir := p_adm or confirmado;
   notas := coalesce(v.descripcion, '');
-  if ver_dir and d.indicaciones is not null and btrim(d.indicaciones) <> '' then
+  -- Las indicaciones se le agregan al equipo; la administración ve y edita solo la descripción (si no, al guardar se duplicarían).
+  if ver_dir and not p_adm and d.indicaciones is not null and btrim(d.indicaciones) <> '' then
     notas := btrim(notas || E'\n' || 'Indicaciones: ' || d.indicaciones);
   end if;
 

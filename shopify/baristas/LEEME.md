@@ -305,6 +305,47 @@ update public.config set retencion = 0.16;   -- 2027
    `assets/sepia-baristas.js` y en `crear_acceso()` de `esquema.sql`: si lo cambias, cámbialo en
    los dos). El `esquema.sql` también crea el almacén de fotos `perfiles` (privado, 2 MB).
 
+## Sepia Equipo: la interfaz de Jorge, sobre esta misma base de datos
+
+Una segunda página, `sepiacoffee.cl/pages/equipo`, con **el diseño y los flujos de «Sepia Equipo»**, la app que armó
+Jorge (eventos con cupos con y sin camioneta, ranking, perfil, administración), pero conectada a la base de datos de
+este portal en vez de al servidor de Jorge (Cloudflare). Las dos páginas conviven: son las mismas cuentas, la misma clave,
+los mismos eventos y postulaciones (la sesión incluso se comparte: quien entra en una, entra en la otra).
+
+| Pieza | Qué hace |
+|---|---|
+| `equipo.sql` | Se corre **después** de `esquema.sql`. Funciones `eq_*` que arman los datos en la forma que la interfaz espera y aplican las reglas: eventos y postulaciones, perfil, cupos, camioneta, cancelación, ranking, equipo, ayuda, avisos, ganancias, fotos de eventos |
+| `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) con las imágenes optimizadas (de 5,7 MB a 0,5 MB) |
+| `equipo/construir.py` | Hace los cambios de texto y de rutas (cada uno anotado con su motivo) y deja `assets/sepia-equipo-v1-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
+| `assets/sepia-equipo-api.js` | El «servidor»: intercepta lo que la interfaz le pide a `/api/*` y lo traduce a Supabase (sesión, funciones `eq_*`, fotos en el almacenamiento privado) |
+| `templates/page.equipo.liquid` | La página, sin el diseño de la tienda. Lleva `SUPABASE_URL` y `SUPABASE_CLAVE` como marcadores: reemplázalos antes de subirla (`construir.py --salida … --url … --clave …` deja una copia lista) |
+| `equipo/pruebas/` | Pruebas de punta a punta en un navegador real (ver más abajo) |
+
+**Reglas** (las de Jorge, aplicadas por la base de datos y no por la pantalla): se postula con confirmación inmediata, por
+orden de llegada, «con camioneta» o «sin camioneta»; cada evento reserva a lo más **un** cupo con camioneta y solo lo toma quien
+declaró tenerla; en un evento de varios cupos, el último queda reservado para la camioneta mientras nadie lo tome; se puede
+cancelar hasta 24 horas antes; los baristas ven los eventos desde 14 días antes; la dirección solo la ven los confirmados y el
+cliente nunca; la administración asigna, confirma y saca gente a mano. El recordatorio del turno llega a la campana desde las
+18:00 (hora de Chile) del día anterior.
+
+**Lo que se cambió respecto de la app de Jorge**: el contacto para restablecer la clave es Manuel; el ranking mensual
+es el mes en curso (antes era siempre octubre); el formulario de eventos pide además la comuna o zona (la ve todo el equipo; antes
+quedaba «Por confirmar»); un evento de un solo cupo se puede tomar sin camioneta; al completar el perfil se avisa que se
+aceptan el uso de los datos y la declaración de boleta (la base lo exige); el patrón del ID de acceso era inválido en los navegadores
+nuevos; la pestaña **Boletas** de la administración muestra un enlace al portal de baristas.
+
+**Lo que no está** (y por qué): las **boletas y los pagos** (en la app de Jorge el barista sube su boleta en PDF; acá se
+siguen gestionando en el portal de baristas, donde ya existen), el cálculo de rutas y TAG con proveedores externos (los traslados
+son manuales: kilómetros y TAG que anota la administración), el correo y el WhatsApp automáticos, y el «service worker» de la app
+instalable (la página se puede agregar a la pantalla de inicio, pero no funciona sin internet). «Mis turnos y ganancias» lo ve solo la
+administración, como en la app de Jorge; cada barista ve sus ganancias en el portal de baristas. La administración entra con su
+correo y su clave (si la activó en el portal); sin clave, entra por el portal de baristas con el código por correo.
+
+**Puesta en marcha**: (1) en Supabase, correr `esquema.sql` de nuevo (cambió una regla) y después `equipo.sql`; (2) crear la
+página «Equipo» (`/pages/equipo`, plantilla `equipo`) y subir al tema los archivos `assets/sepia-equipo-*`, `assets/sepia-equipo-api.js`
+y `templates/page.equipo.liquid` (con la URL y la clave públicas de Supabase); (3) probar en la vista previa del tema y publicarlo. Si cambias algo
+de `fuente/` o de `construir.py`, sube `VERSION` en `construir.py` para que los navegadores no usen copias viejas.
+
 ## Probado, y lo que falta probar
 
 Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inventados.

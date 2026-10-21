@@ -1,0 +1,115 @@
+{% layout none %}
+{%- comment -%}
+  SEPIA COFFEE · Sepia Equipo (página /pages/equipo)
+
+  La interfaz del equipo (turnos, perfil, ranking, administración), conectada a la misma base de datos
+  Supabase del portal de baristas. No usa el diseño de la tienda: es una página completa.
+  Los archivos están en assets/sepia-equipo-*; el «servidor» es assets/sepia-equipo-api.js.
+  Se arma con equipo/construir.py. Antes de subirla, reemplaza SUPABASE_URL y SUPABASE_CLAVE por los de tu
+  proyecto (la clave pública «anon»/«publishable»: está hecha para ir en la página; lo protege la base de datos).
+{%- endcomment -%}
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sepia Coffee · Equipo</title>
+<meta name="description" content="El espacio del equipo Sepia: turnos, nuestra historia y registro fotográfico de cada evento.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#33271f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="sepia-shell" content="v2">
+<link rel="icon" href="{{ 'sepia-equipo-v1-icon-64.png' | asset_url }}">
+<link rel="apple-touch-icon" href="{{ 'sepia-equipo-v1-icon-180.png' | asset_url }}">
+<link rel="manifest" href="{{ 'sepia-equipo-v1-manifest.json' | asset_url }}">
+<link rel="preconnect" href="SUPABASE_URL" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}" data-rsc-css-href="{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}" data-precedence="vite-rsc/importer-resources">
+<link rel="modulepreload" href="{{ 'sepia-equipo-v1-framework-D_rUT4EX.js' | asset_url }}" crossorigin>
+<link rel="modulepreload" href="{{ 'sepia-equipo-v1-client-app-3nlm5eU_.js' | asset_url }}" crossorigin>
+<link rel="modulepreload" href="{{ 'sepia-equipo-v1-BrandStory-CKBrxk2p.js' | asset_url }}" crossorigin>
+<script>
+  window.SEPIA_EQUIPO = {
+    url: "SUPABASE_URL",
+    key: "SUPABASE_CLAVE",
+    portal: "/pages/baristas",
+    files: {
+      "rolldown-runtime-C60lm6uB.js": {{ 'sepia-equipo-v1-rolldown-runtime-C60lm6uB.js' | asset_url | json }},
+      "framework-D_rUT4EX.js": {{ 'sepia-equipo-v1-framework-D_rUT4EX.js' | asset_url | json }},
+      "layout-segment-context-hvT46ZPC.js": {{ 'sepia-equipo-v1-layout-segment-context-hvT46ZPC.js' | asset_url | json }},
+      "index-B0KDm-6B.js": {{ 'sepia-equipo-v1-index-B0KDm-6B.js' | asset_url | json }},
+      "client-app-3nlm5eU_.js": {{ 'sepia-equipo-v1-client-app-3nlm5eU_.js' | asset_url | json }},
+      "BrandStory-CKBrxk2p.js": {{ 'sepia-equipo-v1-BrandStory-CKBrxk2p.js' | asset_url | json }},
+      "index.DiFSpdfw.css": {{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url | json }},
+      "coffee-bean-real.png": {{ 'sepia-equipo-v1-coffee-bean-real.png' | asset_url | json }},
+      "espresso-martini.jpg": {{ 'sepia-equipo-v1-espresso-martini.jpg' | asset_url | json }},
+      "colombia.jpg": {{ 'sepia-equipo-v1-colombia.jpg' | asset_url | json }},
+      "bolivia.jpg": {{ 'sepia-equipo-v1-bolivia.jpg' | asset_url | json }},
+      "sepia-blue-64.png": {{ 'sepia-equipo-v1-icon-64.png' | asset_url | json }},
+      "sepia-blue-180.png": {{ 'sepia-equipo-v1-icon-180.png' | asset_url | json }}
+    }
+  };
+</script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"
+  integrity="sha384-K1nraABOP/zFehpLIUksXebbs7jMpB8gYMlb+uhVKZcWT/9Vkq1+qhv6ndC+1Yuz"
+  crossorigin="anonymous"
+  defer
+></script>
+<script src="{{ 'sepia-equipo-api.js' | asset_url }}" defer></script>
+{% raw %}
+<script>
+Object.assign(((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}),{params:{},nav:{"pathname":"/","searchParams":[]}})
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("0:{\"page:/\":\"$L1\",\"layout:/\":\"$L2\",\"route:/\":\"$L3\",\"__route\":\"route:/\",\"__interceptionContext\":null,\"__layoutIds\":[\"layout:/\"],\"__rootLayout\":\"/\",\"__bfcacheSegmentIdentities\":{\"layout:/\":\"[\\\"layout\\\",\\\"layout:/\\\",\\\"root-boundary:/\\\",\\\"\\\"]\",\"page:/\":\"[\\\"page\\\",\\\"page:/\\\",\\\"root-boundary:/\\\",\\\"\\\"]\"},\"__srcPage\":[\"page\"],\"__layoutFlags\":{\"layout:/\":\"s\"},\"__artifactCompatibility\":{\"schemaVersion\":1,\"graphVersion\":\"app-route-graph:1177fd80f83fa7b0\",\"deploymentVersion\":\"32ffa2eb-a63a-4a7d-8392-28e62c65d6c2\",\"appElementsSchemaVersion\":1,\"rscPayloadSchemaVersion\":1,\"rootBoundaryId\":\"/\",\"renderEpoch\":null},\"__dynamicStaleTime\":0}\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("4:I[\"8d84f8a9a3b9\",[],\"Children\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("5:I[\"2cceb7067104\",[],\"GlobalErrorBoundary\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("6:I[\"27d2c0c01dca\",[],\"default\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("7:I[\"2cceb7067104\",[],\"ErrorBoundary\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("8:I[\"01c962c1ee20\",[],\"LayoutSegmentProvider\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("9:I[\"8d84f8a9a3b9\",[],\"Slot\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("a:I[\"2cceb7067104\",[],\"NotFoundBoundary\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("b:I[\"d9d902fc19dd\",[],\"AppRouterScrollTarget\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("c:I[\"2cceb7067104\",[],\"RedirectBoundary\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push(":HL[\"{% endraw %}{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}{% raw %}\",\"style\"     ]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("2:[[[\"$\",\"link\",\"css:{% endraw %}{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}{% raw %}\",{\"rel\":\"stylesheet\",\"precedence\":\"vite-rsc/importer-resources\",\"href\":\"{% endraw %}{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}{% raw %}\",\"data-rsc-css-href\":\"{% endraw %}{{ 'sepia-equipo-v1-index.DiFSpdfw.css' | asset_url }}{% raw %}\"}],\"$undefined\"],[\"$\",\"html\",null,{\"lang\":\"es-CL\",\"children\":[[\"$\",\"head\",null,{\"children\":[[\"$\",\"meta\",null,{\"name\":\"theme-color\",\"content\":\"#33271f\"}],[\"$\",\"meta\",null,{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1, viewport-fit=cover\"}],[\"$\",\"meta\",null,{\"name\":\"sepia-shell\",\"content\":\"v2\"}],[\"$\",\"meta\",null,{\"name\":\"apple-mobile-web-app-capable\",\"content\":\"yes\"}]]}],[\"$\",\"body\",null,{\"children\":[\"$\",\"$L4\",null,{}]}]]}]]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("3:[[[\"$\",\"meta\",null,{\"charSet\":\"utf-8\"}],[[\"$\",\"title\",\"0\",{\"children\":\"Sepia Coffee · Equipo\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"El espacio del equipo Sepia: turnos, nuestra historia y registro fotográfico de cada evento.\"}],[\"$\",\"link\",\"2\",{\"data-vinext-streamed-icon\":\"$undefined\",\"rel\":\"icon\",\"href\":\"{% endraw %}{{ 'sepia-equipo-v1-icon-64.png' | asset_url }}{% raw %}\",\"type\":\"$undefined\",\"sizes\":\"$undefined\",\"color\":\"$undefined\",\"media\":\"$undefined\",\"fetchPriority\":\"$undefined\"}],[\"$\",\"link\",\"3\",{\"data-vinext-streamed-icon\":\"$undefined\",\"rel\":\"apple-touch-icon\",\"href\":\"{% endraw %}{{ 'sepia-equipo-v1-icon-180.png' | asset_url }}{% raw %}\",\"type\":\"$undefined\",\"sizes\":\"$undefined\",\"color\":\"$undefined\",\"media\":\"$undefined\",\"fetchPriority\":\"$undefined\"}],[\"$\",\"link\",\"4\",{\"rel\":\"manifest\",\"href\":\"{% endraw %}{{ 'sepia-equipo-v1-manifest.json' | asset_url }}{% raw %}\"}]],[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]],[\"$\",\"$L5\",null,{\"fallback\":\"$6\",\"children\":[\"$\",\"$L7\",null,{\"fallback\":\"$6\",\"children\":[\"$\",\"$L8\",null,{\"providerId\":\"layout:/\",\"segmentMap\":{\"children\":[]},\"children\":[\"$\",\"$L9\",null,{\"id\":\"layout:/\",\"parallelSlots\":\"$undefined\",\"children\":[\"$\",\"$La\",null,{\"resetKey\":\"\",\"fallback\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"children\":[\"$\",\"$Lb\",null,{\"children\":[\"$\",\"$Lc\",null,{\"children\":[[\"$\",\"$L8\",null,{\"providerId\":\"page:/\",\"segmentMap\":{\"children\":[\"__PAGE__\"]},\"children\":[\"$\",\"$L9\",null,{\"id\":\"page:/\"}]}],null]}]}]}]}]}]}]}],null,null]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("d:I[\"fc9286cc2c76\",[],\"default\",1]\n")
+</script>
+<script>
+((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).rsc.push("1:[\"$\",\"$Ld\",null,{}]\n")
+</script>
+<script>
+Object.assign(((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}),{"initialCacheKind":"dynamic","dynamicStaleTimeSeconds":0});((self[Symbol.for("vinext.navigationRuntime")]??={bootstrap:{routeManifest:null},functions:{}}).bootstrap.rsc??={rsc:[]}).done=true
+</script>
+{% endraw %}
+</head>
+<body><div class="boot-screen"><span>sepia.</span><p>Preparando tu espacio…</p></div><script type="module" src="{{ 'sepia-equipo-v1-index-B0KDm-6B.js' | asset_url }}"></script></body>
+</html>
