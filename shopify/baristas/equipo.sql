@@ -235,6 +235,7 @@ begin
   base := jsonb_build_object(
     'signedIn', true, 'passwordRequired', cambiar, 'allowed', permitido, 'profileRequired', perfil_requerido,
     'admin', ver_adm, 'canAdmin', adm,
+    'adminClavePendiente', adm and exists (select 1 from public.admins a where a.email = correo and not a.clave_activa),
     'memberId', case when bar.id is not null then bar.id else null end,
     'user', jsonb_build_object('name', nombre,
               'email', case when adm then correo else coalesce(acc.usuario, 'cuenta') || '@sepia.invalid' end),

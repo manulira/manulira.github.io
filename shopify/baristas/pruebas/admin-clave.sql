@@ -101,6 +101,26 @@ select t.debe_fallar('ni puede activar nada', 'select public.admin_activar_clave
 select t.root();
 select t.valor('si vuelve a la lista, la bandera de la clave empieza apagada', $q$insert into public.admins(email) values ('admin@ejemplo.test') returning clave_activa::text$q$, 'false');
 
+-- ---------------------------------------------------------------------------
+-- Agregar a alguien a la administración (crear_admin)
+-- ---------------------------------------------------------------------------
+select t.root();
+select t.valor('crear_admin crea la cuenta del correo (en minúsculas)', $q$select public.crear_admin(' Nueva.Persona@Ejemplo.Test ')->>'cuenta_nueva'$q$, 'true');
+select t.valor('lo deja en la lista de administración, con la clave apagada', $q$select email || '|' || clave_activa from public.admins where email = 'nueva.persona@ejemplo.test'$q$, 'nueva.persona@ejemplo.test|false');
+select t.valor('y con una cuenta confirmada, para poder recibir el código', $q$select count(*)::text from auth.users where email = 'nueva.persona@ejemplo.test' and email_confirmed_at is not null$q$, '1');
+select t.valor('correrlo otra vez no duplica nada', $q$select (public.crear_admin('nueva.persona@ejemplo.test')->>'cuenta_nueva') || '|' || (select count(*) from auth.users where email = 'nueva.persona@ejemplo.test') || '|' || (select count(*) from public.admins where email = 'nueva.persona@ejemplo.test')$q$, 'false|1|1');
+select t.valor('si la cuenta ya existía, no se crea otra', $q$select public.crear_admin('carla@ejemplo.test')->>'cuenta_nueva'$q$, 'false');
+select t.valor('y queda en la lista de administración', $q$select count(*)::text from public.admins where email = 'carla@ejemplo.test'$q$, '1');
+select t.debe_fallar('un correo que no es correo no sirve', $q$select public.crear_admin('no es un correo')$q$);
+select t.como('00000000-0000-0000-0000-0000000000aa', 'ana@ejemplo.test', 'password');
+select t.debe_fallar('una barista no agrega administradores', $q$select public.crear_admin('intruso@ejemplo.test')$q$);
+select t.anonimo();
+select t.debe_fallar('sin sesión tampoco', $q$select public.crear_admin('intruso@ejemplo.test')$q$);
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test', 'otp');
+select t.debe_funcionar('la administración, con código, sí puede agregar a otra persona', $q$select public.crear_admin('otro.mas@ejemplo.test')$q$);
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test', 'password');
+select t.debe_fallar('pero no con una sesión de clave que no activó', $q$select public.crear_admin('otro.mas2@ejemplo.test')$q$);
+
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;
 select n, nombre, detalle from t.resultados where not ok order by n;

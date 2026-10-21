@@ -7,6 +7,7 @@ ya optimizadas), le hace unos pocos cambios de texto y de rutas, y deja:
   assets/sepia-equipo-<versión>-*.js|css|png|jpg|json.liquid  la interfaz, en la carpeta plana de assets del tema
   templates/page.equipo.liquid                           la plantilla de la página /pages/equipo
   snippets/sepia-equipo-conexion.liquid                  la URL y la clave pública de Supabase (en el repo, marcadores)
+  snippets/sepia-equipo-sitio.liquid                     el menú del sitio, para la barra de arriba
 
 El adaptador que la conecta a Supabase es assets/sepia-equipo-api.js (a mano, no se genera).
 
@@ -28,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v2'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v3'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -70,6 +71,19 @@ PALETA = {'azul': (0x52, 0x6e, 0xa0), 'noche': (0x02, 0x05, 0x26), 'celeste': (0
 ESPECIALES = {(0x40, 0x5b, 0x8b): 'noche'}      # el azul «al pasar el mouse» de los botones
 
 
+# Estilos que se agregan a los de la interfaz (solo colores de la paleta)
+CSS_EXTRA = """
+/* Sepia: «Equipo» | «Administración» en la entrada */
+.login-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 16px;padding:4px;border:1px solid #b9c5d3;border-radius:14px;background:#f2f2f2}
+.login-tabs button{padding:10px 12px;border:0;border-radius:10px;background:transparent;color:#526ea0;font-weight:600;cursor:pointer}
+.login-tabs button.active{background:#526ea0;color:#fff}
+.login-tabs button:focus-visible{outline:2px solid #526ea0;outline-offset:2px}
+/* Sepia: espacios de la pantalla para crear la clave de administración */
+.required-profile>form{margin-top:16px}
+.required-profile>.secondary-btn{margin-top:12px}
+"""
+
+
 def a_paleta(r, g, b):
     """El color de la paleta que reemplaza a (r, g, b). La interfaz de Jorge usaba además naranja y muchos beige y
     marrones; acá cada uno pasa al color de la paleta que cumple su papel: fondos claros → blanco, gris o crema;
@@ -104,12 +118,32 @@ def recolorear(texto):
     return re.sub(r'#[0-9a-fA-F]{3,8}\b', uno, texto)
 
 
+# Los datos del menú del sitio (para la barra de arriba): salen del tema, así que siguen al menú y al logo de la tienda
+SITIO = """{%- comment -%}
+  Datos del sitio para la barra de arriba de «Sepia Equipo»: el menú principal de la tienda (Inicio, Productos, Eventos,
+  Portal Baristas…). La barra la dibuja assets/sepia-equipo-api.js. Si se cambia el menú en Shopify, cambia sola.
+{%- endcomment -%}
+<script>
+  window.SEPIA_EQUIPO_SITIO = {
+    inicio: {{ routes.root_url | json }},
+    nombre: {{ shop.name | json }},
+    menu: [{% for link in linklists['main-menu'].links %}{ "t": {{ link.title | json }}, "u": {{ link.url | json }} }{% unless forloop.last %}, {% endunless %}{% endfor %}]
+  };
+</script>
+"""
+
+
 def cambiar(texto, antes, despues, veces=1, donde=''):
     """Reemplaza `antes` por `despues`, exigiendo que esté exactamente `veces` veces."""
     n = texto.count(antes)
     if n != veces:
         sys.exit('ERROR %s: «%s…» aparece %d veces y se esperaban %d.' % (donde, antes[:60], n, veces))
     return texto.replace(antes, despues)
+
+
+def leer_parche(nombre):
+    with open(os.path.join(AQUI, 'parches', nombre), encoding='utf-8') as f:
+        return f.read()
 
 
 def leer(nombre):
@@ -155,6 +189,29 @@ def armar_js():
             t = cambiar(t, 'pattern:`[A-Za-z0-9-]{3,40}`', 'pattern:`[A-Za-z0-9][A-Za-z0-9._\\\\-]{2,29}`', 1, nombre)
             # Sin «service worker» (no hay archivo para él en la tienda).
             t = cambiar(t, 'navigator.serviceWorker.register(`/sw.js`).catch(()=>{})', '0', 1, nombre)
+            # ---- La entrada: «Equipo» y «Administración» por separado ----
+            # Una misma persona puede trabajar como barista y como administración: cada una entra por su lado. El equipo
+            # entra con ID y clave; la administración, con un código al correo o con correo y clave (la clave se crea la
+            # primera vez que entra con código). El código nuevo está en parches/acceso-admin.js.
+            t = cambiar(t, 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)',
+                        leer_parche('acceso-admin.js') + 'function we({onSuccess:e}){let[SM,SS]=(0,D.useState)(`equipo`),[t,n]=(0,D.useState)(``)', 1, nombre)
+            t = cambiar(t, '(0,W.jsx)(`span`,{className:`eyebrow`,children:`EQUIPO SEPIA`})',
+                        '(0,W.jsx)(`span`,{className:`eyebrow`,children:SM===`equipo`?`EQUIPO SEPIA`:`ADMINISTRACIÓN SEPIA`})', 1, nombre)
+            t = cambiar(t, '(0,W.jsx)(`h1`,{children:`Bienvenido al equipo`}),(0,W.jsx)(`p`,{children:`Ingresa con el ID y la clave que te entregó Sepia.`})',
+                        '(0,W.jsx)(`h1`,{children:SM===`equipo`?`Bienvenido al equipo`:`Administración`}),'
+                        '(0,W.jsx)(`p`,{children:SM===`equipo`?`Ingresa con el ID y la clave que te entregó Sepia.`:`Entra con un código al correo o con tu clave.`})', 1, nombre)
+            t = cambiar(t, '(0,W.jsxs)(`form`,{className:`ops-card ops-form`,onSubmit:async n=>{n.preventDefault(),c(!0),o(``);try{let n=await fetch(`/api/auth/login`',
+                        '(0,W.jsx)(SepiaPestanas,{modo:SM,cambiar:SS}),SM===`equipo`?(0,W.jsxs)(`form`,{className:`ops-card ops-form`,onSubmit:async n=>{n.preventDefault(),c(!0),o(``);try{let n=await fetch(`/api/auth/login`', 1, nombre)
+            t = cambiar(t, 'restablecerla.`})]})]})}function Te',
+                        'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e})]})}function Te', 1, nombre)
+            # La primera vez que la administración entra con código, se le pide crear su clave.
+            t = cambiar(t, 'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});',
+                        'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});'
+                        'if(e.adminClavePendiente&&!sepiaClaveOmitida())return(0,W.jsx)(SepiaCrearClave,{onDone:F});', 1, nombre)
+            # El logo de la barra lleva al inicio del sitio de Sepia Coffee (no al inicio de esta página).
+            t = cambiar(t, '(0,W.jsx)(`a`,{href:`#eventos`,children:(0,W.jsx)(lt,{})})',
+                        '(0,W.jsx)(`a`,{href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:(0,W.jsx)(lt,{})})', 1, nombre)
+
             # ---- Lo que se dejó fuera (decisión de Manuel) ----
             # La historia de Sepia y «quiénes somos» (la pestaña «Sepia»).
             t = cambiar(t, '[`sepia`,`Sepia`,_],', '', 1, nombre)
@@ -234,6 +291,7 @@ def plantilla():
 <link rel="apple-touch-icon" href="{{ '%(p)sicon-180.png' | asset_url | split: '?' | first }}">
 <link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url | split: '?' | first }}">
 {%% render 'sepia-equipo-conexion' %%}
+{%% render 'sepia-equipo-sitio' %%}
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-precedence="vite-rsc/importer-resources">
 %(pre)s
@@ -293,7 +351,7 @@ def main():
         for nombre, texto in js.items():
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), texto)
         for nombre in CSS:
-            escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)))
+            escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)) + CSS_EXTRA)
         for origen, destino in IMAGENES.items():
             with open(os.path.join(FUENTE, 'imagenes', origen), 'rb') as f:
                 datos = f.read()
@@ -302,6 +360,7 @@ def main():
         escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json.liquid'), MANIFIESTO)
         escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
+        escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-sitio.liquid'), SITIO)
     print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + 1))
 
 

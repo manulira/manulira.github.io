@@ -39,6 +39,8 @@ export async function abrir(browser, p, origen, ancho = 1100) {
     if (tipo === 'objeto') return p.objeto(d.claims, d);
     if (tipo === 'entrar') return p.entrar(d.email, d.password);
     if (tipo === 'clave') return p.cambiarClave(d.id, d.clave);
+    if (tipo === 'otp') return p.pedirCodigo(d.email);
+    if (tipo === 'verificar') return p.verificarCodigo(d.email, d.token);
     throw new Error('puente: ' + tipo);
   });
   await pg.route('https://cdn.jsdelivr.net/**', r => r.abort());                      // la librería real no se carga

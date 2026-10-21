@@ -1256,6 +1256,46 @@ begin
   return jsonb_build_object('id', uid, 'usuario', u, 'clave', clave);
 end $$;
 
+-- Agrega a una persona a la administración y deja lista su cuenta para entrar con el código del correo
+-- (Supabase solo envía el código a correos que ya tienen cuenta). Sin clave: la crea ella misma la primera
+-- vez que entra con código. Se puede correr de nuevo sin problema. Desde el SQL Editor o por la administración.
+create or replace function public.crear_admin(p_correo text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  c text := lower(btrim(coalesce(p_correo, '')));
+  uid uuid := gen_random_uuid();
+  existia boolean;
+  cols text := 'instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at';
+  vals text;
+  col text;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración agrega administradores' using errcode = '42501';
+  end if;
+  if c !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]{2,}$' or char_length(c) > 254 then
+    raise exception 'Escribe un correo válido.';
+  end if;
+  insert into public.admins (email) values (c) on conflict (email) do nothing;
+  select exists (select 1 from auth.users x where lower(x.email) = c) into existia;
+  if not existia then
+    vals := format('%L, %L, %L, %L, %L, %L, now(), %L::jsonb, %L::jsonb, now(), now()',
+      '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', c, '',
+      '{"provider":"email","providers":["email"]}', '{}');
+    foreach col in array array['confirmation_token', 'recovery_token', 'email_change_token_new', 'email_change',
+                               'email_change_token_current', 'phone_change', 'phone_change_token', 'reauthentication_token'] loop
+      if exists (select 1 from information_schema.columns where table_schema = 'auth' and table_name = 'users' and column_name = col) then
+        cols := cols || ', ' || col;
+        vals := vals || ', ''''';
+      end if;
+    end loop;
+    execute format('insert into auth.users (%s) values (%s)', cols, vals);
+    insert into auth.identities (user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at)
+    values (uid, jsonb_build_object('sub', uid::text, 'email', c, 'email_verified', true, 'phone_verified', false),
+            'email', uid::text, now(), now(), now());
+  end if;
+  return jsonb_build_object('correo', c, 'cuenta_nueva', not existia);
+end $$;
+
 create or replace function public.restablecer_clave(p_acceso uuid) returns text
 language plpgsql security definer set search_path = '' as $$
 declare clave text := public.clave_temporal();
@@ -1461,6 +1501,7 @@ create policy traslado_admin on public.evento_traslado for all to authenticated
 
 revoke all on function public.clave_temporal() from public, anon, authenticated;
 revoke all on function public.crear_acceso(text, text) from public, anon;
+revoke all on function public.crear_admin(text) from public, anon;
 revoke all on function public.restablecer_clave(uuid) from public, anon;
 revoke all on function public.cambiar_estado_acceso(uuid, boolean) from public, anon;
 revoke all on function public.eliminar_acceso(uuid) from public, anon;
@@ -1473,6 +1514,7 @@ revoke all on function public.historial_resumen() from public, anon;
 revoke all on function public.traslados() from public, anon;
 revoke all on function public.tiene_acceso_activo() from public, anon;
 grant execute on function public.crear_acceso(text, text) to authenticated;
+grant execute on function public.crear_admin(text) to authenticated;
 grant execute on function public.restablecer_clave(uuid) to authenticated;
 grant execute on function public.cambiar_estado_acceso(uuid, boolean) to authenticated;
 grant execute on function public.eliminar_acceso(uuid) to authenticated;

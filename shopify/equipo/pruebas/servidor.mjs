@@ -13,10 +13,16 @@ const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png
 /* Como asset_url de Shopify: dirección con «?v=…» (la tienda la agrega a todo lo que se pide con asset_url). */
 const urlAsset = n => '/assets/' + n + (process.env.SIN_VERSION ? '' : '?v=1700000000');
 
+/* El menú del sitio, como lo daría la tienda (el real sale de snippets/sepia-equipo-sitio.liquid con el menú principal). */
+const SITIO_PRUEBA = '<script>window.SEPIA_EQUIPO_SITIO = { inicio: "/", nombre: "Sepia Coffee", menu: [' +
+  '{"t":"Inicio","u":"/"},{"t":"Productos","u":"/collections/all"},{"t":"Eventos","u":"/pages/eventos"},{"t":"Nosotros","u":"/pages/nosotros"},' +
+  '{"t":"Contacto","u":"/pages/contacto"},{"t":"Portal Baristas","u":"/pages/equipo"}] };</script>';
+
 /* Un «Liquid» mínimo, solo para esta plantilla: quita las etiquetas de control y resuelve asset_url. */
 export function renderizar(plantilla, url, clave, snippet = '') {
   let t = plantilla
     .replace(/\{%\s*render 'sepia-equipo-conexion'\s*%\}/g, () => snippet)
+    .replace(/\{%\s*render 'sepia-equipo-sitio'\s*%\}/g, () => SITIO_PRUEBA)
     .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '')
     .replace(/\{%\s*layout none\s*%\}/g, '')
     .replace(/\{%\s*(end)?raw\s*%\}/g, '')

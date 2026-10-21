@@ -2,7 +2,8 @@
  *
  * La interfaz (assets/sepia-equipo/*) fue hecha para hablar con un servidor propio: le pide todo a /api/*.
  * Acá ese servidor es Supabase. Este archivo se pone ANTES de la interfaz e intercepta esas llamadas:
- *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth)
+ *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth); la administración entra aparte
+ *                     (/api/auth/admin/*: código por correo, o correo y clave; la clave se crea la primera vez)
  *   · /api/crew     → funciones eq_estado y eq_accion (equipo.sql): eventos, postulaciones, perfil, administración
  *   · /api/ranking, /api/events/…/team, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
  *   · /api/profile/photo → almacenamiento privado de las fotos de perfil
@@ -58,6 +59,8 @@
     if (/banned/i.test(txt)) return 'Tu acceso está desactivado. Escríbele a Manuel.';
     if (/same password|different from the old/i.test(txt)) return 'La clave nueva tiene que ser distinta de la que ya tenías.';
     if (/password/i.test(txt) && /(short|least|weak|characters)/i.test(txt)) return 'Esa clave es muy corta o muy fácil de adivinar. Usa al menos 8 caracteres.';
+    if (/signups? not allowed|user not found/i.test(txt)) return 'Ese correo no tiene acceso de administración.';
+    if (/expired|invalid/i.test(txt) && /token|otp|code/i.test(txt)) return 'El código no es válido o ya venció. Pide uno nuevo.';
     if (/rate limit|too many/i.test(txt)) return 'Hubo muchos intentos seguidos. Espera un minuto e inténtalo de nuevo.';
     if (/failed to fetch|networkerror|load failed|network request failed/i.test(txt)) return 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
     if (e && e.code === '42501') return txt && !/permission denied|row-level security/i.test(txt) ? txt : 'No tienes permiso para hacer esto.';
@@ -217,7 +220,8 @@
       var id = String(d.id || '').trim().toLowerCase();
       var clave = String(d.password || '');
       if (!id || !clave) return falla(400, 'Escribe tu ID y tu clave.');
-      var correo = id.indexOf('@') >= 0 ? id : id + '@' + DOMINIO_ACCESO;     // la administración entra con su correo
+      if (id.indexOf('@') >= 0) return falla(400, 'Eso es un correo. Si eres de administración, entra por la pestaña «Administración».');
+      var correo = id + '@' + DOMINIO_ACCESO;
       var r = await sb.auth.signInWithPassword({ email: correo, password: clave });
       if (r.error) throw r.error;
       limpiarFotos();
@@ -234,16 +238,72 @@
       var actual = String(p.current || ''), nueva = String(p.password || ''), repetida = String(p.confirm || '');
       var yo = String((s.user.email || '').split('@')[0] || '').toLowerCase();
       if (!actual) return falla(400, 'Escribe tu clave actual.');
-      if (nueva.length < 8) return falla(400, 'La clave nueva tiene que tener al menos 8 caracteres.');
+      var esEquipo = (s.user.email || '').indexOf('@' + DOMINIO_ACCESO) > 0;
+      var minimo = esEquipo ? 8 : 10;                                   // la administración, 10 (como en el portal)
+      if (nueva.length < minimo) return falla(400, 'La clave nueva tiene que tener al menos ' + minimo + ' caracteres.');
       if (nueva !== repetida) return falla(400, 'Las dos claves nuevas no son iguales.');
       if (nueva === actual) return falla(400, 'La clave nueva tiene que ser distinta de la que ya tenías.');
-      if (yo.length >= 3 && s.user.email.indexOf('@' + DOMINIO_ACCESO) > 0 && nueva.toLowerCase().indexOf(yo) >= 0) return falla(400, 'La clave no puede llevar tu ID.');
+      if (yo.length >= 3 && esEquipo && nueva.toLowerCase().indexOf(yo) >= 0) return falla(400, 'La clave no puede llevar tu ID.');
+      if (!esEquipo && yo.length >= 4 && nueva.toLowerCase().indexOf(yo) >= 0) return falla(400, 'La clave no puede llevar tu correo.');
       var v = await sb.auth.signInWithPassword({ email: s.user.email, password: actual });
       if (v.error) return falla(400, 'La clave actual no es correcta.');
       var a = await sb.auth.updateUser({ password: nueva });
       if (a.error) throw a.error;
       await rpc('acceso_clave_cambiada');                           // deja de pedirle el cambio
       await sb.auth.signOut({ scope: 'others' });                  // cierra las sesiones de otros aparatos
+      return ok({ ok: true });
+    }
+
+    /* ----- Administración: código por correo, o correo y clave ----- */
+    if (ruta === '/api/auth/admin/codigo' && metodo === 'POST') {
+      var ac = JSON.parse(init.body || '{}');
+      var correoA = String(ac.email || '').trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoA)) return falla(400, 'Escribe un correo válido.');
+      var otp = await sb.auth.signInWithOtp({ email: correoA, options: { shouldCreateUser: false } });
+      if (otp.error) throw otp.error;
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/auth/admin/verificar' && metodo === 'POST') {
+      var av = JSON.parse(init.body || '{}');
+      var codigo = String(av.code || '').replace(/\s/g, '');
+      if (!/^\d{6,10}$/.test(codigo)) return falla(400, 'El código son solo números, tal como llegó al correo.');
+      var vo = await sb.auth.verifyOtp({ email: String(av.email || '').trim().toLowerCase(), token: codigo, type: 'email' });
+      if (vo.error) throw vo.error;
+      if ((await rpc('es_admin')) !== true) {                           // la base decide quién es administración
+        await sb.auth.signOut({ scope: 'local' });
+        return falla(403, 'Ese correo no tiene acceso de administración.');
+      }
+      limpiarFotos();
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/auth/admin/clave' && metodo === 'POST') {
+      var ak = JSON.parse(init.body || '{}');
+      var pw = String(ak.password || '');
+      var correoK = String(ak.email || '').trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoK)) return falla(400, 'Escribe tu correo de administración.');
+      if (!pw) return falla(400, 'Escribe tu clave.');
+      var si = await sb.auth.signInWithPassword({ email: correoK, password: pw });
+      if (si.error) return falla(401, 'El correo o la clave no son correctos.');
+      if ((await rpc('es_admin')) !== true) {                           // una clave sirve solo si esa persona la activó con un código
+        await sb.auth.signOut({ scope: 'local' });
+        return falla(403, 'Esta cuenta todavía no tiene activada la entrada con clave. Entra con un código por correo: ahí podrás crear tu clave.');
+      }
+      limpiarFotos();
+      return ok({ ok: true });
+    }
+    if (ruta === '/api/auth/admin/crear-clave' && metodo === 'POST') {
+      var sc = await exigirSesion();
+      var cc = JSON.parse(init.body || '{}');
+      var c1 = String(cc.password || ''), c2 = String(cc.confirm || '');
+      var local = String((sc.user.email || '').split('@')[0] || '').toLowerCase();
+      if (c1.length < 10) return falla(400, 'La clave tiene que tener al menos 10 caracteres.');
+      if (c1 !== c2) return falla(400, 'Las dos claves no son iguales.');
+      if (local.length >= 4 && c1.toLowerCase().indexOf(local) >= 0) return falla(400, 'La clave no puede llevar tu correo.');
+      if ((await rpc('es_admin')) !== true) return falla(403, 'Solo la administración crea esta clave.');
+      var up = await sb.auth.updateUser({ password: c1 });
+      if (up.error) throw up.error;
+      await rpc('admin_activar_clave', { p_activa: true });             // desde ahora puede elegir: código o clave
+      await sb.auth.signOut({ scope: 'others' });
       return ok({ ok: true });
     }
 
@@ -318,6 +378,48 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* La barra del sitio: para que la página siga siendo parte de Sepia Coffee */
+  /* ------------------------------------------------------------------ */
+
+  /* Una franja con el menú de la tienda (Inicio, Productos, Eventos, Portal Baristas…) arriba de la interfaz. El logo
+     «Sepia Coffee» de la interfaz lleva al inicio del sitio. Se agrega cuando la interfaz ya está dibujada (la interfaz
+     arma el documento completo: no se le agregan cosas antes). Solo colores de la paleta. */
+  var CSS_SITIO = '.se-sitio{display:block;background:#ffffff;border-bottom:1px solid #b9c5d3;font-family:inherit}' +
+    '.se-sitio nav{display:flex;gap:4px;align-items:center;max-width:1100px;margin:0 auto;padding:0 16px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}' +
+    '.se-sitio a{display:inline-block;padding:12px 10px;color:#020526;font-size:.875rem;font-weight:500;text-decoration:none;border-bottom:2px solid transparent}' +
+    '.se-sitio a:hover{color:#526ea0}' +
+    '.se-sitio a[aria-current="page"]{color:#526ea0;font-weight:700;border-bottom-color:#526ea0}' +
+    '.se-sitio a:focus-visible{outline:2px solid #526ea0;outline-offset:-2px}';
+
+  function montarSitio() {
+    var sitio = window.SEPIA_EQUIPO_SITIO;
+    if (!sitio || !sitio.menu || !sitio.menu.length) return;
+    function poner() {
+      if (document.querySelector('.se-sitio')) return true;
+      if (!document.querySelector('.required-profile, .app-shell')) return false;
+      var cab = document.createElement('header'), nav = document.createElement('nav');
+      cab.className = 'se-sitio';
+      nav.setAttribute('aria-label', 'Menú del sitio');
+      sitio.menu.forEach(function (l) {
+        var a = document.createElement('a');
+        a.href = l.u; a.textContent = l.t;
+        if (/\/pages\/equipo(\/|\?|#|$)/.test(l.u)) a.setAttribute('aria-current', 'page');
+        nav.appendChild(a);
+      });
+      cab.appendChild(nav);
+      document.body.insertBefore(cab, document.body.firstChild);
+      return true;
+    }
+    var estilo = document.createElement('style');
+    estilo.textContent = CSS_SITIO;
+    document.head.appendChild(estilo);
+    if (!poner()) {
+      var obs = new MutationObserver(function () { if (poner()) obs.disconnect(); });
+      obs.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Arranque                                                            */
   /* ------------------------------------------------------------------ */
 
@@ -338,6 +440,7 @@
       });
     };
     interceptarImagenes();
+    montarSitio();
     return true;
   }
 

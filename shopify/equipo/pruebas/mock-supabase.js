@@ -6,7 +6,7 @@
   var PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
   function leer() { try { return JSON.parse(localStorage.getItem(LLAVE)); } catch (e) { return null; } }
-  function claims(s) { return s ? { sub: s.user.id, email: s.user.email, role: 'authenticated', amr: [{ method: 'password' }] } : null; }
+  function claims(s) { return s ? { sub: s.user.id, email: s.user.email, role: 'authenticated', amr: [{ method: s.metodo || 'password' }] } : null; }
   function puente(tipo, datos) { return window.__puente(tipo, datos); }
   function aError(e) { return e ? { message: e.message, code: e.code, status: 400 } : null; }
   function dataUrl(blob) { return new Promise(function (ok, no) { var r = new FileReader(); r.onload = function () { ok(r.result); }; r.onerror = no; r.readAsDataURL(blob); }); }
@@ -62,6 +62,17 @@
             return puente('entrar', c).then(function (r) {
               if (r.error) return { data: { session: null, user: null }, error: aError(r.error) };
               var s = { user: r.data, access_token: 'prueba' };
+              localStorage.setItem(LLAVE, JSON.stringify(s));
+              return { data: { session: s, user: s.user }, error: null };
+            });
+          },
+          signInWithOtp: function (c) {
+            return puente('otp', { email: c.email }).then(function (r) { return { data: {}, error: aError(r.error) }; });
+          },
+          verifyOtp: function (c) {
+            return puente('verificar', { email: c.email, token: c.token }).then(function (r) {
+              if (r.error) return { data: { session: null, user: null }, error: aError(r.error) };
+              var s = { user: r.data, access_token: 'prueba', metodo: 'otp' };
               localStorage.setItem(LLAVE, JSON.stringify(s));
               return { data: { session: s, user: s.user }, error: null };
             });

@@ -1,0 +1,11 @@
+{%- comment -%}
+  Datos del sitio para la barra de arriba de «Sepia Equipo»: el menú principal de la tienda (Inicio, Productos, Eventos,
+  Portal Baristas…). La barra la dibuja assets/sepia-equipo-api.js. Si se cambia el menú en Shopify, cambia sola.
+{%- endcomment -%}
+<script>
+  window.SEPIA_EQUIPO_SITIO = {
+    inicio: {{ routes.root_url | json }},
+    nombre: {{ shop.name | json }},
+    menu: [{% for link in linklists['main-menu'].links %}{ "t": {{ link.title | json }}, "u": {{ link.url | json }} }{% unless forloop.last %}, {% endunless %}{% endfor %}]
+  };
+</script>

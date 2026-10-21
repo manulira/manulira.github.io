@@ -344,6 +344,17 @@ select t.valor('un barista ve las rutas de las fotos que existen', $q$select (se
 select t.como('00000000-0000-0000-0000-0000000000a4', 'zoe@ejemplo.test');
 select t.debe_fallar('y quien no es del equipo no ve ninguna', $q$select public.eq_fotos_perfil(array['00000000-0000-0000-0000-0000000000a2']::uuid[])$q$);
 
+-- Administración: ¿falta que cree su clave? (la entrada con código la pide la primera vez)
+select t.root();
+update public.admins set clave_activa = false where email = 'admin@ejemplo.test';
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test', 'otp');
+select t.valor('quien entra con código y aún no activó su clave: la interfaz se la pide', $q$select (public.eq_estado()->>'adminClavePendiente')$q$, 'true');
+select t.como('00000000-0000-0000-0000-0000000000b1', 'beto@equipo.sepiacoffee.cl');
+select t.valor('un barista nunca recibe ese aviso', $q$select (public.eq_estado()->>'adminClavePendiente')$q$, 'false');
+select t.como('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test', 'otp');
+select t.debe_funcionar('al activar su clave, deja de pedirla', $q$select public.admin_activar_clave(true)$q$);
+select t.valor('y ya no aparece pendiente', $q$select (public.eq_estado()->>'adminClavePendiente')$q$, 'false');
+
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;
 select n, nombre, detalle from t.resultados where not ok order by n;

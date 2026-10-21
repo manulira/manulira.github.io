@@ -106,6 +106,20 @@ export class Puente {
     const [id, email] = t.split('|');
     return { data: { id, email } };
   }
+  /* «GoTrue», código por correo: solo a correos que ya tienen cuenta (shouldCreateUser: false). El código de las pruebas es fijo. */
+  pedirCodigo(correo) {
+    const r = this.psql(`select id from auth.users where lower(email) = lower(${lit(correo)})`);
+    if (!r.salida.trim()) return { error: { message: 'Signups not allowed for otp' } };
+    return { data: null };
+  }
+  verificarCodigo(correo, token) {
+    if (token !== '12345678') return { error: { message: 'Token has expired or is invalid' } };
+    const r = this.psql(`select id || '|' || email from auth.users where lower(email) = lower(${lit(correo)})`);
+    const t = r.salida.trim();
+    if (!t) return { error: { message: 'Token has expired or is invalid' } };
+    const [id, email] = t.split('|');
+    return { data: { id, email } };
+  }
   cambiarClave(id, clave) {
     if (String(clave).length < 6) return { error: { message: 'Password should be at least 6 characters' } };
     const r = this.psql(`update auth.users set encrypted_password = extensions.crypt(${lit(clave)}, extensions.gen_salt('bf')) where id = ${lit(id)}`);
