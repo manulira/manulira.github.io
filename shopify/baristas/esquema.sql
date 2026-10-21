@@ -402,7 +402,9 @@ create unique index if not exists postulaciones_conductor_idx on public.postulac
 create or replace function public.t_postulaciones_antes() returns trigger
 language plpgsql set search_path = '' as $$
 declare
-  admin_o_servicio boolean := (auth.uid() is null) or public.es_admin();   -- editor SQL o administración
+  -- editor SQL, administración, o una función nuestra (security definer: corre como la dueña de la base y
+  -- no como «authenticated»; las funciones eq_* de equipo.sql validan cupos y reglas antes de escribir)
+  admin_o_servicio boolean := (auth.uid() is null) or public.es_admin() or current_user not in ('authenticated', 'anon');
 begin
   if tg_op = 'INSERT' then
     -- Una postulación nueva nace sin confirmación ni datos de cierre.
