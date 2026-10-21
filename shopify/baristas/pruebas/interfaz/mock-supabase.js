@@ -97,6 +97,21 @@
   db.baristas.forEach(function (b) {
     if (!db.accesos.some(function (a) { return a.id === b.id; })) db.accesos.push({ id: b.id, usuario: slug(b.nombre) || b.id, nombre: b.nombre, activo: true, debe_cambiar_clave: false });
   });
+  // Historial anterior al portal: filas {nombre, fecha, evento}; un nombre que calza con un solo acceso queda unido.
+  var claveNombre = function (t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); };
+  db.historial_turnos = (S.historial || []).map(function (x) { return { nombre: x.nombre, fecha: x.fecha, evento: x.evento || null, acceso_id: null }; });
+  var vincularAuto = function () {
+    var n = 0;
+    db.historial_turnos.forEach(function (hx) {
+      if (hx.acceso_id) return;
+      var hc = claveNombre(hx.nombre);
+      var exactos = db.accesos.filter(function (a) { return claveNombre(a.nombre) === hc; });
+      var cand = exactos.length ? exactos : (hc.indexOf(' ') > 0 ? db.accesos.filter(function (a) { return claveNombre(a.nombre).indexOf(hc + ' ') === 0; }) : []);
+      if (cand.length === 1) { hx.acceso_id = cand[0].id; n++; }
+    });
+    return n;
+  };
+  vincularAuto();
   var usuarios = window.__USUARIOS = [];
   (S.usuarios || []).forEach(function (u) {
     var id = u.id || 'u-' + u.usuario;
@@ -237,6 +252,7 @@
       var id = 'u-' + u;
       db.accesos.push({ id: id, usuario: u, nombre: a.p_nombre, activo: true, debe_cambiar_clave: true });
       usuarios.push({ usuario: u, clave: 'abcd-efgh-jkmn', id: id });
+      vincularAuto();
       return { id: id, usuario: u, clave: 'abcd-efgh-jkmn' };
     },
     restablecer_clave: function (a) {
@@ -257,7 +273,25 @@
       db.accesos = db.accesos.filter(function (x) { return x.id !== a.p_acceso; });
       db.baristas = db.baristas.filter(function (x) { return x.id !== a.p_acceso; });
       db.postulaciones = db.postulaciones.filter(function (x) { return x.barista_id !== a.p_acceso; });
+      db.historial_turnos.forEach(function (hx) { if (hx.acceso_id === a.p_acceso) hx.acceso_id = null; });
       return null;
+    },
+    historial_resumen: function () {
+      var g = {};
+      db.historial_turnos.forEach(function (hx) {
+        if (!(esAdmin() || (hx.acceso_id && hx.acceso_id === uid() && esBarista()))) return;
+        var k = claveNombre(hx.nombre) + '|' + (hx.acceso_id || '');
+        var x = g[k] || (g[k] = { nombre: hx.nombre, acceso_id: hx.acceso_id, turnos: 0, desde: hx.fecha, hasta: hx.fecha });
+        x.turnos++; if (hx.fecha < x.desde) x.desde = hx.fecha; if (hx.fecha > x.hasta) x.hasta = hx.fecha;
+      });
+      return Object.keys(g).map(function (k) { return g[k]; }).sort(function (a, b) { return String(a.nombre).localeCompare(String(b.nombre), 'es'); });
+    },
+    vincular_historial: function (a) {
+      if (!esAdmin()) return fallo('Solo la administración vincula el historial');
+      if (a.p_acceso && !db.accesos.some(function (x) { return x.id === a.p_acceso; })) return fallo('No existe ese acceso');
+      var n = 0;
+      db.historial_turnos.forEach(function (hx) { if (claveNombre(hx.nombre) === claveNombre(a.p_nombre)) { hx.acceso_id = a.p_acceso || null; n++; } });
+      return n;
     },
     equipo_evento: function (a) {
       var yoAsignado = db.postulaciones.some(function (p) { return p.evento_id === a.p_evento && p.barista_id === uid() && p.estado === 'confirmada'; });
@@ -270,17 +304,19 @@
     ranking_equipo: function (a) {
       if (!(esBarista() || esAdmin())) return [];
       var desde = a.p_desde || null, hasta = a.p_hasta || null;
-      var filas = db.baristas.filter(function (b) { return db.accesos.some(function (x) { return x.id === b.id && x.activo; }); }).map(function (b) {
-        var n = (!desde && !hasta) ? (b.turnos_previos || 0) : 0;
+      var dentro = function (f) { return !((desde && f < desde) || (hasta && f > hasta)); };
+      var filas = db.accesos.filter(function (x) { return x.activo; }).map(function (x) {
+        var b = db.baristas.filter(function (y) { return y.id === x.id; })[0] || null;
+        var n = (b && !desde && !hasta) ? (b.turnos_previos || 0) : 0;
+        db.historial_turnos.forEach(function (hx) { if (hx.acceso_id === x.id && dentro(hx.fecha)) n++; });
         db.postulaciones.forEach(function (p) {
-          if (p.barista_id !== b.id || p.estado !== 'confirmada' || p.asistio !== true) return;
-          var e = evPorId(p.evento_id); if (!e || e.estado === 'cancelado') return;
-          if ((desde && e.fecha < desde) || (hasta && e.fecha > hasta)) return;
+          if (p.barista_id !== x.id || p.estado !== 'confirmada' || p.asistio !== true) return;
+          var e = evPorId(p.evento_id); if (!e || e.estado === 'cancelado' || !dentro(e.fecha)) return;
           n++;
         });
-        return { barista_id: b.id, nombre: b.nombre, foto_path: b.foto_path || null, turnos: n };
-      });
-      filas.forEach(function (f) { f.puesto = 1 + filas.filter(function (o) { return o.turnos > f.turnos; }).length; });
+        return { barista_id: x.id, nombre: b ? b.nombre : x.nombre, foto_path: (b && b.foto_path) || null, turnos: n, conPerfil: !!b };
+      }).filter(function (f) { return f.conPerfil || f.turnos > 0; });
+      filas.forEach(function (f) { f.puesto = 1 + filas.filter(function (o) { return o.turnos > f.turnos; }).length; delete f.conPerfil; });
       return filas.sort(function (x, y) { return x.puesto - y.puesto || String(x.nombre).localeCompare(String(y.nombre), 'es'); });
     },
     traslados: function () {

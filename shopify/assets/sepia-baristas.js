@@ -37,7 +37,7 @@
   var estado = {
     sesion: null, perfil: null, admin: false, config: null,
     eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {}, sync: null,
-    acceso: null, accesos: [], fotos: {}, equipos: {}, traslados: [], trasladoEv: {}, fotoPendiente: null, ultimoAcceso: null,
+    acceso: null, accesos: [], historial: [], fotos: {}, equipos: {}, traslados: [], trasladoEv: {}, fotoPendiente: null, ultimoAcceso: null,
     pestana: 'eventos', cargando: true, correoLogin: '', usuarioLogin: ''
   };
 
@@ -255,6 +255,9 @@
     }
     var rtr = await sb.rpc('traslados');
     estado.traslados = rtr.data || [];
+    // Turnos del historial anterior al portal (la administración ve todos; cada barista, los suyos).
+    var rhi = await sb.rpc('historial_resumen');
+    estado.historial = rhi.data || [];
     estado.misPosts = {};
     estado.posts.forEach(function (p) { if (p.barista_id === uid) estado.misPosts[p.evento_id] = p; });
     // El equipo de cada evento donde estoy asignado (nombre y foto de quienes van conmigo).
@@ -278,7 +281,7 @@
   function limpiarEstado() {
     estado.sesion = null; estado.perfil = null; estado.admin = false; estado.config = null;
     estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {}; estado.sync = null;
-    estado.acceso = null; estado.accesos = []; estado.fotos = {}; estado.equipos = {}; estado.traslados = []; estado.trasladoEv = {};
+    estado.acceso = null; estado.accesos = []; estado.historial = []; estado.fotos = {}; estado.equipos = {}; estado.traslados = []; estado.trasladoEv = {};
     estado.fotoPendiente = null; estado.ultimoAcceso = null;
     estado.pestana = 'eventos';
   }
@@ -564,6 +567,14 @@
   /* ------------------------------------------------------------------ */
 
   function sinTildes(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+
+  /* Historial anterior al portal: filas ya agrupadas por persona (historial_resumen). */
+  function turnosHistorial(idAcceso) {
+    return estado.historial.filter(function (x) { return x.acceso_id === idAcceso; }).reduce(function (n, x) { return n + Number(x.turnos); }, 0);
+  }
+  function historialSinVincular() {
+    return estado.historial.filter(function (x) { return !x.acceso_id; }).sort(function (a, b) { return String(a.nombre).localeCompare(String(b.nombre), 'es'); });
+  }
 
   var ALIAS_BANCOS = [
     [/banco\s*de\s*chile|banco\s*chile|\bbchile\b|edwards/, 'Banco de Chile'], [/banco\s*estado|bancoestado/, 'Banco Estado'],
@@ -961,7 +972,7 @@
 
   function periodosRanking() {
     var hoy = hoyISO(), a = Number(hoy.slice(0, 4)), m = Number(hoy.slice(5, 7)), out = [['acum', 'Acumulado']];
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 12; i++) {
       var d = new Date(Date.UTC(a, m - 1 - i, 1));
       var etiqueta = d.toLocaleDateString('es-CL', { timeZone: 'UTC', month: 'long', year: 'numeric' });
       var y = d.getUTCFullYear(), mm = ('0' + (d.getUTCMonth() + 1)).slice(-2), ultimo = new Date(Date.UTC(y, d.getUTCMonth() + 1, 0)).getUTCDate();
@@ -1002,7 +1013,7 @@
           h('span', { class: 'sb-ranking__nombre', text: r.nombre + (soy ? ' (tú)' : '') }),
           h('span', { class: 'sb-ranking__turnos' }, h('strong', { text: String(r.turnos) }), ' ' + (Number(r.turnos) === 1 ? 'turno' : 'turnos')));
       })));
-      cuerpo.appendChild(h('p', { class: 'sb-ayuda', text: 'Los empates comparten puesto. Una postulación o una foto no suman. El acumulado incluye los turnos de antes del portal; los meses cuentan solo lo registrado en ese período.' }));
+      cuerpo.appendChild(h('p', { class: 'sb-ayuda', text: 'Los empates comparten puesto. Una postulación o una foto no suman. El acumulado suma todo el historial de Sepia, incluso lo de antes del portal; cada mes cuenta solo los turnos de ese mes.' }));
     };
     var cargar = function () {
       ponerAviso(msg, '');
@@ -1029,7 +1040,8 @@
     });
     var pasados = mios.filter(function (x) { return x[0].fecha < hoy; }).sort(function (a, b) { return a[0].fecha < b[0].fecha ? 1 : -1; });
     var futuros = mios.filter(function (x) { return x[0].fecha >= hoy; });
-    var pagado = 0, pendiente = 0, turnos = Number((estado.perfil && estado.perfil.turnos_previos) || 0);
+    var hist = turnosHistorial(yo);
+    var pagado = 0, pendiente = 0, turnos = Number((estado.perfil && estado.perfil.turnos_previos) || 0) + hist;
     pasados.forEach(function (x) {
       if (x[1].honorarios_pagados_en) pagado += Number(x[0].pago_liquido); else pendiente += Number(x[0].pago_liquido);
       if (x[1].asistio === true) turnos += 1;
@@ -1045,6 +1057,7 @@
     caja.appendChild(h('div', { class: 'sb-datos' },
       dato('Turnos registrados', String(turnos)), dato('Próximos turnos', String(futuros.length)),
       dato('Pagado por Sepia', clp(pagado)), dato('Pendiente de pago', clp(pendiente))));
+    if (hist) caja.appendChild(h('p', { class: 'sb-ayuda', text: 'Los turnos registrados incluyen ' + plural(hist, 'turno', 'turnos') + ' del historial de Sepia anterior al portal.' }));
     if (mt.length) {
       caja.appendChild(h('div', { class: 'sb-pago' },
         h('p', { class: 'sb-pago__monto', text: 'Reembolsos de camioneta: ' + clp(rePagado) + ' pagados · ' + clp(rePend) + ' pendientes' }),
@@ -1827,7 +1840,8 @@
 
   function formularioNuevoAcceso(msg) {
     var f = h('form', { class: 'sb-caja', novalidate: true });
-    var nombre = entrada('text', 'nombre', '', { id: 'sb-na-nombre', required: true, maxlength: '100', autocomplete: 'off', placeholder: 'Ej.: Camila Pérez González' });
+    var sugeridos = historialSinVincular();
+    var nombre = entrada('text', 'nombre', '', { id: 'sb-na-nombre', required: true, maxlength: '100', autocomplete: 'off', placeholder: 'Ej.: Camila Pérez González', list: sugeridos.length ? 'sb-na-lista' : null });
     var usuario = entrada('text', 'usuario', '', { id: 'sb-na-usuario', required: true, maxlength: '30', autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false', placeholder: 'camila.perez' });
     var editado = false;
     nombre.addEventListener('input', function () { if (!editado) usuario.value = sugerirUsuario(nombre.value); });
@@ -1835,7 +1849,10 @@
     var crear = h('button', { type: 'submit', class: 'sb-btn', text: 'Crear acceso' });
     f.appendChild(h('h3', { class: 'sb-h3', text: 'Crear acceso de barista' }));
     f.appendChild(h('p', { class: 'sb-texto', text: 'Entrégale su ID y la clave temporal por privado. No necesita correo para entrar.' }));
-    f.appendChild(h('div', { class: 'sb-grilla' }, campo('Nombre completo', nombre), campo('ID de usuario', usuario, 'Letras sin tilde, números, punto o guion. Se sugiere solo.')));
+    f.appendChild(h('div', { class: 'sb-grilla' },
+      campo('Nombre completo', nombre, sugeridos.length ? 'Si la persona está en el historial, elígela de la lista: así sus turnos quedan unidos solos.' : null),
+      campo('ID de usuario', usuario, 'Letras sin tilde, números, punto o guion. Se sugiere solo.')));
+    if (sugeridos.length) f.appendChild(h('datalist', { id: 'sb-na-lista' }, sugeridos.map(function (x) { return h('option', { value: x.nombre }); })));
     f.appendChild(h('div', { class: 'sb-fila' }, crear));
     f.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -1903,12 +1920,67 @@
           [['Teléfono', b.telefono], ['Correo de contacto', b.correo], ['RUT', b.rut], ['Comuna', b.comuna], ['Talla de camisa', b.talla_camisa || 'Sin informar'],
             ['Camioneta', b.tiene_camioneta ? 'Sí' : 'No'], ['Banco', b.banco], ['Cuenta', b.tipo_cuenta + ' ' + b.numero_cuenta],
             ['Avisos por correo', b.acepta_avisos ? 'Sí' : 'No']].map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })),
-        h('div', { class: 'sb-fila' }, h('label', { class: 'sb-etiqueta', text: 'Turnos de antes del portal' }), previos, guardarPrevios)));
+        h('div', { class: 'sb-fila' }, h('label', { class: 'sb-etiqueta', text: 'Otros turnos previos (sin detalle)' }), previos, guardarPrevios)));
     } else if (a.activo) {
       caja.appendChild(h('p', { class: 'sb-linea', text: a.debe_cambiar_clave ? 'Todavía no entra al portal.' : 'Ya cambió su clave y falta que complete su perfil.' }));
     }
+    añadir(caja, detalleHistorialAcceso(a, msg));
     caja.appendChild(acciones);
     return caja;
+  }
+
+  /* Historial anterior al portal de una persona: lo unido a su acceso y, si hace falta, unir otro nombre. */
+  function detalleHistorialAcceso(a, msg) {
+    var mios = estado.historial.filter(function (x) { return x.acceso_id === a.id; });
+    var libres = historialSinVincular();
+    if (!mios.length && !libres.length) return null;
+    var cont = h('details', { class: 'sb-detalle sb-detalle--chico' },
+      h('summary', { class: 'sb-resumen' }, h('span', { class: 'sb-resumen__t', text: 'Historial anterior al portal: ' + plural(turnosHistorial(a.id), 'turno', 'turnos') })));
+    mios.forEach(function (x) {
+      var quitar = boton('Desvincular', function () {
+        if (!window.confirm('Los turnos de «' + x.nombre + '» dejan de contar para ' + a.nombre + '. ¿Seguro?')) return;
+        conTarea(quitar, async function () {
+          var r = await sb.rpc('vincular_historial', { p_nombre: x.nombre, p_acceso: null });
+          if (r.error) throw r.error;
+          await recargarAccesos();
+        }).catch(function () { ponerAviso(msg, 'No pudimos desvincular el historial.'); });
+      }, 'sb-btn--sec sb-btn--chico');
+      cont.appendChild(h('div', { class: 'sb-fila' }, h('span', { class: 'sb-linea', text: x.nombre + ' · ' + plural(x.turnos, 'turno', 'turnos') }), quitar));
+    });
+    if (libres.length) {
+      var sel = h('select', { class: 'sb-entrada', 'aria-label': 'Nombre del historial para ' + a.nombre },
+        h('option', { value: '', text: 'Elegir un nombre del historial…' }),
+        libres.map(function (x) { return h('option', { value: x.nombre, text: x.nombre + ' · ' + plural(x.turnos, 'turno', 'turnos') }); }));
+      var unir = boton('Vincular historial', function () {
+        if (!sel.value) { ponerAviso(msg, 'Elige primero el nombre del historial.'); sel.focus(); return; }
+        conTarea(unir, async function () {
+          var r = await sb.rpc('vincular_historial', { p_nombre: sel.value, p_acceso: a.id });
+          if (r.error) throw r.error;
+          await recargarAccesos();
+        }).catch(function () { ponerAviso(msg, 'No pudimos vincular el historial.'); });
+      }, 'sb-btn--sec sb-btn--chico');
+      cont.appendChild(h('p', { class: 'sb-ayuda', text: 'Si el nombre del historial no calzó solo (por ejemplo, por un segundo apellido), únelo aquí.' }));
+      cont.appendChild(h('div', { class: 'sb-fila' }, sel, unir));
+    }
+    return cont;
+  }
+
+  /* Resumen del historial en «Admin: accesos»: cuánto hay y quién todavía no tiene acceso. */
+  function bloqueResumenHistorial() {
+    if (!estado.historial.length) return null;
+    var total = estado.historial.reduce(function (n, x) { return n + Number(x.turnos); }, 0);
+    var libres = historialSinVincular();
+    var sinAcceso = libres.reduce(function (n, x) { return n + Number(x.turnos); }, 0);
+    var det = h('details', { class: 'sb-detalle' },
+      h('summary', { class: 'sb-resumen' }, h('span', { class: 'sb-resumen__t', text: 'Historial anterior al portal: ' + plural(total, 'turno', 'turnos') })),
+      h('p', { class: 'sb-texto', text: plural(total - sinAcceso, 'turno unido', 'turnos unidos') + ' a un acceso y ' + plural(sinAcceso, 'turno', 'turnos') + ' de personas sin acceso todavía. Cuentan en el ranking cuando el nombre calza con el de un acceso.' }));
+    if (libres.length) {
+      det.appendChild(h('p', { class: 'sb-linea', text: 'Sin acceso todavía:' }));
+      det.appendChild(h('ul', { class: 'sb-historial-libres' }, libres.map(function (x) { return h('li', { text: x.nombre + ' · ' + plural(x.turnos, 'turno', 'turnos') }); })));
+    } else {
+      det.appendChild(h('p', { class: 'sb-texto', text: 'Todo el historial ya está unido a un acceso.' }));
+    }
+    return det;
   }
 
   function vistaAccesos() {
@@ -1918,6 +1990,7 @@
     caja.appendChild(msg);
     añadir(caja, tarjetaClaveTemporal());
     caja.appendChild(formularioNuevoAcceso(msg));
+    añadir(caja, bloqueResumenHistorial());
     caja.appendChild(h('h3', { class: 'sb-h3', text: plural(estado.accesos.length, 'persona en el equipo', 'personas en el equipo') }));
     if (!estado.accesos.length) caja.appendChild(h('p', { class: 'sb-texto', text: 'Aún no hay accesos. Crea el primero con el formulario de arriba.' }));
     var orden = estado.accesos.slice().sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });

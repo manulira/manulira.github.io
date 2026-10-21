@@ -555,6 +555,98 @@ ok((await p.locator('article', { hasText: 'Evento con camioneta' }).first().inne
 ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
 await p.context().close();
 
+console.log('\n=== J. Historial anterior al portal: ranking, ganancias y administración ===');
+// Las fechas del historial se calculan desde hoy (en Santiago) para que la prueba no caduque.
+const hoyJ = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date());
+const [anioJ, mesJ] = hoyJ.split('-').map(Number);
+const dMes = (atras, dia) => new Date(Date.UTC(anioJ, mesJ - 1 - atras, dia)).toISOString().slice(0, 10);
+const historialAna = [
+  { nombre: 'Ana Prueba', fecha: dMes(11, 5) }, { nombre: 'ana  PRUEBA', fecha: dMes(6, 10) }, { nombre: 'Ana Prueba', fecha: dMes(13, 17) },
+  { nombre: 'Bea Prueba', fecha: dMes(11, 9) }, { nombre: 'Bea Prueba', fecha: dMes(11, 20) },
+  { nombre: 'Tomás Herrera', fecha: dMes(5, 1) }, { nombre: 'Elio Aravena', fecha: dMes(4, 1) }];
+p = await abrir({ sesion: { id: 'u-ana', email: 'ana.prueba@equipo.sepiacoffee.cl' }, perfilPropio: perfilAna, equipo: true, historial: historialAna });
+await p.getByRole('tab', { name: 'Ranking' }).click(); await p.waitForSelector('.sb-ranking');
+t = await txt(p);
+const filasJ = (await p.locator('.sb-ranking__fila').allInnerTexts()).map(x => x.replace(/\n/g, ' '));
+ok(filasJ.length === 3 && /Caro Prueba\s+13 turnos/.test(filasJ[0]) && /Ana Prueba \(tú\)\s+6 turnos/.test(filasJ[1]) && /Bea Prueba\s+4 turnos/.test(filasJ[2]),
+  'el acumulado suma historial y portal: Caro 13 (12 previos + 1), Ana 6 (3 del historial + 3), Bea 4 (2 + 2)');
+ok(t.includes('23 participaciones registradas'), 'cuenta 23 participaciones en total');
+ok(!t.includes('Tomás Herrera') && !t.includes('Elio Aravena'), 'quienes están en el historial pero no tienen acceso no aparecen en el ranking');
+ok((await p.locator('#sb-periodo option').count()) === 13, 'el selector ofrece el acumulado y los últimos 12 meses');
+await p.selectOption('#sb-periodo', { index: 12 }); await espera(p); await espera(p);
+const filasMes = (await p.locator('.sb-ranking__fila').allInnerTexts()).map(x => x.replace(/\n/g, ' '));
+ok(filasMes.length === 3 && /^1\s+BP?\s*Bea Prueba\s+2 turnos|^1\s+Bea Prueba\s+2 turnos/.test(filasMes[0]) && /^2\s+AP\s+Ana Prueba \(tú\)\s+1 turno$/.test(filasMes[1]) && /^3\s+CP\s+Caro Prueba\s+0 turnos/.test(filasMes[2]),
+  'un mes de hace 11 meses cuenta solo los turnos de ese mes: Bea 2, Ana 1, Caro 0');
+ok((await txt(p)).includes('cada mes cuenta solo los turnos de ese mes'), 'la nota explica cómo cuenta el acumulado y los meses');
+await p.getByRole('tab', { name: 'Mis ganancias' }).click(); await espera(p);
+ok((await p.locator('.sb-dato').allInnerTexts()).map(x => x.replace(/\n/g, ' ')).join('|').startsWith('Turnos registrados 6|'), 'Mis ganancias: 6 turnos registrados (3 del historial + 3 del portal)');
+ok((await txt(p)).includes('incluyen 3 turnos del historial de Sepia anterior al portal'), 'y dice cuántos vienen del historial');
+const resumenAna = await p.evaluate(() => window.__rpc.filter(x => x === 'historial_resumen').length);
+ok(resumenAna >= 1 && ((await p.evaluate(() => JSON.stringify(window.__DB.historial_turnos.filter(x => x.acceso_id === 'u-ana').length))) === '3'), 'los 3 turnos del historial quedaron unidos a Ana por su nombre (aunque uno estaba escrito «ana  PRUEBA»)');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+// Barista sin historial: Mis ganancias no menciona el historial
+p = await abrir({ sesion: { id: 'u-ana', email: 'ana.prueba@equipo.sepiacoffee.cl' }, perfilPropio: perfilAna, equipo: true, historial: [{ nombre: 'Tomás Herrera', fecha: dMes(5, 1) }] });
+await p.getByRole('tab', { name: 'Mis ganancias' }).click(); await espera(p);
+ok(!(await txt(p)).includes('del historial de Sepia') && (await p.locator('.sb-dato').first().innerText()).includes('3'), 'sin historial propio, Mis ganancias queda como antes (3 turnos) y no lo menciona');
+await p.context().close();
+
+// Administración
+const historialAdm = [
+  { nombre: 'Bea Prueba', fecha: dMes(3, 2) }, { nombre: 'Bea Prueba', fecha: dMes(3, 9) }, { nombre: 'Dani Prueba', fecha: dMes(2, 4) },
+  { nombre: 'Francisco Gallardo', fecha: dMes(5, 7) }, { nombre: 'Francisco Gallardo', fecha: dMes(5, 21) }, { nombre: 'Francisco Gallardo', fecha: dMes(4, 3) },
+  { nombre: 'Tomás Herrera', fecha: dMes(5, 1) }, { nombre: 'Tomás Herrera', fecha: dMes(4, 2) },
+  { nombre: 'Camila Gonzalez', fecha: dMes(6, 1) }, { nombre: 'Camila Gonzalez', fecha: dMes(6, 8) }, { nombre: 'Camila Gonzalez', fecha: dMes(5, 8) }, { nombre: 'Camila Gonzalez', fecha: dMes(4, 8) }];
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, accesosAdmin: true, historial: historialAdm });
+await p.getByRole('tab', { name: 'Admin: accesos' }).click(); await espera(p);
+const resumenAdm = p.locator('summary', { hasText: 'Historial anterior al portal: 12 turnos' });
+ok((await resumenAdm.count()) === 1, 'Admin: accesos resume el historial: 12 turnos');
+await resumenAdm.click(); await espera(p);
+t = await txt(p);
+ok(t.includes('3 turnos unidos a un acceso y 9 turnos de personas sin acceso todavía'), 'dice cuántos turnos ya están unidos a un acceso (los de Bea y Dani) y cuántos no');
+ok(t.includes('Francisco Gallardo · 3 turnos') && t.includes('Tomás Herrera · 2 turnos') && t.includes('Camila Gonzalez · 4 turnos'), 'lista a quienes no tienen acceso, con sus turnos');
+ok((await p.locator('#sb-na-lista option').count()) === 3, 'el campo «nombre» del formulario ofrece esos 3 nombres para elegir');
+ok((await p.locator('article', { hasText: 'Bea Prueba' }).locator('summary', { hasText: 'Historial anterior al portal: 2 turnos' }).count()) === 1
+  && (await p.locator('article', { hasText: 'Dani Prueba' }).locator('summary', { hasText: 'Historial anterior al portal: 1 turno' }).count()) === 1, 'Bea y Dani quedaron unidas solas por su nombre: 2 y 1 turnos');
+
+// Unir a mano: Camila (el historial dice «Camila Gonzalez», el acceso «Camila Pérez González»: no calzan solos)
+const tarCamila = p.locator('article', { hasText: 'Camila Pérez González' });
+await tarCamila.locator('summary', { hasText: 'Historial anterior al portal: 0 turnos' }).click(); await espera(p);
+await tarCamila.getByRole('button', { name: 'Vincular historial' }).click(); await espera(p);
+ok((await txt(p)).includes('Elige primero el nombre del historial'), 'sin elegir nombre, pide elegirlo');
+ok((await tarCamila.locator('select option').allInnerTexts()).join('|').includes('Camila Gonzalez · 4 turnos'), 'el selector ofrece «Camila Gonzalez · 4 turnos»');
+await tarCamila.locator('select').selectOption({ label: 'Camila Gonzalez · 4 turnos' });
+await tarCamila.getByRole('button', { name: 'Vincular historial' }).click(); await espera(p); await espera(p);
+ok((await p.evaluate(() => window.__DB.historial_turnos.filter(x => x.acceso_id === 'u-camila').length)) === 4, 'al vincular, los 4 turnos quedan unidos al acceso de Camila');
+ok((await p.locator('article', { hasText: 'Camila Pérez González' }).locator('summary', { hasText: 'Historial anterior al portal: 4 turnos' }).count()) === 1, 'y su tarjeta pasa a mostrar 4 turnos');
+ok((await p.locator('summary', { hasText: 'Historial anterior al portal: 12 turnos' }).count()) === 1, 'el total no cambia (12)');
+
+// Desvincular
+const tarBea = p.locator('article', { hasText: 'Bea Prueba' });
+await tarBea.locator('summary', { hasText: 'Historial anterior al portal' }).click(); await espera(p);
+let msgDes = ''; p.once('dialog', d => { msgDes = d.message(); d.accept(); });
+await tarBea.getByRole('button', { name: 'Desvincular' }).click(); await espera(p); await espera(p);
+ok(msgDes.includes('dejan de contar para Bea Prueba') && (await p.evaluate(() => window.__DB.historial_turnos.filter(x => x.nombre === 'Bea Prueba' && x.acceso_id === null).length)) === 2, 'desvincular pide confirmar y suelta los 2 turnos de Bea');
+
+// Crear un acceso con un nombre del historial lo une solo
+await p.fill('#sb-na-nombre', 'francisco gallardo'); await espera(p);
+ok((await p.inputValue('#sb-na-usuario')) === 'francisco.gallardo', 'el ID se sugiere solo: francisco.gallardo');
+await pulsa(p, 'Crear acceso'); await espera(p); await espera(p);
+ok((await p.evaluate(() => window.__DB.historial_turnos.filter(x => x.acceso_id === 'u-francisco.gallardo').length)) === 3, 'al crear el acceso de «francisco gallardo», sus 3 turnos del historial quedan unidos solos');
+ok((await p.locator('article', { hasText: 'Francisco Gallardo' }).locator('summary', { hasText: 'Historial anterior al portal: 3 turnos' }).count()) === 1, 'y su tarjeta lo muestra');
+await p.getByRole('tab', { name: 'Ranking' }).click(); await p.waitForSelector('.sb-ranking');
+t = await txt(p);
+ok(/francisco gallardo\s*3 turnos/i.test(t) && /Camila Pérez González\s*4 turnos/.test(t), 'en el ranking figuran Francisco y Camila, aunque todavía no completan su perfil, por sus turnos del historial');
+ok(!t.includes('Tomás Herrera'), 'quien sigue sin acceso (Tomás) no figura');
+// Nombre completo en el acceso, nombre y primer apellido en el historial
+await p.getByRole('tab', { name: 'Admin: accesos' }).click(); await espera(p);
+await p.fill('#sb-na-nombre', 'Tomás Herrera Pérez'); await espera(p);
+await pulsa(p, 'Crear acceso'); await espera(p); await espera(p);
+ok((await p.evaluate(() => window.__DB.historial_turnos.filter(x => x.nombre === 'Tomás Herrera' && x.acceso_id === 'u-tomas.herrera').length)) === 2, 'un acceso «Tomás Herrera Pérez» se une solo al historial «Tomás Herrera» (2 turnos)');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
 await b.close();
 console.log(`\n${total - fallas} de ${total} comprobaciones pasaron`);
 process.exit(fallas ? 1 : 0);

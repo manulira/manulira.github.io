@@ -1215,6 +1215,7 @@ begin
   values (uid, jsonb_build_object('sub', uid::text, 'email', correo, 'email_verified', true, 'phone_verified', false),
           'email', uid::text, now(), now(), now());
   insert into public.accesos (id, usuario, nombre) values (uid, u, n);
+  perform public.vincular_historial_automatico();               -- si su nombre está en el historial, queda unido
   return jsonb_build_object('id', uid, 'usuario', u, 'clave', clave);
 end $$;
 
@@ -1275,25 +1276,122 @@ language sql stable security definer set search_path = '' as $$
   order by b.nombre;
 $$;
 
--- Ranking de turnos: asistencias registradas por la administración (más los turnos previos al portal en el acumulado).
--- Los empates comparten puesto. Lo ven los baristas activos y la administración.
+-- Historial de turnos anteriores al portal (por ejemplo, el año hasta la fecha). Lo carga la administración
+-- con una consulta SQL y cuenta en el ranking. Cada fila es un turno de una persona en un evento. Los datos
+-- reales NO van en este archivo (el repositorio es público): se cargan aparte, ver LEEME.md.
+-- Una fila se «vincula» a un acceso cuando su nombre coincide con el del acceso (sin tildes, sin importar
+-- mayúsculas; ver vincular_historial_automatico) o cuando la administración la une a mano.
+create or replace function public.nombre_clave(t text) returns text
+language sql immutable set search_path = '' as $$
+  select btrim(regexp_replace(translate(lower(coalesce(t, '')), 'áéíóúüñàèìòùâêîôû', 'aeiouunaeiouaeiou'), '\s+', ' ', 'g'));
+$$;
+
+create table if not exists public.historial_turnos (
+  id uuid primary key default gen_random_uuid(),
+  nombre text not null check (char_length(btrim(nombre)) between 2 and 100),
+  fecha date not null,
+  evento text check (evento is null or char_length(evento) <= 150),
+  horas numeric(5, 2) check (horas is null or (horas >= 0 and horas <= 24)),
+  acceso_id uuid references public.accesos (id) on delete set null,
+  creado_en timestamptz not null default now()
+);
+create index if not exists historial_turnos_acceso on public.historial_turnos (acceso_id);
+-- Sin duplicados: cargar dos veces el mismo historial no repite turnos.
+create unique index if not exists historial_turnos_unico
+  on public.historial_turnos (public.nombre_clave(nombre), fecha, public.nombre_clave(coalesce(evento, '')));
+
+alter table public.historial_turnos enable row level security;
+revoke all on public.historial_turnos from anon;
+grant select, insert, update, delete on public.historial_turnos to authenticated;
+drop policy if exists historial_admin on public.historial_turnos;
+create policy historial_admin on public.historial_turnos for all to authenticated
+  using (public.es_admin()) with check (public.es_admin());
+
+-- Une el historial con el acceso cuyo nombre coincide. Primero busca el mismo nombre (sin tildes ni mayúsculas);
+-- si no hay, busca un acceso cuyo nombre empiece igual (la hoja dice «Elio Aravena» y el acceso «Elio Aravena
+-- Soto»; solo para nombres de al menos dos palabras). Si hay más de un candidato, no adivina: se une a mano.
+create or replace function public.vincular_historial_automatico() returns int
+language plpgsql security definer set search_path = '' as $$
+declare n int;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración vincula el historial' using errcode = '42501';
+  end if;
+  with libres as (
+    select distinct public.nombre_clave(nombre) as hc from public.historial_turnos where acceso_id is null
+  ), candidatos as (
+    select l.hc, a.id, (public.nombre_clave(a.nombre) = l.hc) as exacto
+    from libres l
+    join public.accesos a
+      on public.nombre_clave(a.nombre) = l.hc
+      or (position(' ' in l.hc) > 0 and left(public.nombre_clave(a.nombre), char_length(l.hc) + 1) = l.hc || ' ')
+  ), elegidos as (
+    select hc, (array_agg(id))[1] as acceso
+    from (select hc, id, exacto, bool_or(exacto) over (partition by hc) as hay_exacto from candidatos) c
+    where exacto or not hay_exacto
+    group by hc having count(*) = 1
+  ), cambios as (
+    update public.historial_turnos h set acceso_id = e.acceso
+    from elegidos e
+    where h.acceso_id is null and public.nombre_clave(h.nombre) = e.hc
+    returning 1
+  )
+  select count(*)::int into n from cambios;
+  return n;
+end $$;
+
+-- Une (o suelta, con NULL) todo el historial de un nombre a mano. Devuelve cuántos turnos cambió.
+create or replace function public.vincular_historial(p_nombre text, p_acceso uuid) returns int
+language plpgsql security definer set search_path = '' as $$
+declare n int;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración vincula el historial' using errcode = '42501';
+  end if;
+  if p_acceso is not null and not exists (select 1 from public.accesos a where a.id = p_acceso) then
+    raise exception 'No existe ese acceso';
+  end if;
+  update public.historial_turnos set acceso_id = p_acceso where public.nombre_clave(nombre) = public.nombre_clave(p_nombre);
+  get diagnostics n = row_count;
+  return n;
+end $$;
+
+-- Turnos del historial por persona. La administración ve a todos (también los sin vincular);
+-- cada barista, solo los suyos.
+create or replace function public.historial_resumen()
+returns table (nombre text, acceso_id uuid, turnos int, desde date, hasta date)
+language sql stable security definer set search_path = '' as $$
+  select min(h.nombre), h.acceso_id, count(*)::int, min(h.fecha), max(h.fecha)
+  from public.historial_turnos h
+  where public.es_admin() or (h.acceso_id = auth.uid() and public.es_barista())
+  group by public.nombre_clave(h.nombre), h.acceso_id
+  order by 1;
+$$;
+
+-- Ranking de turnos: el historial, más las asistencias que registra la administración en el portal (y los
+-- turnos «previos» sueltos, solo en el acumulado). Los empates comparten puesto. Lo ven los baristas
+-- activos y la administración. Aparece cada acceso activo que ya completó su perfil o ya tiene turnos
+-- (así, quien viene del historial figura aunque todavía no haya entrado).
 create or replace function public.ranking_equipo(p_desde date default null, p_hasta date default null)
 returns table (puesto int, barista_id uuid, nombre text, foto_path text, turnos int)
 language sql stable security definer set search_path = '' as $$
   with cuenta as (
-    select b.id, b.nombre, b.foto_path,
-           (case when p_desde is null and p_hasta is null then b.turnos_previos else 0 end)
-           + (count(p.id) filter (where p.estado = 'confirmada' and p.asistio is true and e.estado <> 'cancelado'
-                                    and (p_desde is null or e.fecha >= p_desde) and (p_hasta is null or e.fecha <= p_hasta)))::int as turnos
-    from public.baristas b
-    join public.accesos a on a.id = b.id and a.activo
-    left join public.postulaciones p on p.barista_id = b.id
-    left join public.eventos e on e.id = p.evento_id
-    group by b.id
+    select a.id, coalesce(b.nombre, a.nombre) as nombre, b.foto_path, (b.id is not null) as con_perfil,
+           (case when p_desde is null and p_hasta is null then coalesce(b.turnos_previos, 0) else 0 end)
+           + (select count(*) from public.historial_turnos h
+               where h.acceso_id = a.id
+                 and (p_desde is null or h.fecha >= p_desde) and (p_hasta is null or h.fecha <= p_hasta))::int
+           + (select count(*) from public.postulaciones p
+               join public.eventos e on e.id = p.evento_id
+               where p.barista_id = a.id and p.estado = 'confirmada' and p.asistio is true and e.estado <> 'cancelado'
+                 and (p_desde is null or e.fecha >= p_desde) and (p_hasta is null or e.fecha <= p_hasta))::int as turnos
+    from public.accesos a
+    left join public.baristas b on b.id = a.id
+    where a.activo
   )
   select (rank() over (order by c.turnos desc))::int, c.id, c.nombre, c.foto_path, c.turnos
   from cuenta c
-  where public.es_barista() or public.es_admin()
+  where (c.con_perfil or c.turnos > 0) and (public.es_barista() or public.es_admin())
   order by 1, c.nombre;
 $$;
 
@@ -1332,6 +1430,9 @@ revoke all on function public.eliminar_acceso(uuid) from public, anon;
 revoke all on function public.acceso_clave_cambiada() from public, anon;
 revoke all on function public.equipo_evento(uuid) from public, anon;
 revoke all on function public.ranking_equipo(date, date) from public, anon;
+revoke all on function public.vincular_historial_automatico() from public, anon, authenticated;
+revoke all on function public.vincular_historial(text, uuid) from public, anon;
+revoke all on function public.historial_resumen() from public, anon;
 revoke all on function public.traslados() from public, anon;
 revoke all on function public.tiene_acceso_activo() from public, anon;
 grant execute on function public.crear_acceso(text, text) to authenticated;
@@ -1341,6 +1442,8 @@ grant execute on function public.eliminar_acceso(uuid) to authenticated;
 grant execute on function public.acceso_clave_cambiada() to authenticated;
 grant execute on function public.equipo_evento(uuid) to authenticated;
 grant execute on function public.ranking_equipo(date, date) to authenticated;
+grant execute on function public.vincular_historial(text, uuid) to authenticated;
+grant execute on function public.historial_resumen() to authenticated;
 grant execute on function public.traslados() to authenticated;
 grant execute on function public.tiene_acceso_activo() to authenticated;
 

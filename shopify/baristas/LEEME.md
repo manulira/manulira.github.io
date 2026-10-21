@@ -20,8 +20,8 @@ administración entra con su correo y un código (no con clave).
 
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
 protege los datos son las reglas del `esquema.sql`, que se probaron con 184
-comprobaciones (`pruebas/rls.sql`), 143 de la automatización (`pruebas/automatizacion.sql`) y 143 de los accesos,
-equipo, ranking y traslados (`pruebas/accesos.sql`): un barista ve solo lo suyo, la dirección
+comprobaciones (`pruebas/rls.sql`), 143 de la automatización (`pruebas/automatizacion.sql`), 143 de los accesos,
+equipo, ranking y traslados (`pruebas/accesos.sql`) y 72 del historial (`pruebas/historial.sql`): un barista ve solo lo suyo, la dirección
 exacta solo la ven los confirmados en ese evento, y los datos del cliente y los
 de todos los baristas solo los ve la administración.
 
@@ -54,11 +54,27 @@ es privada: solo la ve el equipo con sesión iniciada), talla de camisa, si tien
 datos personales y bancarios de siempre. Tiene un botón «Pegar datos desde mi banco» que lee el
 texto que entrega la app del banco y rellena banco, tipo y número de cuenta.
 
-**Ranking.** Ordena al equipo por turnos con asistencia registrada (acumulado o por mes; los
-empates comparten puesto). Una postulación o una foto no suman: suma cuando tú marcas
-**Asistió** en *Admin: seguimiento* (aparece una vez pasada la fecha del evento). El acumulado
-incluye los *turnos de antes del portal* que anotas en la ficha de cada persona (*Admin: accesos →
-Datos privados*). Los baristas ven el ranking completo pero no los datos privados de nadie.
+**Ranking.** Ordena al equipo por turnos (acumulado o por mes, hasta 12 meses atrás; los empates
+comparten puesto). Cuenta el **historial** (ver más abajo) y las asistencias del portal: una
+postulación o una foto no suman; suma cuando tú marcas **Asistió** en *Admin: seguimiento*
+(aparece una vez pasada la fecha del evento). Además, el acumulado incluye los *otros turnos
+previos (sin detalle)* que anotas en la ficha de cada persona (*Admin: accesos → Datos privados*).
+Aparece quien tiene acceso activo y ya completó su perfil o ya tiene turnos (así, quien viene del
+historial figura aunque todavía no haya entrado). Los baristas ven el ranking completo pero no los
+datos privados de nadie.
+
+**Historial anterior al portal.** Los turnos que ya se hicieron antes de usar el portal (por
+ejemplo, el año hasta hoy) se cargan **una vez** con una consulta SQL (tabla `historial_turnos`,
+solo la ve la administración): una fila por barista y evento, con su fecha y horas. **Esos datos
+no van en este repositorio** (es público): se pegan directo en el editor SQL de Supabase. Cada
+fila se une a un acceso por el **nombre**: igual sin importar tildes ni mayúsculas, o el acceso
+con el nombre completo («Elio Aravena Soto») y el historial con nombre y primer apellido («Elio
+Aravena»). Si hay dos posibles, no adivina. Pasa al crear el acceso o al correr la carga, y lo que
+no calce se une a mano en *Admin: accesos* (cada persona tiene «Historial anterior al portal» con
+un selector «Vincular historial», y un resumen arriba lista quién del historial todavía no tiene
+acceso). Cargar dos veces el mismo historial no repite turnos. Al eliminar un acceso, su historial
+no se borra: queda sin unir. «Mis ganancias» suma los turnos del historial a los turnos
+registrados de cada barista.
 
 **Mis ganancias.** Cada barista ve sus turnos, lo pagado y lo pendiente, y los reembolsos de
 camioneta aparte. Solo ella y la administración ven esos montos.
@@ -276,14 +292,15 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
 - **Reglas de acceso y de la automatización (Postgres)**: `pruebas/rls.sql` (184),
   `pruebas/automatizacion.sql` (143: recordatorios, vacante, evento OK, grupo, boleta, pago,
   sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
-  desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos). Se corren con `psql` sobre una base vacía:
+  desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
+  `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial). Se corren con `psql` sobre una base vacía:
   primero `pruebas/shim-supabase.sql`, luego `esquema.sql`, luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
 - **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
-- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 216 comprobaciones en un
+- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 245 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las
