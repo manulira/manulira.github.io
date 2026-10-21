@@ -10,6 +10,9 @@ const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const TEMA = path.join(AQUI, '..', '..');
 const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8' };
 
+/* Como asset_url de Shopify: dirección con «?v=…» (la tienda la agrega a todo lo que se pide con asset_url). */
+const urlAsset = n => '/assets/' + n + (process.env.SIN_VERSION ? '' : '?v=1700000000');
+
 /* Un «Liquid» mínimo, solo para esta plantilla: quita las etiquetas de control y resuelve asset_url. */
 export function renderizar(plantilla, url, clave, snippet = '') {
   let t = plantilla
@@ -17,8 +20,11 @@ export function renderizar(plantilla, url, clave, snippet = '') {
     .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '')
     .replace(/\{%\s*layout none\s*%\}/g, '')
     .replace(/\{%\s*(end)?raw\s*%\}/g, '')
-    .replace(/\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\|\s*json\s*\}\}/g, (_, n) => JSON.stringify('/assets/' + n))
-    .replace(/\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\}\}/g, (_, n) => '/assets/' + n)
+    // asset_url con «| split: '?' | first» (sin «?v=»), con o sin «| json»
+    .replace(/\{\{\s*['"]([^'"]+)['"]\s*\|\s*asset_url\s*\|\s*split:\s*['"]\?['"]\s*\|\s*first\s*\|\s*json\s*\}\}/g, (_, n) => JSON.stringify('/assets/' + n))
+    .replace(/\{\{\s*['"]([^'"]+)['"]\s*\|\s*asset_url\s*\|\s*split:\s*['"]\?['"]\s*\|\s*first\s*\}\}/g, (_, n) => '/assets/' + n)
+    // asset_url a secas: con «?v=», como la tienda
+    .replace(/\{\{\s*['"]([^'"]+)['"]\s*\|\s*asset_url\s*\}\}/g, (_, n) => urlAsset(n))
     .replaceAll('SUPABASE_URL', url).replaceAll('SUPABASE_CLAVE', clave);
   const resto = t.match(/\{\{|\{%/g);
   if (resto) throw new Error('La plantilla trae Liquid que el armado de pruebas no entiende: ' + t.slice(t.search(/\{\{|\{%/), 80));

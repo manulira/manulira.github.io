@@ -155,16 +155,16 @@ def plantilla():
         archivos[nombre] = PREFIJO + nombre
     for origen, destino in IMAGENES.items():
         archivos[origen] = PREFIJO + destino
-    mapa = ',\n'.join('      "%s": {{ \'%s\' | asset_url | json }}' % (k, v) for k, v in archivos.items())
+    mapa = ',\n'.join('      "%s": {{ "%s" | asset_url | split: "?" | first | json }}' % (k, v) for k, v in archivos.items())
     entrada = PREFIJO + 'index-B0KDm-6B.js'
-    pre = '\n'.join('<link rel="modulepreload" href="{{ \'%s\' | asset_url }}" crossorigin>' % (PREFIJO + n)
+    pre = '\n'.join('<link rel="modulepreload" href="{{ "%s" | asset_url | split: "?" | first }}" crossorigin>' % (PREFIJO + n)
                     for n in ['framework-D_rUT4EX.js', 'client-app-3nlm5eU_.js', 'BrandStory-CKBrxk2p.js'])
     bloques = '\n'.join('<script>\n%s\n</script>' % s for s in inline)
     # Los datos de arranque piden el CSS, los íconos y el manifiesto en «/_next/…» y «/icons/…»: acá están en assets.
     for ruta, destino in RUTAS_ARRANQUE.items():
         if ruta not in bloques:
             sys.exit('ERROR: los datos de arranque ya no mencionan ' + ruta)
-        bloques = bloques.replace(ruta, "{%% endraw %%}{{ '%s' | asset_url }}{%% raw %%}" % (PREFIJO + destino))
+        bloques = bloques.replace(ruta, "{%% endraw %%}{{ '%s' | asset_url | split: '?' | first }}{%% raw %%}" % (PREFIJO + destino))
     return '''{%% layout none %%}
 {%%- comment -%%}
   SEPIA COFFEE · Sepia Equipo (página /pages/equipo)
@@ -186,12 +186,12 @@ def plantilla():
 <meta name="theme-color" content="#33271f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="sepia-shell" content="v2">
-<link rel="icon" href="{{ '%(p)sicon-64.png' | asset_url }}">
-<link rel="apple-touch-icon" href="{{ '%(p)sicon-180.png' | asset_url }}">
-<link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url }}">
+<link rel="icon" href="{{ '%(p)sicon-64.png' | asset_url | split: '?' | first }}">
+<link rel="apple-touch-icon" href="{{ '%(p)sicon-180.png' | asset_url | split: '?' | first }}">
+<link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url | split: '?' | first }}">
 {%% render 'sepia-equipo-conexion' %%}
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url }}" data-precedence="vite-rsc/importer-resources">
+<link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-precedence="vite-rsc/importer-resources">
 %(pre)s
 <script>
   window.SEPIA_EQUIPO = {
@@ -213,7 +213,7 @@ def plantilla():
 %(bloques)s
 {%% endraw %%}
 </head>
-<body>%(boot)s<script type="module" src="{{ '%(entrada)s' | asset_url }}"></script></body>
+<body>%(boot)s<script type="module" src="{{ '%(entrada)s' | asset_url | split: '?' | first }}"></script></body>
 </html>
 ''' % {'p': PREFIJO, 'pre': pre, 'mapa': mapa, 'bloques': bloques, 'boot': boot, 'entrada': entrada}
 
