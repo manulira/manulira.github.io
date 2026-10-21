@@ -4,7 +4,7 @@
 Toma la interfaz del equipo (fuente/: los archivos compilados tal como los entregó Jorge, con las imágenes
 ya optimizadas), le hace unos pocos cambios de texto y de rutas, y deja:
 
-  assets/sepia-equipo-<versión>-*.js|css|png|jpg|json   la interfaz, en la carpeta plana de assets del tema
+  assets/sepia-equipo-<versión>-*.js|css|png|jpg|json.liquid  la interfaz, en la carpeta plana de assets del tema
   templates/page.equipo.liquid                           la plantilla de la página /pages/equipo
   snippets/sepia-equipo-conexion.liquid                  la URL y la clave pública de Supabase (en el repo, marcadores)
 
@@ -45,6 +45,7 @@ RUTAS_ARRANQUE = {'/_next/static/css/index.DiFSpdfw.css': 'index.DiFSpdfw.css',
                   '/icons/sepia-blue-180.png': 'icon-180.png',
                   '/manifest.webmanifest': 'manifest.json'}
 
+# Shopify no acepta archivos .json en assets: va como .json.liquid (se publica como .json y puede nombrar el ícono)
 MANIFIESTO = '''{
   "name": "Sepia Coffee · Equipo",
   "short_name": "Sepia",
@@ -56,7 +57,7 @@ MANIFIESTO = '''{
   "start_url": "/pages/equipo",
   "scope": "/pages/",
   "icons": [
-    { "src": "%sicon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+    { "src": "{{ '%sicon-180.png' | asset_url }}", "sizes": "180x180", "type": "image/png", "purpose": "any" }
   ]
 }
 ''' % PREFIJO
@@ -251,7 +252,7 @@ def main():
             shutil.copyfile(os.path.join(FUENTE, nombre), os.path.join(carpeta_assets, PREFIJO + nombre))
         for origen, destino in IMAGENES.items():
             shutil.copyfile(os.path.join(FUENTE, 'imagenes', origen), os.path.join(carpeta_assets, PREFIJO + destino))
-        escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json'), MANIFIESTO)
+        escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json.liquid'), MANIFIESTO)
         escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
     print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + 1))
