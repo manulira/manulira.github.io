@@ -356,8 +356,9 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
   desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
   `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
-  `pruebas/admin-clave.sql` (38: entrada de la administración con clave o código). Se corren con `psql` sobre una base vacía:
-  primero `pruebas/shim-supabase.sql`, luego `esquema.sql`, luego el archivo de pruebas. Al romper
+  `pruebas/admin-clave.sql` (38: entrada de la administración con clave o código) y `pruebas/equipo.sql` (169: las funciones de
+  Sepia Equipo). Se corren con `psql` sobre una base vacía: primero `pruebas/shim-supabase.sql`, luego `esquema.sql` (y `equipo.sql`
+  para las pruebas de Sepia Equipo), luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
 - **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
@@ -366,6 +367,14 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
 - **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 278 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
+- **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
+  de pruebas) → 103 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
+  postular con y sin camioneta, cupos, cancelar (24 horas), fotos de cada evento y de perfil, ranking, avisos, cambio de clave, salir,
+  toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias) y el celular. La página se
+  sirve como la sirve la tienda (con `?v=` en las direcciones). `SECCION=A` (o `E`, etc.) corre solo una parte.
+- **Probado en la tienda real**: la página en la vista previa del tema carga, muestra la entrada y un intento de entrar con datos
+  falsos llega a Supabase y vuelve con «ID o clave incorrectos». Entrar de verdad necesita correr `equipo.sql` en Supabase.
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las
   consultas de una barista (20 comprobaciones).
 - **Falta**: correr el `esquema.sql` nuevo en el proyecto real, instalar el script de Google y

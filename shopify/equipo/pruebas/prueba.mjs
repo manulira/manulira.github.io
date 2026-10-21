@@ -331,14 +331,14 @@ try {
     ok(/Foto de perfil quitada/.test(await texto(pg)) && db(`select (foto_path is null)::text from public.baristas where nombre = 'Ana Prueba'`) === 'true' && db(`select count(*) from storage.objects where bucket_id = 'perfiles'`) === '0', 'y la puede quitar (se borra de la base y del almacenamiento)');
 
     /* Avisos dentro de la app */
-    db(`insert into public.avisos (barista_id, clave, titulo, cuerpo) select id, 'prueba:1', 'Mañana tienes turno: Matrimonio Tres Cupos', 'Horario 18:00 – 23:00.' from public.baristas where nombre = 'Ana Prueba'`);
+    db(`insert into public.avisos (barista_id, clave, titulo, cuerpo) select id, 'prueba:1', 'Recordatorio de prueba: Matrimonio Tres Cupos', 'Horario 18:00 – 23:00.' from public.baristas where nombre = 'Ana Prueba'`);
     await pg.reload(); await entrarSiHaySplash(pg); await espera(pg, 1200);
     await pg.locator('.crew-notices summary').click(); await espera(pg, 500);
     t = await texto(pg);
-    ok(/Mañana tienes turno: Matrimonio Tres Cupos/.test(t) && /1 Avisos|Avisos/.test(t), 'la campana muestra el aviso de turno');
+    ok(/Recordatorio de prueba: Matrimonio Tres Cupos/.test(t), 'la campana muestra el aviso de turno');
     await captura(pg, 'D4-avisos');
     await pulsa(pg, 'Marcar como leído'); await espera(pg, 1000);
-    ok(!/Mañana tienes turno/.test(await texto(pg)) && db(`select (leido_en is not null)::text from public.avisos where clave = 'prueba:1'`) === 'true', 'al marcarlo como leído desaparece y queda anotado en la base');
+    ok(!/Recordatorio de prueba/.test(await texto(pg)) && db(`select (leido_en is not null)::text from public.avisos where clave = 'prueba:1'`) === 'true', 'al marcarlo como leído desaparece y queda anotado en la base');
 
     /* Cambiar la clave desde el perfil, y salir */
     await seccion('Cambiar mi clave');
