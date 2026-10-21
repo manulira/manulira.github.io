@@ -91,6 +91,9 @@
     db.accesos.push({ id: 'u-dani', usuario: 'dani.prueba', nombre: 'Dani Prueba', activo: true, debe_cambiar_clave: false });
   }
   var sesion = S.sesion ? { user: { id: S.sesion.id, email: S.sesion.email } } : null;
+  // Cuenta de administración con clave: claveAdmin = 'sin' (no tiene clave), 'inactiva' (tiene clave pero no la activó) o 'activa'.
+  var AC = S.claveAdmin ? { email: 'admin@ejemplo.cl', id: 'u-admin', clave: S.claveAdmin === 'sin' ? null : 'clave-admin-larga', activa: S.claveAdmin === 'activa' } : null;
+  window.__AC = AC;
   if (S.perfilPropio) db.baristas.push(Object.assign({ id: S.sesion.id, correo: S.sesion.email, acepta_boleta: true, acepta_boleta_texto: cfg.texto_boleta, acepta_privacidad: true, cuenta_propia: true, aceptado_en: new Date().toISOString() }, S.perfilPropio));
   // Todo barista tiene un acceso activo (salvo que el escenario ya lo definió). Y los usuarios de ID y clave de la prueba.
   var slug = function (n) { return n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z ]/g, '').trim().replace(/\s+/g, '.'); };
@@ -119,7 +122,11 @@
     if (!db.accesos.some(function (a) { return a.id === id; })) db.accesos.push({ id: id, usuario: u.usuario, nombre: u.nombre, activo: u.activo !== false, debe_cambiar_clave: u.debeCambiar !== false });
   });
   var uid = function () { return sesion && sesion.user.id; };
-  var esAdmin = function () { return !!(S.admin && sesion); };
+  var esAdmin = function () {
+    if (!(S.admin && sesion)) return false;
+    if (!AC) return true;
+    return sesion.user.email === AC.email && (sesion.metodo !== 'password' || AC.activa);
+  };
   var accesoActivo = function () { return db.accesos.some(function (a) { return a.id === uid() && a.activo; }); };
   var esBarista = function () { return accesoActivo() && db.baristas.some(function (b) { return b.id === uid(); }); };
   var tienePost = function (ev) { return db.postulaciones.some(function (p) { return p.evento_id === ev && p.barista_id === uid(); }); };
@@ -243,6 +250,17 @@
   window.__rpc = [];
   var RPC = {
     es_admin: function () { return esAdmin(); },
+    admin_clave_activa: function () {
+      if (S.sinFuncionClave) return fallo('Could not find the function public.admin_clave_activa without parameters in the schema cache');
+      if (!AC) return true;
+      return esAdmin() ? AC.activa : false;
+    },
+    admin_activar_clave: function (a) {
+      if (!AC) return null;
+      if (!sesion || sesion.user.email !== AC.email) return fallo('Solo la administración cambia su entrada con clave');
+      if (a.p_activa && sesion.metodo === 'password') return fallo('Para activar la clave hay que entrar con un código por correo');
+      AC.activa = !!a.p_activa; return null;
+    },
     acceso_clave_cambiada: function () { var a = db.accesos.filter(function (x) { return x.id === uid(); })[0]; if (a) a.debe_cambiar_clave = false; return null; },
     crear_acceso: function (a) {
       if (!esAdmin()) return fallo('Solo la administración crea accesos');
@@ -365,6 +383,11 @@
         onAuthStateChange: function () { return { data: { subscription: { unsubscribe: function () {} } } }; },
         signInWithPassword: function (a) {
           window.__signIn = (window.__signIn || []).concat([a]);
+          if (AC && a.email === AC.email) {
+            if (!AC.clave || AC.clave !== a.password) return Promise.resolve({ data: {}, error: { message: 'Invalid login credentials' } });
+            sesion = { user: { id: AC.id, email: AC.email }, metodo: 'password' };
+            return Promise.resolve({ data: { session: sesion }, error: null });
+          }
           var usuario = String(a.email || '').split('@')[0], dominio = String(a.email || '').split('@')[1];
           var u = dominio === 'equipo.sepiacoffee.cl' ? usuarios.filter(function (x) { return x.usuario === usuario; })[0] : (sesion && sesion.user.email === a.email ? usuarios.filter(function (x) { return x.id === sesion.user.id; })[0] : null);
           if (!u || u.clave !== a.password) return Promise.resolve({ data: {}, error: { message: 'Invalid login credentials' } });
@@ -377,6 +400,11 @@
           if (!sesion) return Promise.resolve({ data: {}, error: { message: 'Auth session missing!' } });
           var u = usuarios.filter(function (x) { return x.id === sesion.user.id; })[0];
           if (a.password && a.password.length < 6) return Promise.resolve({ data: {}, error: { message: 'Password should be at least 6 characters.' } });
+          if (AC && sesion.user.email === AC.email) {
+            if (a.password === AC.clave) return Promise.resolve({ data: {}, error: { message: 'New password should be different from the old password.' } });
+            AC.clave = a.password; window.__claveCambiada = a.password;
+            return Promise.resolve({ data: { user: sesion.user }, error: null });
+          }
           if (u && a.password === u.clave) return Promise.resolve({ data: {}, error: { message: 'New password should be different from the old password.' } });
           if (u) u.clave = a.password;
           window.__claveCambiada = a.password;
@@ -385,6 +413,7 @@
         signInWithOtp: function (a) { window.__otp = a; return Promise.resolve({ error: /limite/.test(a.email) ? { message: 'email rate limit exceeded' } : (/sinacceso/.test(a.email) ? { message: 'Signups not allowed for otp' } : null) }); },
         verifyOtp: function (a) {
           if (a.token !== '123456') return Promise.resolve({ data: {}, error: { message: 'Token has expired or is invalid' } });
+          if (AC && a.email === AC.email) { sesion = { user: { id: AC.id, email: AC.email }, metodo: 'otp' }; return Promise.resolve({ data: { session: sesion }, error: null }); }
           sesion = { user: { id: S.nuevoId || 'u-nuevo', email: a.email } }; return Promise.resolve({ data: { session: sesion }, error: null });
         },
         signOut: function (o) { window.__signOut = o || { scope: 'global' }; if (!o || o.scope !== 'others') sesion = null; return Promise.resolve({ error: null }); }

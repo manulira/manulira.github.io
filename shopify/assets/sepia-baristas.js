@@ -38,7 +38,7 @@
     sesion: null, perfil: null, admin: false, config: null,
     eventos: [], posts: [], dirs: {}, privado: {}, baristas: {}, misPosts: {}, seg: {}, segDatos: {}, sync: null,
     acceso: null, accesos: [], historial: [], fotos: {}, equipos: {}, traslados: [], trasladoEv: {}, fotoPendiente: null, ultimoAcceso: null,
-    pestana: 'eventos', cargando: true, correoLogin: '', usuarioLogin: ''
+    pestana: 'eventos', cargando: true, correoLogin: '', usuarioLogin: '', claveAdmin: null, claveAdminOmitida: false
   };
 
   /* ------------------------------------------------------------------ */
@@ -218,6 +218,12 @@
     estado.perfil = rp.data;
     var ra = await sb.rpc('es_admin');
     estado.admin = ra.data === true;
+    // ¿Tiene activada su entrada con clave? (null: la base todavía no tiene esa función)
+    estado.claveAdmin = null;
+    if (estado.admin) {
+      var rca = await sb.rpc('admin_clave_activa');
+      estado.claveAdmin = rca.error ? null : rca.data === true;
+    }
     var rac = await sb.from('accesos').select('*');
     var accesos = rac.data || [];
     estado.acceso = accesos.filter(function (a) { return a.id === uid; })[0] || null;
@@ -282,7 +288,7 @@
     estado.sesion = null; estado.perfil = null; estado.admin = false; estado.config = null;
     estado.eventos = []; estado.posts = []; estado.dirs = {}; estado.privado = {}; estado.baristas = {}; estado.misPosts = {}; estado.seg = {}; estado.segDatos = {}; estado.sync = null;
     estado.acceso = null; estado.accesos = []; estado.historial = []; estado.fotos = {}; estado.equipos = {}; estado.traslados = []; estado.trasladoEv = {};
-    estado.fotoPendiente = null; estado.ultimoAcceso = null;
+    estado.fotoPendiente = null; estado.ultimoAcceso = null; estado.claveAdmin = null; estado.claveAdminOmitida = false;
     estado.pestana = 'eventos';
   }
 
@@ -337,8 +343,54 @@
       caja.appendChild(msg);
       caja.appendChild(h('p', { class: 'sb-ayuda', text: '¿Olvidaste tu clave? Escríbele a Manuel para que te dé una nueva.' }));
       caja.appendChild(h('hr', { class: 'sb-sep' }));
-      caja.appendChild(boton('Soy administración: entrar con un código por correo', pasoCorreo, 'sb-btn--sec'));
+      caja.appendChild(boton('Soy administración', pasoAdmin, 'sb-btn--sec'));
       [usuario, claveCampo.entrada].forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); entrar.click(); } }); });
+    };
+    /* Administración: elige entrar con correo y clave, o con un código por correo. */
+    var pasoAdmin = function () {
+      caja.textContent = '';
+      caja.appendChild(h('h2', { class: 'sb-h2', text: 'Administración' }));
+      caja.appendChild(h('p', { class: 'sb-texto', text: 'Elige cómo quieres entrar.' }));
+      caja.appendChild(h('div', { class: 'sb-opciones' },
+        boton('Entrar con correo y clave', pasoAdminClave),
+        boton('Entrar con un código por correo', pasoCorreo, 'sb-btn--sec')));
+      caja.appendChild(h('p', { class: 'sb-ayuda', text: 'La clave se crea la primera vez que entras con código. Si todavía no la tienes, entra con código.' }));
+      caja.appendChild(h('div', { class: 'sb-fila' }, boton('Volver', pasoClave, 'sb-btn--sec')));
+    };
+    var pasoAdminClave = function () {
+      caja.textContent = '';
+      var correo = entrada('email', 'correo', estado.correoLogin, { autocomplete: 'username', required: true, placeholder: 'tucorreo@ejemplo.cl', inputmode: 'email', autocapitalize: 'none' });
+      var claveCampo = campoClave('Clave', 'clave', 'current-password', 'sb-clave-admin');
+      var msg = h('div');
+      var entrar = boton('Iniciar sesión', function () {
+        var v = correo.value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { ponerAviso(msg, 'Escribe tu correo de administración.'); correo.focus(); return; }
+        if (!claveCampo.entrada.value) { ponerAviso(msg, 'Escribe tu clave.'); claveCampo.entrada.focus(); return; }
+        ponerAviso(msg, '');
+        estado.correoLogin = v;
+        conTarea(entrar, async function () {
+          var r = await sb.auth.signInWithPassword({ email: v, password: claveCampo.entrada.value });
+          if (r.error) throw r.error;
+          // La base decide: una clave sirve solo si esa persona la activó desde una sesión de código.
+          var ea = await sb.rpc('es_admin');
+          if (ea.data !== true) { await sb.auth.signOut({ scope: 'local' }); throw new Error('sin clave activa'); }
+          estado.sesion = r.data.session;
+        }).then(entrarAlPortal, function (e) {
+          ponerAviso(msg, /sin clave activa/.test((e && e.message) || '')
+            ? 'Esta cuenta todavía no tiene activada la entrada con clave. Entra con un código por correo: ahí podrás crear tu clave.'
+            : /invalid login credentials|invalid_credentials/i.test((e && e.message) || '') ? 'El correo o la clave no son correctos.'
+            : mensajeError(e, 'No pudimos entrar. Inténtalo de nuevo en un momento.'));
+        });
+      });
+      caja.appendChild(h('h2', { class: 'sb-h2', text: 'Administración' }));
+      caja.appendChild(h('p', { class: 'sb-texto', text: 'Entra con tu correo y tu clave.' }));
+      caja.appendChild(campo('Correo electrónico', correo));
+      caja.appendChild(claveCampo);
+      caja.appendChild(h('div', { class: 'sb-fila' }, entrar, boton('Volver', pasoAdmin, 'sb-btn--sec')));
+      caja.appendChild(msg);
+      caja.appendChild(h('p', { class: 'sb-ayuda', text: '¿No tienes clave o no la recuerdas? Entra con un código por correo.' }));
+      caja.appendChild(boton('Entrar con un código por correo', pasoCorreo, 'sb-btn--sec'));
+      [correo, claveCampo.entrada].forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); entrar.click(); } }); });
     };
     var pasoCorreo = function () {
       caja.textContent = '';
@@ -356,9 +408,9 @@
         }).catch(function (e) { ponerAviso(msg, mensajeError(e, 'No pudimos enviar el código. Revisa el correo e inténtalo de nuevo en un minuto.')); });
       });
       caja.appendChild(h('h2', { class: 'sb-h2', text: 'Administración' }));
-      caja.appendChild(h('p', { class: 'sb-texto', text: 'Te enviamos un código de un solo uso al correo de administración. No hay clave que recordar.' }));
+      caja.appendChild(h('p', { class: 'sb-texto', text: 'Te enviamos un código de un solo uso al correo de administración.' }));
       caja.appendChild(campo('Correo electrónico', correo));
-      caja.appendChild(h('div', { class: 'sb-fila' }, enviar, boton('Volver', pasoClave, 'sb-btn--sec')));
+      caja.appendChild(h('div', { class: 'sb-fila' }, enviar, boton('Volver', pasoAdmin, 'sb-btn--sec')));
       caja.appendChild(msg);
       correo.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviar.click(); } });
     };
@@ -444,6 +496,86 @@
       });
     });
     return f;
+  }
+
+  /* Clave de la administración: opcional, además del código por correo. Se pide la primera vez que
+     entra con código y se puede crear, cambiar o desactivar desde la pestaña «Mi clave». */
+  function vistaClaveAdmin(primera) {
+    var activa = estado.claveAdmin === true;
+    var correo = (estado.sesion && estado.sesion.user && estado.sesion.user.email) || '';
+    var f = h('form', { class: primera ? 'sb-caja' : 'sb-sub', novalidate: true });
+    var msg = h('div');
+    var actual = activa ? campoClave('Clave actual', 'actual', 'current-password', 'sb-ca-actual') : null;
+    var nueva = campoClave(activa ? 'Clave nueva' : 'Clave', 'nueva', 'new-password', 'sb-ca-nueva');
+    var repetir = campoClave(activa ? 'Repite la clave nueva' : 'Repite la clave', 'repetir', 'new-password', 'sb-ca-repetir');
+    var guardar = h('button', { type: 'submit', class: 'sb-btn', text: activa ? 'Cambiar mi clave' : 'Guardar mi clave' });
+    f.appendChild(h(primera ? 'h2' : 'h3', { class: primera ? 'sb-h2' : 'sb-h3', text: primera ? 'Crea tu clave de administración' : 'Mi clave de administración' }));
+    f.appendChild(h('p', { class: 'sb-texto', text: primera
+      ? 'Entraste con un código por correo. Si creas una clave, la próxima vez podrás elegir: entrar con tu correo y clave, o con un código.'
+      : activa ? 'La entrada con clave está activada: puedes entrar con tu correo y clave, o con un código por correo.'
+      : 'Hoy solo entras con código por correo. Crea una clave para poder elegir entre las dos formas.' }));
+    if (actual) f.appendChild(actual);
+    f.appendChild(nueva); f.appendChild(repetir);
+    f.appendChild(h('p', { class: 'sb-ayuda', text: 'Usa al menos 10 caracteres. Una frase larga y fácil de recordar sirve.' }));
+    var fila = h('div', { class: 'sb-fila' }, guardar);
+    if (primera) fila.appendChild(boton('Ahora no', function () { estado.claveAdminOmitida = true; pintar(); }, 'sb-btn--sec'));
+    f.appendChild(fila);
+    f.appendChild(msg);
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var n1 = nueva.entrada.value, n2 = repetir.entrada.value, local = correo.split('@')[0].toLowerCase();
+      var error = null;
+      if (actual && !actual.entrada.value) error = 'Escribe tu clave actual.';
+      else if (n1.length < 10) error = 'La clave tiene que tener al menos 10 caracteres.';
+      else if (n1 !== n2) error = 'Las dos claves no son iguales.';
+      else if (local.length >= 4 && n1.toLowerCase().indexOf(local) >= 0) error = 'La clave no puede llevar tu correo.';
+      if (error) { ponerAviso(msg, error); return; }
+      ponerAviso(msg, '');
+      conTarea(guardar, async function () {
+        if (actual) {
+          var v = await sb.auth.signInWithPassword({ email: correo, password: actual.entrada.value });
+          if (v.error) throw new Error('clave actual');
+        }
+        var r = await sb.auth.updateUser({ password: n1 });
+        if (r.error) throw r.error;
+        if (!activa) {
+          var r2 = await sb.rpc('admin_activar_clave', { p_activa: true });
+          if (r2.error) throw r2.error;
+          estado.claveAdmin = true;
+        }
+        await sb.auth.signOut({ scope: 'others' });
+        if (primera) { pintar(); return; }
+        [actual, nueva, repetir].forEach(function (c) { if (c) c.entrada.value = ''; });
+        ponerAviso(msg, activa ? 'Listo, cambiamos tu clave. Las otras sesiones se cerraron.' : 'Listo, activamos tu clave. Desde ahora puedes entrar con tu correo y clave, o con un código.', 'ok');
+        if (!activa) pintar();
+      }).catch(function (e) {
+        ponerAviso(msg, /clave actual/.test((e && e.message) || '') ? 'La clave actual no es correcta.' : mensajeError(e, 'No pudimos guardar la clave. Inténtalo de nuevo.'));
+      });
+    });
+    return f;
+  }
+
+  function vistaMiClave() {
+    var caja = h('div');
+    var msg = h('div');
+    caja.appendChild(h('h2', { class: 'sb-h2', text: 'Mi clave' }));
+    caja.appendChild(vistaClaveAdmin(false));
+    if (estado.claveAdmin === true) {
+      var quitar = boton('Desactivar la entrada con clave', function () {
+        if (!window.confirm('Después de esto solo podrás entrar con código por correo. ¿Seguro?')) return;
+        conTarea(quitar, async function () {
+          var r = await sb.rpc('admin_activar_clave', { p_activa: false });
+          if (r.error) throw r.error;
+          // Una sesión de clave deja de valer como administración: se vuelve a entrar con código.
+          await sb.auth.signOut({ scope: 'local' });
+          limpiarEstado();
+          pintar();
+        }).catch(function () { ponerAviso(msg, 'No pudimos desactivarla. Inténtalo de nuevo.'); });
+      }, 'sb-btn--sec');
+      caja.appendChild(h('div', { class: 'sb-caja sb-caja--aparte' }, h('p', { class: 'sb-texto', text: 'Si prefieres entrar solo con código por correo, puedes apagar la clave. No se borra: puedes activarla de nuevo cuando quieras.' }),
+        h('div', { class: 'sb-fila' }, quitar), msg));
+    }
+    return caja;
   }
 
   /* ------------------------------------------------------------------ */
@@ -2009,6 +2141,7 @@
       var n = alertasSeg().length;
       lista.push(['seguimiento', 'Admin: seguimiento' + (n ? ' (' + n + ')' : '')], ['admin', 'Admin: eventos'],
         ['postulantes', 'Admin: postulantes'], ['resumen', 'Admin: pagos'], ['accesos', 'Admin: accesos'], ['ranking', 'Ranking']);
+      if (estado.claveAdmin !== null) lista.push(['miclave', 'Mi clave']);
     }
     return lista;
   }
@@ -2023,7 +2156,7 @@
     var vista = { eventos: vistaEventos, mis: vistaMisPostulaciones,
       datos: function () { return h('div', null, vistaFormularioPerfil('editar'), h('div', { class: 'sb-caja sb-caja--aparte' }, vistaCambiarClave(false))); },
       ranking: vistaRanking, ganancias: vistaGanancias,
-      seguimiento: vistaSeguimiento, admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen, accesos: vistaAccesos }[estado.pestana];
+      seguimiento: vistaSeguimiento, admin: vistaAdminEventos, postulantes: vistaPostulantes, resumen: vistaResumen, accesos: vistaAccesos, miclave: vistaMiClave }[estado.pestana];
     return h('div', null, nav, h('div', { class: 'sb-panel', role: 'tabpanel' }, vista()));
   }
 
@@ -2041,7 +2174,7 @@
     if (estado.cargando) { raiz.appendChild(h('p', { class: 'sb-texto', role: 'status', text: 'Cargando…' })); return; }
     if (!estado.sesion) { raiz.appendChild(vistaLogin()); raiz.appendChild(pie()); return; }
     raiz.appendChild(barraSuperior());
-    if (estado.admin) raiz.appendChild(vistaApp());
+    if (estado.admin) raiz.appendChild(estado.claveAdmin === false && !estado.claveAdminOmitida ? vistaClaveAdmin(true) : vistaApp());
     else if (!estado.acceso || !estado.acceso.activo) raiz.appendChild(vistaSinAcceso());
     else if (estado.acceso.debe_cambiar_clave) raiz.appendChild(vistaCambiarClave(true));
     else if (!estado.perfil) raiz.appendChild(vistaFormularioPerfil('crear'));

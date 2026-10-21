@@ -5,7 +5,7 @@ clave** que le das tú, completa su perfil (foto, talla de camisa, camioneta, da
 bancarios, y la declaración de que puede emitir boleta de honorarios), ve los eventos, postula,
 mira el ranking del equipo y sus ganancias. Tú confirmas a quién va a cada evento, asignas quién
 lleva la camioneta y ves cuántos baristas necesitas, los horarios y lo que vas a pagar. La
-administración entra con su correo y un código (no con clave).
+administración entra con su correo: con un código por correo o, si activó su clave, con correo y clave.
 
 ## Cómo está armado
 
@@ -87,6 +87,20 @@ se cambian en *Admin: eventos → Ajustes de traslado con camioneta* (o `config.
 `config.precio_litro`). El estacionamiento lo ingresas tú al cierre. En *Admin: pagos →
 Reembolsos de camioneta* registras que ya lo pagaste (no transfiere dinero). **No son honorarios
 ni van en la boleta**, y no cuentan para el tope diario.
+
+**Administración: clave o código.** En «Soy administración» se elige entre *correo y clave* y
+*código por correo*. La primera vez que alguien de la administración entra con código y todavía no
+tiene clave, el portal se la pide («Ahora no» la deja para después; la pestaña *Mi clave* sirve para
+crearla, cambiarla o desactivarla). Mínimo 10 caracteres. Por seguridad, una clave sirve como
+administración solo si esa persona la **activó** desde una sesión con código (`admins.clave_activa`,
+funciones `admin_activar_clave` y `admin_clave_activa`): así nadie que haya creado una cuenta con el correo
+de la administración antes que ella puede entrar con una clave puesta de antemano. Al crear la clave, ella
+reemplaza cualquier otra. Quien es administración se define en la tabla `admins`:
+`insert into public.admins (email) values ('correo@ejemplo.cl');` (en minúsculas), y esa persona tiene
+que tener cuenta en Supabase (*Authentication → Users → Add user*, con «Auto Confirm User»): el botón de
+código no crea cuentas. Para quitar a alguien: `delete from public.admins where email = '…';`.
+Conviene, además, apagar «Allow new users to sign up» en *Authentication → Sign In / Providers → Email*:
+el portal ya no usa registros nuevos (los accesos se crean desde «Admin: accesos»).
 
 **Quien ya se había registrado con correo** (pruebas anteriores) pierde el acceso: hay que
 crearle un ID y clave desde *Admin: accesos* y que vuelva a completar su perfil.
@@ -293,14 +307,15 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   `pruebas/automatizacion.sql` (143: recordatorios, vacante, evento OK, grupo, boleta, pago,
   sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
   desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
-  `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial). Se corren con `psql` sobre una base vacía:
+  `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
+  `pruebas/admin-clave.sql` (38: entrada de la administración con clave o código). Se corren con `psql` sobre una base vacía:
   primero `pruebas/shim-supabase.sql`, luego `esquema.sql`, luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
 - **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
-- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 245 comprobaciones en un
+- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 271 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las

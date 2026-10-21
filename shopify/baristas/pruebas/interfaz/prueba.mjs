@@ -174,7 +174,9 @@ await p.context().close();
 console.log('\n=== A2. Administración entra con código por correo; una cuenta sin acceso no ve nada ===');
 p = await abrir({ nuevoId: 'u-extraño' });
 await pulsa(p, 'Soy administración'); await espera(p);
-ok((await txt(p)).includes('Administración') && (await txt(p)).includes('código de un solo uso'), '«Soy administración» ofrece el código por correo');
+ok((await txt(p)).includes('Elige cómo quieres entrar') && (await p.getByRole('button', { name: 'Entrar con correo y clave' }).count()) === 1 && (await p.getByRole('button', { name: 'Entrar con un código por correo' }).count()) === 1, '«Soy administración» deja elegir: correo y clave, o código por correo');
+await pulsa(p, 'Entrar con un código por correo'); await espera(p);
+ok((await txt(p)).includes('Administración') && (await txt(p)).includes('código de un solo uso'), 'la opción del código pide el correo y manda un código de un solo uso');
 await p.fill('input[name=correo]', 'sinacceso@ejemplo.cl'); await pulsa(p, 'Enviarme el código'); await espera(p);
 ok((await txt(p)).includes('no tiene acceso de administración') && (await p.evaluate(() => window.__otp)) === undefined || (await p.evaluate(() => window.__otp.options.shouldCreateUser)) === false, 'un correo desconocido no puede crear una cuenta nueva por el código');
 await p.fill('input[name=correo]', 'admin@ejemplo.cl'); await pulsa(p, 'Enviarme el código'); await espera(p);
@@ -211,7 +213,7 @@ await p.context().close();
 
 console.log('\n=== C. Administración ===');
 p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, otraBarista: true });
-ok((await p.getByRole('tab').allInnerTexts()).join('|') === 'Admin: seguimiento|Admin: eventos|Admin: postulantes|Admin: pagos|Admin: accesos|Ranking', 've solo las pestañas de administración (con seguimiento primero) y el ranking');
+ok((await p.getByRole('tab').allInnerTexts()).join('|') === 'Admin: seguimiento|Admin: eventos|Admin: postulantes|Admin: pagos|Admin: accesos|Ranking|Mi clave', 've solo las pestañas de administración (con seguimiento primero), el ranking y «Mi clave»');
 await p.getByRole('tab', { name: 'Admin: eventos' }).click(); await espera(p);
 t = await txt(p);
 ok(t.includes('Borrador secreto') && t.includes('Cliente: Familia Secreta'), 've borradores y el cliente');
@@ -645,6 +647,93 @@ await p.fill('#sb-na-nombre', 'Tomás Herrera Pérez'); await espera(p);
 await pulsa(p, 'Crear acceso'); await espera(p); await espera(p);
 ok((await p.evaluate(() => window.__DB.historial_turnos.filter(x => x.nombre === 'Tomás Herrera' && x.acceso_id === 'u-tomas.herrera').length)) === 2, 'un acceso «Tomás Herrera Pérez» se une solo al historial «Tomás Herrera» (2 turnos)');
 ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+console.log('\n=== K. Administración: elegir entre clave y código; pedir la clave la primera vez ===');
+const irAdmin = async (pg, opcion) => { await pulsa(pg, 'Soy administración'); await espera(pg); await pulsa(pg, opcion); await espera(pg); };
+const entrarConClave = async (pg, clave) => { await pg.fill('input[name=correo]', 'admin@ejemplo.cl'); await pg.fill('input[name=clave]', clave); await pulsa(pg, 'Iniciar sesión'); await espera(pg); await espera(pg); };
+const entrarConCodigo = async pg => { await pg.fill('input[name=correo]', 'admin@ejemplo.cl'); await pulsa(pg, 'Enviarme el código'); await espera(pg); await pg.fill('input[name=codigo]', '123456'); await pulsa(pg, 'Entrar'); await espera(pg); await espera(pg); };
+
+// K1. Con la clave activada se puede entrar con correo y clave
+p = await abrir({ admin: true, claveAdmin: 'activa' });
+await irAdmin(p, 'Entrar con correo y clave');
+t = await txt(p);
+ok(t.includes('Entra con tu correo y tu clave') && (await p.locator('input[name=clave]').count()) === 1, 'la opción de clave pide correo y clave');
+await entrarConClave(p, 'clave-equivocada');
+ok((await txt(p)).includes('El correo o la clave no son correctos'), 'una clave equivocada lo dice, sin mencionar un «ID»');
+await entrarConClave(p, 'clave-admin-larga');
+t = await txt(p);
+ok(t.includes('Admin: seguimiento') && !t.includes('Crea tu clave de administración'), 'con la clave correcta entra como administración, sin que le pidan crearla otra vez');
+ok(t.includes('Mi clave'), 'y tiene la pestaña «Mi clave»');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+// K2. Una clave que existe pero no se activó no sirve
+p = await abrir({ admin: true, claveAdmin: 'inactiva' });
+await irAdmin(p, 'Entrar con correo y clave');
+await entrarConClave(p, 'clave-admin-larga');
+t = await txt(p);
+ok(t.includes('todavía no tiene activada la entrada con clave') && t.includes('Entra con tu correo y tu clave') && !t.includes('Admin: seguimiento'), 'una clave sin activar no entra: avisa que hay que entrar con código para crearla');
+ok((await p.evaluate(() => window.__signOut && window.__signOut.scope)) === 'local', 'y cierra la sesión que acababa de abrir');
+await p.context().close();
+
+// K3. Sin clave: entra con código y el portal se la pide
+p = await abrir({ admin: true, claveAdmin: 'sin' });
+await irAdmin(p, 'Entrar con un código por correo');
+await entrarConCodigo(p);
+t = await txt(p);
+ok(t.includes('Crea tu clave de administración') && !t.includes('Admin: seguimiento'), 'la primera vez que entra con código, el portal le pide crear su clave');
+await p.fill('input[name=nueva]', 'corta'); await p.fill('input[name=repetir]', 'corta'); await pulsa(p, 'Guardar mi clave'); await espera(p);
+ok((await txt(p)).includes('al menos 10 caracteres'), 'una clave corta se rechaza (mínimo 10)');
+await p.fill('input[name=nueva]', 'una-frase-larga-123'); await p.fill('input[name=repetir]', 'otra-frase-larga-123'); await pulsa(p, 'Guardar mi clave'); await espera(p);
+ok((await txt(p)).includes('no son iguales'), 'si las dos no coinciden, lo dice');
+await p.fill('input[name=nueva]', 'admin-es-mi-clave-1'); await p.fill('input[name=repetir]', 'admin-es-mi-clave-1'); await pulsa(p, 'Guardar mi clave'); await espera(p);
+ok((await txt(p)).includes('no puede llevar tu correo'), 'una clave que lleva su correo se rechaza');
+ok((await p.evaluate(() => window.__AC.clave)) === null, 'mientras tanto no se guardó ninguna clave');
+await p.fill('input[name=nueva]', 'una-frase-larga-123'); await p.fill('input[name=repetir]', 'una-frase-larga-123'); await pulsa(p, 'Guardar mi clave'); await espera(p); await espera(p);
+t = await txt(p);
+ok(t.includes('Admin: seguimiento') && !t.includes('Crea tu clave de administración'), 'con una clave buena guarda y entra al portal');
+ok((await p.evaluate(() => window.__AC.clave === 'una-frase-larga-123' && window.__AC.activa === true)) && (await p.evaluate(() => window.__signOut.scope)) === 'others', 'queda con la clave puesta y activada, y se cierran las otras sesiones');
+await pulsa(p, 'Salir'); await espera(p);
+await irAdmin(p, 'Entrar con correo y clave');
+await entrarConClave(p, 'una-frase-larga-123');
+t = await txt(p);
+ok(t.includes('Admin: seguimiento') && !t.includes('Crea tu clave de administración'), 'la próxima vez entra con correo y clave, sin que se la pidan de nuevo');
+ok(p.errores.length === 0, 'sin errores en la consola' + (p.errores.length ? ': ' + p.errores[0] : ''));
+await p.context().close();
+
+// K4. «Ahora no»: sigue con código y la crea después desde «Mi clave»
+p = await abrir({ admin: true, claveAdmin: 'sin' });
+await irAdmin(p, 'Entrar con un código por correo');
+await entrarConCodigo(p);
+await pulsa(p, 'Ahora no'); await espera(p);
+t = await txt(p);
+ok(t.includes('Admin: seguimiento') && t.includes('Mi clave') && !t.includes('Crea tu clave de administración'), '«Ahora no» lo deja seguir al portal, con la pestaña «Mi clave»');
+await p.getByRole('tab', { name: 'Mi clave' }).click(); await espera(p);
+ok((await txt(p)).includes('Hoy solo entras con código por correo'), '«Mi clave» explica que hoy solo entra con código');
+await p.fill('input[name=nueva]', 'otra-frase-larga-456'); await p.fill('input[name=repetir]', 'otra-frase-larga-456'); await pulsa(p, 'Guardar mi clave'); await espera(p); await espera(p);
+t = await txt(p);
+ok(t.includes('La entrada con clave está activada') && (await p.evaluate(() => window.__AC.activa)) === true, 'desde ahí la crea y queda activada');
+await p.context().close();
+
+// K5. Con la clave activa: cambiarla y desactivarla
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, claveAdmin: 'activa' });
+await p.getByRole('tab', { name: 'Mi clave' }).click(); await espera(p);
+ok((await txt(p)).includes('La entrada con clave está activada') && (await p.locator('input[name=actual]').count()) === 1, '«Mi clave» muestra que está activada y pide la clave actual para cambiarla');
+await p.fill('input[name=actual]', 'no-es-esta'); await p.fill('input[name=nueva]', 'clave-nueva-muy-larga-9'); await p.fill('input[name=repetir]', 'clave-nueva-muy-larga-9'); await pulsa(p, 'Cambiar mi clave'); await espera(p); await espera(p);
+ok((await txt(p)).includes('La clave actual no es correcta') && (await p.evaluate(() => window.__AC.clave)) === 'clave-admin-larga', 'con la clave actual equivocada no la cambia');
+await p.fill('input[name=actual]', 'clave-admin-larga'); await pulsa(p, 'Cambiar mi clave'); await espera(p); await espera(p);
+ok((await txt(p)).includes('Listo, cambiamos tu clave') && (await p.evaluate(() => window.__AC.clave)) === 'clave-nueva-muy-larga-9', 'con la actual correcta, la cambia');
+let msgDesactivar = ''; p.once('dialog', d => { msgDesactivar = d.message(); d.accept(); });
+await pulsa(p, 'Desactivar la entrada con clave'); await espera(p); await espera(p);
+ok(msgDesactivar.includes('solo podrás entrar con código por correo') && (await p.evaluate(() => window.__AC.activa)) === false, 'desactivar pide confirmar y apaga la entrada con clave');
+ok((await txt(p)).includes('Bienvenido al equipo'), 'y cierra la sesión: se vuelve a entrar con código');
+await p.context().close();
+
+// K6. Base sin la función nueva: no se pide ni se ofrece nada
+p = await abrir({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, claveAdmin: 'sin', sinFuncionClave: true });
+t = await txt(p);
+ok(t.includes('Admin: seguimiento') && !t.includes('Crea tu clave de administración') && !t.includes('Mi clave'), 'si la base todavía no tiene la función, entra normal, sin pedir clave y sin la pestaña «Mi clave»');
 await p.context().close();
 
 await b.close();

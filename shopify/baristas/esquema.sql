@@ -75,17 +75,48 @@ create table if not exists public.admins (
 alter table public.admins enable row level security;   -- sin políticas: no se lee desde la web
 revoke all on public.admins from anon, authenticated;
 
--- ¿Quien consulta es administración? Su correo está en admins Y entró con el
--- código del correo. Si la sesión nació de una contraseña no vale: alguien
--- podría haber creado una cuenta con el correo de la administración antes que
--- ella, y quedarse con una contraseña puesta.
+-- ¿Quien consulta es administración? Su correo tiene que estar en admins, y además:
+--  · entró con el código del correo (siempre vale), o
+--  · entró con correo y clave Y esa persona activó antes su clave (admins.clave_activa).
+-- Una sesión de clave sola no basta: alguien podría haber creado una cuenta con el correo de la
+-- administración antes que ella, y quedarse con una clave puesta. La clave solo se activa desde una
+-- sesión de código (admin_activar_clave), después de que la propia persona puso su clave, que reemplaza
+-- a cualquier otra.
+alter table public.admins add column if not exists clave_activa boolean not null default false;
+
 create or replace function public.es_admin() returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.admins a where a.email = lower(coalesce(auth.jwt() ->> 'email', '')))
-     and not exists (
-       select 1 from jsonb_array_elements(coalesce(auth.jwt() -> 'amr', '[]'::jsonb)) x
-       where x ->> 'method' = 'password');
+  select exists (
+    select 1 from public.admins a
+    where a.email = lower(coalesce(auth.jwt() ->> 'email', ''))
+      and (a.clave_activa or not exists (
+             select 1 from jsonb_array_elements(coalesce(auth.jwt() -> 'amr', '[]'::jsonb)) x
+             where x ->> 'method' = 'password')));
 $$;
+
+-- ¿Tengo activada la entrada con clave? (solo responde la administración)
+create or replace function public.admin_clave_activa() returns boolean
+language sql stable security definer set search_path = '' as $$
+  select coalesce((select a.clave_activa from public.admins a
+                   where a.email = lower(coalesce(auth.jwt() ->> 'email', '')) and public.es_admin()), false);
+$$;
+
+-- Activa o desactiva mi entrada con clave. Activar solo se puede desde una sesión iniciada con código.
+create or replace function public.admin_activar_clave(p_activa boolean) returns void
+language plpgsql security definer set search_path = '' as $$
+declare
+  correo text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  con_clave boolean := exists (select 1 from jsonb_array_elements(coalesce(auth.jwt() -> 'amr', '[]'::jsonb)) x
+                               where x ->> 'method' = 'password');
+begin
+  if not exists (select 1 from public.admins a where a.email = correo) then
+    raise exception 'Solo la administración cambia su entrada con clave' using errcode = '42501';
+  end if;
+  if coalesce(p_activa, false) and con_clave then
+    raise exception 'Para activar la clave hay que entrar con un código por correo' using errcode = '42501';
+  end if;
+  update public.admins set clave_activa = coalesce(p_activa, false) where email = correo;
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- 2. Configuración (tarifas, retención y textos que acepta el barista)
@@ -1138,12 +1169,16 @@ grant execute on function public.api_importar(text, jsonb, date, date, timestamp
 
 -- Las funciones de las políticas solo las ejecuta quien inició sesión.
 revoke all on function public.es_admin() from public, anon;
+revoke all on function public.admin_clave_activa() from public, anon;
+revoke all on function public.admin_activar_clave(boolean) from public, anon;
 revoke all on function public.es_barista() from public, anon;
 revoke all on function public.tiene_postulacion(uuid) from public, anon;
 revoke all on function public.esta_confirmado(uuid) from public, anon;
 revoke all on function public.evento_abierto(uuid) from public, anon;
 revoke all on function public.dentro_de_publicacion(date) from public, anon;
 grant execute on function public.es_admin() to authenticated;
+grant execute on function public.admin_clave_activa() to authenticated;
+grant execute on function public.admin_activar_clave(boolean) to authenticated;
 grant execute on function public.es_barista() to authenticated;
 grant execute on function public.tiene_postulacion(uuid) to authenticated;
 grant execute on function public.esta_confirmado(uuid) to authenticated;
