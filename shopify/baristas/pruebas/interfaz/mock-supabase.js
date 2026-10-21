@@ -174,7 +174,7 @@
       eq: function (c, v) { q.filters.push(function (r) { return r[c] === v; }); return api; },
       order: function (c, o) { q.orders.push([c, !o || o.ascending !== false]); return api; },
       single: function () { q.single = 'single'; return api; }, maybeSingle: function () { q.single = 'maybe'; return api; },
-      then: function (res, rej) { return new Promise(function (ok) { setTimeout(function () { ok(run()); }, 5); }).then(res, rej); }
+      then: function (res, rej) { window.__peticiones = (window.__peticiones || 0) + 1; return new Promise(function (ok) { setTimeout(function () { ok(run()); }, S.latencia || 5); }).then(res, rej); }
     };
     function run() {
       var base = (t === 'eventos_vista' || t === 'seguimiento_vista') ? 'eventos' : t; var tabla = db[base];
@@ -353,7 +353,8 @@
     return {
       from: from,
       rpc: function (n, args) {
-        return Promise.resolve().then(function () {
+        window.__peticiones = (window.__peticiones || 0) + 1;
+        return new Promise(function (ok) { setTimeout(ok, S.latencia || 0); }).then(function () {
           window.__rpc.push(n);
           var f = RPC[n]; var r = f ? f(args || {}) : null;
           return r && r.error ? r : { data: r, error: null };
@@ -370,7 +371,8 @@
             });
           },
           createSignedUrls: function (rutas) {
-            return Promise.resolve({ data: rutas.map(function (r) { return { path: r, signedUrl: PNG, error: null }; }), error: null });
+            window.__peticiones = (window.__peticiones || 0) + 1;
+            return new Promise(function (ok) { setTimeout(ok, S.latencia || 0); }).then(function () { return { data: rutas.map(function (r) { return { path: r, signedUrl: PNG, error: null }; }), error: null }; });
           },
           remove: function (rutas) {
             rutas.forEach(function (r) { delete window.__STORAGE[r]; });

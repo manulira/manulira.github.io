@@ -736,6 +736,40 @@ t = await txt(p);
 ok(t.includes('Admin: seguimiento') && !t.includes('Crea tu clave de administración') && !t.includes('Mi clave'), 'si la base todavía no tiene la función, entra normal, sin pedir clave y sin la pestaña «Mi clave»');
 await p.context().close();
 
+console.log('\n=== L. Carga rápida y vaso de Sepia llenándose ===');
+// Con 400 ms por petición, una consulta tras otra (16 en total) tardaría más de 6 segundos.
+const medida = async (esc) => {
+  const ctx = await b.newContext({ viewport: { width: 390, height: 900 } });
+  const pg = await ctx.newPage();
+  const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(e => { window.__ESC = e; }, esc);
+  const t0 = Date.now();
+  await pg.goto(ARNES); await pg.addStyleTag({ content: CSS });
+  await pg.waitForSelector('.sb-cab');
+  pg.antes = { vaso: await pg.locator('.sb-carga .sb-vaso').count(), texto: await pg.locator('.sb-carga').innerText().catch(() => ''), vistaLogin: await pg.locator('.sb-tabs').count() };
+  await pg.waitForSelector('.sb-tabs', { timeout: 20000 });
+  pg.ms = Date.now() - t0; pg.errs = errs; pg.peticiones = await pg.evaluate(() => window.__peticiones);
+  return pg;
+};
+p = await medida({ sesion: { id: 'u-admin', email: 'admin@ejemplo.cl' }, admin: true, accesosAdmin: true, equipo: true, latencia: 400 });
+ok(p.antes.vaso === 1 && p.antes.texto.includes('Preparando tu portal') && p.antes.vistaLogin === 0, 'mientras carga se ve el vaso de Sepia con «Preparando tu portal…»');
+ok((await p.locator('.sb-carga').count()) === 0, 'y desaparece cuando el portal está listo');
+ok(p.peticiones >= 14, 'la administración pide más de 14 cosas a la base (' + p.peticiones + ')');
+ok(p.ms < 3000, 'pero las pide en pocos viajes: con 400 ms por petición carga en ' + p.ms + ' ms (en fila serían más de 6 000)');
+ok(p.errs.length === 0, 'sin errores');
+await p.context().close();
+p = await medida({ sesion: { id: 'u-ana', email: 'ana.prueba@equipo.sepiacoffee.cl' }, perfilPropio: perfilAna, equipo: true, latencia: 400 });
+ok(p.ms < 3000 && p.peticiones >= 12, 'una barista también: ' + p.peticiones + ' peticiones en ' + p.ms + ' ms con 400 ms cada una');
+await p.context().close();
+{
+  const ctx = await b.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
+  const pg = await ctx.newPage();
+  await pg.addInitScript(e => { window.__ESC = e; }, { sesion: { id: 'u-ana', email: 'ana@ejemplo.cl' }, perfilPropio: perfilAna, equipo: true, latencia: 1500 });
+  await pg.goto(ARNES); await pg.addStyleTag({ content: CSS }); await pg.waitForSelector('.sb-vaso');
+  ok((await pg.evaluate(() => getComputedStyle(document.querySelector('.sb-vaso__liquido')).animationName)) === 'none', 'si el celular pide menos movimiento, el vaso queda quieto (medio lleno)');
+  await ctx.close();
+}
+
 await b.close();
 console.log(`\n${total - fallas} de ${total} comprobaciones pasaron`);
 process.exit(fallas ? 1 : 0);

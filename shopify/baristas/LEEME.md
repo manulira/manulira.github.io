@@ -18,6 +18,12 @@ administración entra con su correo: con un código por correo o, si activó su 
 | `templates/page.baristas.json` | tema de Shopify | Plantilla de la página «Baristas» |
 | `apps-script/Codigo.gs` | Google Apps Script (cuenta de la administración) | Lee el calendario, manda los correos de seguimiento |
 
+**Velocidad.** El portal pide los datos a la base en **3 viajes** (lo básico y lo común; lo de la
+administración y el equipo de cada evento; las fotos) en vez de una consulta tras otra, que con la red
+del celular demoraba hasta 20 segundos. La página abre de antemano la conexión con Supabase
+(`preconnect`) y, desde que llega el HTML, muestra un vaso de Sepia llenándose («Preparando tu portal…»)
+hasta que el portal está listo; si el celular pide menos movimiento, el vaso queda quieto.
+
 La clave pública de Supabase queda en la página (está hecha para eso). Lo que
 protege los datos son las reglas del `esquema.sql`, que se probaron con 184
 comprobaciones (`pruebas/rls.sql`), 143 de la automatización (`pruebas/automatizacion.sql`), 143 de los accesos,
@@ -315,7 +321,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
-- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 271 comprobaciones en un
+- **Interfaz**: `node shopify/baristas/pruebas/interfaz/prueba.mjs` → 278 comprobaciones en un
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Probado en el proyecto real de Supabase**: el envío del código por correo, el login y las

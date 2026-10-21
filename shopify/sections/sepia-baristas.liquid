@@ -16,12 +16,26 @@
   #B9C5D3, crema #E7E5D9, gris #F2F2F2 y blanco).
 {%- endcomment -%}
 
+{%- comment -%} Abre la conexión con Supabase y con la librería mientras se arma la página. {%- endcomment -%}
+{%- assign sb_origen = section.settings.supabase_url | strip -%}
+{%- if sb_origen != blank -%}<link rel="preconnect" href="{{ sb_origen | escape }}" crossorigin>{%- endif -%}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
 <section class="sb-seccion">
   <div
     id="sc-baristas"
     data-supabase-url="{{ section.settings.supabase_url | strip | escape }}"
     data-supabase-key="{{ section.settings.supabase_key | strip | escape }}"
   >
+    <header class="sb-cab">
+      <h1 class="sb-h1">Baristas Sepia</h1>
+      <p class="sb-texto">Mira los eventos, postula y sigue tus turnos y ganancias.</p>
+    </header>
+    {%- comment -%} Mientras carga el portal: el vaso se llena. El script lo reemplaza apenas pinta. {%- endcomment -%}
+    <div class="sb-carga" role="status" aria-live="polite">
+      <svg class="sb-vaso" viewBox="0 0 120 124" width="120" height="124" aria-hidden="true" focusable="false"><defs><clipPath id="sb-vaso-int"><path d="M33 26H87L82.4 97Q82 103 77 103H43Q38 103 37.6 97Z"/></clipPath></defs><g class="sb-vaso__vapor"><path d="M48 17C44 12 52 8 48 3"/><path d="M60 17C56 12 64 8 60 3"/><path d="M72 17C68 12 76 8 72 3"/></g><g clip-path="url(#sb-vaso-int)"><g class="sb-vaso__liquido"><rect x="30" y="31" width="60" height="80" fill="#020526"/><rect x="30" y="31" width="60" height="7" fill="#b9c5d3"/></g></g><path d="M30 22H90L84.4 97Q84 106 77 106H43Q36 106 35.6 97Z" fill="none" stroke="#020526" stroke-width="3" stroke-linejoin="round"/><rect x="43" y="57" width="34" height="25" rx="3" fill="#e7e5d9"/><text class="sb-vaso__marca" x="60" y="73" text-anchor="middle">sepia</text><path d="M26 113H94" stroke="#526ea0" stroke-width="3" stroke-linecap="round"/></svg>
+      <p class="sb-carga__t">Preparando tu portal…</p>
+    </div>
     <noscript>
       <p>Para usar el portal de baristas necesitas activar JavaScript en tu navegador.</p>
     </noscript>
@@ -158,6 +172,31 @@
 
   .sb-sep { margin: 1.5rem 0; border: 0; border-top: 1px solid #b9c5d3; }
   .sb-pie { margin-top: 2rem; font-size: 0.9rem; }
+
+  /* Vaso de Sepia Coffee llenándose mientras carga */
+  .sb-carga { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem 0 3rem; text-align: center; }
+  .sb-carga__t { margin: 0; color: #526ea0; font-weight: 600; }
+  .sb-vaso { display: block; width: 120px; height: auto; overflow: visible; }
+  .sb-vaso__liquido { transform: translateY(80px); animation: sb-llena 3.6s ease-in-out infinite; }
+  .sb-vaso__vapor path { fill: none; stroke: #b9c5d3; stroke-width: 3; stroke-linecap: round; opacity: 0; animation: sb-vapor 3.6s ease-in-out infinite; }
+  .sb-vaso__vapor path:nth-child(2) { animation-delay: 0.2s; }
+  .sb-vaso__vapor path:nth-child(3) { animation-delay: 0.4s; }
+  .sb-vaso__marca { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; fill: #526ea0; font-family: inherit; }
+  @keyframes sb-llena {
+    0% { transform: translateY(80px); opacity: 1; }
+    62% { transform: translateY(0); opacity: 1; }
+    90% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0; }
+  }
+  @keyframes sb-vapor {
+    0%, 55% { opacity: 0; transform: translateY(6px); }
+    75% { opacity: 0.9; transform: translateY(0); }
+    95%, 100% { opacity: 0; transform: translateY(-5px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sb-vaso__liquido { animation: none; transform: translateY(22px); }
+    .sb-vaso__vapor path { animation: none; opacity: 0.8; }
+  }
   .sb-pie a { color: #526ea0; text-decoration: underline; }
 {% endstylesheet %}
 

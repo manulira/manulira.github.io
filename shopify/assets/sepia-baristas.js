@@ -210,73 +210,99 @@
   /* Carga de datos                                                      */
   /* ------------------------------------------------------------------ */
 
+  /* La carga va en pocos viajes a la base y cada viaje pide todo junto: una consulta tras otra, con la
+     red del celular, demoraba medio minuto. Viaje 1: lo básico y lo común. Viaje 2: lo de la
+     administración y el equipo de cada evento. Viaje 3: las fotos. */
   async function cargarTodo() {
     var uid = estado.sesion.user.id;
-    var rc = await sb.from('config').select('*').eq('id', 1).maybeSingle();
-    estado.config = rc.data;
-    var rp = await sb.from('baristas').select('*').eq('id', uid).maybeSingle();
-    estado.perfil = rp.data;
-    var ra = await sb.rpc('es_admin');
-    estado.admin = ra.data === true;
-    // ¿Tiene activada su entrada con clave? (null: la base todavía no tiene esa función)
-    estado.claveAdmin = null;
-    if (estado.admin) {
-      var rca = await sb.rpc('admin_clave_activa');
-      estado.claveAdmin = rca.error ? null : rca.data === true;
-    }
-    var rac = await sb.from('accesos').select('*');
-    var accesos = rac.data || [];
+    var r = await Promise.all([
+      sb.from('config').select('*').eq('id', 1).maybeSingle(),
+      sb.from('baristas').select('*').eq('id', uid).maybeSingle(),
+      sb.rpc('es_admin'),
+      sb.from('accesos').select('*'),
+      pedirComunes()
+    ]);
+    estado.config = r[0].data;
+    estado.perfil = r[1].data;
+    estado.admin = r[2].data === true;
+    var accesos = r[3].data || [];
     estado.acceso = accesos.filter(function (a) { return a.id === uid; })[0] || null;
     estado.accesos = estado.admin ? accesos : [];
-    if (estado.perfil || estado.admin) await cargarEventos();
+    aplicarComunes(r[4]);
+    // ¿Tiene activada su entrada con clave? (null: la base todavía no tiene esa función)
+    estado.claveAdmin = null;
+    if (estado.perfil || estado.admin) await cargarSegundoViaje(true);
   }
 
-  async function cargarEventos() {
+  /* Lo que ve cualquiera con acceso: la base devuelve vacío a quien no corresponde. */
+  function pedirComunes() {
+    return Promise.all([
+      sb.from('eventos_vista').select('*').order('fecha', { ascending: true }).order('hora_inicio', { ascending: true }),
+      sb.from('postulaciones').select('*').order('creado_en', { ascending: true }),
+      sb.from('evento_direcciones').select('*'),
+      sb.rpc('traslados'),
+      sb.rpc('historial_resumen')
+    ]);
+  }
+
+  function aplicarComunes(r) {
     var uid = estado.sesion.user.id;
-    var re = await sb.from('eventos_vista').select('*').order('fecha', { ascending: true }).order('hora_inicio', { ascending: true });
-    estado.eventos = re.data || [];
-    var rp = await sb.from('postulaciones').select('*').order('creado_en', { ascending: true });
-    estado.posts = rp.data || [];
-    var rd = await sb.from('evento_direcciones').select('*');
+    estado.eventos = r[0].data || [];
+    estado.posts = r[1].data || [];
     estado.dirs = {};
-    (rd.data || []).forEach(function (d) { estado.dirs[d.evento_id] = d; });
-    if (estado.admin) {
-      var rb = await sb.from('baristas').select('*');
-      estado.baristas = {};
-      (rb.data || []).forEach(function (b) { estado.baristas[b.id] = b; });
-      var rv = await sb.from('evento_privado').select('*');
-      estado.privado = {};
-      (rv.data || []).forEach(function (p) { estado.privado[p.evento_id] = p; });
-      var rs = await sb.from('seguimiento_vista').select('*');
-      estado.seg = {};
-      (rs.data || []).forEach(function (s) { estado.seg[s.evento_id] = s; });
-      var rq = await sb.from('evento_seguimiento').select('*');
-      estado.segDatos = {};
-      (rq.data || []).forEach(function (s) { estado.segDatos[s.evento_id] = s; });
-      var ru = await sb.from('automatizacion').select('ultima_sync_en,ultima_sync_resumen').eq('id', 1).maybeSingle();
-      estado.sync = ru.data || null;
-      var rt = await sb.from('evento_traslado').select('*');
-      estado.trasladoEv = {};
-      (rt.data || []).forEach(function (t) { estado.trasladoEv[t.evento_id] = t; });
-    }
-    var rtr = await sb.rpc('traslados');
-    estado.traslados = rtr.data || [];
+    (r[2].data || []).forEach(function (d) { estado.dirs[d.evento_id] = d; });
+    estado.traslados = r[3].data || [];
     // Turnos del historial anterior al portal (la administración ve todos; cada barista, los suyos).
-    var rhi = await sb.rpc('historial_resumen');
-    estado.historial = rhi.data || [];
+    estado.historial = r[4].data || [];
     estado.misPosts = {};
     estado.posts.forEach(function (p) { if (p.barista_id === uid) estado.misPosts[p.evento_id] = p; });
-    // El equipo de cada evento donde estoy asignado (nombre y foto de quienes van conmigo).
-    estado.equipos = {};
+  }
+
+  /* Segundo viaje: datos de la administración y el equipo de cada evento donde estoy asignado, todo a la vez. */
+  async function cargarSegundoViaje(primera) {
+    var uid = estado.sesion.user.id;
     var asignados = estado.posts.filter(function (p) { return p.barista_id === uid && p.estado === 'confirmada'; });
-    await Promise.all(asignados.map(async function (p) {
-      var re2 = await sb.rpc('equipo_evento', { p_evento: p.evento_id });
-      estado.equipos[p.evento_id] = re2.data || [];
-    }));
+    var admin = estado.admin;
+    var r = await Promise.all([
+      admin ? sb.from('baristas').select('*') : null,
+      admin ? sb.from('evento_privado').select('*') : null,
+      admin ? sb.from('seguimiento_vista').select('*') : null,
+      admin ? sb.from('evento_seguimiento').select('*') : null,
+      admin ? sb.from('automatizacion').select('ultima_sync_en,ultima_sync_resumen').eq('id', 1).maybeSingle() : null,
+      admin ? sb.from('evento_traslado').select('*') : null,
+      admin && primera ? sb.rpc('admin_clave_activa') : null,
+      Promise.all(asignados.map(function (p) { return sb.rpc('equipo_evento', { p_evento: p.evento_id }); }))
+    ]);
+    if (admin) {
+      estado.baristas = {};
+      (r[0].data || []).forEach(function (b) { estado.baristas[b.id] = b; });
+      estado.privado = {};
+      (r[1].data || []).forEach(function (p) { estado.privado[p.evento_id] = p; });
+      estado.seg = {};
+      (r[2].data || []).forEach(function (s) { estado.seg[s.evento_id] = s; });
+      estado.segDatos = {};
+      (r[3].data || []).forEach(function (s) { estado.segDatos[s.evento_id] = s; });
+      estado.sync = (r[4] && r[4].data) || null;
+      estado.trasladoEv = {};
+      (r[5].data || []).forEach(function (t) { estado.trasladoEv[t.evento_id] = t; });
+      if (primera) estado.claveAdmin = r[6].error ? null : r[6].data === true;
+    }
+    estado.equipos = {};
+    asignados.forEach(function (p, i) { estado.equipos[p.evento_id] = r[7][i].data || []; });
+    await cargarFotos();
+  }
+
+  async function cargarFotos() {
     var rutas = [];
     Object.keys(estado.equipos).forEach(function (k) { estado.equipos[k].forEach(function (m) { if (m.foto_path) rutas.push(m.foto_path); }); });
     if (estado.perfil && estado.perfil.foto_path) rutas.push(estado.perfil.foto_path);
     try { await firmarFotos(rutas); } catch (e) { /* sin fotos se ven las iniciales */ }
+  }
+
+  /* Recarga después de una acción: los eventos y lo que depende de ellos, también en pocos viajes. */
+  async function cargarEventos() {
+    aplicarComunes(await pedirComunes());
+    await cargarSegundoViaje(false);
   }
 
   async function recargar() {
@@ -2171,7 +2197,7 @@
     raiz.appendChild(h('header', { class: 'sb-cab' },
       h('h1', { class: 'sb-h1', text: 'Baristas Sepia' }),
       h('p', { class: 'sb-texto', text: 'Mira los eventos, postula y sigue tus turnos y ganancias.' })));
-    if (estado.cargando) { raiz.appendChild(h('p', { class: 'sb-texto', role: 'status', text: 'Cargando…' })); return; }
+    if (estado.cargando) { raiz.appendChild(vasoCargando('Preparando tu portal…')); return; }
     if (!estado.sesion) { raiz.appendChild(vistaLogin()); raiz.appendChild(pie()); return; }
     raiz.appendChild(barraSuperior());
     if (estado.admin) raiz.appendChild(estado.claveAdmin === false && !estado.claveAdminOmitida ? vistaClaveAdmin(true) : vistaApp());
@@ -2180,6 +2206,16 @@
     else if (!estado.perfil) raiz.appendChild(vistaFormularioPerfil('crear'));
     else raiz.appendChild(vistaApp());
     raiz.appendChild(pie());
+  }
+
+  /* Vaso de Sepia Coffee llenándose, mientras carga. Es el mismo dibujo que lleva la página (sepia-baristas.liquid);
+     es un texto fijo nuestro, sin datos de nadie. */
+  var VASO_SVG = '<svg class="sb-vaso" viewBox="0 0 120 124" width="120" height="124" aria-hidden="true" focusable="false"><defs><clipPath id="sb-vaso-int"><path d="M33 26H87L82.4 97Q82 103 77 103H43Q38 103 37.6 97Z"/></clipPath></defs><g class="sb-vaso__vapor"><path d="M48 17C44 12 52 8 48 3"/><path d="M60 17C56 12 64 8 60 3"/><path d="M72 17C68 12 76 8 72 3"/></g><g clip-path="url(#sb-vaso-int)"><g class="sb-vaso__liquido"><rect x="30" y="31" width="60" height="80" fill="#020526"/><rect x="30" y="31" width="60" height="7" fill="#b9c5d3"/></g></g><path d="M30 22H90L84.4 97Q84 106 77 106H43Q36 106 35.6 97Z" fill="none" stroke="#020526" stroke-width="3" stroke-linejoin="round"/><rect x="43" y="57" width="34" height="25" rx="3" fill="#e7e5d9"/><text class="sb-vaso__marca" x="60" y="73" text-anchor="middle">sepia</text><path d="M26 113H94" stroke="#526ea0" stroke-width="3" stroke-linecap="round"/></svg>';
+  function vasoCargando(texto) {
+    var c = h('div', { class: 'sb-carga', role: 'status', 'aria-live': 'polite' });
+    c.innerHTML = VASO_SVG;
+    c.appendChild(h('p', { class: 'sb-carga__t', text: texto }));
+    return c;
   }
 
   function pie() {
@@ -2191,8 +2227,8 @@
   /* ------------------------------------------------------------------ */
 
   async function iniciar() {
-    if (!SB_URL || !SB_KEY) { raiz.appendChild(aviso('Este portal todavía no está configurado.')); return; }
-    if (!window.supabase || !window.supabase.createClient) { raiz.appendChild(aviso('No pudimos cargar el portal. Recarga la página.')); return; }
+    if (!SB_URL || !SB_KEY) { raiz.textContent = ''; raiz.appendChild(aviso('Este portal todavía no está configurado.')); return; }
+    if (!window.supabase || !window.supabase.createClient) { raiz.textContent = ''; raiz.appendChild(aviso('No pudimos cargar el portal. Recarga la página.')); return; }
     sb = window.supabase.createClient(SB_URL, SB_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'sepia-baristas-auth' }
     });
