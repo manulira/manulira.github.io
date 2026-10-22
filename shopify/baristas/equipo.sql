@@ -117,6 +117,16 @@ language sql stable set search_path = '' as $$
     'vehicleDeclared', true)
 $$;
 
+-- ¿El evento lleva máquina de espresso? (el filtro «Evento con máquina / sin máquina»). Lo puesto a mano manda; si no,
+-- se deduce de lo que se sirve (Manuel, 22 oct): con café es la mesa cafetero (con máquina); solo espresso martini o
+-- carajillo es la mesa martini, y Cenco, sin máquina.
+create or replace function public.eq_maquina(v public.eventos) returns boolean
+language sql stable set search_path = '' as $$
+  select coalesce(v.tiene_maquina,
+    concat_ws(' ', v.nombre, v.servicio, v.descripcion) ~* '\mcaf(e|é|etero|etera)s?\M'
+    or concat_ws(' ', v.nombre, v.servicio, v.descripcion) ~* 'mesa cafetero')
+$$;
+
 -- ---------------------------------------------------------------------------
 -- 4. Un evento en el formato de la interfaz
 -- ---------------------------------------------------------------------------
@@ -190,7 +200,7 @@ begin
     'pay', pago, 'estimated_net_pay', pago, 'pay_basis', 'net', 'payBasis', 'net',
     'notes', notas, 'uniform', coalesce(v.uniforme, ''),
     'status', case v.estado when 'borrador' then 'draft' when 'abierto' then 'published' when 'cerrado' then 'closed' else 'cancelled' end,
-    'has_machine', case v.tiene_maquina when true then 1 when false then 0 else null end,
+    'has_machine', case public.eq_maquina(v) when true then 1 when false then 0 else null end,
     'compensation', comp, 'transport', transp,
     'calendarImport', case when p_adm and sg.origen = 'calendario'
       then jsonb_build_object('review',

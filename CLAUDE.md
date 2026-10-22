@@ -42,6 +42,7 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   cada barista toma uno solo. La administración sigue viendo cada turno por separado. Cenco Costanera: 3 horas sin camioneta ($25.000), 4 horas con camioneta ($40.000).
 - **Tarjeta amarilla**: la pone o quita la administración en «Equipo», también a quien todavía no entra ni completa su perfil; el barista **no** puede saberlo (ni en la pantalla ni en sus datos). Con amarilla,
   sus postulaciones esperan confirmación; se quita sola cuando le registran asistencia en un evento posterior a la tarjeta (al cerrar el evento).
+- **Filtro con / sin máquina**: lo marcado a mano manda; si no, `eq_maquina` lo deduce de lo que se sirve: con café (mesa cafetero) = con máquina; solo espresso martini o carajillo (mesa martini) y Cenco = sin máquina.
 - **Tienda**: sin botón «Portal Baristas» en la barra (no quedó bien) y sin ingreso de clientes (ícono de cuenta oculto).
 - **Fuera de la consola**: historia del café y «quiénes somos» (el Nosotros es el del sitio), fotos del turno, «Necesito ayuda», pantalla de
   bienvenida con granos, y boletas y pagos (siguen en el portal de baristas).
