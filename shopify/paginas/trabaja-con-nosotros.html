@@ -1,0 +1,129 @@
+<p>Somos un equipo chico. No siempre tenemos vacantes abiertas, pero sí guardamos los antecedentes de la gente que nos escribe y revisamos esa lista antes de buscar afuera.</p>
+<h2>A quién buscamos</h2>
+<p>Sobre todo <strong>baristas para eventos</strong>: matrimonios, eventos corporativos y celebraciones privadas, casi siempre de noche y los fines de semana. Es trabajo por evento, no de lunes a viernes.</p>
+<p>No necesitas años de experiencia. Sí necesitas saber trabajar con gente mirando, aguantar un peak sin perder la calma y tener criterio para dejar la barra impecable sin que nadie te lo pida. El resto lo enseñamos.</p>
+
+<style>
+/* Paleta de Sepia Coffee: azul noche #020526, celeste #B9C5D3, crema #E7E5D9, azul #526EA0, blanco. */
+.tp{--na:#020526;--ce:#B9C5D3;--be:#E7E5D9;--te:#526EA0;margin:1.5rem 0}
+.tp *{box-sizing:border-box}
+.tp-botones{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0 1.4rem}
+.tp-btn{display:inline-block;font:inherit;font-weight:600;font-size:1rem;padding:.85rem 1.4rem;border-radius:999px;text-decoration:none;cursor:pointer;border:2px solid var(--na)}
+.tp-btn.lleno{background:var(--na);color:var(--be)}
+.tp-btn.lleno:hover{background:var(--te);border-color:var(--te);color:#FFFFFF}
+.tp-btn.borde{background:#FFFFFF;color:var(--na)}
+.tp-btn.borde:hover{border-color:var(--te);color:var(--te)}
+.tp-form{background:var(--be);border-radius:20px;padding:clamp(1.2rem,2.6vw,1.8rem)}
+.tp-form h3{margin:0 0 .3rem;font-size:1.22rem;color:var(--na)}
+.tp-form>p{margin:0 0 1rem;font-size:.9rem;color:var(--na);opacity:.75}
+.tp fieldset{border:0;margin:0 0 1rem;padding:0}
+.tp legend{font-size:.77rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--te);padding:0;margin-bottom:.6rem}
+.tp-campos{display:grid;gap:.8rem;grid-template-columns:1fr}
+@media(min-width:620px){.tp-campos{grid-template-columns:1fr 1fr}}
+.tp-campo{display:grid;gap:.3rem}
+.tp-campo.ancho{grid-column:1/-1}
+.tp-campo label{font-size:.8rem;font-weight:600;color:var(--na)}
+.tp-campo input,.tp-campo select,.tp-campo textarea{font:inherit;padding:.65rem .8rem;border:1px solid var(--ce);border-radius:12px;background:#FFFFFF;color:var(--na);width:100%}
+.tp-campo textarea{min-height:6.5rem;resize:vertical;line-height:1.5}
+.tp-campo input:focus,.tp-campo select:focus,.tp-campo textarea:focus{outline:2px solid var(--te);outline-offset:1px;border-color:var(--te)}
+.tp-enviar{margin-top:.4rem;width:100%;font:inherit;font-weight:600;font-size:1rem;background:var(--na);color:var(--be);border:0;border-radius:999px;padding:.9rem;cursor:pointer}
+.tp-enviar:hover{background:var(--te);color:#FFFFFF}
+.tp-legal{font-size:.8rem;color:var(--na);opacity:.7;margin:.7rem 0 0}
+.tp-ok{background:var(--ce);color:var(--na);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;font-weight:600}
+</style>
+
+<div class="tp" id="postular">
+  <h2>Cómo postular</h2>
+  <p>Llena el formulario con tus datos y tu experiencia. Nos llega por correo y te contestamos aunque no haya vacante en ese momento.</p>
+  <div class="tp-botones">
+    <a class="tp-btn lleno" href="#postular-form">Postular</a>
+    <a class="tp-btn borde" href="/pages/equipo">Ya soy del equipo: entrar a la consola</a>
+  </div>
+
+  <form class="tp-form" method="post" action="/contact#postular-form" id="postular-form" accept-charset="UTF-8">
+    <input type="hidden" name="form_type" value="contact">
+    <input type="hidden" name="utf8" value="✓">
+    <input type="hidden" name="contact[Tipo]" value="Postulación de barista (Trabaja con nosotros)">
+    <div class="tp-ok" id="tp-ok" hidden>¡Gracias! Recibimos tu postulación y te vamos a contactar.</div>
+    <h3>Postulación de barista</h3>
+    <p>Los campos con * son obligatorios.</p>
+
+    <fieldset>
+      <legend>Tus datos</legend>
+      <div class="tp-campos">
+        <div class="tp-campo"><label for="tp-nom">Nombre y apellido *</label>
+          <input id="tp-nom" type="text" name="contact[Nombre]" required autocomplete="name"></div>
+        <div class="tp-campo"><label for="tp-rut">RUT</label>
+          <input id="tp-rut" type="text" name="contact[RUT]" placeholder="12.345.678-9"></div>
+        <div class="tp-campo"><label for="tp-mail">Correo *</label>
+          <input id="tp-mail" type="email" name="contact[email]" required autocomplete="email"></div>
+        <div class="tp-campo"><label for="tp-fono">Teléfono / WhatsApp *</label>
+          <input id="tp-fono" type="tel" name="contact[Teléfono]" required autocomplete="tel" placeholder="+56 9 1234 5678"></div>
+        <div class="tp-campo"><label for="tp-comuna">Comuna donde vives *</label>
+          <input id="tp-comuna" type="text" name="contact[Comuna]" required></div>
+        <div class="tp-campo"><label for="tp-edad">Edad</label>
+          <input id="tp-edad" type="number" name="contact[Edad]" min="18" max="99" inputmode="numeric"></div>
+        <div class="tp-campo ancho"><label for="tp-ig">Instagram o link a tu CV (opcional)</label>
+          <input id="tp-ig" type="text" name="contact[Instagram o CV]" placeholder="@usuario o un link de Drive"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Tu experiencia</legend>
+      <div class="tp-campos">
+        <div class="tp-campo"><label for="tp-exp">Experiencia en barra *</label>
+          <select id="tp-exp" name="contact[Experiencia en barra]" required>
+            <option value="">Elige una opción</option>
+            <option>Sin experiencia</option>
+            <option>Menos de 1 año</option>
+            <option>1 a 3 años</option>
+            <option>Más de 3 años</option>
+          </select></div>
+        <div class="tp-campo"><label for="tp-tipo">Qué has preparado</label>
+          <select id="tp-tipo" name="contact[Qué ha preparado]">
+            <option value="">Elige una opción</option>
+            <option>Café (espresso y leche)</option>
+            <option>Coctelería</option>
+            <option>Café y coctelería</option>
+            <option>Ninguno todavía</option>
+          </select></div>
+        <div class="tp-campo ancho"><label for="tp-donde">Dónde has trabajado y cuánto tiempo</label>
+          <textarea id="tp-donde" name="contact[Dónde ha trabajado]" placeholder="Ej.: cafetería X, 1 año; eventos con productora Y, 6 meses"></textarea></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Disponibilidad</legend>
+      <div class="tp-campos">
+        <div class="tp-campo"><label for="tp-finde">¿Puedes los fines de semana y de noche? *</label>
+          <select id="tp-finde" name="contact[Fines de semana y noche]" required>
+            <option value="">Elige una opción</option>
+            <option>Sí, siempre</option>
+            <option>A veces</option>
+            <option>No</option>
+          </select></div>
+        <div class="tp-campo"><label for="tp-auto">¿Tienes auto?</label>
+          <select id="tp-auto" name="contact[Tiene auto]">
+            <option value="">Elige una opción</option>
+            <option>Sí</option>
+            <option>No</option>
+          </select></div>
+        <div class="tp-campo ancho"><label for="tp-msj">Cuéntanos de ti *</label>
+          <textarea id="tp-msj" name="contact[body]" required placeholder="Por qué te gustaría trabajar con nosotros, qué te gusta del café, lo que quieras contarnos."></textarea></div>
+      </div>
+    </fieldset>
+
+    <button class="tp-enviar" type="submit">Enviar postulación</button>
+    <p class="tp-legal">Usamos tus datos solo para esta postulación.</p>
+  </form>
+  <p class="tp-legal">¿Prefieres hablar? Escríbenos por <a href="https://wa.me/56979284400" rel="noopener" target="_blank">WhatsApp</a>.</p>
+</div>
+
+<script>
+(function(){
+  if (/[?&]contact_posted=true/.test(location.search) && /postular/.test(location.hash)) {
+    var ok = document.getElementById('tp-ok');
+    if (ok) { ok.hidden = false; ok.scrollIntoView({ block: 'center' }); }
+  }
+})();
+</script>
