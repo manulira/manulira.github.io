@@ -9,3 +9,10 @@
 /* Sepia: espacios de la pantalla para crear la clave de administración */
 .required-profile>form{margin-top:16px}
 .required-profile>.secondary-btn{margin-top:12px}
+/* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
+a.required-profile-brand{text-decoration:none}
+.login-nosotros{display:block;margin:22px auto 0;width:max-content;color:#526ea0;font-size:14px;font-weight:600;text-decoration:none}
+.login-nosotros:hover{text-decoration:underline}
+.login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
+/* Sepia: la barra de abajo en el celular reparte el ancho entre las pestañas que haya (con «Nosotros» son 4 o 5) */
+.ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}

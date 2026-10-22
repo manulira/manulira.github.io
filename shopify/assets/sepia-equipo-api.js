@@ -378,48 +378,6 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* La barra del sitio: para que la página siga siendo parte de Sepia Coffee */
-  /* ------------------------------------------------------------------ */
-
-  /* Una franja con el menú de la tienda (Inicio, Productos, Eventos, Portal Baristas…) arriba de la interfaz. El logo
-     «Sepia Coffee» de la interfaz lleva al inicio del sitio. Se agrega cuando la interfaz ya está dibujada (la interfaz
-     arma el documento completo: no se le agregan cosas antes). Solo colores de la paleta. */
-  var CSS_SITIO = '.se-sitio{display:block;background:#ffffff;border-bottom:1px solid #b9c5d3;font-family:inherit}' +
-    '.se-sitio nav{display:flex;gap:4px;align-items:center;max-width:1100px;margin:0 auto;padding:0 16px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}' +
-    '.se-sitio a{display:inline-block;padding:12px 10px;color:#020526;font-size:.875rem;font-weight:500;text-decoration:none;border-bottom:2px solid transparent}' +
-    '.se-sitio a:hover{color:#526ea0}' +
-    '.se-sitio a[aria-current="page"]{color:#526ea0;font-weight:700;border-bottom-color:#526ea0}' +
-    '.se-sitio a:focus-visible{outline:2px solid #526ea0;outline-offset:-2px}';
-
-  function montarSitio() {
-    var sitio = window.SEPIA_EQUIPO_SITIO;
-    if (!sitio || !sitio.menu || !sitio.menu.length) return;
-    function poner() {
-      if (document.querySelector('.se-sitio')) return true;
-      if (!document.querySelector('.required-profile, .app-shell')) return false;
-      var cab = document.createElement('header'), nav = document.createElement('nav');
-      cab.className = 'se-sitio';
-      nav.setAttribute('aria-label', 'Menú del sitio');
-      sitio.menu.forEach(function (l) {
-        var a = document.createElement('a');
-        a.href = l.u; a.textContent = l.t;
-        if (/\/pages\/equipo(\/|\?|#|$)/.test(l.u)) a.setAttribute('aria-current', 'page');
-        nav.appendChild(a);
-      });
-      cab.appendChild(nav);
-      document.body.insertBefore(cab, document.body.firstChild);
-      return true;
-    }
-    var estilo = document.createElement('style');
-    estilo.textContent = CSS_SITIO;
-    document.head.appendChild(estilo);
-    if (!poner()) {
-      var obs = new MutationObserver(function () { if (poner()) obs.disconnect(); });
-      obs.observe(document.body, { childList: true, subtree: true });
-    }
-  }
-
-  /* ------------------------------------------------------------------ */
   /* Arranque                                                            */
   /* ------------------------------------------------------------------ */
 
@@ -440,7 +398,6 @@
       });
     };
     interceptarImagenes();
-    montarSitio();
     return true;
   }
 

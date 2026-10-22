@@ -701,28 +701,69 @@ try {
 
   /* ====================================================================== */
   if (corre('I')) {
-    console.log('\n=== I. Dentro del sitio de Sepia Coffee: menú del sitio y logo que vuelve al inicio ===');
-    const pg = await nueva();
-    await pg.waitForSelector('.se-sitio', { timeout: 5000 }).catch(() => {});
-    let enlaces = await pg.locator('.se-sitio a').evaluateAll(els => els.map(e => e.textContent + '>' + e.getAttribute('href')));
-    ok(enlaces.length === 6 && enlaces[0] === 'Inicio>/' && enlaces.includes('Portal Baristas>/pages/equipo'), 'en la entrada ya está el menú del sitio (Inicio, Productos, Eventos, Nosotros, Contacto, Portal Baristas)');
-    ok(await pg.locator('.se-sitio a[aria-current="page"]').innerText() === 'Portal Baristas', '«Portal Baristas» aparece marcado: es donde estás');
-    await captura(pg, 'I1-sitio-entrada');
+    console.log('\n=== I. Consola aparte: sin el menú del sitio; el logo vuelve al inicio; «Nosotros»; íconos ===');
+    const pg = await nueva(1366);
+    ok(await pg.locator('.se-sitio').count() === 0 && !/Productos|Portal Baristas|Contacto/.test(await texto(pg)), 'la entrada no trae el menú de sepiacoffee.cl: es una aplicación aparte');
+    const logoEntrada = pg.locator('a.required-profile-brand[href="/"]');
+    ok(await logoEntrada.count() === 1 && /volver al inicio del sitio/.test(await logoEntrada.getAttribute('aria-label')), 'el logo de la entrada es un enlace al inicio del sitio');
+    await captura(pg, 'I1-entrada');
+    await Promise.all([pg.waitForURL(ORIGEN + '/', { timeout: 8000 }).catch(() => {}), logoEntrada.click()]);
+    ok(new URL(pg.url()).pathname === '/' && /Inicio de Sepia Coffee/.test(await texto(pg)), 'al apretar el logo de la entrada, vuelve al inicio de la página web');
+    await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 300);
+    const nosEntrada = pg.locator('a.login-nosotros');
+    ok(await nosEntrada.count() === 1 && await nosEntrada.getAttribute('href') === '/pages/nosotros', 'la entrada tiene «Nosotros» y apunta a la página Nosotros del sitio');
+    await Promise.all([pg.waitForURL(ORIGEN + '/pages/nosotros', { timeout: 8000 }).catch(() => {}), nosEntrada.click()]);
+    ok(/Nosotros de Sepia Coffee/.test(await texto(pg)), '«Nosotros» de la entrada lleva a esa página');
+    await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 300);
+
     await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
-    ok(/Hola, Beto/.test(await texto(pg)) && await pg.locator('.se-sitio').count() === 1, 'al entrar, la barra sigue arriba (una sola)');
-    await pg.getByRole('button', { name: 'Ranking' }).first().click(); await espera(pg, 800);
-    await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 800);
-    ok(await pg.locator('.se-sitio').count() === 1 && await pg.locator('.se-sitio').evaluate(el => el === document.body.firstElementChild), 'y no se pierde al cambiar de pantalla');
-    await captura(pg, 'I2-sitio-inicio');
+    ok(/Hola, Beto/.test(await texto(pg)) && await pg.locator('.se-sitio').count() === 0 && !/Productos|Portal Baristas|Contacto/.test(await texto(pg)), 'adentro tampoco hay menú del sitio');
+    const nombresNav = await pg.locator('.desktop-nav button').allInnerTexts();
+    ok(nombresNav.join('|') === 'Eventos|Ranking|Mi Perfil|Nosotros', 'la navegación del equipo: ' + nombresNav.join(' · '));
+    await captura(pg, 'I2-adentro');
     const logo = pg.locator('.app-header a[href="/"]').first();
-    ok(await logo.count() === 1 && /volver al inicio del sitio/.test(await logo.getAttribute('aria-label')), 'el logo de Sepia Coffee de la interfaz apunta al inicio del sitio');
+    ok(await logo.count() === 1 && /volver al inicio del sitio/.test(await logo.getAttribute('aria-label')), 'el logo de la barra apunta al inicio del sitio');
     await Promise.all([pg.waitForURL(ORIGEN + '/', { timeout: 8000 }).catch(() => {}), logo.click()]);
     ok(new URL(pg.url()).pathname === '/', 'al apretar el logo, vuelve al inicio de la página web');
-    await pg.goBack(); await entrarSiHaySplash(pg).catch(() => {}); await espera(pg, 600);
-    await pg.locator('.se-sitio a', { hasText: 'Inicio' }).click(); await espera(pg, 800);
-    ok(new URL(pg.url()).pathname === '/', 'y «Inicio» del menú también');
+    await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 600);
+    await pg.locator('.desktop-nav').getByRole('button', { name: 'Nosotros' }).click(); await espera(pg, 800);
+    ok(new URL(pg.url()).pathname === '/pages/nosotros', '«Nosotros» de la barra lleva a la página Nosotros del sitio');
     ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
     await pg.context().close();
+
+    /* En el celular: la barra de abajo reparte el ancho (4 pestañas el equipo, 5 la administración) */
+    const mov = await nueva(390);
+    await iniciarSesion(mov, 'beto.prueba', 'mi frase segura 1');
+    let cajas = await mov.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
+    ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Nosotros', 'en el celular el equipo ve: ' + cajas.map(c => c.t).join(' · '));
+    ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 70), 'y las pestañas caben, sin cortarse (' + cajas.map(c => c.w).join(', ') + ' px)');
+    await captura(mov, 'I3-celular-equipo');
+    await mov.locator('.bottom-nav').getByRole('button', { name: 'Nosotros' }).click(); await espera(mov, 800);
+    ok(new URL(mov.url()).pathname === '/pages/nosotros', '«Nosotros» en el celular también lleva a la página Nosotros');
+    await mov.context().close();
+
+    const adm = await nueva(390);
+    await iniciarAdmin(adm, 'admin@ejemplo.test', 'claveadmin1');
+    if (!/Gestiona experiencias|Hola/.test(await texto(adm))) { await adm.context().close(); ok(false, 'no se pudo entrar como administración para probar el celular'); }
+    else {
+      cajas = await adm.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
+      ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Administrar|Nosotros', 'en el celular la administración ve: ' + cajas.map(c => c.t).join(' · '));
+      ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 60), 'y también caben (' + cajas.map(c => c.w).join(', ') + ' px)');
+      await captura(adm, 'I4-celular-admin');
+      await adm.context().close();
+    }
+
+    /* Íconos: el logo cuadrado en la pestaña del navegador y en la aplicación descargable */
+    const ic = await nueva();
+    const enlaces = await ic.evaluate(() => Array.from(document.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]')).map(l => l.rel + '|' + (l.getAttribute('sizes') || '') + '|' + l.getAttribute('href')));
+    ok(enlaces.some(e => /^icon\|32x32\|.*icon-32\.png/.test(e)) && enlaces.some(e => /^apple-touch-icon\|\|.*icon-180\.png/.test(e)), 'la pestaña y el iPhone usan el logo cuadrado: ' + enlaces.filter(e => !/manifest/.test(e)).map(e => e.split('/').pop()).join(', '));
+    const manifiesto = await ic.evaluate(async () => { const m = document.querySelector('link[rel="manifest"]'); const r = await fetch(m.href); return { estado: r.status, json: await r.json() }; });
+    const iconos = manifiesto.json.icons || [];
+    ok(manifiesto.estado === 200 && iconos.some(i => i.sizes === '192x192') && iconos.some(i => i.sizes === '512x512' && i.purpose === 'maskable') && manifiesto.json.display === 'standalone', 'la aplicación descargable trae su manifiesto con íconos de 192 y 512 px');
+    const dims = [];
+    for (const i of iconos) dims.push(await ic.evaluate(src => new Promise(r => { const im = new Image(); im.onload = () => r(im.naturalWidth + 'x' + im.naturalHeight); im.onerror = () => r('no carga'); im.src = src; }), new URL(i.src, ORIGEN).href));
+    ok(dims.length === 3 && dims.every((d, k) => d === iconos[k].sizes), 'los íconos del manifiesto existen y miden lo que dicen (' + dims.join(', ') + ')');
+    await ic.context().close();
   }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();

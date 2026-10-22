@@ -2,6 +2,9 @@
    Este código se agrega tal cual al archivo de la interfaz (construir.py), antes de la pantalla de entrada. Usa
    lo que ese archivo ya tiene a mano: D (React), W (los elementos de la pantalla) y Ce (el campo de clave con «Mostrar»).
    Se comunica con las rutas /api/auth/admin/* de assets/sepia-equipo-api.js. */
+/* A dónde lleva «Nosotros»: la página Nosotros de la tienda (la dirección sale del menú del sitio, en snippets/sepia-equipo-sitio.liquid) */
+var SEPIA_NOSOTROS = (window.SEPIA_EQUIPO_SITIO && window.SEPIA_EQUIPO_SITIO.nosotros) || `/pages/nosotros`;
+
 function sepiaH(etiqueta, propiedades, ...hijos) {
   return (0, W.jsxs)(etiqueta, { ...propiedades, children: hijos });
 }

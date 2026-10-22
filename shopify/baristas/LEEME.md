@@ -323,9 +323,15 @@ puede elegir. Solo administran quienes están en `public.admins`, y la base de d
 recibe datos de administración aunque los pida. Para sumar a alguien: `select public.crear_admin('correo@ejemplo.cl');` en el SQL Editor (crea su
 cuenta, para que Supabase le pueda mandar el código, y lo agrega a la lista).
 
-**Dentro del sitio**: arriba de la interfaz hay una franja con el menú de la tienda (Inicio, Productos, Eventos, Nosotros, Contacto, Portal Baristas;
-sale del menú principal de Shopify y cambia sola si lo editas) y el logo «Sepia Coffee» de la interfaz lleva al inicio de la página web. La interfaz sigue
-siendo una página completa (no usa el encabezado ni el pie de la tienda): sus estilos son globales y se pisarían con los del tema.
+**Una aplicación aparte, con salida al sitio**: la consola es una página completa, **sin el menú de sepiacoffee.cl** (no usa el encabezado ni el pie de la
+tienda). Su logo (en la entrada y en la barra de arriba) lleva al inicio de la página web, y hay una pestaña **«Nosotros»** (también en la entrada)
+que lleva a la página Nosotros de la tienda: la dirección sale del menú principal de Shopify (`snippets/sepia-equipo-sitio.liquid`; si no hay un
+«Nosotros» en el menú, usa `/pages/nosotros`). La barra de abajo del celular reparte el ancho: 4 pestañas para el equipo (Eventos, Ranking, Mi Perfil, Nosotros)
+y 5 para la administración (suma Administrar).
+
+**Íconos**: el logo cuadrado de Sepia Coffee (fondo crema, «sepia coffee» en azul) es el ícono de la **aplicación descargable** (manifiesto con 192 y 512 px, y el de 180 px
+para el iPhone, tal cual) y el **ícono de la pestaña del navegador** de la consola (32 y 64 px, el mismo logo recortado un poco más cerca para que se lea chico).
+Los PNG están en `equipo/iconos/`. El de **sepiacoffee.cl** se fija en el tema (Configuración del tema → Favicon).
 
 **Lo que se dejó fuera, a pedido**: la historia del café y «quiénes somos» (la pestaña «Sepia»), la pantalla de bienvenida con granos de
 café, las fotos del turno (tres por evento), el botón «Necesito ayuda» y las boletas y pagos (siguen en el portal de baristas).
@@ -333,11 +339,12 @@ café, las fotos del turno (tres por evento), el botón «Necesito ayuda» y las
 | Pieza | Qué hace |
 |---|---|
 | `equipo.sql` | Se corre **después** de `esquema.sql`. Funciones `eq_*` que arman los datos en la forma que la interfaz espera y aplican las reglas: eventos y postulaciones, perfil, cupos, camioneta, cancelación, ranking, equipo de un evento, avisos y ganancias |
-| `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) y los íconos |
-| `equipo/construir.py` y `equipo/parches/` | Hacen los cambios de texto y de rutas (cada uno anotado con su motivo) y agregan la entrada de la administración, **pinta todo con la paleta** (cada color de Jorge pasa al de la paleta que cumple su papel) y deja `assets/sepia-equipo-v2-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
+| `equipo/fuente/` | La interfaz tal como la entregó Jorge (archivos compilados) |
+| `equipo/iconos/` | Los íconos de la aplicación y de la pestaña, hechos con el logo cuadrado de Sepia Coffee |
+| `equipo/construir.py` y `equipo/parches/` | Hacen los cambios de texto y de rutas (cada uno anotado con su motivo) y agregan la entrada de la administración, **pinta todo con la paleta** (cada color de Jorge pasa al de la paleta que cumple su papel) y deja `assets/sepia-equipo-v4-*` y `templates/page.equipo.liquid`. Se detiene si la fuente ya no calza |
 | `assets/sepia-equipo-api.js` | El «servidor»: intercepta lo que la interfaz le pide a `/api/*` y lo traduce a Supabase (sesión, funciones `eq_*`, fotos de perfil en el almacenamiento privado) |
 | `templates/page.equipo.liquid` | La página, sin el diseño de la tienda |
-| `snippets/sepia-equipo-sitio.liquid` | El menú principal de la tienda, para la franja de arriba |
+| `snippets/sepia-equipo-sitio.liquid` | Las direcciones del sitio a las que lleva la consola: inicio (logo) y Nosotros |
 | `snippets/sepia-equipo-conexion.liquid` | La URL y la clave pública de Supabase. En el repo lleva los marcadores `SUPABASE_URL` y `SUPABASE_CLAVE`: reemplázalos antes de subirlo (`construir.py --salida … --url … --clave …` deja una copia lista) |
 | `equipo/pruebas/` | Pruebas de punta a punta en un navegador real (ver más abajo) |
 
@@ -381,12 +388,11 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
-  de pruebas) → 144 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de pruebas) → 155 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
   de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
   postular con y sin camioneta, cupos, cancelar (24 horas), foto de perfil, ranking, avisos, cambio de clave, salir,
   toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias), las dos formas de entrar de la
-  administración (código o clave, y la clave que se crea la primera vez), que un barista no vea nada de administración, la franja del
-  sitio con el logo que vuelve al inicio, el celular y que **toda pantalla use solo los colores de la paleta**. La página se
+  administración (código o clave, y la clave que se crea la primera vez), que un barista no vea nada de administración, que la consola no traiga el menú del sitio, el logo que vuelve al inicio, «Nosotros», los íconos, el celular y que **toda pantalla use solo los colores de la paleta**. La página se
   sirve como la sirve la tienda (con `?v=` en las direcciones). `SECCION=A` (o `E`, etc.) corre solo una parte.
 - **Probado en la tienda real**: la página en la vista previa del tema carga, muestra la entrada y un intento de entrar con datos
   falsos llega a Supabase y vuelve con «ID o clave incorrectos». Entrar de verdad necesita correr `equipo.sql` en Supabase.

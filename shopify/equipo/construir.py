@@ -29,15 +29,17 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v3'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v4'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
       'index-B0KDm-6B.js', 'client-app-3nlm5eU_.js', 'BrandStory-CKBrxk2p.js']
 CSS = ['index.DiFSpdfw.css']
-# nombre en la fuente → nombre armado (solo los íconos de la página: la historia de Sepia y la pantalla de bienvenida
-# con sus fotos quedaron fuera)
+# Íconos: el logo cuadrado de Sepia Coffee (equipo/iconos/). Los de 64 y 180 px los pide la interfaz con el nombre de la
+# izquierda; el de 32 px (pestaña del navegador) y los de 192 y 512 px (la aplicación descargable) los usa la plantilla
+# y el manifiesto. La historia de Sepia y la pantalla de bienvenida con sus fotos quedaron fuera.
 IMAGENES = {'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png'}
+ICONOS_EXTRA = ['icon-32.png', 'icon-192.png', 'icon-512.png']
 
 # Direcciones que los datos de arranque de la interfaz piden en la raíz del sitio → archivo armado
 RUTAS_ARRANQUE = {'/_next/static/css/index.DiFSpdfw.css': 'index.DiFSpdfw.css',
@@ -48,8 +50,8 @@ RUTAS_ARRANQUE = {'/_next/static/css/index.DiFSpdfw.css': 'index.DiFSpdfw.css',
 # Shopify no acepta archivos .json en assets: va como .json.liquid (se publica como .json y puede nombrar el ícono)
 MANIFIESTO = '''{
   "name": "Sepia Coffee · Equipo",
-  "short_name": "Sepia",
-  "description": "Tu equipo, tus turnos y la historia detrás de cada café.",
+  "short_name": "Sepia Equipo",
+  "description": "Tus turnos, tu perfil y el ranking del equipo de Sepia Coffee.",
   "lang": "es-CL",
   "theme_color": "#020526",
   "background_color": "#ffffff",
@@ -57,10 +59,12 @@ MANIFIESTO = '''{
   "start_url": "/pages/equipo",
   "scope": "/pages/",
   "icons": [
-    { "src": "{{ '%sicon-180.png' | asset_url }}", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+    { "src": "{{ '%(p)sicon-192.png' | asset_url | split: '?' | first }}", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "{{ '%(p)sicon-512.png' | asset_url | split: '?' | first }}", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "{{ '%(p)sicon-512.png' | asset_url | split: '?' | first }}", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
-''' % PREFIJO
+''' % {'p': PREFIJO}
 
 
 # ---------------------------------------------------------------------------
@@ -81,6 +85,13 @@ CSS_EXTRA = """
 /* Sepia: espacios de la pantalla para crear la clave de administración */
 .required-profile>form{margin-top:16px}
 .required-profile>.secondary-btn{margin-top:12px}
+/* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
+a.required-profile-brand{text-decoration:none}
+.login-nosotros{display:block;margin:22px auto 0;width:max-content;color:#526ea0;font-size:14px;font-weight:600;text-decoration:none}
+.login-nosotros:hover{text-decoration:underline}
+.login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
+/* Sepia: la barra de abajo en el celular reparte el ancho entre las pestañas que haya (con «Nosotros» son 4 o 5) */
+.ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
 """
 
 
@@ -118,17 +129,19 @@ def recolorear(texto):
     return re.sub(r'#[0-9a-fA-F]{3,8}\b', uno, texto)
 
 
-# Los datos del menú del sitio (para la barra de arriba): salen del tema, así que siguen al menú y al logo de la tienda
+# Direcciones del sitio a las que lleva la consola: el logo (inicio) y «Nosotros». «Nosotros» sale del menú de la tienda
+# (si no está, queda /pages/nosotros). La consola NO muestra el menú del sitio: es una aplicación aparte.
 SITIO = """{%- comment -%}
-  Datos del sitio para la barra de arriba de «Sepia Equipo»: el menú principal de la tienda (Inicio, Productos, Eventos,
-  Portal Baristas…). La barra la dibuja assets/sepia-equipo-api.js. Si se cambia el menú en Shopify, cambia sola.
+  Direcciones del sitio de Sepia Coffee a las que lleva la consola de «Sepia Equipo»: el logo vuelve al inicio y la
+  pestaña «Nosotros» lleva a la página Nosotros de la tienda (se toma del menú principal; si no está, /pages/nosotros).
 {%- endcomment -%}
+{%- assign sepia_nosotros = '/pages/nosotros' -%}
+{%- for link in linklists['main-menu'].links -%}
+  {%- assign titulo = link.title | downcase | strip -%}
+  {%- if titulo == 'nosotros' -%}{%- assign sepia_nosotros = link.url -%}{%- endif -%}
+{%- endfor -%}
 <script>
-  window.SEPIA_EQUIPO_SITIO = {
-    inicio: {{ routes.root_url | json }},
-    nombre: {{ shop.name | json }},
-    menu: [{% for link in linklists['main-menu'].links %}{ "t": {{ link.title | json }}, "u": {{ link.url | json }} }{% unless forloop.last %}, {% endunless %}{% endfor %}]
-  };
+  window.SEPIA_EQUIPO_SITIO = { inicio: {{ routes.root_url | json }}, nosotros: {{ sepia_nosotros | json }} };
 </script>
 """
 
@@ -208,9 +221,18 @@ def armar_js():
             t = cambiar(t, 'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});',
                         'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});'
                         'if(e.adminClavePendiente&&!sepiaClaveOmitida())return(0,W.jsx)(SepiaCrearClave,{onDone:F});', 1, nombre)
-            # El logo de la barra lleva al inicio del sitio de Sepia Coffee (no al inicio de esta página).
+            # Esta consola es una aplicación aparte (sin el menú de la tienda), pero su logo lleva al inicio de
+            # sepiacoffee.cl y hay una pestaña «Nosotros» que lleva a la página Nosotros del sitio.
             t = cambiar(t, '(0,W.jsx)(`a`,{href:`#eventos`,children:(0,W.jsx)(lt,{})})',
                         '(0,W.jsx)(`a`,{href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:(0,W.jsx)(lt,{})})', 1, nombre)
+            t = cambiar(t, '(0,W.jsx)(`span`,{className:`required-profile-brand`,children:`sepia.`})',
+                        '(0,W.jsx)(`a`,{className:`required-profile-brand`,href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:`sepia.`})', 2, nombre)
+            t = cambiar(t, 'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e})]})}function Te',
+                        'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e}),'
+                        '(0,W.jsx)(`a`,{className:`login-nosotros`,href:SEPIA_NOSOTROS,children:`Nosotros`})]})}function Te', 1, nombre)
+            t = cambiar(t, 'function L(e){x(e),location.hash=e,y(``),o(``)}',
+                        'function L(e){if(e===`nosotros`){location.href=SEPIA_NOSOTROS;return}x(e),location.hash=e,y(``),o(``)}', 1, nombre)
+            t = cambiar(t, '[`admin`,`Administrar`,se]]:[]];if(!e)', '[`admin`,`Administrar`,se]]:[],[`nosotros`,`Nosotros`,_]];if(!e)', 1, nombre)
 
             # ---- Lo que se dejó fuera (decisión de Manuel) ----
             # La historia de Sepia y «quiénes somos» (la pestaña «Sepia»).
@@ -282,12 +304,13 @@ def plantilla():
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sepia Coffee · Equipo</title>
-<meta name="description" content="El espacio del equipo Sepia: turnos, nuestra historia y registro fotográfico de cada evento.">
+<meta name="description" content="El espacio del equipo Sepia Coffee: tus turnos, tu perfil y el ranking del equipo.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#020526">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="sepia-shell" content="v2">
-<link rel="icon" href="{{ '%(p)sicon-64.png' | asset_url | split: '?' | first }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ '%(p)sicon-32.png' | asset_url | split: '?' | first }}">
+<link rel="icon" type="image/png" sizes="64x64" href="{{ '%(p)sicon-64.png' | asset_url | split: '?' | first }}">
 <link rel="apple-touch-icon" href="{{ '%(p)sicon-180.png' | asset_url | split: '?' | first }}">
 <link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url | split: '?' | first }}">
 {%% render 'sepia-equipo-conexion' %%}
@@ -352,8 +375,8 @@ def main():
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), texto)
         for nombre in CSS:
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)) + CSS_EXTRA)
-        for origen, destino in IMAGENES.items():
-            with open(os.path.join(FUENTE, 'imagenes', origen), 'rb') as f:
+        for destino in list(IMAGENES.values()) + ICONOS_EXTRA:
+            with open(os.path.join(AQUI, 'iconos', destino), 'rb') as f:
                 datos = f.read()
             with open(os.path.join(carpeta_assets, PREFIJO + destino), 'wb') as f:
                 f.write(datos)
@@ -361,7 +384,7 @@ def main():
         escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-sitio.liquid'), SITIO)
-    print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + 1))
+    print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + len(ICONOS_EXTRA) + 1))
 
 
 if __name__ == '__main__':

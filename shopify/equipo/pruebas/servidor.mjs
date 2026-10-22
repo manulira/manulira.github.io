@@ -13,10 +13,8 @@ const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png
 /* Como asset_url de Shopify: dirección con «?v=…» (la tienda la agrega a todo lo que se pide con asset_url). */
 const urlAsset = n => '/assets/' + n + (process.env.SIN_VERSION ? '' : '?v=1700000000');
 
-/* El menú del sitio, como lo daría la tienda (el real sale de snippets/sepia-equipo-sitio.liquid con el menú principal). */
-const SITIO_PRUEBA = '<script>window.SEPIA_EQUIPO_SITIO = { inicio: "/", nombre: "Sepia Coffee", menu: [' +
-  '{"t":"Inicio","u":"/"},{"t":"Productos","u":"/collections/all"},{"t":"Eventos","u":"/pages/eventos"},{"t":"Nosotros","u":"/pages/nosotros"},' +
-  '{"t":"Contacto","u":"/pages/contacto"},{"t":"Portal Baristas","u":"/pages/equipo"}] };</script>';
+/* Las direcciones del sitio, como las daría la tienda (las reales salen de snippets/sepia-equipo-sitio.liquid). */
+const SITIO_PRUEBA = '<script>window.SEPIA_EQUIPO_SITIO = { inicio: "/", nosotros: "/pages/nosotros" };</script>';
 
 /* Un «Liquid» mínimo, solo para esta plantilla: quita las etiquetas de control y resuelve asset_url. */
 export function renderizar(plantilla, url, clave, snippet = '') {
@@ -47,6 +45,12 @@ export function servir(puerto, { url, clave }) {
     const u = new URL(req.url, 'http://x');
     peticiones.push(req.method + ' ' + u.pathname);
     if (u.pathname === '/pages/equipo') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end(html); return; }
+    if (u.pathname === '/') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end('<h1>Inicio de Sepia Coffee</h1>'); return; }
+    if (u.pathname === '/pages/nosotros') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end('<h1>Nosotros de Sepia Coffee</h1>'); return; }
+    if (u.pathname.startsWith('/assets/') && u.pathname.endsWith('.json')) {      // el manifiesto: en el tema es un «.json.liquid»
+      const f = path.join(TEMA, 'assets', path.basename(u.pathname) + '.liquid');
+      if (fs.existsSync(f)) { res.writeHead(200, { 'content-type': 'application/json' }); res.end(renderizar(fs.readFileSync(f, 'utf8'), url, clave)); return; }
+    }
     if (u.pathname === '/pages/baristas') { res.writeHead(200, { 'content-type': tipos['.html'] }); res.end('<h1>Portal de baristas</h1>'); return; }
     if (u.pathname.startsWith('/assets/')) {
       const f = path.join(TEMA, 'assets', path.basename(u.pathname));

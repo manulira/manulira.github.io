@@ -1,11 +1,12 @@
 {%- comment -%}
-  Datos del sitio para la barra de arriba de «Sepia Equipo»: el menú principal de la tienda (Inicio, Productos, Eventos,
-  Portal Baristas…). La barra la dibuja assets/sepia-equipo-api.js. Si se cambia el menú en Shopify, cambia sola.
+  Direcciones del sitio de Sepia Coffee a las que lleva la consola de «Sepia Equipo»: el logo vuelve al inicio y la
+  pestaña «Nosotros» lleva a la página Nosotros de la tienda (se toma del menú principal; si no está, /pages/nosotros).
 {%- endcomment -%}
+{%- assign sepia_nosotros = '/pages/nosotros' -%}
+{%- for link in linklists['main-menu'].links -%}
+  {%- assign titulo = link.title | downcase | strip -%}
+  {%- if titulo == 'nosotros' -%}{%- assign sepia_nosotros = link.url -%}{%- endif -%}
+{%- endfor -%}
 <script>
-  window.SEPIA_EQUIPO_SITIO = {
-    inicio: {{ routes.root_url | json }},
-    nombre: {{ shop.name | json }},
-    menu: [{% for link in linklists['main-menu'].links %}{ "t": {{ link.title | json }}, "u": {{ link.url | json }} }{% unless forloop.last %}, {% endunless %}{% endfor %}]
-  };
+  window.SEPIA_EQUIPO_SITIO = { inicio: {{ routes.root_url | json }}, nosotros: {{ sepia_nosotros | json }} };
 </script>
