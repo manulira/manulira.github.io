@@ -40,8 +40,9 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 - **Eventos con turnos** (Manuel, 22 oct): un evento partido en turnos por el script (TURNOS_FIJOS, `gcal_id` con `#3h`, `#4h`) se ve en la consola del
   equipo como **una tarjeta con dos opciones**: «con camioneta» toma el turno que la exige (el más largo, o `eventos.exige_camioneta`) y «sin camioneta» el otro;
   cada barista toma uno solo. La administración sigue viendo cada turno por separado. Cenco Costanera: 3 horas sin camioneta ($25.000), 4 horas con camioneta ($40.000).
-- **Tarjeta amarilla**: la pone o quita la administración en «Equipo»; el barista **no** puede saberlo (ni en la pantalla ni en sus datos). Con amarilla,
+- **Tarjeta amarilla**: la pone o quita la administración en «Equipo», también a quien todavía no entra ni completa su perfil; el barista **no** puede saberlo (ni en la pantalla ni en sus datos). Con amarilla,
   sus postulaciones esperan confirmación; se quita sola cuando le registran asistencia en un evento posterior a la tarjeta (al cerrar el evento).
+- **Tienda**: sin botón «Portal Baristas» en la barra (no quedó bien) y sin ingreso de clientes (ícono de cuenta oculto).
 - **Fuera de la consola**: historia del café y «quiénes somos» (el Nosotros es el del sitio), fotos del turno, «Necesito ayuda», pantalla de
   bienvenida con granos, y boletas y pagos (siguen en el portal de baristas).
 - **De Jorge se tomó** la navegación y la forma (barra, tarjetas de evento, pestañas y próximo turno, perfil por secciones, campana de avisos,
@@ -52,7 +53,7 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v8`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v9`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
   y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (171 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
@@ -75,13 +76,13 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
 ## Estado (22 oct 2026, noche)
 
-- Shopify: tema publicado **«Sepia Coffee · botón Portal Baristas (borrador)» (`193508933996`)** (Sepia Equipo v7 + botón «Portal Baristas» en la barra). Borrador **«Sepia Coffee · equipo v8 turnos (borrador)» (`193517551980`)**: v8 (eventos con turnos en una tarjeta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
+- Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
 - Página «Trabaja con nosotros» (`713403400556`): el formulario manda a `solicitar_ingreso` de Supabase (copia en `shopify/paginas/trabaja-con-nosotros.html` con marcadores
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 60, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
+- Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
 
 ## Pendientes y decisiones abiertas
 
