@@ -76,13 +76,12 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
 - Página «Trabaja con nosotros» (`713403400556`): el formulario manda a `solicitar_ingreso` de Supabase (copia en `shopify/paginas/trabaja-con-nosotros.html` con marcadores
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
-- Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado`. Manuel no tiene cuenta de barista todavía.
+- Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
 - Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 60, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 166.
 
 ## Pendientes y decisiones abiertas
 
-1. Manuel necesita su propia cuenta de barista marcada como administración (si no, no puede entrar a la consola).
    Correos: que cotizaciones, contacto y postulaciones lleguen también a `contacto@sepiacoffee.cl` (correo de contacto de la tienda + grupo o reenvío en Google Workspace).
 2. Apagar el registro abierto de usuarios en Supabase (en los ajustes de Authentication; recomendado). Los accesos se crean desde la administración, no hace falta que nadie se registre solo.
 3. Apps Script (calendario y correos): puesta en marcha pendiente (`MODO_PRUEBA` = `no` e `instalarDisparadores`); ver LEEME, sección «Automatización».
