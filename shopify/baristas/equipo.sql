@@ -365,8 +365,9 @@ begin
   where (ver_adm)
      or (e.estado <> 'borrador'
          and (public.eq_grupo(e.id) is null or public.eq_principal(e.id) = e.id)
-         and (adm
-              or exists (select 1 from public.postulaciones p where p.evento_id = e.id and p.barista_id = uid)
+         -- Lo mismo para todos (también la administración en «Vista barista»): los eventos abiertos de los próximos
+         -- config.dias_publicacion días (14), y aquellos a los que la persona ya postuló.
+         and (exists (select 1 from public.postulaciones p where p.evento_id = e.id and p.barista_id = uid)
               or (e.estado = 'abierto' and public.dentro_de_publicacion(e.fecha))));
 
   select coalesce(jsonb_agg(jsonb_build_object(

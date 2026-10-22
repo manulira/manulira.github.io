@@ -21,7 +21,8 @@ insert into public.baristas(id, nombre, rut, correo, telefono, comuna, banco, ti
   ('00000000-0000-0000-0000-0000000000b1', 'Beto Prueba', '22.222.222-2', 'beto@ejemplo.test', '+56911110002', 'Ñuñoa', 'BCI', 'Cuenta vista', '11110002', true, true, 'x', true, true);
 insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, pago_manual, estado) values
   ('e1000000-0000-0000-0000-000000000001', 'Evento Abierto', t.hoy() + 5, '18:00', '22:00', 'Pirque', 2, 40000, 'abierto'),
-  ('e1000000-0000-0000-0000-000000000002', 'Borrador Oculto', t.hoy() + 6, '18:00', '22:00', 'Pirque', 2, 40000, 'borrador');
+  ('e1000000-0000-0000-0000-000000000002', 'Borrador Oculto', t.hoy() + 6, '18:00', '22:00', 'Pirque', 2, 40000, 'borrador'),
+  ('e1000000-0000-0000-0000-000000000005', 'Evento Lejano', t.hoy() + 40, '18:00', '22:00', 'Pirque', 2, 40000, 'abierto');
 
 -- ---------------------------------------------------------------------------
 -- Antes de marcarla: Mara es una barista más
@@ -46,6 +47,8 @@ select t.valor('ve los borradores en la administración', $q$select count(*)::te
 select t.filas('y ve a todos los baristas', 'select * from public.baristas', 2);
 select t.valor('en «Vista barista» deja de ver como administración', $q$select (public.eq_estado('barista')->>'admin') || ' ' || (public.eq_estado('barista')->>'canAdmin')$q$, 'false true');
 select t.valor('y sigue siendo ella: su propia ficha de barista', $q$select (public.eq_estado('barista')->>'memberId') || ' ' || (public.eq_estado('barista')->'user'->>'name')$q$, '00000000-0000-0000-0000-0000000000a1 Mara Prueba');
+select t.valor('en «Vista barista» ve lo mismo que un barista: nada a más de 14 días', $q$select count(*)::text from jsonb_array_elements(public.eq_estado('barista')->'events') e where e->>'title' = 'Evento Lejano'$q$, '0');
+select t.valor('en la administración sí lo ve', $q$select count(*)::text from jsonb_array_elements(public.eq_estado()->'events') e where e->>'title' = 'Evento Lejano'$q$, '1');
 select t.valor('en «Vista barista» no ve los borradores', $q$select count(*)::text from jsonb_array_elements(public.eq_estado('barista')->'events') e where e->>'title' = 'Borrador Oculto'$q$, '0');
 select t.valor('ni la clave de administración por correo le pide nada', $q$select public.eq_estado()->>'adminClavePendiente'$q$, 'false');
 select t.valor('puede marcar a otra persona', $q$select public.hacer_admin('beto.prueba')->>'admin'$q$, 'true');

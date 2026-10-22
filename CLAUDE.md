@@ -83,7 +83,7 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
+- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
 
 ## Pendientes y decisiones abiertas
 
