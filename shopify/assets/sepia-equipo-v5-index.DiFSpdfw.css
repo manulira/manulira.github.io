@@ -11,6 +11,11 @@
 .required-profile>.secondary-btn{margin-top:12px}
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
+/* Sepia: el logo de la tienda (imagen) en la carga, la entrada, la barra y el pie */
+.brand-logo{display:block;width:auto;height:30px;max-width:100%}
+.required-profile-brand .brand-logo{height:34px}
+.boot-screen .brand-logo{height:44px}
+.app-footer .brand-logo{height:22px}
 .login-nosotros{display:block;margin:22px auto 0;width:max-content;color:#526ea0;font-size:14px;font-weight:600;text-decoration:none}
 .login-nosotros:hover{text-decoration:underline}
 .login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}

@@ -595,7 +595,7 @@ try {
     await pestana(pg, 'Administración').click(); await espera(pg, 400);
     t = await texto(pg);
     ok(/ADMINISTRACIÓN SEPIA/.test(t) && /Entrar con un código por correo/.test(t) && /Entrar con correo y clave/.test(t), 'la pestaña de administración ofrece entrar con código o con correo y clave');
-    ok(await pg.locator('.required-profile-brand').innerText() === 'sepia.', 'el logo de la entrada queda como lo dejó Jorge');
+    ok(await pg.locator('.required-profile-brand img.brand-logo').getAttribute('alt') === 'Sepia Coffee', 'el logo de la entrada es el de la tienda');
     await captura(pg, 'H2-admin');
 
     /* Con correo y clave (esta persona ya activó su clave) */

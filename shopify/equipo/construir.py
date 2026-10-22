@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v4'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v5'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -38,7 +38,9 @@ CSS = ['index.DiFSpdfw.css']
 # Íconos: el logo cuadrado de Sepia Coffee (equipo/iconos/). Los de 64 y 180 px los pide la interfaz con el nombre de la
 # izquierda; el de 32 px (pestaña del navegador) y los de 192 y 512 px (la aplicación descargable) los usa la plantilla
 # y el manifiesto. La historia de Sepia y la pantalla de bienvenida con sus fotos quedaron fuera.
-IMAGENES = {'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png'}
+IMAGENES = {'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png',
+            # El logo horizontal azul de la tienda (el mismo de sepiacoffee.cl): carga, entrada y barra de arriba.
+            'sepia-coffee-logo.png': 'logo.png'}
 ICONOS_EXTRA = ['icon-32.png', 'icon-192.png', 'icon-512.png']
 
 # Direcciones que los datos de arranque de la interfaz piden en la raíz del sitio → archivo armado
@@ -87,6 +89,11 @@ CSS_EXTRA = """
 .required-profile>.secondary-btn{margin-top:12px}
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
+/* Sepia: el logo de la tienda (imagen) en la carga, la entrada, la barra y el pie */
+.brand-logo{display:block;width:auto;height:30px;max-width:100%}
+.required-profile-brand .brand-logo{height:34px}
+.boot-screen .brand-logo{height:44px}
+.app-footer .brand-logo{height:22px}
 .login-nosotros{display:block;margin:22px auto 0;width:max-content;color:#526ea0;font-size:14px;font-weight:600;text-decoration:none}
 .login-nosotros:hover{text-decoration:underline}
 .login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
@@ -226,7 +233,15 @@ def armar_js():
             t = cambiar(t, '(0,W.jsx)(`a`,{href:`#eventos`,children:(0,W.jsx)(lt,{})})',
                         '(0,W.jsx)(`a`,{href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:(0,W.jsx)(lt,{})})', 1, nombre)
             t = cambiar(t, '(0,W.jsx)(`span`,{className:`required-profile-brand`,children:`sepia.`})',
-                        '(0,W.jsx)(`a`,{className:`required-profile-brand`,href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:`sepia.`})', 2, nombre)
+                        '(0,W.jsx)(`a`,{className:`required-profile-brand`,href:`/`,"aria-label":`Sepia Coffee: volver al inicio del sitio`,children:'
+                        '(0,W.jsx)(`img`,{className:`brand-logo`,src:SEPIA_LOGO,alt:`Sepia Coffee`})})', 2, nombre)
+            # El logo (Manuel): el de la tienda, no el «sepia.» ni el «sepia coffee · SEPIA CREW» escritos con letras. lt() es el
+            # logo de la pantalla de carga, de la barra de arriba y del pie.
+            t = cambiar(t, 'function lt(){return(0,W.jsxs)(`div`,{className:`brand brand-stacked`,"aria-label":`Sepia Coffee · Sepia Crew`,children:['
+                           '(0,W.jsxs)(`span`,{className:`brand-name`,children:[(0,W.jsx)(`span`,{children:`sepia`}),(0,W.jsx)(`span`,{children:`coffee`})]}),'
+                           '(0,W.jsx)(`span`,{className:`brand-divider`}),(0,W.jsxs)(`span`,{className:`brand-caption`,children:[`SEPIA`,(0,W.jsx)(`br`,{}),`CREW`]})]})}',
+                        'var SEPIA_LOGO=(window.SEPIA_EQUIPO&&window.SEPIA_EQUIPO.files||{})[`sepia-coffee-logo.png`]||`/images/sepia-coffee-logo.png`;'
+                        'function lt(){return(0,W.jsx)(`div`,{className:`brand`,children:(0,W.jsx)(`img`,{className:`brand-logo`,src:SEPIA_LOGO,alt:`Sepia Coffee`})})}', 1, nombre)
             t = cambiar(t, 'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e})]})}function Te',
                         'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e}),'
                         '(0,W.jsx)(`a`,{className:`login-nosotros`,href:SEPIA_NOSOTROS,children:`Nosotros`})]})}function Te', 1, nombre)
@@ -315,6 +330,9 @@ def plantilla():
 <link rel="manifest" href="{{ '%(p)smanifest.json' | asset_url | split: '?' | first }}">
 {%% render 'sepia-equipo-conexion' %%}
 {%% render 'sepia-equipo-sitio' %%}
+{%%- comment -%%} La carga inicial (antes de que arranque la app) muestra el logo de la tienda en lugar del «sepia.» escrito con
+  letras. Se cambia solo con estilo: el HTML de la carga tiene que quedar igual al de la fuente o React falla al tomar la página. {%%- endcomment -%%}
+<style>.boot-screen>span{display:block;width:234px;max-width:80vw;height:44px;font-size:0;color:transparent;background:url("{{ '%(p)slogo.png' | asset_url | split: '?' | first }}") center/contain no-repeat}</style>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-precedence="vite-rsc/importer-resources">
 %(pre)s
