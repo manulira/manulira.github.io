@@ -75,7 +75,7 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
 ## Estado (22 oct 2026, noche)
 
-- Shopify: tema publicado **«Sepia Coffee · equipo v7 (borrador)» (`193504706924`)**, con Sepia Equipo **v7** (logo, una sola entrada, solicitudes, confirmación de postulaciones y amarilla). Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
+- Shopify: tema publicado **«Sepia Coffee · botón Portal Baristas (borrador)» (`193508933996`)** (Sepia Equipo v7 + botón «Portal Baristas» en la barra). Borrador **«Sepia Coffee · equipo v8 turnos (borrador)» (`193517551980`)**: v8 (eventos con turnos en una tarjeta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
 - Página «Trabaja con nosotros» (`713403400556`): el formulario manda a `solicitar_ingreso` de Supabase (copia en `shopify/paginas/trabaja-con-nosotros.html` con marcadores
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
