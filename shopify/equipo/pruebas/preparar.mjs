@@ -7,9 +7,6 @@ export const CLAVE_SB = 'sb_publishable_prueba';
 export function sembrar() {
   const p = new Puente();
   p.crear(`
-    insert into auth.users (id, email, encrypted_password, email_confirmed_at, aud, role, instance_id)
-    values ('00000000-0000-0000-0000-0000000000ad', 'admin@ejemplo.test', extensions.crypt('claveadmin1', extensions.gen_salt('bf')), now(), 'authenticated', 'authenticated', '00000000-0000-0000-0000-000000000000');
-    insert into public.admins (email, clave_activa) values ('admin@ejemplo.test', true);
     insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, lugar, descripcion, baristas_necesarios, pago_manual, estado, servicio, uniforme, tiene_maquina) values
       ('e1000000-0000-0000-0000-000000000001', 'Matrimonio Tres Cupos', current_date + 6, '18:00', '23:00', 'Pirque', 'Viña Prueba', 'Tenida negra', 3, 50000, 'abierto', 'Carrito Espresso Martini', 'Camisa negra', true),
       ('e1000000-0000-0000-0000-000000000002', 'Coffee Break Un Cupo', current_date + 7, '09:00', '11:00', 'Las Condes', null, null, 1, 25000, 'abierto', null, null, null),
@@ -22,6 +19,15 @@ export function sembrar() {
   `);
   const clave = id => p.consulta(`select (public.crear_acceso('${id}', initcap(replace('${id}', '.', ' '))))->>'clave'`);
   const claves = { 'ana.prueba': clave('ana.prueba'), 'beto.prueba': clave('beto.prueba'), 'carla.prueba': clave('carla.prueba') };
+  /* La administración: una cuenta de barista (con clave propia y perfil) marcada con hacer_admin */
+  clave('admin.prueba');
+  p.psql(`
+    update auth.users set encrypted_password = extensions.crypt('claveadmin1', extensions.gen_salt('bf')) where email = 'admin.prueba@equipo.sepiacoffee.cl';
+    update public.accesos set debe_cambiar_clave = false where usuario = 'admin.prueba';
+    insert into public.baristas (id, nombre, rut, correo, telefono, banco, tipo_cuenta, numero_cuenta, talla_camisa, tiene_camioneta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
+      select id, 'Admin Prueba', '11.111.111-1', 'admin@ejemplo.test', '+56987650001', 'BCI', 'Cuenta RUT', '11111111', 'M', false, true, true, 'x', true from public.accesos where usuario = 'admin.prueba';
+    select public.hacer_admin('admin.prueba');
+  `);
   return { p, claves };
 }
 

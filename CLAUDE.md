@@ -29,9 +29,9 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 - **Logos**: en Sepia Equipo va el logo horizontal azul de la tienda (`equipo/iconos/logo.png`) en la carga, la entrada, la barra y el pie; ya no el «sepia.» ni el «sepia coffee · SEPIA CREW» escritos con letras (Manuel, 22 oct). Logo de la tienda: horizontal azul. Logo cuadrado (crema): ícono de la app
   descargable y de la pestaña del navegador (`shopify/equipo/iconos/`, y favicon del tema).
 - **La consola es una app aparte**: sin el menú de sepiacoffee.cl; su logo vuelve al inicio del sitio y una pestaña «Nosotros» lleva a `/pages/nosotros`.
-- **Entrada separada**: pestaña «Equipo» (ID y clave) y pestaña «Administración» (código al correo o correo y clave; la clave se crea la primera
-  vez). Una misma persona puede ser barista y administración, con cuentas distintas. «Vista barista» y «Administrar» son **solo** de administración
-  y la base lo exige.
+- **Una sola entrada** (Manuel, 22 oct; reemplaza a la entrada separada): todos entran con ID y clave. La administración es una cuenta de barista
+  marcada (`accesos.admin`, con `select public.hacer_admin('su.id');`): es barista y administración a la vez y cambia con «Vista barista» / «Administración».
+  Ese botón y «Administrar» son **solo** de administración y la base lo exige. La entrada por correo (`public.admins`) ya no está en la consola.
 - **Fuera de la consola**: historia del café y «quiénes somos» (el Nosotros es el del sitio), fotos del turno, «Necesito ayuda», pantalla de
   bienvenida con granos, y boletas y pagos (siguen en el portal de baristas).
 - **De Jorge se tomó** la navegación y la forma (barra, tarjetas de evento, pestañas y próximo turno, perfil por secciones, campana de avisos,
@@ -42,9 +42,9 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v5`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v6`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
-  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (155 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
+  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (145 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
 - **Supabase**: se corre `esquema.sql` y después `equipo.sql` en el SQL Editor cuando cambian. La URL y la clave pública (publishable) del proyecto están en Supabase →
   Project Settings → API; en el repo van como marcadores (`SUPABASE_URL`, `SUPABASE_CLAVE`) y los valores reales solo se suben al tema (`snippets/sepia-equipo-conexion.liquid`).
@@ -60,21 +60,23 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   para atraparlo.
 - La interfaz de Jorge hidrata `document` completo (React 19): agregar elementos al `<body>` antes de que cargue rompe la hidratación.
 - La tienda impide mostrarse dentro de otra página (`X-Frame-Options: DENY`): por eso la consola es una página completa y no un iframe ni parte del tema.
-- `signInWithOtp` con `shouldCreateUser: false`: el código por correo solo llega a correos que ya existen en Supabase Auth. Para sumar un administrador: `select public.crear_admin('correo@…');`.
+- `signInWithOtp` con `shouldCreateUser: false` (portal de baristas): el código por correo solo llega a correos que ya existen en Supabase Auth (`crear_admin`).
 - En plpgsql, un `count(*)` en el mismo `select` que una función que inserta no ve el insert (instantánea de la sentencia).
 
-## Estado (22 oct 2026)
+## Estado (22 oct 2026, noche)
 
-- Shopify: tema publicado «Sepia Coffee · equipo v3 (borrador)» (`193483571564`). Borrador **«Sepia Coffee · logo nuevo (borrador)» (`193484423532`)**: trae Sepia Equipo **v4** (consola aparte, «Nosotros», íconos),
-  logo horizontal y favicon; **falta que Manuel lo publique** (puede que ya lo haya hecho: revisar con `themes`). Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta «Portal Baristas» a `/pages/equipo`.
-  Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Ajuste del logo en el tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
-- Supabase: ya tiene `esquema.sql` y `equipo.sql` de una versión anterior. **Falta correr de nuevo el paso 1 (`esquema.sql`: agrega `crear_admin`) y el paso 11 (`equipo.sql`: agrega `adminClavePendiente`), y el paso 12**
-  (`select public.crear_admin('<correo del administrador>');`). Sin eso la entrada de administración con código no funciona.
-- Pruebas: SQL admin-clave 49, equipo 149, accesos 143, rls 184, automatización 143, historial 72; interfaz de Sepia Equipo 155.
+- Shopify: tema publicado **«Sepia Coffee · logo nuevo (borrador)» (`193484423532`)**, con Sepia Equipo v4. Borrador **«Sepia Coffee · equipo v6 (borrador)» (`193491042668`)**:
+  trae v6 (logo de la tienda en la consola y una sola entrada); **falta que Manuel lo publique**. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
+  «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
+- Página «Trabaja con nosotros»: formulario de postulación (formulario de contacto de Shopify) y botón a la consola; copia en `shopify/paginas/trabaja-con-nosotros.html`.
+  Los formularios de contacto (cotización, contacto, postulación) llegan al correo de contacto de la tienda (hoy `manuel@sepiacoffee.cl`).
+- Supabase: al día con este repositorio (migración `admin_con_cuenta_de_barista` aplicada). Administración con cuenta de barista: `jorge.hurtado`. Manuel no tiene cuenta de barista todavía.
+- Pruebas: SQL admin-clave 49, admin-barista 26, equipo 149, accesos 143, rls 184, automatización 143, historial 72; interfaz de Sepia Equipo 145.
 
 ## Pendientes y decisiones abiertas
 
-1. Que Manuel corra los pasos de Supabase de arriba y publique el borrador.
+1. Que Manuel publique el borrador v6, y antes tenga su propia cuenta de barista marcada como administración (si no, no puede entrar a la consola).
+   Correos: que cotizaciones, contacto y postulaciones lleguen también a `contacto@sepiacoffee.cl` (correo de contacto de la tienda + grupo o reenvío en Google Workspace).
 2. Apagar el registro abierto de usuarios en Supabase (en los ajustes de Authentication; recomendado). Los accesos se crean desde la administración, no hace falta que nadie se registre solo.
 3. Apps Script (calendario y correos): puesta en marcha pendiente (`MODO_PRUEBA` = `no` e `instalarDisparadores`); ver LEEME, sección «Automatización».
 4. Este repositorio es **público** y ahora contiene el código compilado de Jorge: Manuel debe decidir si lo pasa a privado.

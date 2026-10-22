@@ -229,8 +229,10 @@ begin
   select * into bar from public.baristas where id = uid;
   nombre := coalesce(bar.nombre, acc.nombre, initcap(replace(split_part(correo, '@', 1), '.', ' ')));
   permitido := adm or (acc.id is not null and acc.activo);
-  cambiar := (not adm) and acc.id is not null and acc.debe_cambiar_clave;
-  perfil_requerido := (not adm) and bar.id is null;
+  -- Quien entra con ID y clave (también la administración con cuenta de barista) cambia su clave y completa
+  -- su perfil como cualquiera del equipo. La administración por correo (sin cuenta de barista) no.
+  cambiar := acc.id is not null and acc.debe_cambiar_clave;
+  perfil_requerido := acc.id is not null and bar.id is null;
 
   base := jsonb_build_object(
     'signedIn', true, 'passwordRequired', cambiar, 'allowed', permitido, 'profileRequired', perfil_requerido,
@@ -238,7 +240,7 @@ begin
     'adminClavePendiente', adm and exists (select 1 from public.admins a where a.email = correo and not a.clave_activa),
     'memberId', case when bar.id is not null then bar.id else null end,
     'user', jsonb_build_object('name', nombre,
-              'email', case when adm then correo else coalesce(acc.usuario, 'cuenta') || '@sepia.invalid' end),
+              'email', case when acc.id is null then correo else acc.usuario || '@sepia.invalid' end),
     'profile', case when bar.id is not null then public.eq_perfil_json(bar) else null end);
   if not permitido or cambiar then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;
   if perfil_requerido then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;

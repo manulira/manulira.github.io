@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v5'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v6'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -79,14 +79,6 @@ ESPECIALES = {(0x40, 0x5b, 0x8b): 'noche'}      # el azul «al pasar el mouse» 
 
 # Estilos que se agregan a los de la interfaz (solo colores de la paleta)
 CSS_EXTRA = """
-/* Sepia: «Equipo» | «Administración» en la entrada */
-.login-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 16px;padding:4px;border:1px solid #b9c5d3;border-radius:14px;background:#f2f2f2}
-.login-tabs button{padding:10px 12px;border:0;border-radius:10px;background:transparent;color:#526ea0;font-weight:600;cursor:pointer}
-.login-tabs button.active{background:#526ea0;color:#fff}
-.login-tabs button:focus-visible{outline:2px solid #526ea0;outline-offset:2px}
-/* Sepia: espacios de la pantalla para crear la clave de administración */
-.required-profile>form{margin-top:16px}
-.required-profile>.secondary-btn{margin-top:12px}
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
 /* Sepia: el logo de la tienda (imagen) en la carga, la entrada, la barra y el pie */
@@ -209,25 +201,12 @@ def armar_js():
             t = cambiar(t, 'pattern:`[A-Za-z0-9-]{3,40}`', 'pattern:`[A-Za-z0-9][A-Za-z0-9._\\\\-]{2,29}`', 1, nombre)
             # Sin «service worker» (no hay archivo para él en la tienda).
             t = cambiar(t, 'navigator.serviceWorker.register(`/sw.js`).catch(()=>{})', '0', 1, nombre)
-            # ---- La entrada: «Equipo» y «Administración» por separado ----
-            # Una misma persona puede trabajar como barista y como administración: cada una entra por su lado. El equipo
-            # entra con ID y clave; la administración, con un código al correo o con correo y clave (la clave se crea la
-            # primera vez que entra con código). El código nuevo está en parches/acceso-admin.js.
+            # ---- La entrada: una sola, con ID y clave (Manuel, 22 oct) ----
+            # Todos entran igual. La administración es una cuenta de barista marcada (accesos.admin, con hacer_admin):
+            # adentro cambia de vista con «Vista barista» / «Administrar», que solo ve quien es administración (la base
+            # lo exige). parches/entrada.js trae lo que usa la entrada (la dirección de «Nosotros»).
             t = cambiar(t, 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)',
-                        leer_parche('acceso-admin.js') + 'function we({onSuccess:e}){let[SM,SS]=(0,D.useState)(`equipo`),[t,n]=(0,D.useState)(``)', 1, nombre)
-            t = cambiar(t, '(0,W.jsx)(`span`,{className:`eyebrow`,children:`EQUIPO SEPIA`})',
-                        '(0,W.jsx)(`span`,{className:`eyebrow`,children:SM===`equipo`?`EQUIPO SEPIA`:`ADMINISTRACIÓN SEPIA`})', 1, nombre)
-            t = cambiar(t, '(0,W.jsx)(`h1`,{children:`Bienvenido al equipo`}),(0,W.jsx)(`p`,{children:`Ingresa con el ID y la clave que te entregó Sepia.`})',
-                        '(0,W.jsx)(`h1`,{children:SM===`equipo`?`Bienvenido al equipo`:`Administración`}),'
-                        '(0,W.jsx)(`p`,{children:SM===`equipo`?`Ingresa con el ID y la clave que te entregó Sepia.`:`Entra con un código al correo o con tu clave.`})', 1, nombre)
-            t = cambiar(t, '(0,W.jsxs)(`form`,{className:`ops-card ops-form`,onSubmit:async n=>{n.preventDefault(),c(!0),o(``);try{let n=await fetch(`/api/auth/login`',
-                        '(0,W.jsx)(SepiaPestanas,{modo:SM,cambiar:SS}),SM===`equipo`?(0,W.jsxs)(`form`,{className:`ops-card ops-form`,onSubmit:async n=>{n.preventDefault(),c(!0),o(``);try{let n=await fetch(`/api/auth/login`', 1, nombre)
-            t = cambiar(t, 'restablecerla.`})]})]})}function Te',
-                        'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e})]})}function Te', 1, nombre)
-            # La primera vez que la administración entra con código, se le pide crear su clave.
-            t = cambiar(t, 'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});',
-                        'if(e.passwordRequired)return(0,W.jsx)(Te,{required:!0,onSuccess:F});'
-                        'if(e.adminClavePendiente&&!sepiaClaveOmitida())return(0,W.jsx)(SepiaCrearClave,{onDone:F});', 1, nombre)
+                        leer_parche('entrada.js') + 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)', 1, nombre)
             # Esta consola es una aplicación aparte (sin el menú de la tienda), pero su logo lleva al inicio de
             # sepiacoffee.cl y hay una pestaña «Nosotros» que lleva a la página Nosotros del sitio.
             t = cambiar(t, '(0,W.jsx)(`a`,{href:`#eventos`,children:(0,W.jsx)(lt,{})})',
@@ -242,8 +221,8 @@ def armar_js():
                            '(0,W.jsx)(`span`,{className:`brand-divider`}),(0,W.jsxs)(`span`,{className:`brand-caption`,children:[`SEPIA`,(0,W.jsx)(`br`,{}),`CREW`]})]})}',
                         'var SEPIA_LOGO=(window.SEPIA_EQUIPO&&window.SEPIA_EQUIPO.files||{})[`sepia-coffee-logo.png`]||`/images/sepia-coffee-logo.png`;'
                         'function lt(){return(0,W.jsx)(`div`,{className:`brand`,children:(0,W.jsx)(`img`,{className:`brand-logo`,src:SEPIA_LOGO,alt:`Sepia Coffee`})})}', 1, nombre)
-            t = cambiar(t, 'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e})]})}function Te',
-                        'restablecerla.`})]}):(0,W.jsx)(SepiaAdmin,{onSuccess:e}),'
+            t = cambiar(t, 'restablecerla.`})]})]})}function Te',
+                        'restablecerla.`})]}),'
                         '(0,W.jsx)(`a`,{className:`login-nosotros`,href:SEPIA_NOSOTROS,children:`Nosotros`})]})}function Te', 1, nombre)
             t = cambiar(t, 'function L(e){x(e),location.hash=e,y(``),o(``)}',
                         'function L(e){if(e===`nosotros`){location.href=SEPIA_NOSOTROS;return}x(e),location.hash=e,y(``),o(``)}', 1, nombre)

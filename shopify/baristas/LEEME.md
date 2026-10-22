@@ -316,12 +316,13 @@ base de datos de este portal: mismas cuentas, misma clave, mismos eventos y post
 cuentas, los IDs y las claves temporales se siguen creando y restableciendo como hasta ahora, desde el portal de baristas o desde
 «Equipo» en esta página.
 
-**Entrar**: la entrada tiene dos pestañas, separadas porque una misma persona puede trabajar como barista y como administración
-(con dos cuentas distintas). **Equipo**: ID y clave, como la dejó Jorge. **Administración**: con un código al correo o con correo y clave. La
-primera vez que entra con código se le pide crear su clave (mínimo 10 caracteres; puede dejarlo para después con «Ahora no»); desde entonces
-puede elegir. Solo administran quienes están en `public.admins`, y la base de datos lo decide: un barista no ve «Vista barista» ni «Administrar» ni
-recibe datos de administración aunque los pida. Para sumar a alguien: `select public.crear_admin('correo@ejemplo.cl');` en el SQL Editor (crea su
-cuenta, para que Supabase le pueda mandar el código, y lo agrega a la lista).
+**Entrar**: una sola entrada, con ID y clave, para todos (Manuel, 22 oct). La administración es una **cuenta de barista marcada**: la misma
+persona trabaja como barista y como administración con un solo ID. Adentro cambia de vista con **«Vista barista»** / **«Administración»**; ese botón
+solo lo ve quien está marcado, y la base de datos lo decide (`es_admin()`): un barista no ve «Vista barista» ni «Administrar» ni recibe datos de
+administración aunque los pida. La administración con cuenta de barista cambia su clave temporal y completa su perfil como cualquiera del equipo.
+Para marcar o desmarcar a alguien, en el SQL Editor: `select public.hacer_admin('camila.perez');` y `select public.hacer_admin('camila.perez', false);`.
+Si su acceso se desactiva, deja de ser administración. (La administración por correo de `public.admins` sigue existiendo para el portal de baristas,
+pero la consola ya no tiene esa entrada.)
 
 **Una aplicación aparte, con salida al sitio**: la consola es una página completa, **sin el menú de sepiacoffee.cl** (no usa el encabezado ni el pie de la
 tienda). Su logo (en la entrada y en la barra de arriba) lleva al inicio de la página web, y hay una pestaña **«Nosotros»** (también en la entrada)
@@ -376,7 +377,8 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   sincronización del calendario y sus resguardos) y `pruebas/accesos.sql` (143: crear, restablecer,
   desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
   `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
-  `pruebas/admin-clave.sql` (49: entrada de la administración con clave o código, y agregar administradores) y `pruebas/equipo.sql` (149: las funciones de
+  `pruebas/admin-clave.sql` (49: entrada de la administración con clave o código, y agregar administradores) y
+  `pruebas/admin-barista.sql` (26: la administración con cuenta de barista, `hacer_admin` y el cambio de vista) y `pruebas/equipo.sql` (149: las funciones de
   Sepia Equipo). Se corren con `psql` sobre una base vacía: primero `pruebas/shim-supabase.sql`, luego `esquema.sql` (y `equipo.sql`
   para las pruebas de Sepia Equipo), luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
@@ -388,7 +390,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
-  de pruebas) → 155 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de pruebas) → 145 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
   de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
   postular con y sin camioneta, cupos, cancelar (24 horas), foto de perfil, ranking, avisos, cambio de clave, salir,
   toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias), las dos formas de entrar de la

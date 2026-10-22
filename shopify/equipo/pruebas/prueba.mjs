@@ -54,15 +54,8 @@ async function iniciarSesion(pg, id, contrasena) {
   await espera(pg, 1800);
 }
 
-/* La administración entra por su pestaña, con correo y clave (la clave ya activada). */
-async function iniciarAdmin(pg, correo, contrasena) {
-  await pg.getByRole('tab', { name: 'Administración' }).click();
-  await pulsa(pg, 'Entrar con correo y clave');
-  await pg.getByRole('textbox', { name: 'Correo electrónico' }).fill(correo);
-  await clave(pg, 'Clave').fill(contrasena);
-  await pulsa(pg, 'Iniciar sesión');
-  await espera(pg, 1800);
-}
+/* La administración entra igual que todos, con su ID y su clave (es una cuenta de barista marcada). */
+const iniciarAdmin = iniciarSesion;
 
 async function crearClave(pg, actual, nuevaClave) {
   await clave(pg, 'Clave actual').fill(actual);
@@ -356,9 +349,9 @@ try {
         values ('e1000000-0000-0000-0000-000000000009', 'Evento Para Asignar', current_date + 9, '15:00', '19:00', 'La Reina', 3, 42000, 'abierto', true);
         insert into public.evento_seguimiento (evento_id) values ('e1000000-0000-0000-0000-000000000009')`);
     const pg = await nueva();
-    await iniciarAdmin(pg, 'admin@ejemplo.test', 'claveadmin1');
+    await iniciarAdmin(pg, 'admin.prueba', 'claveadmin1');
     let t = await texto(pg);
-    ok(/Gestiona experiencias/.test(t) && /Vista barista/.test(t), 'la administración entra con su correo y clave (si activó su clave)');
+    ok(/Gestiona experiencias/.test(t) && /Vista barista/.test(t), 'la administración entra con su ID y su clave');
     await pg.locator('button', { hasText: /^Eventos listos/ }).first().click(); await espera(pg, 500);
     t += ' ' + await texto(pg);
     ok(/Familia Reservada/.test(t) && /Traslado con camioneta/.test(t), 've el cliente y los datos de traslado de los eventos, que los baristas no ven');
@@ -559,7 +552,7 @@ try {
     await pg.context().close();
 
     const adm = await nueva();
-    await iniciarAdmin(adm, 'admin@ejemplo.test', 'claveadmin1');
+    await iniciarAdmin(adm, 'admin.prueba', 'claveadmin1');
     await revisa(adm, 'el inicio de administración');
     await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 900);
     await revisa(adm, 'el panel de administración');
@@ -579,111 +572,56 @@ try {
 
   /* ====================================================================== */
   if (corre('H')) {
-    console.log('\n=== H. Entrada: Equipo y Administración por separado; clave de administración la primera vez ===');
-    db(`select public.crear_admin('nuevo.admin@ejemplo.test'); select public.crear_admin('otro.admin@ejemplo.test');`);
-    const CODIGO = '12345678';
-    const pestana = (pg, nombre) => pg.getByRole('tab', { name: nombre });
+    console.log('\n=== H. Una sola entrada (ID y clave); la administración es una cuenta de barista con cambio de vista ===');
     const pg = await nueva();
     let t = await texto(pg);
-    ok(await pestana(pg, 'Equipo').count() === 1 && await pestana(pg, 'Administración').count() === 1, 'la entrada tiene dos pestañas: «Equipo» y «Administración»');
-    ok(/Bienvenido al equipo/.test(t) && /ID de usuario/.test(t), 'por defecto está la del equipo, con ID y clave (como la dejó Jorge)');
-    await captura(pg, 'H1-equipo');
-    await pg.getByLabel('ID de usuario').fill('admin@ejemplo.test');
-    await clave(pg, 'Clave').fill('claveadmin1');
-    await pulsa(pg, 'Iniciar sesión'); await espera(pg, 1500);
-    ok(/Si eres de administración, entra por la pestaña «Administración»/.test(await texto(pg)), 'si alguien pone un correo en la entrada del equipo, se le indica la pestaña de administración');
-    await pestana(pg, 'Administración').click(); await espera(pg, 400);
-    t = await texto(pg);
-    ok(/ADMINISTRACIÓN SEPIA/.test(t) && /Entrar con un código por correo/.test(t) && /Entrar con correo y clave/.test(t), 'la pestaña de administración ofrece entrar con código o con correo y clave');
+    ok(await pg.getByRole('tab').count() === 0 && !/Administración/.test(t), 'la entrada no tiene pestañas: no hay una entrada aparte para la administración');
+    ok(/Bienvenido al equipo/.test(t) && /ID de usuario/.test(t), 'todos entran con ID y clave');
     ok(await pg.locator('.required-profile-brand img.brand-logo').getAttribute('alt') === 'Sepia Coffee', 'el logo de la entrada es el de la tienda');
-    await captura(pg, 'H2-admin');
-
-    /* Con correo y clave (esta persona ya activó su clave) */
-    await pulsa(pg, 'Entrar con correo y clave'); await espera(pg, 300);
-    await pg.getByRole('textbox', { name: 'Correo electrónico' }).fill('admin@ejemplo.test');
-    await clave(pg, 'Clave').fill('clave incorrecta');
+    await captura(pg, 'H1-entrada');
+    await pg.getByLabel('ID de usuario').fill('mara@ejemplo.test');
+    await clave(pg, 'Clave').fill('lo que sea');
     await pulsa(pg, 'Iniciar sesión'); await espera(pg, 1500);
-    ok(/El correo o la clave no son correctos/.test(await texto(pg)), 'con una clave equivocada no entra');
-    await clave(pg, 'Clave').fill('claveadmin1');
-    await pulsa(pg, 'Iniciar sesión'); await espera(pg, 2000);
-    t = await texto(pg);
-    ok(/Gestiona experiencias/.test(t) && /Vista barista/.test(t), 'con su correo y su clave, la administración entra');
+    ok(/Eso es un correo\. Entra con tu ID/.test(await texto(pg)), 'si alguien pone un correo, se le pide su ID');
     await pg.context().close();
 
-    /* Con código, la primera vez: se le pide crear su clave */
-    const nuevo = await nueva();
-    await pestana(nuevo, 'Administración').click();
-    await pulsa(nuevo, 'Entrar con un código por correo'); await espera(nuevo, 300);
-    await nuevo.getByRole('textbox', { name: 'Correo electrónico' }).fill('desconocido@ejemplo.test');
-    await pulsa(nuevo, 'Enviarme el código'); await espera(nuevo, 1500);
-    ok(/Ese correo no tiene acceso de administración/.test(await texto(nuevo)), 'un correo sin cuenta no recibe código');
-    await nuevo.getByRole('textbox', { name: 'Correo electrónico' }).fill('nuevo.admin@ejemplo.test');
-    await pulsa(nuevo, 'Enviarme el código'); await espera(nuevo, 1500);
-    t = await texto(nuevo);
-    ok(/Revisa tu correo/.test(t) && /nuevo\.admin@ejemplo\.test/.test(t), 'a un correo de administración se le pide el código que llegó');
-    await nuevo.getByRole('textbox', { name: 'Código' }).fill('99999999');
-    await pulsa(nuevo, 'Entrar', { exact: true }); await espera(nuevo, 1500);
-    ok(/El código no es válido o ya venció/.test(await texto(nuevo)), 'un código equivocado no entra');
-    await nuevo.getByRole('textbox', { name: 'Código' }).fill(CODIGO);
-    await pulsa(nuevo, 'Entrar', { exact: true }); await espera(nuevo, 2000);
-    t = await texto(nuevo);
-    ok(/Crea tu clave de administración/.test(t), 'después del código, la primera vez, le pide crear su clave');
-    await captura(nuevo, 'H3-crear-clave');
-    ok(db(`select clave_activa::text from public.admins where email = 'nuevo.admin@ejemplo.test'`) === 'false', 'hasta ese momento la entrada con clave sigue apagada');
-    await clave(nuevo, 'Clave').fill('una frase muy larga 1');
-    await clave(nuevo, 'Repite la clave').fill('otra frase muy larga 2');
-    await pulsa(nuevo, 'Guardar mi clave'); await espera(nuevo, 1500);
-    ok(/Las dos claves no son iguales/.test(await texto(nuevo)), 'si las dos claves no son iguales, avisa');
-    await clave(nuevo, 'Repite la clave').fill('una frase muy larga 1');
-    await pulsa(nuevo, 'Guardar mi clave'); await espera(nuevo, 2000);
-    t = await texto(nuevo);
-    ok(/Gestiona experiencias/.test(t) && /Vista barista/.test(t), 'con la clave guardada, entra a la administración');
-    ok(db(`select clave_activa::text from public.admins where email = 'nuevo.admin@ejemplo.test'`) === 'true', 'y queda activada la entrada con clave');
-    await nuevo.reload(); await entrarSiHaySplash(nuevo); await espera(nuevo, 1200);
-    ok(/Gestiona experiencias/.test(await texto(nuevo)), 'al recargar sigue adentro y ya no le pide la clave');
-    await nuevo.context().close();
+    /* Mara: barista con clave propia y perfil. Todavía no es administración. */
+    db(`select public.crear_acceso('mara.prueba', 'Mara Prueba');
+        update auth.users set encrypted_password = extensions.crypt('mara frase segura 1', extensions.gen_salt('bf')) where email = 'mara.prueba@equipo.sepiacoffee.cl';
+        update public.accesos set debe_cambiar_clave = false where usuario = 'mara.prueba';
+        insert into public.baristas (id, nombre, rut, correo, telefono, banco, tipo_cuenta, numero_cuenta, talla_camisa, tiene_camioneta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
+          select id, 'Mara Prueba', '${rut(20000099)}', 'mara@ejemplo.test', '+56987650099', 'BCI', 'Cuenta RUT', '20000099', 'M', false, true, true, 'x', true from public.accesos where usuario = 'mara.prueba'`);
+    const mara = await nueva();
+    await iniciarSesion(mara, 'mara.prueba', 'mara frase segura 1');
+    t = await texto(mara);
+    ok(/Hola, Mara/.test(t) && !/Vista barista/.test(t) && await mara.getByRole('button', { name: 'Administrar' }).count() === 0, 'sin marcar, Mara entra como barista y no tiene el cambio de vista');
+    await mara.context().close();
 
-    const conClave = await nueva();
-    await pestana(conClave, 'Administración').click();
-    await pulsa(conClave, 'Entrar con correo y clave'); await espera(conClave, 300);
-    await conClave.getByRole('textbox', { name: 'Correo electrónico' }).fill('nuevo.admin@ejemplo.test');
-    await clave(conClave, 'Clave').fill('una frase muy larga 1');
-    await pulsa(conClave, 'Iniciar sesión'); await espera(conClave, 2000);
-    ok(/Gestiona experiencias/.test(await texto(conClave)), 'la próxima vez puede entrar con su correo y la clave que creó');
-    await conClave.context().close();
+    /* Se marca como administración (select public.hacer_admin('mara.prueba') en el SQL Editor) */
+    ok(db(`select public.hacer_admin('mara.prueba')->>'admin'`) === 'true', 'se marca su cuenta como administración');
+    const dual = await nueva();
+    await iniciarSesion(dual, 'mara.prueba', 'mara frase segura 1');
+    t = await texto(dual);
+    ok(/Gestiona experiencias/.test(t) && /Vista barista/.test(t), 'con el mismo ID y la misma clave entra a la administración, con el botón «Vista barista»');
+    await captura(dual, 'H2-administracion');
+    await pulsa(dual, 'Vista barista'); await espera(dual, 1500);
+    t = await texto(dual);
+    ok(/Hola, Mara/.test(t) && !/Gestiona experiencias/.test(t), '«Vista barista» la deja como barista, con su nombre');
+    ok(await dual.getByRole('button', { name: /Administrar|Administración/ }).count() > 0, 'y desde ahí puede volver a la administración');
+    await captura(dual, 'H3-vista-barista');
+    await abrirPostulacion(dual, 'Coffee Break Un Cupo');
+    ok(await dual.locator('input[type=radio][value=none]').count() === 1, 'como barista puede postular a un evento');
+    await dual.keyboard.press('Escape'); await espera(dual, 300);
+    ok(dual.errores.length === 0, 'sin errores en la consola' + (dual.errores.length ? ': ' + dual.errores.join(' · ') : ''));
+    await dual.context().close();
 
-    /* «Ahora no» */
-    const otro = await nueva();
-    await pestana(otro, 'Administración').click();
-    await pulsa(otro, 'Entrar con correo y clave'); await espera(otro, 300);
-    await otro.getByRole('textbox', { name: 'Correo electrónico' }).fill('otro.admin@ejemplo.test');
-    await clave(otro, 'Clave').fill('lo que sea');
-    await pulsa(otro, 'Iniciar sesión'); await espera(otro, 1500);
-    ok(/El correo o la clave no son correctos/.test(await texto(otro)), 'quien aún no tiene clave no puede entrar con clave');
-    await pulsa(otro, 'Volver'); await espera(otro, 200);
-    await pulsa(otro, 'Entrar con un código por correo'); await espera(otro, 200);
-    await otro.getByRole('textbox', { name: 'Correo electrónico' }).fill('otro.admin@ejemplo.test');
-    await pulsa(otro, 'Enviarme el código'); await espera(otro, 1500);
-    await otro.getByRole('textbox', { name: 'Código' }).fill(CODIGO);
-    await pulsa(otro, 'Entrar', { exact: true }); await espera(otro, 2000);
-    ok(/Crea tu clave de administración/.test(await texto(otro)), 'la otra persona también ve la petición');
-    await pulsa(otro, 'Ahora no'); await espera(otro, 1800);
-    ok(/Gestiona experiencias/.test(await texto(otro)), '«Ahora no» la deja entrar solo con el código');
-    await otro.reload(); await entrarSiHaySplash(otro); await espera(otro, 1200);
-    ok(/Gestiona experiencias/.test(await texto(otro)), 'y en esa sesión no se lo vuelve a pedir');
-    ok(db(`select clave_activa::text from public.admins where email = 'otro.admin@ejemplo.test'`) === 'false', 'la clave sigue sin activarse');
-    await otro.context().close();
-
-    /* Un código de alguien que no es administración no sirve de nada */
-    const intruso = await nueva();
-    await pestana(intruso, 'Administración').click();
-    await pulsa(intruso, 'Entrar con un código por correo'); await espera(intruso, 200);
-    await intruso.getByRole('textbox', { name: 'Correo electrónico' }).fill('beto.prueba@equipo.sepiacoffee.cl');
-    await pulsa(intruso, 'Enviarme el código'); await espera(intruso, 1500);
-    await intruso.getByRole('textbox', { name: 'Código' }).fill(CODIGO);
-    await pulsa(intruso, 'Entrar', { exact: true }); await espera(intruso, 2000);
-    ok(/Ese correo no tiene acceso de administración/.test(await texto(intruso)) && await intruso.evaluate(() => localStorage.getItem('sepia-baristas-auth')) === null, 'una cuenta que no es de administración no entra por ahí (y no queda con sesión)');
-    await intruso.context().close();
+    /* Al desmarcarla vuelve a ser solo barista */
+    db(`select public.hacer_admin('mara.prueba', false)`);
+    const sola = await nueva();
+    await iniciarSesion(sola, 'mara.prueba', 'mara frase segura 1');
+    t = await texto(sola);
+    ok(/Hola, Mara/.test(t) && !/Vista barista|Gestiona experiencias/.test(t), 'al desmarcarla, vuelve a ser solo barista');
+    await sola.context().close();
 
     /* Los baristas no pueden pasar a la vista de administración */
     const beto = await nueva();
@@ -693,8 +631,10 @@ try {
     await beto.evaluate(() => { location.hash = 'admin'; }); await espera(beto, 800);
     t = await texto(beto);
     ok(!/Crear evento|Preparar eventos|Turnos y ganancias/.test(t), 'ni escribiendo la dirección de esa pantalla');
-    const pideAdmin = p.rpc({ sub: db(`select id from public.baristas where nombre = 'Beto Prueba'`), email: 'beto.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] }, 'eq_estado', { p_vista: null });
+    const claims = { sub: db(`select id from public.baristas where nombre = 'Beto Prueba'`), email: 'beto.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] };
+    const pideAdmin = p.rpc(claims, 'eq_estado', { p_vista: null });
     ok(pideAdmin.data && pideAdmin.data.admin === false && pideAdmin.data.canAdmin === false && pideAdmin.data.members.length === 0, 'y la base de datos no le entrega datos de administración aunque los pida');
+    ok(p.rpc(claims, 'hacer_admin', { p_usuario: 'beto.prueba' }).error, 'ni se puede marcar solo como administración');
     ok(beto.errores.length === 0, 'sin errores en la consola' + (beto.errores.length ? ': ' + beto.errores.join(' · ') : ''));
     await beto.context().close();
   }
@@ -743,7 +683,7 @@ try {
     await mov.context().close();
 
     const adm = await nueva(390);
-    await iniciarAdmin(adm, 'admin@ejemplo.test', 'claveadmin1');
+    await iniciarAdmin(adm, 'admin.prueba', 'claveadmin1');
     if (!/Gestiona experiencias|Hola/.test(await texto(adm))) { await adm.context().close(); ok(false, 'no se pudo entrar como administración para probar el celular'); }
     else {
       cajas = await adm.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));

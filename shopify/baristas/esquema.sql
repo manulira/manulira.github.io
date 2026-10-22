@@ -195,6 +195,40 @@ language sql stable security definer set search_path = '' as $$
   select exists (select 1 from public.accesos a where a.id = auth.uid() and a.activo);
 $$;
 
+-- Administración con cuenta de barista: una misma persona entra con su ID y su clave y trabaja como barista
+-- y como administración (en Sepia Equipo cambia de vista con «Vista barista» / «Administrar»). Se marca con
+-- hacer_admin('su.id'). Si el acceso se desactiva, deja de ser administración.
+alter table public.accesos add column if not exists admin boolean not null default false;
+
+-- es_admin(), ahora también con la cuenta de barista marcada (redefinida acá porque arriba todavía no
+-- existía la tabla de accesos). El correo de admins sigue valiendo igual que antes.
+create or replace function public.es_admin() returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.accesos c where c.id = auth.uid() and c.admin and c.activo)
+      or exists (
+    select 1 from public.admins a
+    where a.email = lower(coalesce(auth.jwt() ->> 'email', ''))
+      and (a.clave_activa or not exists (
+             select 1 from jsonb_array_elements(coalesce(auth.jwt() -> 'amr', '[]'::jsonb)) x
+             where x ->> 'method' = 'password')));
+$$;
+
+-- Marca (o desmarca) como administración la cuenta de barista con ese ID. Desde el SQL Editor o por la
+-- administración:  select public.hacer_admin('camila.perez');   select public.hacer_admin('camila.perez', false);
+create or replace function public.hacer_admin(p_usuario text, p_admin boolean default true) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  u text := lower(btrim(coalesce(p_usuario, '')));
+  fila public.accesos;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración agrega administradores' using errcode = '42501';
+  end if;
+  update public.accesos set admin = coalesce(p_admin, true) where usuario = u returning * into fila;
+  if fila.id is null then raise exception 'No hay una cuenta con el ID %', u; end if;
+  return jsonb_build_object('usuario', fila.usuario, 'nombre', fila.nombre, 'admin', fila.admin, 'activo', fila.activo);
+end $$;
+
 -- ---------------------------------------------------------------------------
 -- 3. Baristas
 -- ---------------------------------------------------------------------------
@@ -1502,6 +1536,7 @@ create policy traslado_admin on public.evento_traslado for all to authenticated
 revoke all on function public.clave_temporal() from public, anon, authenticated;
 revoke all on function public.crear_acceso(text, text) from public, anon;
 revoke all on function public.crear_admin(text) from public, anon;
+revoke all on function public.hacer_admin(text, boolean) from public, anon;
 revoke all on function public.restablecer_clave(uuid) from public, anon;
 revoke all on function public.cambiar_estado_acceso(uuid, boolean) from public, anon;
 revoke all on function public.eliminar_acceso(uuid) from public, anon;
@@ -1515,6 +1550,7 @@ revoke all on function public.traslados() from public, anon;
 revoke all on function public.tiene_acceso_activo() from public, anon;
 grant execute on function public.crear_acceso(text, text) to authenticated;
 grant execute on function public.crear_admin(text) to authenticated;
+grant execute on function public.hacer_admin(text, boolean) to authenticated;
 grant execute on function public.restablecer_clave(uuid) to authenticated;
 grant execute on function public.cambiar_estado_acceso(uuid, boolean) to authenticated;
 grant execute on function public.eliminar_acceso(uuid) to authenticated;

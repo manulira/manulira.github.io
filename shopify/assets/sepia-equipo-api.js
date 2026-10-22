@@ -2,8 +2,8 @@
  *
  * La interfaz (assets/sepia-equipo/*) fue hecha para hablar con un servidor propio: le pide todo a /api/*.
  * Acá ese servidor es Supabase. Este archivo se pone ANTES de la interfaz e intercepta esas llamadas:
- *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth); la administración entra aparte
- *                     (/api/auth/admin/*: código por correo, o correo y clave; la clave se crea la primera vez)
+ *   · /api/auth/*   → inicio y cierre de sesión, cambio de clave (Supabase Auth). Todos entran con ID y clave;
+ *                     la administración es una cuenta de barista marcada (hacer_admin, esquema.sql)
  *   · /api/crew     → funciones eq_estado y eq_accion (equipo.sql): eventos, postulaciones, perfil, administración
  *   · /api/ranking, /api/events/…/team, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
  *   · /api/profile/photo → almacenamiento privado de las fotos de perfil
@@ -220,7 +220,7 @@
       var id = String(d.id || '').trim().toLowerCase();
       var clave = String(d.password || '');
       if (!id || !clave) return falla(400, 'Escribe tu ID y tu clave.');
-      if (id.indexOf('@') >= 0) return falla(400, 'Eso es un correo. Si eres de administración, entra por la pestaña «Administración».');
+      if (id.indexOf('@') >= 0) return falla(400, 'Eso es un correo. Entra con tu ID (por ejemplo, camila.perez) y tu clave.');
       var correo = id + '@' + DOMINIO_ACCESO;
       var r = await sb.auth.signInWithPassword({ email: correo, password: clave });
       if (r.error) throw r.error;
@@ -251,59 +251,6 @@
       if (a.error) throw a.error;
       await rpc('acceso_clave_cambiada');                           // deja de pedirle el cambio
       await sb.auth.signOut({ scope: 'others' });                  // cierra las sesiones de otros aparatos
-      return ok({ ok: true });
-    }
-
-    /* ----- Administración: código por correo, o correo y clave ----- */
-    if (ruta === '/api/auth/admin/codigo' && metodo === 'POST') {
-      var ac = JSON.parse(init.body || '{}');
-      var correoA = String(ac.email || '').trim().toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoA)) return falla(400, 'Escribe un correo válido.');
-      var otp = await sb.auth.signInWithOtp({ email: correoA, options: { shouldCreateUser: false } });
-      if (otp.error) throw otp.error;
-      return ok({ ok: true });
-    }
-    if (ruta === '/api/auth/admin/verificar' && metodo === 'POST') {
-      var av = JSON.parse(init.body || '{}');
-      var codigo = String(av.code || '').replace(/\s/g, '');
-      if (!/^\d{6,10}$/.test(codigo)) return falla(400, 'El código son solo números, tal como llegó al correo.');
-      var vo = await sb.auth.verifyOtp({ email: String(av.email || '').trim().toLowerCase(), token: codigo, type: 'email' });
-      if (vo.error) throw vo.error;
-      if ((await rpc('es_admin')) !== true) {                           // la base decide quién es administración
-        await sb.auth.signOut({ scope: 'local' });
-        return falla(403, 'Ese correo no tiene acceso de administración.');
-      }
-      limpiarFotos();
-      return ok({ ok: true });
-    }
-    if (ruta === '/api/auth/admin/clave' && metodo === 'POST') {
-      var ak = JSON.parse(init.body || '{}');
-      var pw = String(ak.password || '');
-      var correoK = String(ak.email || '').trim().toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoK)) return falla(400, 'Escribe tu correo de administración.');
-      if (!pw) return falla(400, 'Escribe tu clave.');
-      var si = await sb.auth.signInWithPassword({ email: correoK, password: pw });
-      if (si.error) return falla(401, 'El correo o la clave no son correctos.');
-      if ((await rpc('es_admin')) !== true) {                           // una clave sirve solo si esa persona la activó con un código
-        await sb.auth.signOut({ scope: 'local' });
-        return falla(403, 'Esta cuenta todavía no tiene activada la entrada con clave. Entra con un código por correo: ahí podrás crear tu clave.');
-      }
-      limpiarFotos();
-      return ok({ ok: true });
-    }
-    if (ruta === '/api/auth/admin/crear-clave' && metodo === 'POST') {
-      var sc = await exigirSesion();
-      var cc = JSON.parse(init.body || '{}');
-      var c1 = String(cc.password || ''), c2 = String(cc.confirm || '');
-      var local = String((sc.user.email || '').split('@')[0] || '').toLowerCase();
-      if (c1.length < 10) return falla(400, 'La clave tiene que tener al menos 10 caracteres.');
-      if (c1 !== c2) return falla(400, 'Las dos claves no son iguales.');
-      if (local.length >= 4 && c1.toLowerCase().indexOf(local) >= 0) return falla(400, 'La clave no puede llevar tu correo.');
-      if ((await rpc('es_admin')) !== true) return falla(403, 'Solo la administración crea esta clave.');
-      var up = await sb.auth.updateUser({ password: c1 });
-      if (up.error) throw up.error;
-      await rpc('admin_activar_clave', { p_activa: true });             // desde ahora puede elegir: código o clave
-      await sb.auth.signOut({ scope: 'others' });
       return ok({ ok: true });
     }
 
