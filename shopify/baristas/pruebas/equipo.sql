@@ -35,6 +35,9 @@ insert into auth.users(id, email) values
   ('00000000-0000-0000-0000-0000000000a3', 'hilda@equipo.sepiacoffee.cl'), -- debe cambiar la clave
   ('00000000-0000-0000-0000-0000000000a4', 'zoe@ejemplo.test');            -- cuenta sin acceso
 insert into public.admins(email) values ('admin@ejemplo.test');
+-- Estas pruebas son de cupos y reglas de Sepia Equipo: todas las postulaciones se confirman solas (la regla de
+-- los 2 eventos trabajados y la tarjeta amarilla se prueban en ingreso.sql).
+update public.config set eventos_para_confirmar = 0 where id = 1;
 insert into public.accesos(id, usuario, nombre, debe_cambiar_clave, activo) values
   ('00000000-0000-0000-0000-0000000000a1', 'ana.prueba', 'Ana Prueba', false, true),
   ('00000000-0000-0000-0000-0000000000b1', 'beto.prueba', 'Beto Prueba', false, true),

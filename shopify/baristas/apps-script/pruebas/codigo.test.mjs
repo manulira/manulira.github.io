@@ -194,7 +194,11 @@ const CASOS = [
   { clave: 'resumen_cierre:2027-03-18', tipo: 'resumen_cierre', datos: { boletas: [{ barista: 'Ana Prueba', rut: '11.111.111-1', evento: EV.nombre, fecha: EV.fecha, folio: '123', monto_boleta: 82596, pago_liquido: 70000 }],
     atrasados: [{ evento: 'Otro', fecha: '2027-03-01', dias: 12, boletas_pendientes: 1, pagos_pendientes: 2, documento_cliente_pendiente: true }] } },
   { clave: 'resumen_cierre:2027-03-19', tipo: 'resumen_cierre', datos: { boletas: [], atrasados: [{ evento: 'Otro', fecha: '2027-03-01', dias: 12, boletas_pendientes: 0, pagos_pendientes: 0, documento_cliente_pendiente: true }] } },
+  { clave: 'acceso:a', tipo: 'acceso_nuevo', datos: { nombre: 'Olga Nueva Rojas', usuario: 'olga.nueva', clave: 'ab12-cd34-ef56' } },
+  { clave: 'solicitud:s', tipo: 'solicitud_nueva', datos: { nombre: 'Olga Nueva Rojas', correo: 'olga@ejemplo.test', telefono: '+56955551234', comuna: 'Ñuñoa', edad: 27, rut: null,
+    experiencia: '1 a 3 años', preparado: 'Café y coctelería', donde: 'Cafetería Prueba', disponibilidad: 'Sí, siempre', tiene_auto: 'No', redes: null, mensaje: 'Me gusta el café', creada_en: '2027-03-01T12:00:00Z' } },
 ];
+const DE_INGRESO = ['acceso_nuevo', 'solicitud_nueva'];      // llevan a la consola (/pages/equipo), no al portal
 
 test('cada tipo de correo sale completo, sin undefined ni NaN, y con el enlace del portal', () => {
   for (const item of CASOS) {
@@ -204,7 +208,8 @@ test('cada tipo de correo sale completo, sin undefined ni NaN, y con el enlace d
       assert.doesNotMatch(s, /undefined|NaN|\[object|null/, `${item.tipo} (${item.clave}) ${nombre}`);
     }
     assert.ok(c.asunto.length > 8 && c.asunto.length < 140, c.asunto);
-    if (item.tipo !== 'pago') assert.ok(html.includes('https://sepiacoffee.cl/pages/baristas'), item.tipo + ' sin enlace');
+    if (DE_INGRESO.includes(item.tipo)) assert.ok(html.includes('https://sepiacoffee.cl/pages/equipo'), item.tipo + ' sin enlace a la consola');
+    else if (item.tipo !== 'pago') assert.ok(html.includes('https://sepiacoffee.cl/pages/baristas'), item.tipo + ' sin enlace');
   }
 });
 
@@ -250,6 +255,16 @@ test('asuntos y contenido clave', () => {
   assert.match(t(c('boleta', 'boleta:p:1')), /Retención: 15,25 %/);
   assert.match(t(c('pago')), /Monto: \$70\.000 líquidos/);
   assert.match(c('resumen_cierre', 'resumen_cierre:2027-03-18').asunto, /^Cierres pendientes: 1 boletas por revisar, 1 atrasados/);
+  const acceso = t(c('acceso_nuevo'));
+  assert.match(acceso, /^Hola Ana,/);
+  assert.match(acceso, /ID de usuario: olga\.nueva/);
+  assert.match(acceso, /Clave para entrar la primera vez: ab12-cd34-ef56/);
+  assert.match(acceso, /crear tu propia clave/);
+  const sol = c('solicitud_nueva');
+  assert.match(sol.asunto, /^Nueva solicitud para trabajar con Sepia: Olga Nueva Rojas/);
+  assert.match(t(sol), /Experiencia en barra: 1 a 3 años/);
+  assert.match(t(sol), /Administrar → Solicitudes/);
+  assert.doesNotMatch(t(sol), /RUT:|Instagram o CV:/);       // lo que no escribió, no aparece
 });
 
 // ---------------------------------------------------------------------------

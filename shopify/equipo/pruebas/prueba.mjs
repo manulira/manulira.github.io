@@ -466,7 +466,7 @@ try {
     ok(/Pendiente de pago/.test(t) && /Evento Pasado/.test(t), 'con el detalle del turno y su estado de pago');
     await pulsa(pg, 'Administrar'); await espera(pg, 600);
     t = await texto(pg);
-    ok(!/Boletas/.test(t) && await pg.locator('.admin-menu-card').count() === 5, 'el panel tiene cinco accesos (eventos abiertos, preparar, equipo, ganancias y crear) y ninguno de boletas');
+    ok(!/Boletas/.test(t) && await pg.locator('.admin-menu-card').count() === 6, 'el panel tiene seis accesos (eventos abiertos, preparar, equipo, solicitudes, ganancias y crear) y ninguno de boletas');
 
     /* Vista barista */
     await pulsa(pg, 'Vista barista'); await espera(pg, 1500);
@@ -530,7 +530,10 @@ try {
           }
         }
       };
-      for (const el of document.querySelectorAll('body *')) { revisar(el); revisar(el, '::before'); revisar(el, '::after'); }
+      for (const el of document.querySelectorAll('body *')) {
+        if (el.closest('.sepia-amarilla')) continue;      // la tarjeta amarilla: la única excepción, a pedido de Manuel
+        revisar(el); revisar(el, '::before'); revisar(el, '::after');
+      }
       return [...malos].map(([k, v]) => k + ' en ' + v);
     }, PALETA);
     const revisa = async (pg, donde) => { await captura(pg, 'G-' + donde.replace(/[^a-z]+/gi, '-')); const f = await fuera(pg); ok(f.length === 0, donde + ' usa solo colores de la paleta' + (f.length ? ': ' + f.slice(0, 8).join(' · ') : '')); };
@@ -704,6 +707,92 @@ try {
     for (const i of iconos) dims.push(await ic.evaluate(src => new Promise(r => { const im = new Image(); im.onload = () => r(im.naturalWidth + 'x' + im.naturalHeight); im.onerror = () => r('no carga'); im.src = src; }), new URL(i.src, ORIGEN).href));
     ok(dims.length === 3 && dims.every((d, k) => d === iconos[k].sizes), 'los íconos del manifiesto existen y miden lo que dicen (' + dims.join(', ') + ')');
     await ic.context().close();
+  }
+
+  /* ====================================================================== */
+  if (corre('J')) {
+    console.log('\n=== J. Solicitudes de ingreso, postulaciones que esperan confirmación y tarjeta amarilla ===');
+    db(`update public.config set eventos_para_confirmar = 2 where id = 1`);
+    /* Una solicitud desde «Trabaja con nosotros» (sin sesión) */
+    const sol = p.rpc(null, 'solicitar_ingreso', { p: { nombre: 'Olga Nueva Rojas', correo: 'olga@ejemplo.test', telefono: '+56 9 5555 1234', edad: '27',
+      experiencia: '1 a 3 años', preparado: 'Café y coctelería', donde: 'Cafetería Prueba, 2 años', disponibilidad: 'Sí, siempre', tiene_auto: 'No', mensaje: 'Me gusta el café' } });
+    ok(sol.data && sol.data.ok === true, 'una persona manda su solicitud sin iniciar sesión');
+
+    const adm = await nueva();
+    await iniciarAdmin(adm, 'admin.prueba', 'claveadmin1');
+    await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 900);
+    let t = await texto(adm);
+    ok(/1 solicitud nueva/.test(t), 'al entrar a Administrar, se avisa que hay una solicitud nueva');
+    const tarjetaSol = adm.locator('.admin-menu-card', { hasText: 'Solicitudes' });
+    ok(await tarjetaSol.count() === 1 && /1/.test(await tarjetaSol.locator('.admin-menu-count').innerText()), 'el acceso «Solicitudes» muestra cuántas hay');
+    await tarjetaSol.click(); await espera(adm, 600);
+    t = await texto(adm);
+    ok(/Olga Nueva Rojas/.test(t) && /olga@ejemplo\.test/.test(t) && /1 a 3 años/.test(t) && /Cafetería Prueba, 2 años/.test(t), 'la solicitud se ve con sus datos y su experiencia');
+    await captura(adm, 'J1-solicitudes');
+    await pulsa(adm, 'Aprobar'); await espera(adm, 1800);
+    t = await texto(adm);
+    ok(/Solicitud aprobada: su ID es olga\.nueva/.test(t), 'al aprobar se crea su ID y se avisa que le llegará el correo');
+    ok(/No hay solicitudes pendientes/.test(t), 'y la solicitud ya no está pendiente');
+    ok(db(`select a.usuario || ' ' || a.debe_cambiar_clave || ' ' || (x.clave is not null) || ' ' || x.correo from public.accesos a join public.accesos_por_enviar x on x.acceso_id = a.id where a.usuario = 'olga.nueva'`) === 'olga.nueva true true olga@ejemplo.test',
+       'en la base: la cuenta queda creada y su ID y clave esperan el correo del script');
+
+    /* Nina: barista nueva, sin eventos trabajados */
+    db(`select public.crear_acceso('nina.prueba', 'Nina Prueba');
+        update auth.users set encrypted_password = extensions.crypt('nina frase segura 1', extensions.gen_salt('bf')) where email = 'nina.prueba@equipo.sepiacoffee.cl';
+        update public.accesos set debe_cambiar_clave = false where usuario = 'nina.prueba';
+        insert into public.baristas (id, nombre, rut, correo, telefono, banco, tipo_cuenta, numero_cuenta, talla_camisa, tiene_camioneta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
+          select id, 'Nina Prueba', '${rut(20000088)}', 'nina@ejemplo.test', '+56987650088', 'BCI', 'Cuenta RUT', '20000088', 'M', false, true, true, 'x', true from public.accesos where usuario = 'nina.prueba';
+        insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, baristas_necesarios, pago_manual, estado) values
+          ('e1000000-0000-0000-0000-0000000000j1', 'Evento Para Nina', current_date + 9, '18:00', '22:00', 'Ñuñoa', 3, 40000, 'abierto'),
+          ('e1000000-0000-0000-0000-0000000000j2', 'Otro Para Nina', current_date + 10, '18:00', '22:00', 'Ñuñoa', 3, 40000, 'abierto');
+        insert into public.evento_seguimiento (evento_id) values ('e1000000-0000-0000-0000-0000000000j1'), ('e1000000-0000-0000-0000-0000000000j2') on conflict do nothing`.replace(/0000000000j/g, '00000000009'));
+    const nina = await nueva();
+    await iniciarSesion(nina, 'nina.prueba', 'nina frase segura 1');
+    await postular(nina, 'Evento Para Nina', 'none');
+    t = await texto(nina);
+    ok(/Postulación enviada\. La administración la confirmará/.test(t), 'con menos de 2 eventos trabajados, su postulación queda esperando confirmación (y se le dice)');
+    ok(db(`select p.estado from public.postulaciones p join public.eventos e on e.id = p.evento_id where e.nombre = 'Evento Para Nina'`) === 'postulada', 'en la base queda «postulada»');
+
+    /* La administración la ve pendiente, con cuántos eventos lleva, y la confirma */
+    await adm.reload(); await entrarSiHaySplash(adm); await espera(adm, 1200);
+    await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 800);
+    await adm.getByRole('button', { name: 'Equipo Perfiles y accesos' }).click(); await espera(adm, 800);
+    const fichaNina = adm.locator('article.ops-card', { hasText: 'Nina Prueba' }).first();
+    ok(/0 eventos trabajados · sus postulaciones esperan confirmación/.test(await fichaNina.innerText()), 'en «Equipo» se ve cuántos eventos lleva');
+    await fichaNina.getByRole('button', { name: 'Poner amarilla' }).click(); await espera(adm, 1500);
+    ok(/Tarjeta amarilla puesta/.test(await texto(adm)) && db(`select count(*) from public.amarillas a join public.baristas b on b.id = a.barista_id where b.nombre = 'Nina Prueba'`) === '1', 'la administración le pone la tarjeta amarilla');
+    ok(await adm.locator('article.ops-card', { hasText: 'Nina Prueba' }).first().locator('.sepia-amarilla').count() === 1, 'y la ve junto a su nombre');
+    await captura(adm, 'J2-amarilla');
+    const evNina = db(`select id from public.eventos where nombre = 'Evento Para Nina'`);
+    const eqNina = p.rpc({ sub: db(`select id from public.accesos where usuario = 'admin.prueba'`), email: 'admin.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] }, 'eq_equipo_evento', { p_evento: evNina });
+    ok(eqNina.data && eqNina.data.team.some(x => x.name === 'Nina Prueba' && x.status === 'pending'), 'en el equipo del evento, Nina aparece pendiente');
+    await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 600);
+    await adm.getByRole('button', { name: 'Eventos abiertos Cupos y equipos' }).click(); await espera(adm, 800);
+    await adm.locator('article', { hasText: 'Evento Para Nina' }).last().getByRole('button', { name: 'Ver equipo' }).click(); await espera(adm, 1500);
+    const filaNina = adm.locator('.vehicle-person', { hasText: 'Nina Prueba' });
+    ok(await filaNina.locator('.sepia-amarilla').count() === 1 && /pendiente/.test(await filaNina.innerText()), 'en el equipo del evento se ve pendiente y con su amarilla');
+    await filaNina.getByRole('button', { name: 'Confirmar' }).click(); await espera(adm, 1500);
+    ok(db(`select p.estado from public.postulaciones p join public.eventos e on e.id = p.evento_id where e.nombre = 'Evento Para Nina'`) === 'confirmada', 'la administración la confirma');
+    await adm.keyboard.press('Escape'); await espera(adm, 400);
+
+    /* Nina no sabe que tiene amarilla */
+    await nina.reload(); await entrarSiHaySplash(nina); await espera(nina, 1200);
+    t = await texto(nina);
+    ok(!/amarilla/i.test(t) && await nina.locator('.sepia-amarilla').count() === 0, 'Nina no ve nada de la amarilla');
+    const suyo = p.rpc({ sub: db(`select id from public.accesos where usuario = 'nina.prueba'`), email: 'nina.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] }, 'eq_estado', { p_vista: null });
+    ok(!JSON.stringify(suyo.data).includes('yellow'), 'ni le llega en sus datos');
+
+    /* Quien ya lleva 2 eventos, se confirma solo */
+    db(`insert into public.historial_turnos (nombre, fecha, acceso_id) select 'Nina Prueba', current_date - d, id from public.accesos, (values (300), (200)) v(d) where usuario = 'nina.prueba'`);
+    await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 600);
+    await adm.getByRole('button', { name: 'Equipo Perfiles y accesos' }).click(); await espera(adm, 800);
+    await adm.locator('article.ops-card', { hasText: 'Nina Prueba' }).first().getByRole('button', { name: 'Quitar amarilla' }).click(); await espera(adm, 1500);
+    ok(/Tarjeta amarilla quitada/.test(await texto(adm)), 'la administración le quita la amarilla');
+    await nina.reload(); await entrarSiHaySplash(nina); await espera(nina, 1200);
+    await postular(nina, 'Otro Para Nina', 'none');
+    ok(/¡Turno confirmado!/.test(await texto(nina)) && db(`select p.estado from public.postulaciones p join public.eventos e on e.id = p.evento_id where e.nombre = 'Otro Para Nina'`) === 'confirmada', 'con 2 eventos trabajados y sin amarilla, su postulación se confirma sola');
+    for (const pg of [adm, nina]) { ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : '')); await pg.context().close(); }
+    db(`update public.config set eventos_para_confirmar = 0 where id = 1`);
   }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();

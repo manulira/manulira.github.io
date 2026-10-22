@@ -1062,7 +1062,7 @@ begin
   perform public.exigir_secreto(secreto);
   return coalesce((
     select jsonb_agg(jsonb_build_object('clave', c.clave, 'tipo', c.tipo, 'para', c.para, 'datos', c.datos) order by c.clave)
-    from public.calcular_notificaciones(ahora) c
+    from (select * from public.calcular_notificaciones(ahora) union all select * from public.notificaciones_ingreso(ahora)) c
     where not exists (select 1 from public.notificaciones n where n.clave = c.clave)), '[]'::jsonb);
 end $$;
 
@@ -1074,7 +1074,7 @@ begin
   with ins as (
     insert into public.notificaciones (clave, tipo, evento_id, postulacion_id, enviado_en)
     select c.clave, c.tipo, c.evento_id, c.postulacion_id, ahora
-    from public.calcular_notificaciones(ahora) c
+    from (select * from public.calcular_notificaciones(ahora) union all select * from public.notificaciones_ingreso(ahora)) c
     where c.clave in (select jsonb_array_elements_text(claves))
     on conflict (clave) do nothing
     returning 1)
@@ -1587,3 +1587,270 @@ begin
       using (bucket_id = 'perfiles' and ((storage.foldername(name))[1] = auth.uid()::text or public.es_admin()));
   end if;
 end $storage$;
+
+-- ---------------------------------------------------------------------------
+-- 11. Solicitudes de ingreso, confirmación de postulaciones y tarjeta amarilla
+-- ---------------------------------------------------------------------------
+-- solicitudes ....... las postulaciones de la página «Trabaja con nosotros». Cualquiera la manda
+--                     (solicitar_ingreso); la ve y la resuelve solo la administración, en Sepia Equipo.
+-- accesos_por_enviar  al aprobar una solicitud se crea el acceso, y su ID y clave temporal quedan acá
+--                     hasta que el script de Google le manda el correo a la persona. Al marcarlo como
+--                     enviado, la clave se borra. Nadie la lee desde la web.
+-- amarillas ......... la tarjeta amarilla de un barista. Solo la ve la administración: el barista no
+--                     sabe que la tiene. Mientras la tenga, sus postulaciones esperan confirmación.
+
+alter table public.config add column if not exists eventos_para_confirmar int not null default 2
+  check (eventos_para_confirmar between 0 and 50);                 -- desde cuántos eventos trabajados se confirma solo
+alter table public.config add column if not exists correo_solicitudes text not null default 'contacto@sepiacoffee.cl'
+  check (correo_solicitudes ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]{2,}$');
+
+create table if not exists public.solicitudes (
+  id uuid primary key default gen_random_uuid(),
+  creada_en timestamptz not null default now(),
+  nombre text not null check (char_length(nombre) between 3 and 100),
+  rut text check (rut is null or char_length(rut) <= 20),
+  correo text not null check (correo ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]{2,}$' and char_length(correo) <= 254),
+  telefono text not null check (char_length(telefono) between 6 and 30),
+  comuna text check (comuna is null or char_length(comuna) <= 80),
+  edad int check (edad is null or edad between 18 and 99),
+  redes text check (redes is null or char_length(redes) <= 300),
+  experiencia text check (experiencia is null or char_length(experiencia) <= 60),
+  preparado text check (preparado is null or char_length(preparado) <= 60),
+  donde text check (donde is null or char_length(donde) <= 2000),
+  disponibilidad text check (disponibilidad is null or char_length(disponibilidad) <= 60),
+  tiene_auto text check (tiene_auto is null or char_length(tiene_auto) <= 20),
+  mensaje text check (mensaje is null or char_length(mensaje) <= 3000),
+  estado text not null default 'pendiente' check (estado in ('pendiente', 'aprobada', 'rechazada')),
+  resuelta_en timestamptz,
+  resuelta_por uuid,
+  acceso_id uuid references public.accesos (id) on delete set null
+);
+create index if not exists solicitudes_estado on public.solicitudes (estado, creada_en);
+alter table public.solicitudes enable row level security;     -- sin políticas: se lee solo por las funciones
+revoke all on public.solicitudes from anon, authenticated;
+
+create table if not exists public.accesos_por_enviar (
+  acceso_id uuid primary key references public.accesos (id) on delete cascade,
+  solicitud_id uuid references public.solicitudes (id) on delete set null,
+  correo text not null,
+  clave text,
+  creado_en timestamptz not null default now(),
+  enviado_en timestamptz
+);
+alter table public.accesos_por_enviar enable row level security;
+revoke all on public.accesos_por_enviar from anon, authenticated;
+
+create table if not exists public.amarillas (
+  barista_id uuid primary key references public.baristas (id) on delete cascade,
+  puesta_en timestamptz not null default now(),
+  puesta_por uuid
+);
+alter table public.amarillas enable row level security;
+revoke all on public.amarillas from anon, authenticated;
+
+-- Quita espacios de más y deja null lo vacío (para los textos de la solicitud).
+create or replace function public.texto_limpio(t text, largo int) returns text
+language sql immutable set search_path = '' as $$
+  select nullif(left(regexp_replace(btrim(coalesce(t, '')), '\s+', ' ', 'g'), largo), '')
+$$;
+
+-- La página «Trabaja con nosotros» manda acá la postulación (sin sesión). Si la misma persona (mismo
+-- correo) ya tiene una pendiente, se actualiza en vez de duplicarse. Tope: 30 solicitudes por hora en total.
+create or replace function public.solicitar_ingreso(p jsonb) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  d jsonb := coalesce(p, '{}'::jsonb);
+  n text := public.texto_limpio(d ->> 'nombre', 100);
+  c text := lower(public.texto_limpio(d ->> 'correo', 254));
+  f text := public.texto_limpio(d ->> 'telefono', 30);
+  e int;
+  previa uuid;
+begin
+  if n is null or char_length(n) < 3 then raise exception 'Escribe tu nombre y apellido.'; end if;
+  if c is null or c !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]{2,}$' then raise exception 'Escribe un correo válido.'; end if;
+  if f is null or char_length(regexp_replace(f, '\D', '', 'g')) < 8 then raise exception 'Escribe un teléfono válido.'; end if;
+  begin e := nullif(btrim(coalesce(d ->> 'edad', '')), '')::int; exception when others then e := null; end;
+  if e is not null and (e < 18 or e > 99) then raise exception 'Para trabajar con nosotros necesitas ser mayor de edad.'; end if;
+  if (select count(*) from public.solicitudes where creada_en > now() - interval '1 hour') >= 30 then
+    raise exception 'Recibimos muchas solicitudes en este momento. Inténtalo de nuevo en un rato.';
+  end if;
+  select id into previa from public.solicitudes where correo = c and estado = 'pendiente' order by creada_en desc limit 1;
+  if previa is not null then
+    -- Lo que no vuelve a escribir se conserva.
+    update public.solicitudes set nombre = n, telefono = f, rut = coalesce(public.texto_limpio(d ->> 'rut', 20), rut),
+      comuna = coalesce(public.texto_limpio(d ->> 'comuna', 80), comuna), edad = coalesce(e, edad),
+      redes = coalesce(public.texto_limpio(d ->> 'redes', 300), redes),
+      experiencia = coalesce(public.texto_limpio(d ->> 'experiencia', 60), experiencia),
+      preparado = coalesce(public.texto_limpio(d ->> 'preparado', 60), preparado),
+      donde = coalesce(public.texto_limpio(d ->> 'donde', 2000), donde),
+      disponibilidad = coalesce(public.texto_limpio(d ->> 'disponibilidad', 60), disponibilidad),
+      tiene_auto = coalesce(public.texto_limpio(d ->> 'tiene_auto', 20), tiene_auto),
+      mensaje = coalesce(public.texto_limpio(d ->> 'mensaje', 3000), mensaje)
+    where id = previa;
+  else
+    insert into public.solicitudes (nombre, correo, telefono, rut, comuna, edad, redes, experiencia, preparado, donde,
+                                    disponibilidad, tiene_auto, mensaje)
+    values (n, c, f, public.texto_limpio(d ->> 'rut', 20), public.texto_limpio(d ->> 'comuna', 80), e,
+            public.texto_limpio(d ->> 'redes', 300), public.texto_limpio(d ->> 'experiencia', 60),
+            public.texto_limpio(d ->> 'preparado', 60), public.texto_limpio(d ->> 'donde', 2000),
+            public.texto_limpio(d ->> 'disponibilidad', 60), public.texto_limpio(d ->> 'tiene_auto', 20),
+            public.texto_limpio(d ->> 'mensaje', 3000));
+  end if;
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- ID nuevo a partir del nombre: «Camila Pérez Soto» → camila.perez (camila.perez2 si ya existe).
+create or replace function public.usuario_desde_nombre(p_nombre text) returns text
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  partes text[] := regexp_split_to_array(
+    regexp_replace(translate(lower(btrim(coalesce(p_nombre, ''))), 'áéíóúüñàèìòùâêîôûäëïö', 'aeiouunaeiouaeiouaeio'), '[^a-z ]', '', 'g'), '\s+');
+  base text;
+  u text;
+  i int := 1;
+begin
+  partes := array_remove(partes, '');
+  base := left(coalesce(partes[1], 'barista') || case when array_length(partes, 1) >= 2 then '.' || partes[2] else '' end, 27);
+  if char_length(base) < 3 then base := base || '.sepia'; end if;
+  u := base;
+  while exists (select 1 from public.accesos a where a.usuario = u) loop
+    i := i + 1;
+    u := base || i;
+  end loop;
+  return u;
+end $$;
+
+-- La administración aprueba o rechaza una solicitud. Al aprobar se crea el acceso (ID y clave temporal)
+-- y queda el correo para el script de Google. Devuelve el ID creado.
+create or replace function public.resolver_solicitud(p_id uuid, p_aprobar boolean) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  s public.solicitudes;
+  u text;
+  r jsonb;
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración resuelve solicitudes' using errcode = '42501';
+  end if;
+  select * into s from public.solicitudes where id = p_id for update;
+  if s.id is null then raise exception 'No encontramos esa solicitud.'; end if;
+  if s.estado <> 'pendiente' then raise exception 'Esa solicitud ya se resolvió.'; end if;
+  if not coalesce(p_aprobar, false) then
+    update public.solicitudes set estado = 'rechazada', resuelta_en = now(), resuelta_por = auth.uid() where id = p_id;
+    return jsonb_build_object('ok', true, 'estado', 'rechazada');
+  end if;
+  u := public.usuario_desde_nombre(s.nombre);
+  r := public.crear_acceso(u, s.nombre);
+  insert into public.accesos_por_enviar (acceso_id, solicitud_id, correo, clave)
+  values ((r ->> 'id')::uuid, s.id, s.correo, r ->> 'clave');
+  update public.solicitudes set estado = 'aprobada', resuelta_en = now(), resuelta_por = auth.uid(),
+                                acceso_id = (r ->> 'id')::uuid where id = p_id;
+  return jsonb_build_object('ok', true, 'estado', 'aprobada', 'usuario', u, 'correo', s.correo);
+end $$;
+
+-- Correos de esta sección, para el script (los suma api_pendientes):
+--   acceso_nuevo      a la persona aprobada: su ID y su clave temporal (una vez).
+--   solicitud_nueva   a config.correo_solicitudes: llegó una solicitud (una vez por solicitud).
+create or replace function public.notificaciones_ingreso(ahora timestamptz default now())
+returns table (clave text, tipo text, para jsonb, datos jsonb, evento_id uuid, postulacion_id uuid)
+language sql stable security definer set search_path = '' as $$
+  select 'acceso:' || x.acceso_id, 'acceso_nuevo',
+         jsonb_build_array(jsonb_build_object('email', x.correo, 'nombre', a.nombre)),
+         jsonb_build_object('nombre', a.nombre, 'usuario', a.usuario, 'clave', x.clave),
+         null::uuid, null::uuid
+  from public.accesos_por_enviar x join public.accesos a on a.id = x.acceso_id join auth.users u on u.id = x.acceso_id
+  where x.enviado_en is null and x.clave is not null and a.activo and a.debe_cambiar_clave
+    -- solo si esa clave sigue siendo la de la cuenta (si la administración la restableció, este correo ya no sirve)
+    and u.encrypted_password = extensions.crypt(x.clave, u.encrypted_password)
+  union all
+  select 'solicitud:' || s.id, 'solicitud_nueva',
+         jsonb_build_array(jsonb_build_object('email', c.correo_solicitudes, 'nombre', 'Sepia Coffee')),
+         jsonb_build_object('nombre', s.nombre, 'correo', s.correo, 'telefono', s.telefono, 'rut', s.rut,
+                            'comuna', s.comuna, 'edad', s.edad, 'redes', s.redes, 'experiencia', s.experiencia,
+                            'preparado', s.preparado, 'donde', s.donde, 'disponibilidad', s.disponibilidad,
+                            'tiene_auto', s.tiene_auto, 'mensaje', s.mensaje, 'creada_en', s.creada_en),
+         null::uuid, null::uuid
+  from public.solicitudes s cross join public.config c
+  where c.id = 1 and s.creada_en > ahora - interval '14 days'
+$$;
+
+-- Al marcar el correo del acceso como enviado, la clave temporal se borra de la cola.
+create or replace function public.t_notificaciones_acceso() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  if new.clave like 'acceso:%' then
+    update public.accesos_por_enviar set clave = null, enviado_en = new.enviado_en
+     where acceso_id::text = substr(new.clave, 8);
+  end if;
+  return new;
+end $$;
+drop trigger if exists notificaciones_acceso on public.notificaciones;
+create trigger notificaciones_acceso after insert on public.notificaciones
+  for each row execute function public.t_notificaciones_acceso();
+
+-- Eventos trabajados: turnos con asistencia registrada (no cancelados) más los del historial.
+create or replace function public.eventos_trabajados(p_barista uuid) returns int
+language sql stable security definer set search_path = '' as $$
+  select ((select count(*) from public.postulaciones p join public.eventos e on e.id = p.evento_id
+           where p.barista_id = p_barista and p.estado = 'confirmada' and p.asistio is true and e.estado <> 'cancelado')
+        + (select count(*) from public.historial_turnos h where h.acceso_id = p_barista))::int
+$$;
+
+create or replace function public.tiene_amarilla(p_barista uuid) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.amarillas a where a.barista_id = p_barista)
+$$;
+
+-- ¿Su postulación se confirma sola? La administración siempre; el resto, desde config.eventos_para_confirmar
+-- eventos trabajados y sin tarjeta amarilla.
+create or replace function public.confirma_solo(p_barista uuid) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.accesos a where a.id = p_barista and a.admin and a.activo)
+      or (not public.tiene_amarilla(p_barista)
+          and public.eventos_trabajados(p_barista) >= (select c.eventos_para_confirmar from public.config c where c.id = 1))
+$$;
+
+-- Poner o quitar la amarilla (solo la administración).
+create or replace function public.poner_amarilla(p_barista uuid, p_poner boolean default true) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not (auth.uid() is null or public.es_admin()) then
+    raise exception 'Solo la administración pone la tarjeta amarilla' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.baristas b where b.id = p_barista) then raise exception 'No encontramos a esa persona.'; end if;
+  if coalesce(p_poner, true) then
+    insert into public.amarillas (barista_id, puesta_por) values (p_barista, auth.uid())
+    on conflict (barista_id) do update set puesta_en = now(), puesta_por = excluded.puesta_por;
+  else
+    delete from public.amarillas where barista_id = p_barista;
+  end if;
+end $$;
+
+-- Si a un barista con amarilla le registran que asistió a un evento posterior a la tarjeta (salió bien),
+-- la amarilla se quita sola.
+create or replace function public.t_postulaciones_amarilla() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  if new.asistio is true and old.asistio is distinct from true and new.estado = 'confirmada' then
+    delete from public.amarillas a
+     where a.barista_id = new.barista_id
+       and (select e.fecha from public.eventos e where e.id = new.evento_id) >= (a.puesta_en at time zone 'America/Santiago')::date;
+  end if;
+  return null;
+end $$;
+drop trigger if exists postulaciones_amarilla on public.postulaciones;
+create trigger postulaciones_amarilla after update on public.postulaciones
+  for each row execute function public.t_postulaciones_amarilla();
+
+revoke all on function public.texto_limpio(text, int) from public;
+revoke all on function public.solicitar_ingreso(jsonb) from public;
+revoke all on function public.usuario_desde_nombre(text) from public, anon, authenticated;
+revoke all on function public.resolver_solicitud(uuid, boolean) from public, anon;
+revoke all on function public.notificaciones_ingreso(timestamptz) from public, anon, authenticated;
+revoke all on function public.eventos_trabajados(uuid) from public, anon, authenticated;
+revoke all on function public.tiene_amarilla(uuid) from public, anon, authenticated;
+revoke all on function public.confirma_solo(uuid) from public, anon, authenticated;
+revoke all on function public.poner_amarilla(uuid, boolean) from public, anon;
+grant execute on function public.solicitar_ingreso(jsonb) to anon, authenticated;
+grant execute on function public.resolver_solicitud(uuid, boolean) to authenticated;
+grant execute on function public.poner_amarilla(uuid, boolean) to authenticated;

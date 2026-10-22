@@ -5,8 +5,9 @@
  *   1. Lee el calendario, y los eventos de servicio los publica en el portal para que los
  *      baristas se inscriban (sincronizarCalendario, una vez al día).
  *   2. Manda los correos de seguimiento: reconfirmar a los 7, 6 y 5 días, avisar de una
- *      vacante, estado de la semana, grupo de WhatsApp, boleta y pago (enviarNotificaciones,
- *      cada hora).
+ *      vacante, estado de la semana, grupo de WhatsApp, boleta y pago, y los de ingreso: el
+ *      ID y la clave a quien se aprobó en «Solicitudes», y el aviso de solicitud nueva a
+ *      contacto@ (enviarNotificaciones, cada hora).
  *
  * Qué correo toca mandar, a quién y cuándo lo decide la base de datos (Supabase, función
  * calcular_notificaciones en esquema.sql). Este script solo lee el calendario, pregunta qué
@@ -549,8 +550,42 @@ function armarCorreo_(item, dest, portal) {
       bloques.push(abrir);
       return { asunto: 'Cierres pendientes: ' + bol.length + ' boletas por revisar' + (atr.length ? ', ' + atr.length + ' atrasados' : ''), titulo: 'Cierres pendientes', bloques: bloques };
     }
+    case 'acceso_nuevo': {
+      // A quien la administración aprobó en «Solicitudes»: su ID y su clave temporal para entrar a Sepia Equipo.
+      const consola = consolaUrl_(portal);
+      return {
+        asunto: 'Bienvenido al equipo de Sepia Coffee: tu ID y tu clave',
+        titulo: 'Ya eres parte del equipo',
+        bloques: [{ p: hola }, { p: 'Aprobamos tu solicitud para trabajar con nosotros. Con estos datos entras por primera vez a Sepia Equipo, donde ves los eventos y postulas a los turnos:' },
+          { datos: [['ID de usuario', d.usuario], ['Clave para entrar la primera vez', d.clave]] },
+          { p: 'Al entrar te pediremos crear tu propia clave y completar tu perfil (datos de contacto y de pago).' },
+          { boton: { texto: 'Entrar a Sepia Equipo', url: consola } },
+          { nota: 'Esta clave sirve una sola vez. Si no la pediste o tienes problemas para entrar, responde este correo.' }],
+      };
+    }
+    case 'solicitud_nueva': {
+      // A config.correo_solicitudes: alguien postuló en «Trabaja con nosotros». Se aprueba en la consola.
+      const filas = [['Nombre', d.nombre], ['Correo', d.correo], ['Teléfono', d.telefono], ['Comuna', d.comuna], ['Edad', d.edad],
+        ['RUT', d.rut], ['Experiencia en barra', d.experiencia], ['Qué ha preparado', d.preparado], ['Dónde ha trabajado', d.donde],
+        ['Fines de semana y noche', d.disponibilidad], ['Auto', d.tiene_auto], ['Instagram o CV', d.redes], ['Cuéntanos de ti', d.mensaje]]
+        .filter(function (f) { return f[1] !== null && f[1] !== undefined && String(f[1]).trim() !== ''; })
+        .map(function (f) { return [f[0], String(f[1])]; });
+      return {
+        asunto: 'Nueva solicitud para trabajar con Sepia: ' + (d.nombre || 'sin nombre'),
+        titulo: 'Llegó una solicitud para entrar al equipo',
+        bloques: [{ p: hola }, { p: 'Alguien postuló desde la página «Trabaja con nosotros». Para aprobarla o rechazarla, entra a Sepia Equipo → Administrar → Solicitudes. Si la apruebas, le llega un correo con su ID y su clave.' },
+          { datos: filas },
+          { boton: { texto: 'Revisar en Sepia Equipo', url: consolaUrl_(portal) } }],
+      };
+    }
   }
   return { asunto: 'Aviso de Sepia Coffee', titulo: 'Aviso', bloques: [{ p: hola }, { p: JSON.stringify(d).slice(0, 500) }, abrir] };
+}
+
+// La consola Sepia Equipo está junto al portal de baristas: /pages/equipo en vez de /pages/baristas.
+function consolaUrl_(portal) {
+  const u = String(portal || 'https://sepiacoffee.cl/pages/baristas');
+  return /\/pages\/baristas/.test(u) ? u.replace(/\/pages\/baristas.*$/, '/pages/equipo') : u.replace(/\/+$/, '') + '/pages/equipo';
 }
 
 function correoSincronizacion_(r, extra, portal) {

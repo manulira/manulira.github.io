@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v6'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v7'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -81,6 +81,20 @@ ESPECIALES = {(0x40, 0x5b, 0x8b): 'noche'}      # el azul «al pasar el mouse» 
 CSS_EXTRA = """
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
+/* Sepia: la tarjeta amarilla (solo administración). Es la única excepción a la paleta, a pedido de Manuel: una
+   tarjeta como la del fútbol se reconoce por su color. */
+.sepia-amarilla{display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:2px 8px 2px 5px;border-radius:999px;background:#fff6cc;color:#020526;font-size:11px;font-weight:700;vertical-align:middle;white-space:nowrap}
+.sepia-amarilla-carta{display:inline-block;width:9px;height:12px;border-radius:2px;background:#f5c400;box-shadow:0 0 0 1px #c99f00}
+.sepia-amarilla-panel{margin-top:10px}
+.sepia-amarilla-panel .field-hint{margin:0 0 6px}
+.sepia-solicitud dl{display:grid;gap:6px;margin:10px 0 14px}
+.sepia-solicitud dl div{display:grid;grid-template-columns:minmax(110px,34%) 1fr;gap:10px}
+.sepia-solicitud dt{font-weight:600;color:#526ea0}
+.sepia-solicitud dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.sepia-solicitudes>.ops-card{margin-bottom:14px}
+.ops-admin-list>.ops-card.sepia-solicitud{display:block}
+.sepia-solicitud h3{margin:0 0 2px}
+.sepia-solicitud .ops-actions{justify-content:flex-start}
 /* Sepia: el logo de la tienda (imagen) en la carga, la entrada, la barra y el pie */
 .brand-logo{display:block;width:auto;height:30px;max-width:100%}
 .required-profile-brand .brand-logo{height:34px}
@@ -206,7 +220,31 @@ def armar_js():
             # adentro cambia de vista con «Vista barista» / «Administrar», que solo ve quien es administración (la base
             # lo exige). parches/entrada.js trae lo que usa la entrada (la dirección de «Nosotros»).
             t = cambiar(t, 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)',
-                        leer_parche('entrada.js') + 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)', 1, nombre)
+                        leer_parche('entrada.js') + leer_parche('ingreso.js') + 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)', 1, nombre)
+
+            # ---- Solicitudes de ingreso, confirmación de postulaciones y tarjeta amarilla (Manuel, 22 oct) ----
+            # parches/ingreso.js. Las reglas están en la base (esquema.sql, sección 11): acá solo se muestran.
+            # El mensaje de una acción puede depender de la respuesta (p. ej. «postulación pendiente» o el ID creado).
+            t = cambiar(t, 'return await F(),y(n),!0}', 'return await F(),y(typeof n==`function`?n(i):n),!0}', 1, nombre)
+            # Al postular: si la base la deja pendiente (menos de 2 eventos trabajados, o amarilla), se dice eso.
+            t = cambiar(t, "await I(`apply`,{eventId:U.id,vehicleMode:e},`¡Turno confirmado! Tu cupo quedó reservado.`)",
+                        "await I(`apply`,{eventId:U.id,vehicleMode:e},e=>e&&e.pending?`Postulación enviada. La administración la confirmará y te avisaremos.`:`¡Turno confirmado! Tu cupo quedó reservado.`)", 1, nombre)
+            # Administrar: un acceso «Solicitudes» con su pantalla.
+            t = cambiar(t, '[`members`,`Equipo`,`Perfiles y accesos`,m,e.members.length,()=>l(`members`)],',
+                        '[`members`,`Equipo`,`Perfiles y accesos`,m,e.members.length,()=>l(`members`)],'
+                        '[`requests`,`Solicitudes`,`Postulaciones nuevas`,m,(e.requests||[]).length,()=>l(`requests`)],', 1, nombre)
+            t = cambiar(t, 's===`home`?(0,W.jsxs)(`div`,{className:`admin-welcome`,children:[(0,W.jsx)(`h2`,{children:`¿Qué quieres hacer hoy?`}),(0,W.jsx)(`p`,{children:`Elige una opción para comenzar.`})]}):',
+                        's===`home`?(0,W.jsxs)(`div`,{className:`admin-welcome`,children:[(0,W.jsx)(`h2`,{children:`¿Qué quieres hacer hoy?`}),(0,W.jsx)(`p`,{children:'
+                        '(e.requests||[]).length?`Tienes ${(e.requests||[]).length===1?`1 solicitud nueva`:`${(e.requests||[]).length} solicitudes nuevas`} para entrar al equipo: revisa «Solicitudes».`:`Elige una opción para comenzar.`})]}):'
+                        's===`requests`?(0,W.jsx)(SepiaSolicitudes,{data:e,busy:t,act:n}):', 1, nombre)
+            # Equipo (administración): la amarilla junto al nombre, cuántos eventos lleva y el botón para ponerla o quitarla.
+            t = cambiar(t, '(0,W.jsx)(`h3`,{children:e.name})]}),(0,W.jsx)(`p`,{children:e.profile.email||`Sin correo de contacto`})',
+                        '(0,W.jsx)(`h3`,{children:e.name}),(0,W.jsx)(SepiaAmarilla,{yellow:e.yellow})]}),(0,W.jsx)(`p`,{children:e.profile.email||`Sin correo de contacto`})', 1, nombre)
+            t = cambiar(t, 'children:e.status===`disabled`?`Restaurar acceso`:`Desactivar acceso`})',
+                        'children:e.status===`disabled`?`Restaurar acceso`:`Desactivar acceso`}),(0,W.jsx)(SepiaAmarillaBoton,{member:e,busy:t,act:n})', 1, nombre)
+            # Equipo de un evento: la amarilla junto al nombre de quien postuló (solo llega a la administración).
+            t = cambiar(t, '(0,W.jsxs)(`div`,{children:[(0,W.jsx)(`strong`,{children:e.name}),(0,W.jsx)(`p`,{children:{pending:`Postuló · pendiente`',
+                        '(0,W.jsxs)(`div`,{children:[(0,W.jsxs)(`strong`,{children:[e.name,(0,W.jsx)(SepiaAmarilla,{yellow:e.yellow})]}),(0,W.jsx)(`p`,{children:{pending:`Postuló · pendiente`', 1, nombre)
             # Esta consola es una aplicación aparte (sin el menú de la tienda), pero su logo lleva al inicio de
             # sepiacoffee.cl y hay una pestaña «Nosotros» que lleva a la página Nosotros del sitio.
             t = cambiar(t, '(0,W.jsx)(`a`,{href:`#eventos`,children:(0,W.jsx)(lt,{})})',

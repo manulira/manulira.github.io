@@ -221,6 +221,7 @@ declare
   eventos jsonb;
   posts jsonb;
   miembros jsonb;
+  solicitudes jsonb;
 begin
   if uid is null then return jsonb_build_object('signedIn', false); end if;
   adm := public.es_admin();
@@ -256,9 +257,12 @@ begin
   select coalesce(jsonb_agg(jsonb_build_object(
            'id', p.id, 'event_id', p.evento_id, 'member_id', p.barista_id,
            'status', public.eq_estado_post(p.estado, p.asistio),
-           'vehicle_mode', case when p.conductor then 'pickup' else 'none' end,
+           'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta) then 'pickup' else 'none' end,
            'created_at', p.creado_en,
-           'name', case when ver_adm then b.nombre else null end) order by p.creado_en), '[]'::jsonb) into posts
+           'name', case when ver_adm then b.nombre else null end)
+           -- La amarilla y lo que pidió solo van a la administración (el barista no sabe que tiene amarilla).
+           || case when ver_adm then jsonb_build_object('yellow', public.tiene_amarilla(p.barista_id), 'wantsPickup', p.pide_camioneta)
+                   else '{}'::jsonb end order by p.creado_en), '[]'::jsonb) into posts
   from public.postulaciones p
   join public.baristas b on b.id = p.barista_id
   where (ver_adm or p.barista_id = uid);
@@ -268,13 +272,22 @@ begin
              'id', a.id, 'name', coalesce(b.nombre, a.nombre),
              'status', case when not a.activo then 'disabled' when a.debe_cambiar_clave then 'invited' else 'active' end,
              'profile', case when b.id is not null then public.eq_perfil_json(b) else '{}'::jsonb end,
-             'username', a.usuario) order by coalesce(b.nombre, a.nombre)), '[]'::jsonb) into miembros
+             'username', a.usuario,
+             'yellow', public.tiene_amarilla(a.id), 'eventsWorked', public.eventos_trabajados(a.id),
+             'isAdmin', a.admin) order by coalesce(b.nombre, a.nombre)), '[]'::jsonb) into miembros
     from public.accesos a left join public.baristas b on b.id = a.id;
+    select coalesce(jsonb_agg(jsonb_build_object(
+             'id', s.id, 'createdAt', s.creada_en, 'name', s.nombre, 'email', s.correo, 'phone', s.telefono,
+             'rut', s.rut, 'comuna', s.comuna, 'age', s.edad, 'social', s.redes, 'experience', s.experiencia,
+             'prepared', s.preparado, 'where', s.donde, 'availability', s.disponibilidad, 'car', s.tiene_auto,
+             'message', s.mensaje) order by s.creada_en), '[]'::jsonb) into solicitudes
+    from public.solicitudes s where s.estado = 'pendiente';
   else
     miembros := '[]'::jsonb;
+    solicitudes := '[]'::jsonb;
   end if;
 
-  return base || jsonb_build_object('members', miembros, 'events', eventos, 'applications', posts);
+  return base || jsonb_build_object('members', miembros, 'events', eventos, 'applications', posts, 'requests', solicitudes);
 end $$;
 
 -- ---------------------------------------------------------------------------
@@ -326,7 +339,7 @@ begin
     select jsonb_agg(jsonb_build_object(
              'member_id', p.barista_id, 'name', b.nombre,
              'status', public.eq_estado_post(p.estado, p.asistio),
-             'vehicle_mode', case when p.conductor then 'pickup' else 'none' end) order by p.conductor desc, p.creado_en)
+             'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta) then 'pickup' else 'none' end) order by p.conductor desc, p.creado_en)
     from public.postulaciones p join public.baristas b on b.id = p.barista_id
     where p.evento_id = p_evento
       and (p.estado = 'confirmada' or (adm and p.estado in ('postulada', 'rechazada', 'retirada')))
@@ -422,6 +435,11 @@ end $$;
 -- Ocupa un cupo (postulación con confirmación inmediata, o asignación de la administración).
 -- Reglas: cupos libres; a lo más un cupo con camioneta por evento y solo para quien la declaró; en un evento de
 -- varios cupos, uno queda reservado para la camioneta mientras nadie lo tome.
+-- Lo que pidió quien postuló y espera confirmación (con o sin camioneta): al confirmarla, la administración usa esto.
+alter table public.postulaciones add column if not exists pide_camioneta boolean not null default false;
+
+-- Tomar un cupo. Quien postula (no la administración) queda confirmado solo si confirma_solo() (esquema.sql:
+-- 2 eventos trabajados o más y sin tarjeta amarilla); si no, queda pendiente hasta que la administración lo confirme.
 create or replace function public.eq_ocupar_cupo(p_evento uuid, p_barista uuid, p_modo text, p_admin boolean)
 returns void
 language plpgsql security definer set search_path = '' as $$
@@ -461,6 +479,13 @@ begin
     max_otros := case when cu.capacidad > 1 then cu.capacidad - 1 else cu.capacidad end;
     if cu.otros >= max_otros and cu.pickup = 0 then raise exception 'Ya no quedan cupos sin camioneta: el último está reservado para la camioneta.'; end if;
     if cu.otros >= cu.capacidad then raise exception 'Ya no quedan cupos sin camioneta.'; end if;
+  end if;
+  if not p_admin and not public.confirma_solo(p_barista) then
+    insert into public.postulaciones (evento_id, barista_id, estado, pide_camioneta)
+    values (p_evento, p_barista, 'postulada', p_modo = 'pickup')
+    on conflict (evento_id, barista_id) do update
+      set estado = 'postulada', pide_camioneta = excluded.pide_camioneta, asistio = null, actualizado_en = now();
+    return;
   end if;
   insert into public.postulaciones (evento_id, barista_id, estado, conductor)
   values (p_evento, p_barista, 'confirmada', p_modo = 'pickup')
@@ -588,7 +613,9 @@ begin
     return public.eq_perfil_guardar(d -> 'profile');
   elsif p_accion = 'apply' then
     perform public.eq_ocupar_cupo((d ->> 'eventId')::uuid, uid, coalesce(d ->> 'vehicleMode', ''), false);
-    return jsonb_build_object('ok', true);
+    -- «pending»: la postulación espera que la administración la confirme (la pantalla avisa eso).
+    return jsonb_build_object('ok', true, 'pending',
+      exists (select 1 from public.postulaciones p where p.evento_id = (d ->> 'eventId')::uuid and p.barista_id = uid and p.estado = 'postulada'));
   elsif p_accion = 'cancelApplication' then
     select * into post from public.postulaciones where evento_id = (d ->> 'eventId')::uuid and barista_id = uid and estado in ('postulada', 'confirmada');
     if post.id is null then raise exception 'No tienes un turno en este evento.'; end if;
@@ -608,7 +635,20 @@ begin
     return jsonb_build_object('ok', true);
   elsif p_accion = 'applicationStatus' then
     if d ->> 'status' <> 'approved' then raise exception 'Estado no válido.'; end if;
-    perform public.eq_ocupar_cupo((d ->> 'eventId')::uuid, (d ->> 'memberId')::uuid, 'none', true);
+    -- Se confirma con lo que pidió (con o sin camioneta).
+    perform public.eq_ocupar_cupo((d ->> 'eventId')::uuid, (d ->> 'memberId')::uuid,
+      case when coalesce((select p.pide_camioneta from public.postulaciones p
+                          where p.evento_id = (d ->> 'eventId')::uuid and p.barista_id = (d ->> 'memberId')::uuid
+                            and p.estado = 'postulada'), false) then 'pickup' else 'none' end, true);
+    return jsonb_build_object('ok', true);
+  elsif p_accion = 'rejectApplication' then
+    update public.postulaciones set estado = 'rechazada', actualizado_en = now()
+     where evento_id = (d ->> 'eventId')::uuid and barista_id = (d ->> 'memberId')::uuid and estado = 'postulada';
+    return jsonb_build_object('ok', true);
+  elsif p_accion = 'requestStatus' then
+    return public.resolver_solicitud((d ->> 'id')::uuid, d ->> 'status' = 'approved');
+  elsif p_accion = 'yellowCard' then
+    perform public.poner_amarilla((d ->> 'memberId')::uuid, coalesce((d ->> 'on')::boolean, true));
     return jsonb_build_object('ok', true);
   elsif p_accion = 'removeApplication' then
     update public.postulaciones set estado = 'retirada', actualizado_en = now()

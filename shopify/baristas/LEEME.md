@@ -324,6 +324,22 @@ Para marcar o desmarcar a alguien, en el SQL Editor: `select public.hacer_admin(
 Si su acceso se desactiva, deja de ser administración. (La administración por correo de `public.admins` sigue existiendo para el portal de baristas,
 pero la consola ya no tiene esa entrada.)
 
+**Solicitudes de ingreso**: la página «Trabaja con nosotros» manda la postulación a `solicitar_ingreso` (sin sesión; si el mismo correo
+ya tiene una pendiente, se actualiza; tope de 30 por hora). La administración la ve en **Administrar → Solicitudes** (con un aviso al entrar) y la aprueba
+o rechaza. Al aprobar se crea su ID (`usuario_desde_nombre`: «Camila Pérez» → `camila.perez`, `camila.perez2` si ya existe) con clave temporal, que queda en
+`accesos_por_enviar` hasta que el script de Google le manda el correo «Bienvenido al equipo» con su ID y su clave (tipo `acceso_nuevo`); al marcarlo enviado,
+la clave se borra de la cola. Si la administración le restablece la clave antes, ese correo ya no sale. Cada solicitud nueva avisa también a
+`config.correo_solicitudes` (`solicitud_nueva`, contacto@sepiacoffee.cl).
+
+**Postulaciones con confirmación**: quien lleva menos de `config.eventos_para_confirmar` (2) eventos trabajados (`eventos_trabajados`: asistencias
+registradas más el historial) o tiene tarjeta amarilla queda **pendiente** al postular («Postulación enviada. La administración la confirmará»); la
+administración la ve en el equipo del evento y la confirma (con o sin camioneta, lo que pidió) o la elimina. Con 2 o más y sin amarilla, se confirma sola.
+
+**Tarjeta amarilla** (`amarillas`, solo administración): se pone o quita en Administrar → Equipo («Poner amarilla»), donde también se ve cuántos eventos
+lleva cada persona. Se ve como una tarjetita amarilla junto al nombre (única excepción a la paleta). El barista no la ve ni le llega en sus datos. Se quita
+sola cuando le registran asistencia en un evento posterior a la tarjeta (al cerrar el evento, todos los confirmados quedan como asistidos: si alguno no
+salió bien, vuelve a ponérsela).
+
 **Una aplicación aparte, con salida al sitio**: la consola es una página completa, **sin el menú de sepiacoffee.cl** (no usa el encabezado ni el pie de la
 tienda). Su logo (en la entrada y en la barra de arriba) lleva al inicio de la página web, y hay una pestaña **«Nosotros»** (también en la entrada)
 que lleva a la página Nosotros de la tienda: la dirección sale del menú principal de Shopify (`snippets/sepia-equipo-sitio.liquid`; si no hay un
@@ -378,11 +394,12 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   desactivar y eliminar accesos, perfil, equipo, ranking, traslados y reglas del almacén de fotos) y
   `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
   `pruebas/admin-clave.sql` (49: entrada de la administración con clave o código, y agregar administradores) y
-  `pruebas/admin-barista.sql` (26: la administración con cuenta de barista, `hacer_admin` y el cambio de vista) y `pruebas/equipo.sql` (149: las funciones de
+  `pruebas/admin-barista.sql` (26: la administración con cuenta de barista, `hacer_admin` y el cambio de vista) y
+  `pruebas/ingreso.sql` (60: solicitudes, correo con el ID y la clave, confirmación de postulaciones y tarjeta amarilla) y `pruebas/equipo.sql` (149: las funciones de
   Sepia Equipo). Se corren con `psql` sobre una base vacía: primero `pruebas/shim-supabase.sql`, luego `esquema.sql` (y `equipo.sql`
   para las pruebas de Sepia Equipo), luego el archivo de pruebas. Al romper
   una regla a propósito, las pruebas lo detectan.
-- **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/` → 30
+- **Script de Google (Node)**: `node --test shopify/baristas/apps-script/pruebas/*.test.mjs` → 30
   comprobaciones del lector de calendario y de los correos, más 3 de punta a punta (el script
   real contra el esquema real, con el paso de los días simulado) si se define `PGHOST`,
   `PGPORT` y `PGUSER` de un Postgres de pruebas.
@@ -390,7 +407,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
-  de pruebas) → 145 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de pruebas) → 166 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
   de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
   postular con y sin camioneta, cupos, cancelar (24 horas), foto de perfil, ranking, avisos, cambio de clave, salir,
   toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias), las dos formas de entrar de la

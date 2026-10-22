@@ -3,6 +3,20 @@
 
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
+/* Sepia: la tarjeta amarilla (solo administración). Es la única excepción a la paleta, a pedido de Manuel: una
+   tarjeta como la del fútbol se reconoce por su color. */
+.sepia-amarilla{display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:2px 8px 2px 5px;border-radius:999px;background:#fff6cc;color:#020526;font-size:11px;font-weight:700;vertical-align:middle;white-space:nowrap}
+.sepia-amarilla-carta{display:inline-block;width:9px;height:12px;border-radius:2px;background:#f5c400;box-shadow:0 0 0 1px #c99f00}
+.sepia-amarilla-panel{margin-top:10px}
+.sepia-amarilla-panel .field-hint{margin:0 0 6px}
+.sepia-solicitud dl{display:grid;gap:6px;margin:10px 0 14px}
+.sepia-solicitud dl div{display:grid;grid-template-columns:minmax(110px,34%) 1fr;gap:10px}
+.sepia-solicitud dt{font-weight:600;color:#526ea0}
+.sepia-solicitud dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.sepia-solicitudes>.ops-card{margin-bottom:14px}
+.ops-admin-list>.ops-card.sepia-solicitud{display:block}
+.sepia-solicitud h3{margin:0 0 2px}
+.sepia-solicitud .ops-actions{justify-content:flex-start}
 /* Sepia: el logo de la tienda (imagen) en la carga, la entrada, la barra y el pie */
 .brand-logo{display:block;width:auto;height:30px;max-width:100%}
 .required-profile-brand .brand-logo{height:34px}

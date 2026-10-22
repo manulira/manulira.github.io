@@ -27,6 +27,8 @@ export function sembrar() {
     insert into public.baristas (id, nombre, rut, correo, telefono, banco, tipo_cuenta, numero_cuenta, talla_camisa, tiene_camioneta, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
       select id, 'Admin Prueba', '11.111.111-1', 'admin@ejemplo.test', '+56987650001', 'BCI', 'Cuenta RUT', '11111111', 'M', false, true, true, 'x', true from public.accesos where usuario = 'admin.prueba';
     select public.hacer_admin('admin.prueba');
+    -- Las secciones A a I prueban cupos y pantallas: ahí todas las postulaciones se confirman solas. La J prueba la regla de los 2 eventos.
+    update public.config set eventos_para_confirmar = 0 where id = 1;
   `);
   return { p, claves };
 }

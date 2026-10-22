@@ -30,21 +30,23 @@
 .tp-enviar:hover{background:var(--te);color:#FFFFFF}
 .tp-legal{font-size:.8rem;color:var(--na);opacity:.7;margin:.7rem 0 0}
 .tp-ok{background:var(--ce);color:var(--na);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;font-weight:600}
+.tp-error{background:#FFFFFF;color:var(--na);border:2px solid var(--na);border-radius:14px;padding:.8rem 1rem;margin-bottom:1rem;font-weight:600}
+.tp-trampa{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.tp-enviar[disabled]{opacity:.6;cursor:wait}
 </style>
 
 <div class="tp" id="postular">
   <h2>Cómo postular</h2>
-  <p>Llena el formulario con tus datos y tu experiencia. Nos llega por correo y te contestamos aunque no haya vacante en ese momento.</p>
+  <p>Llena el formulario con tus datos y tu experiencia. Lo revisamos y, si quedas, te llega un correo con tu ID y tu clave para entrar a la consola del equipo.</p>
   <div class="tp-botones">
     <a class="tp-btn lleno" href="#postular-form">Postular</a>
     <a class="tp-btn borde" href="/pages/equipo">Ya soy del equipo: entrar a la consola</a>
   </div>
 
-  <form class="tp-form" method="post" action="/contact#postular-form" id="postular-form" accept-charset="UTF-8">
-    <input type="hidden" name="form_type" value="contact">
-    <input type="hidden" name="utf8" value="✓">
-    <input type="hidden" name="contact[Tipo]" value="Postulación de barista (Trabaja con nosotros)">
-    <div class="tp-ok" id="tp-ok" hidden>¡Gracias! Recibimos tu postulación y te vamos a contactar.</div>
+  <form class="tp-form" id="postular-form" novalidate>
+    <div class="tp-ok" id="tp-ok" role="status" hidden>¡Gracias! Recibimos tu postulación. La revisamos y te escribimos al correo que nos diste.</div>
+    <div class="tp-error" id="tp-error" role="alert" hidden></div>
+    <div class="tp-trampa" aria-hidden="true"><label>No llenar <input type="text" name="sitio_web" tabindex="-1" autocomplete="off"></label></div>
     <h3>Postulación de barista</h3>
     <p>Los campos con * son obligatorios.</p>
 
@@ -52,19 +54,19 @@
       <legend>Tus datos</legend>
       <div class="tp-campos">
         <div class="tp-campo"><label for="tp-nom">Nombre y apellido *</label>
-          <input id="tp-nom" type="text" name="contact[Nombre]" required autocomplete="name"></div>
+          <input id="tp-nom" type="text" name="nombre" required autocomplete="name"></div>
         <div class="tp-campo"><label for="tp-rut">RUT</label>
-          <input id="tp-rut" type="text" name="contact[RUT]" placeholder="12.345.678-9"></div>
+          <input id="tp-rut" type="text" name="rut" placeholder="12.345.678-9"></div>
         <div class="tp-campo"><label for="tp-mail">Correo *</label>
-          <input id="tp-mail" type="email" name="contact[email]" required autocomplete="email"></div>
+          <input id="tp-mail" type="email" name="correo" required autocomplete="email"></div>
         <div class="tp-campo"><label for="tp-fono">Teléfono / WhatsApp *</label>
-          <input id="tp-fono" type="tel" name="contact[Teléfono]" required autocomplete="tel" placeholder="+56 9 1234 5678"></div>
+          <input id="tp-fono" type="tel" name="telefono" required autocomplete="tel" placeholder="+56 9 1234 5678"></div>
         <div class="tp-campo"><label for="tp-comuna">Comuna donde vives *</label>
-          <input id="tp-comuna" type="text" name="contact[Comuna]" required></div>
+          <input id="tp-comuna" type="text" name="comuna" required></div>
         <div class="tp-campo"><label for="tp-edad">Edad</label>
-          <input id="tp-edad" type="number" name="contact[Edad]" min="18" max="99" inputmode="numeric"></div>
+          <input id="tp-edad" type="number" name="edad" min="18" max="99" inputmode="numeric"></div>
         <div class="tp-campo ancho"><label for="tp-ig">Instagram o link a tu CV (opcional)</label>
-          <input id="tp-ig" type="text" name="contact[Instagram o CV]" placeholder="@usuario o un link de Drive"></div>
+          <input id="tp-ig" type="text" name="redes" placeholder="@usuario o un link de Drive"></div>
       </div>
     </fieldset>
 
@@ -72,7 +74,7 @@
       <legend>Tu experiencia</legend>
       <div class="tp-campos">
         <div class="tp-campo"><label for="tp-exp">Experiencia en barra *</label>
-          <select id="tp-exp" name="contact[Experiencia en barra]" required>
+          <select id="tp-exp" name="experiencia" required>
             <option value="">Elige una opción</option>
             <option>Sin experiencia</option>
             <option>Menos de 1 año</option>
@@ -80,7 +82,7 @@
             <option>Más de 3 años</option>
           </select></div>
         <div class="tp-campo"><label for="tp-tipo">Qué has preparado</label>
-          <select id="tp-tipo" name="contact[Qué ha preparado]">
+          <select id="tp-tipo" name="preparado">
             <option value="">Elige una opción</option>
             <option>Café (espresso y leche)</option>
             <option>Coctelería</option>
@@ -88,7 +90,7 @@
             <option>Ninguno todavía</option>
           </select></div>
         <div class="tp-campo ancho"><label for="tp-donde">Dónde has trabajado y cuánto tiempo</label>
-          <textarea id="tp-donde" name="contact[Dónde ha trabajado]" placeholder="Ej.: cafetería X, 1 año; eventos con productora Y, 6 meses"></textarea></div>
+          <textarea id="tp-donde" name="donde" placeholder="Ej.: cafetería X, 1 año; eventos con productora Y, 6 meses"></textarea></div>
       </div>
     </fieldset>
 
@@ -96,20 +98,20 @@
       <legend>Disponibilidad</legend>
       <div class="tp-campos">
         <div class="tp-campo"><label for="tp-finde">¿Puedes los fines de semana y de noche? *</label>
-          <select id="tp-finde" name="contact[Fines de semana y noche]" required>
+          <select id="tp-finde" name="disponibilidad" required>
             <option value="">Elige una opción</option>
             <option>Sí, siempre</option>
             <option>A veces</option>
             <option>No</option>
           </select></div>
         <div class="tp-campo"><label for="tp-auto">¿Tienes auto?</label>
-          <select id="tp-auto" name="contact[Tiene auto]">
+          <select id="tp-auto" name="tiene_auto">
             <option value="">Elige una opción</option>
             <option>Sí</option>
             <option>No</option>
           </select></div>
         <div class="tp-campo ancho"><label for="tp-msj">Cuéntanos de ti *</label>
-          <textarea id="tp-msj" name="contact[body]" required placeholder="Por qué te gustaría trabajar con nosotros, qué te gusta del café, lo que quieras contarnos."></textarea></div>
+          <textarea id="tp-msj" name="mensaje" required placeholder="Por qué te gustaría trabajar con nosotros, qué te gusta del café, lo que quieras contarnos."></textarea></div>
       </div>
     </fieldset>
 
@@ -120,10 +122,34 @@
 </div>
 
 <script>
+/* La postulación se guarda en la base de Sepia (Supabase, función solicitar_ingreso) y aparece en la consola
+   Sepia Equipo → Administrar → Solicitudes. Al aprobarla, le llega a la persona un correo con su ID y su clave.
+   SUPABASE_URL y SUPABASE_CLAVE (la clave pública) se reemplazan al publicar la página; en el repositorio van como marcadores. */
 (function(){
-  if (/[?&]contact_posted=true/.test(location.search) && /postular/.test(location.hash)) {
-    var ok = document.getElementById('tp-ok');
-    if (ok) { ok.hidden = false; ok.scrollIntoView({ block: 'center' }); }
-  }
+  var URL_SB = 'SUPABASE_URL', CLAVE_SB = 'SUPABASE_CLAVE';
+  var f = document.getElementById('postular-form');
+  if (!f) return;
+  var ok = document.getElementById('tp-ok'), err = document.getElementById('tp-error'), btn = f.querySelector('.tp-enviar');
+  function error(m) { err.textContent = m; err.hidden = false; err.scrollIntoView({ block: 'center' }); }
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.hidden = true;
+    if (!f.checkValidity()) { f.reportValidity(); return; }
+    var d = {};
+    [].slice.call(f.elements).forEach(function (el) { if (el.name && el.name !== 'sitio_web') d[el.name] = el.value; });
+    if (f.elements.sitio_web && f.elements.sitio_web.value) { f.hidden = true; return; }     // un robot
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    fetch(URL_SB + '/rest/v1/rpc/solicitar_ingreso', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', apikey: CLAVE_SB }, body: JSON.stringify({ p: d })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) throw new Error((j && j.message) || 'No pudimos enviar tu postulación. Inténtalo de nuevo en un rato.');
+        [].slice.call(f.querySelectorAll('fieldset, .tp-enviar, h3, h3 + p')).forEach(function (x) { x.hidden = true; });
+        ok.hidden = false; ok.scrollIntoView({ block: 'center' });
+      });
+    }).catch(function (x) {
+      error(x.message || 'No pudimos enviar tu postulación. Revisa tu conexión e inténtalo de nuevo.');
+    }).then(function () { btn.disabled = false; btn.textContent = 'Enviar postulación'; });
+  });
 })();
 </script>
