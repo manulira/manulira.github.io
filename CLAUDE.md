@@ -37,6 +37,9 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   (solo correo automático; no hay botón de WhatsApp). Cada solicitud nueva avisa también a `config.correo_solicitudes` (contacto@).
 - **Postulaciones**: se confirman solas desde `config.eventos_para_confirmar` (2) eventos trabajados (asistencia registrada + historial) y sin amarilla;
   si no, quedan pendientes hasta que la administración las confirme. La administración se confirma sola.
+- **Eventos con turnos** (Manuel, 22 oct): un evento partido en turnos por el script (TURNOS_FIJOS, `gcal_id` con `#3h`, `#4h`) se ve en la consola del
+  equipo como **una tarjeta con dos opciones**: «con camioneta» toma el turno que la exige (el más largo, o `eventos.exige_camioneta`) y «sin camioneta» el otro;
+  cada barista toma uno solo. La administración sigue viendo cada turno por separado. Cenco Costanera: 3 horas sin camioneta ($25.000), 4 horas con camioneta ($40.000).
 - **Tarjeta amarilla**: la pone o quita la administración en «Equipo»; el barista **no** puede saberlo (ni en la pantalla ni en sus datos). Con amarilla,
   sus postulaciones esperan confirmación; se quita sola cuando le registran asistencia en un evento posterior a la tarjeta (al cerrar el evento).
 - **Fuera de la consola**: historia del café y «quiénes somos» (el Nosotros es el del sitio), fotos del turno, «Necesito ayuda», pantalla de
@@ -49,9 +52,9 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v7`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v8`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
-  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (166 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
+  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (171 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
 - **Supabase**: se corre `esquema.sql` y después `equipo.sql` en el SQL Editor cuando cambian. La URL y la clave pública (publishable) del proyecto están en Supabase →
   Project Settings → API; en el repo van como marcadores (`SUPABASE_URL`, `SUPABASE_CLAVE`) y los valores reales solo se suben al tema (`snippets/sepia-equipo-conexion.liquid`).
@@ -78,7 +81,7 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 60, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 166.
+- Pruebas: SQL admin-clave 49, admin-barista 26, ingreso 60, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
 
 ## Pendientes y decisiones abiertas
 

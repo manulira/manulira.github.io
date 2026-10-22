@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v7'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v8'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -229,6 +229,12 @@ def armar_js():
             # Al postular: si la base la deja pendiente (menos de 2 eventos trabajados, o amarilla), se dice eso.
             t = cambiar(t, "await I(`apply`,{eventId:U.id,vehicleMode:e},`¡Turno confirmado! Tu cupo quedó reservado.`)",
                         "await I(`apply`,{eventId:U.id,vehicleMode:e},e=>e&&e.pending?`Postulación enviada. La administración la confirmará y te avisaremos.`:`¡Turno confirmado! Tu cupo quedó reservado.`)", 1, nombre)
+            # Eventos con turnos (Cenco Costanera: 3 horas sin camioneta y 4 horas con camioneta): la base los junta en una
+            # tarjeta y manda en «turns» el texto de cada opción; la ventana para postular lo muestra en vez de solo «Con/Sin camioneta».
+            t = cambiar(t, '[[`pickup`,`🛻`,`Con camioneta`],[`none`,`👤`,`Sin camioneta`]].map(',
+                        '[[`pickup`,`🛻`,i&&i.turns&&i.turns.pickup||`Con camioneta`],[`none`,`👤`,i&&i.turns&&i.turns.none||`Sin camioneta`]].filter(([e])=>!i||!i.turns||i.turns[e]).map(', 1, nombre)
+            t = cambiar(t, '(0,W.jsx)(`legend`,{children:`Elige tu turno`})',
+                        '(0,W.jsx)(`legend`,{children:i&&i.turns?`Elige uno de los dos turnos`:`Elige tu turno`})', 1, nombre)
             # Administrar: un acceso «Solicitudes» con su pantalla.
             t = cambiar(t, '[`members`,`Equipo`,`Perfiles y accesos`,m,e.members.length,()=>l(`members`)],',
                         '[`members`,`Equipo`,`Perfiles y accesos`,m,e.members.length,()=>l(`members`)],'

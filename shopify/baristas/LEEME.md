@@ -395,6 +395,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   `pruebas/historial.sql` (72: carga, vinculación por nombre, ranking con historial) y
   `pruebas/admin-clave.sql` (49: entrada de la administración con clave o código, y agregar administradores) y
   `pruebas/admin-barista.sql` (26: la administración con cuenta de barista, `hacer_admin` y el cambio de vista) y
+  `pruebas/turnos.sql` (25: eventos con turnos, una tarjeta con dos opciones) y
   `pruebas/ingreso.sql` (60: solicitudes, correo con el ID y la clave, confirmación de postulaciones y tarjeta amarilla) y `pruebas/equipo.sql` (149: las funciones de
   Sepia Equipo). Se corren con `psql` sobre una base vacía: primero `pruebas/shim-supabase.sql`, luego `esquema.sql` (y `equipo.sql`
   para las pruebas de Sepia Equipo), luego el archivo de pruebas. Al romper
@@ -407,7 +408,7 @@ Todo se corre desde la raíz del repositorio. Los datos de las pruebas son inven
   navegador contra una simulación de Supabase (necesita Playwright: variables `PLAYWRIGHT` y
   `CHROMIUM` si no están en su lugar por defecto).
 - **Sepia Equipo, de punta a punta**: `node shopify/equipo/pruebas/prueba.mjs` (con `PGHOST`, `PGPORT` y `PGUSER` de un Postgres
-  de pruebas) → 166 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
+  de pruebas) → 171 comprobaciones en un navegador real: la interfaz de Jorge, el adaptador y las reglas de la base de datos
   de verdad (solo se simulan la librería de Supabase, su Auth y su Storage). Cubre entrar con ID y clave, clave y perfil obligatorios,
   postular con y sin camioneta, cupos, cancelar (24 horas), foto de perfil, ranking, avisos, cambio de clave, salir,
   toda la administración (crear y editar eventos, asignar, cuentas, restablecer, desactivar, ganancias), las dos formas de entrar de la

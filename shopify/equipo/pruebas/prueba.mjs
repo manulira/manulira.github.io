@@ -794,6 +794,30 @@ try {
     for (const pg of [adm, nina]) { ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : '')); await pg.context().close(); }
     db(`update public.config set eventos_para_confirmar = 0 where id = 1`);
   }
+
+  /* ====================================================================== */
+  if (corre('K')) {
+    console.log('\n=== K. Evento con turnos: una tarjeta, dos opciones (3 horas sin camioneta, 4 horas con camioneta) ===');
+    db(`insert into public.eventos (id, nombre, fecha, hora_inicio, hora_fin, comuna, lugar, baristas_necesarios, pago_manual, estado) values
+          ('e1000000-0000-0000-0000-0000000000c3', 'Cenco Prueba · turno de 3 horas', current_date + 4, '17:45', '20:45', 'Providencia', 'Cenco Prueba', 1, 25000, 'abierto'),
+          ('e1000000-0000-0000-0000-0000000000c4', 'Cenco Prueba · turno de 4 horas', current_date + 4, '17:45', '21:45', 'Providencia', 'Cenco Prueba', 1, 40000, 'abierto');
+        insert into public.evento_seguimiento (evento_id, gcal_id) values
+          ('e1000000-0000-0000-0000-0000000000c3', 'cenco@google.com|x#3h'), ('e1000000-0000-0000-0000-0000000000c4', 'cenco@google.com|x#4h')
+        on conflict (evento_id) do update set gcal_id = excluded.gcal_id`);
+    const pg = await nueva();
+    await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
+    ok(await pg.locator('article', { hasText: 'Cenco Prueba' }).count() === 1 && !/turno de 3 horas|turno de 4 horas/.test(await texto(pg)), 'los dos turnos se ven como una sola tarjeta');
+    await abrirPostulacion(pg, 'Cenco Prueba');
+    const t = await texto(pg);
+    ok(/Elige uno de los dos turnos/.test(t) && /3 horas · sin camioneta · 17:45 a 20:45 · \$25\.000/.test(t) && /4 horas · con camioneta · 17:45 a 21:45 · \$40\.000/.test(t), 'al postular se ven los dos turnos con su hora y su pago');
+    ok(await pg.locator('input[type=radio][value=pickup]').isDisabled(), 'sin camioneta declarada, no puede elegir el de 4 horas');
+    await captura(pg, 'K1-turnos');
+    await pg.locator('input[type=radio][value=none]').check();
+    await pulsa(pg, 'Confirmar turno'); await espera(pg, 1500);
+    ok(db(`select e.nombre || ' ' || p.estado from public.postulaciones p join public.eventos e on e.id = p.evento_id join public.accesos a on a.id = p.barista_id where a.usuario = 'beto.prueba' and e.nombre like 'Cenco Prueba%'`) === 'Cenco Prueba · turno de 3 horas confirmada', 'queda confirmado en el turno de 3 horas');
+    ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
+    await pg.context().close();
+  }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();
 }

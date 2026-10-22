@@ -202,6 +202,108 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- 4b. Eventos con turnos (un mismo evento partido en turnos, p. ej. Cenco Costanera: 3 horas y 4 horas)
+-- ---------------------------------------------------------------------------
+-- El script del calendario (TURNOS_FIJOS) crea un evento por turno con el mismo código de calendario y «#3h», «#4h»
+-- al final. En la base siguen siendo eventos separados (cada uno con su horario, pago y cupos, y la administración los
+-- maneja por separado), pero el equipo los ve como UNA tarjeta con dos opciones: «con camioneta» toma el turno que la
+-- exige y «sin camioneta» el otro. Cada barista toma una sola opción. Qué turno exige camioneta: eventos.exige_camioneta
+-- si está puesto; si no, el más largo del grupo (Manuel, 22 oct: 3 horas sin camioneta, 4 horas con camioneta).
+alter table public.eventos add column if not exists exige_camioneta boolean;
+
+-- Código del grupo (null si el evento no tiene turnos).
+create or replace function public.eq_grupo(p_evento uuid) returns text
+language sql stable security definer set search_path = '' as $$
+  select split_part(s.gcal_id, '#', 1) from public.evento_seguimiento s
+  where s.evento_id = p_evento and s.gcal_id like '%#%'
+$$;
+
+-- Duración de un turno en minutos (si termina después de medianoche, cuenta hasta el otro día).
+create or replace function public.eq_minutos(ini time, fin time) returns int
+language sql immutable set search_path = '' as $$
+  select (extract(epoch from (fin - ini)) / 60)::int + case when fin <= ini then 1440 else 0 end
+$$;
+
+-- Los turnos del grupo de un evento (los que no están cancelados), con la opción que le toca a cada uno.
+create or replace function public.eq_turnos(p_evento uuid)
+returns table (evento_id uuid, opcion text)
+language sql stable security definer set search_path = '' as $$
+  with g as (select public.eq_grupo(p_evento) as k),
+  t as (
+    select e.id, e.exige_camioneta, public.eq_minutos(e.hora_inicio, e.hora_fin) as m
+    from public.eventos e join public.evento_seguimiento s on s.evento_id = e.id, g
+    where g.k is not null and split_part(s.gcal_id, '#', 1) = g.k and s.gcal_id like '%#%' and e.estado <> 'cancelado'
+  )
+  select t.id, case when coalesce(t.exige_camioneta,
+                                  (select count(*) from t) > 1 and t.m = (select max(m) from t) and (select min(m) from t) < t.m)
+                    then 'pickup' else 'none' end
+  from t
+$$;
+
+-- El evento que representa al grupo en la pantalla del equipo: el turno sin camioneta (o el primero).
+create or replace function public.eq_principal(p_evento uuid) returns uuid
+language sql stable security definer set search_path = '' as $$
+  select coalesce((select t.evento_id from public.eq_turnos(p_evento) t
+                   join public.eventos e on e.id = t.evento_id
+                   order by (t.opcion = 'pickup'), e.hora_fin, e.id limit 1), p_evento)
+$$;
+
+-- El turno del grupo que corresponde a una opción («pickup» o «none»).
+create or replace function public.eq_turno_de(p_evento uuid, p_opcion text) returns uuid
+language sql stable security definer set search_path = '' as $$
+  select t.evento_id from public.eq_turnos(p_evento) t join public.eventos e on e.id = t.evento_id
+  where t.opcion = p_opcion order by e.hora_fin, e.id limit 1
+$$;
+
+-- La tarjeta del grupo para el equipo: el evento principal con el horario, los cupos y el pago de cada opción.
+create or replace function public.eq_grupo_json(p_evento uuid) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  base jsonb := public.eq_evento_json(p_evento, false);
+  r record;
+  turnos jsonb := '{}'::jsonb;
+  notas text := '';
+  cupos int := 0; asignados int := 0; con int := 0; sin int := 0;
+  ini time; fin time;
+  confirmado boolean := false;
+  titulo text;
+  pago_sin int;
+begin
+  for r in
+    select t.opcion, e.id, e.nombre, e.hora_inicio, e.hora_fin, e.baristas_necesarios, v.pago_liquido, c.asignados
+    from public.eq_turnos(p_evento) t join public.eventos e on e.id = t.evento_id
+    join public.eventos_vista v on v.id = e.id cross join lateral public.eq_cupos(e.id) c
+    order by (t.opcion = 'pickup'), e.hora_fin
+  loop
+    cupos := cupos + r.baristas_necesarios;
+    asignados := asignados + r.asignados;
+    if r.opcion = 'pickup' then con := con + r.asignados; else sin := sin + r.asignados; pago_sin := coalesce(pago_sin, r.pago_liquido); end if;
+    if ini is null or r.hora_inicio < ini then ini := r.hora_inicio; end if;
+    if fin is null or public.eq_minutos(ini, r.hora_fin) > public.eq_minutos(ini, fin) then fin := r.hora_fin; end if;
+    titulo := coalesce(titulo, regexp_replace(r.nombre, '\s*·\s*turno de .*$', ''));
+    turnos := turnos || jsonb_build_object(r.opcion,
+      trim(trailing '.' from trim(trailing '0' from round(public.eq_minutos(r.hora_inicio, r.hora_fin) / 60.0, 1)::text)) || ' horas · '
+      || case when r.opcion = 'pickup' then 'con camioneta' else 'sin camioneta' end
+      || ' · ' || public.eq_hhmm(r.hora_inicio) || ' a ' || public.eq_hhmm(r.hora_fin)
+      || ' · $' || replace(to_char(r.pago_liquido, 'FM999G999G999'), ',', '.'));
+    notas := notas || E'\n· ' || (turnos ->> r.opcion);
+    confirmado := confirmado or exists (select 1 from public.postulaciones p
+                   where p.evento_id = r.id and p.barista_id = auth.uid() and p.estado = 'confirmada');
+  end loop;
+  if cupos = 0 then return base; end if;
+  return base || jsonb_build_object(
+    'title', titulo,
+    'start', public.eq_hhmm(ini), 'end', public.eq_hhmm(fin),
+    'next_day', (fin <= ini)::int, 'nextDay', (fin <= ini),
+    'slots', cupos, 'capacity', cupos, 'assigned', asignados, 'pickup_assigned', con, 'other_assigned', sin,
+    'pay', coalesce(pago_sin, (base ->> 'pay')::int), 'estimated_net_pay', coalesce(pago_sin, (base ->> 'pay')::int),
+    'turns', turnos,
+    'notes', btrim('Este evento tiene dos turnos; elige uno al postular:' || notas || E'\n\n' || coalesce(base ->> 'notes', '')),
+    'address', case when confirmado then coalesce((select d.direccion from public.evento_direcciones d
+                 where d.evento_id in (select x.evento_id from public.eq_turnos(p_evento) x) and d.direccion is not null limit 1), '') else '' end);
+end $$;
+
+-- ---------------------------------------------------------------------------
 -- 5. El «paquete» de datos de quien consulta
 -- ---------------------------------------------------------------------------
 create or replace function public.eq_estado(p_vista text default null) returns jsonb
@@ -246,18 +348,26 @@ begin
   if not permitido or cambiar then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;
   if perfil_requerido then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;
 
-  select coalesce(jsonb_agg(public.eq_evento_json(e.id, ver_adm) order by e.fecha, e.hora_inicio), '[]'::jsonb) into eventos
+  -- El equipo ve un evento con turnos como una sola tarjeta (la del turno principal); la administración, cada turno.
+  select coalesce(jsonb_agg(case when not ver_adm and public.eq_grupo(e.id) is not null then public.eq_grupo_json(e.id)
+                                 else public.eq_evento_json(e.id, ver_adm) end order by e.fecha, e.hora_inicio), '[]'::jsonb) into eventos
   from public.eventos e
   where (ver_adm)
      or (e.estado <> 'borrador'
+         and (public.eq_grupo(e.id) is null or public.eq_principal(e.id) = e.id)
          and (adm
               or exists (select 1 from public.postulaciones p where p.evento_id = e.id and p.barista_id = uid)
               or (e.estado = 'abierto' and public.dentro_de_publicacion(e.fecha))));
 
   select coalesce(jsonb_agg(jsonb_build_object(
-           'id', p.id, 'event_id', p.evento_id, 'member_id', p.barista_id,
+           'id', p.id,
+           -- El equipo ve su postulación en la tarjeta del grupo, con la opción que tomó.
+           'event_id', case when not ver_adm and public.eq_grupo(p.evento_id) is not null then public.eq_principal(p.evento_id) else p.evento_id end,
+           'member_id', p.barista_id,
            'status', public.eq_estado_post(p.estado, p.asistio),
-           'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta) then 'pickup' else 'none' end,
+           'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta)
+                                  or (not ver_adm and exists (select 1 from public.eq_turnos(p.evento_id) t where t.evento_id = p.evento_id and t.opcion = 'pickup'))
+                                then 'pickup' else 'none' end,
            'created_at', p.creado_en,
            'name', case when ver_adm then b.nombre else null end)
            -- La amarilla y lo que pidió solo van a la administración (el barista no sabe que tiene amarilla).
@@ -339,9 +449,12 @@ begin
     select jsonb_agg(jsonb_build_object(
              'member_id', p.barista_id, 'name', b.nombre,
              'status', public.eq_estado_post(p.estado, p.asistio),
-             'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta) then 'pickup' else 'none' end) order by p.conductor desc, p.creado_en)
+             'vehicle_mode', case when p.conductor or (p.estado = 'postulada' and p.pide_camioneta)
+                                    or exists (select 1 from public.eq_turnos(p_evento) t where t.evento_id = p.evento_id and t.opcion = 'pickup')
+                                  then 'pickup' else 'none' end) order by p.conductor desc, p.creado_en)
     from public.postulaciones p join public.baristas b on b.id = p.barista_id
-    where p.evento_id = p_evento
+    -- Un evento con turnos muestra al equipo de todos sus turnos.
+    where (p.evento_id = p_evento or p.evento_id in (select t.evento_id from public.eq_turnos(p_evento) t))
       and (p.estado = 'confirmada' or (adm and p.estado in ('postulada', 'rechazada', 'retirada')))
   ), '[]'::jsonb));
 end $$;
@@ -468,6 +581,15 @@ begin
   select * into post from public.postulaciones where evento_id = p_evento and barista_id = p_barista;
   if post.id is not null and post.estado in ('confirmada', 'postulada') and not (p_admin and post.estado = 'postulada') then
     raise exception 'Ya tienes un turno en este evento.';
+  end if;
+  -- En un evento con turnos, cada barista toma uno solo.
+  if exists (select 1 from public.postulaciones p join public.eq_turnos(p_evento) t on t.evento_id = p.evento_id
+             where p.barista_id = p_barista and p.evento_id <> p_evento and p.estado in ('postulada', 'confirmada')) then
+    raise exception 'Ya tienes un turno en este evento.';
+  end if;
+  -- El turno que exige camioneta se toma con camioneta.
+  if p_modo <> 'pickup' and exists (select 1 from public.eq_turnos(p_evento) t where t.evento_id = p_evento and t.opcion = 'pickup') then
+    raise exception 'Este turno es con camioneta.';
   end if;
   select * into cu from public.eq_cupos(p_evento);
   ocupados := cu.asignados - (case when post.estado = 'confirmada' then 1 else 0 end);
@@ -607,17 +729,25 @@ declare
   d jsonb := coalesce(p_datos, '{}'::jsonb);
   post public.postulaciones;
   ev public.eventos;
+  ev_id uuid;
 begin
   if uid is null then raise exception 'Inicia sesión para continuar.'; end if;
   if p_accion = 'profile' then
     return public.eq_perfil_guardar(d -> 'profile');
   elsif p_accion = 'apply' then
-    perform public.eq_ocupar_cupo((d ->> 'eventId')::uuid, uid, coalesce(d ->> 'vehicleMode', ''), false);
+    -- En un evento con turnos, «con camioneta» o «sin camioneta» elige el turno.
+    ev_id := (d ->> 'eventId')::uuid;
+    if public.eq_grupo(ev_id) is not null then
+      ev_id := coalesce(public.eq_turno_de(ev_id, coalesce(d ->> 'vehicleMode', '')), ev_id);
+    end if;
+    perform public.eq_ocupar_cupo(ev_id, uid, coalesce(d ->> 'vehicleMode', ''), false);
     -- «pending»: la postulación espera que la administración la confirme (la pantalla avisa eso).
     return jsonb_build_object('ok', true, 'pending',
-      exists (select 1 from public.postulaciones p where p.evento_id = (d ->> 'eventId')::uuid and p.barista_id = uid and p.estado = 'postulada'));
+      exists (select 1 from public.postulaciones p where p.evento_id = ev_id and p.barista_id = uid and p.estado = 'postulada'));
   elsif p_accion = 'cancelApplication' then
-    select * into post from public.postulaciones where evento_id = (d ->> 'eventId')::uuid and barista_id = uid and estado in ('postulada', 'confirmada');
+    select * into post from public.postulaciones
+     where (evento_id = (d ->> 'eventId')::uuid or evento_id in (select t.evento_id from public.eq_turnos((d ->> 'eventId')::uuid) t))
+       and barista_id = uid and estado in ('postulada', 'confirmada') limit 1;
     if post.id is null then raise exception 'No tienes un turno en este evento.'; end if;
     select * into ev from public.eventos where id = post.evento_id;
     if public.eq_inicio(ev.fecha, ev.hora_inicio) - now() < interval '24 hours' then
@@ -767,6 +897,11 @@ grant execute on function public.eq_avisos_leer(uuid) to authenticated;
 revoke all on function public.eq_perfil_guardar(jsonb) from public, anon, authenticated;
 revoke all on function public.eq_ocupar_cupo(uuid, uuid, text, boolean) from public, anon, authenticated;
 revoke all on function public.eq_evento_guardar(jsonb) from public, anon, authenticated;
+revoke all on function public.eq_grupo(uuid) from public, anon, authenticated;
+revoke all on function public.eq_turnos(uuid) from public, anon, authenticated;
+revoke all on function public.eq_principal(uuid) from public, anon, authenticated;
+revoke all on function public.eq_turno_de(uuid, text) from public, anon, authenticated;
+revoke all on function public.eq_grupo_json(uuid) from public, anon, authenticated;
 revoke all on function public.eq_accion(text, jsonb) from public, anon;
 grant execute on function public.eq_accion(text, jsonb) to authenticated;
 revoke all on function public.eq_fotos_perfil(uuid[]) from public, anon;
