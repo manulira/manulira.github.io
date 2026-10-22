@@ -84,8 +84,8 @@ Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (p
 
    Correos: que cotizaciones, contacto y postulaciones lleguen también a `contacto@sepiacoffee.cl` (correo de contacto de la tienda + grupo o reenvío en Google Workspace).
 2. Apagar el registro abierto de usuarios en Supabase (en los ajustes de Authentication; recomendado). Los accesos se crean desde la administración, no hace falta que nadie se registre solo.
-3. Apps Script (calendario y correos): puesta en marcha pendiente (`MODO_PRUEBA` = `no` e `instalarDisparadores`); ver LEEME, sección «Automatización».
-   **Sin el script andando no salen los correos con el ID y la clave de quien se aprueba**, ni el aviso de solicitud nueva.
+3. Apps Script (calendario y correos): en marcha desde el 22 oct (`Codigo.gs` actualizado, `MODO_PRUEBA` = `no`, disparadores instalados; la sincronización
+   del calendario ya corrió). Revisar que salgan los primeros correos (tabla `notificaciones`).
 4. Este repositorio es **público** y ahora contiene el código compilado de Jorge: Manuel debe decidir si lo pasa a privado.
 5. Boletas y pagos siguen solo en el portal de baristas (`/pages/baristas`); no están en Sepia Equipo.
 6. Borrar a mano los archivos viejos `sepia-equipo-v1/v2/v3-*` del tema (opcional).
