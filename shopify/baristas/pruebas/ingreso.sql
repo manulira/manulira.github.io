@@ -148,6 +148,8 @@ select t.yo_admin();
 select t.debe_funcionar('la administración también la puede quitar a mano', $q$select public.eq_accion('yellowCard', '{"memberId":"00000000-0000-0000-0000-0000000000a1","on":true}'); select public.eq_accion('yellowCard', '{"memberId":"00000000-0000-0000-0000-0000000000a1","on":false}')$q$);
 select t.valor('y queda sin amarilla', $q$select m->>'yellow' from jsonb_array_elements(public.eq_estado()->'members') m where m->>'id' = '00000000-0000-0000-0000-0000000000a1'$q$, 'false');
 
+select t.debe_funcionar('también se le puede poner a alguien que todavía no entra ni completa su perfil', $q$select public.eq_accion('yellowCard', jsonb_build_object('memberId', t.acc('camila.perez'), 'on', true))$q$);
+select t.valor('y queda con amarilla', $q$select m->>'yellow' from jsonb_array_elements(public.eq_estado()->'members') m where m->>'username' = 'camila.perez'$q$, 'true');
 select t.root();
 select 'PASARON ' || count(*) filter (where ok) || ' de ' || count(*) as resumen from t.resultados;
 select n, nombre, detalle from t.resultados where not ok order by n;

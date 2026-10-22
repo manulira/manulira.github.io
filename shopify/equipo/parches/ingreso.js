@@ -24,7 +24,7 @@ function SepiaAmarillaBoton({ member, busy, act }) {
   return sepiaE(`div`, { className: `sepia-amarilla-panel` },
     sepiaE(`p`, { className: `field-hint` }, trabajados,
       member.yellow || n < 2 ? ` · sus postulaciones esperan confirmación` : null),
-    sepiaE(`button`, { type: `button`, className: `secondary-btn`, disabled: busy || !member.profile || !Object.keys(member.profile).length,
+    sepiaE(`button`, { type: `button`, className: `secondary-btn`, disabled: busy,
       onClick: () => act(`yellowCard`, { memberId: member.id, on: !member.yellow },
         member.yellow ? `Tarjeta amarilla quitada.` : `Tarjeta amarilla puesta. Sus postulaciones esperarán confirmación.`) },
       member.yellow ? `Quitar amarilla` : `Poner amarilla`));

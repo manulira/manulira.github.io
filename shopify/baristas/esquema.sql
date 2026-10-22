@@ -1641,10 +1641,21 @@ alter table public.accesos_por_enviar enable row level security;
 revoke all on public.accesos_por_enviar from anon, authenticated;
 
 create table if not exists public.amarillas (
-  barista_id uuid primary key references public.baristas (id) on delete cascade,
+  barista_id uuid primary key references public.accesos (id) on delete cascade,
   puesta_en timestamptz not null default now(),
   puesta_por uuid
 );
+-- La amarilla se puede poner apenas existe la cuenta, aunque la persona todavía no haya entrado ni completado su
+-- perfil (Manuel, 22 oct): por eso apunta a accesos y no a baristas.
+do $amarilla$
+begin
+  if exists (select 1 from pg_constraint where conname = 'amarillas_barista_id_fkey'
+             and confrelid = 'public.baristas'::regclass) then
+    alter table public.amarillas drop constraint amarillas_barista_id_fkey;
+    alter table public.amarillas add constraint amarillas_barista_id_fkey
+      foreign key (barista_id) references public.accesos (id) on delete cascade;
+  end if;
+end $amarilla$;
 alter table public.amarillas enable row level security;
 revoke all on public.amarillas from anon, authenticated;
 
@@ -1817,7 +1828,7 @@ begin
   if not (auth.uid() is null or public.es_admin()) then
     raise exception 'Solo la administración pone la tarjeta amarilla' using errcode = '42501';
   end if;
-  if not exists (select 1 from public.baristas b where b.id = p_barista) then raise exception 'No encontramos a esa persona.'; end if;
+  if not exists (select 1 from public.accesos a where a.id = p_barista) then raise exception 'No encontramos a esa persona.'; end if;
   if coalesce(p_poner, true) then
     insert into public.amarillas (barista_id, puesta_por) values (p_barista, auth.uid())
     on conflict (barista_id) do update set puesta_en = now(), puesta_por = excluded.puesta_por;

@@ -1,24 +1,10 @@
 {%- comment -%}
-  SEPIA COFFEE · botón «Portal Baristas» en la barra de arriba, junto a la cuenta, la lupa y el carrito.
-  Lleva a la consola Sepia Equipo (/pages/equipo). Se incluye desde snippets/header-actions.liquid
-  (una sola línea: {% render 'sepia-portal-boton' %}). En el celular es un círculo con el ícono del equipo, para que no choque con el logo.
+  SEPIA COFFEE · ajustes de la barra de arriba. Se incluye desde snippets/header-actions.liquid
+  (una sola línea: {% render 'sepia-portal-boton' %}).
+  · El botón «Portal Baristas» que estuvo acá se sacó (Manuel, 22 oct: no quedó bien); al portal se llega por el menú.
+  · Sin ingreso de clientes (Manuel, 22 oct): se oculta el ícono de cuenta. Para apagar del todo las cuentas de clientes
+    (también en el pago): Shopify → Configuración → Cuentas de clientes.
 {%- endcomment -%}
-<a class="sepia-portal-boton" href="/pages/equipo" aria-label="Portal Baristas: entrar a Sepia Equipo">
-  <span class="sepia-portal-boton__largo">Portal Baristas</span><span class="sepia-portal-boton__corto" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-</a>
 <style>
-  .sepia-portal-boton{display:inline-flex;align-items:center;align-self:center;margin-inline-end:6px;padding:7px 14px;border-radius:999px;
-    background:#526EA0;color:#FFFFFF;font-size:13px;font-weight:600;line-height:1;letter-spacing:.01em;text-decoration:none;white-space:nowrap;
-    transition:background .2s}
-  .sepia-portal-boton:hover{background:#020526;color:#FFFFFF}
-  .sepia-portal-boton:focus-visible{outline:2px solid #020526;outline-offset:2px}
-  .sepia-portal-boton__corto{display:none}
-  @media screen and (max-width:749px){
-    .sepia-portal-boton{width:28px;height:28px;padding:0;justify-content:center;margin-inline-end:-8px}
-    /* Para que el botón quepa sin tocar el logo, en el celular el logo baja de 26 a 22 px de alto. */
-    .header-logo__image{max-height:22px;width:auto}
-    .sepia-portal-boton__largo{display:none}
-    .sepia-portal-boton__corto{display:inline-flex}
-  }
-  @media screen and (max-width:370px){ .header-logo__image{max-height:20px} }
+  header-actions .account-button{display:none !important}
 </style>
