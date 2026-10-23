@@ -45,134 +45,155 @@ a.required-profile-brand{text-decoration:none}
 .ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
 
 /* ==========================================================================
-   Sepia: diseño inspirado en la futura cafetería (Jorge, 23 oct).
-   Se mantiene el logo «sepia coffee» tal cual (imagen, su diseño y su letra) y la paleta de Manuel: crema
-   #e7e5d9 (fondo, como el papel de la guía de marca), celeste #b9c5d3 (la fachada, los vasos y la barra),
-   azul #526ea0, azul noche #020526 (sillas y delantales), gris #f2f2f2 y blanco.
-   De la foto se toman: superficies celestes lisas y redondeadas, las franjas del toldo y de los vasos, la
-   cuadrícula de la bolsa, el damero, botones redondos y títulos en una letra geométrica como la del logo
-   (Poppins, la misma de los títulos de sepiacoffee.cl). Sin la figura caminando (Jorge, 23 oct).
+   Sepia: diseño inspirado en la futura cafetería (Jorge, 23 oct; revisado a pedido de Jorge el mismo día).
+   - El logo «sepia coffee» no se toca (imagen, diseño y letra). Sin la figura caminando.
+   - Solo la paleta de Manuel: crema #e7e5d9 (fondo), celeste #b9c5d3 (el color de la fachada), azul #526ea0,
+     azul noche #020526, gris #f2f2f2 y blanco.
+   - Armonía: fondo crema, el saludo en un rectángulo celeste liso (sin cuadrícula), tarjetas blancas, la franja
+     de toldo solo arriba de la barra.
+   - Todo lo que se selecciona o se aprieta (menú, pestañas, filtros, botones) es un rectángulo de esquinas
+     redondeadas, no un círculo ni una píldora (Jorge, 23 oct).
+   - Títulos en Poppins (la letra de los títulos de sepiacoffee.cl) y textos en DM Sans.
    ========================================================================== */
 :root{
   background:#e7e5d9;
-  --sepia-crema:#e7e5d9;--sepia-celeste:#b9c5d3;--sepia-azul:#526ea0;--sepia-noche:#020526;--sepia-gris:#f2f2f2;--sepia-blanco:#ffffff;
   --font-sans:"DM Sans","Inter","Avenir Next","Segoe UI",Arial,sans-serif;
   --sepia-titulo:"Poppins","DM Sans","Avenir Next","Segoe UI",Arial,sans-serif;
-  --sepia-radio:22px;
-  --sepia-sombra:0 1px 2px #0205260f,0 10px 28px #02052614;
+  --r-tarjeta:20px;      /* tarjetas y bloques */
+  --r-control:12px;      /* botones, pestañas, filtros, campos, menú */
+  --sepia-sombra:0 1px 2px #0205260d,0 8px 24px #02052612;
   --line:#b9c5d3;--muted:#526ea0;
-  /* Franjas (toldo y vasos), cuadrícula (bolsa) y damero */
-  --sepia-franjas:repeating-linear-gradient(90deg,#b9c5d3 0 14px,#ffffff 14px 28px);
-  --sepia-cuadricula:linear-gradient(#ffffff 1px,transparent 1px),linear-gradient(90deg,#ffffff 1px,transparent 1px);
-  --sepia-damero:repeating-conic-gradient(#020526 0 25%,#ffffff 0 50%);
 }
 html,body{background:#e7e5d9}
 body{font-family:var(--font-sans);color:#020526;-webkit-font-smoothing:antialiased}
-.app-shell,.ops-shell,.app-main,.auth-shell,.onboarding-page,.boot-screen{background:#e7e5d9}
+.app-shell,.ops-shell,.app-main,.auth-shell,.onboarding-page,.boot-screen,.required-profile{background:#e7e5d9}
 
-/* Títulos: letra geométrica como la del logo */
+/* ---------- Letras ---------- */
 .page-intro h1,.ops-hero h2,.dashboard-hero h2,.auth-content h1,.onboarding-card h1,.ops-card h2,.ranking-banner h2,
-.install-dialog>h2,.hero-copy h2,.visual-copy h2,.team-note h3,.coffee-content h3,.story-hero h2,
-.prominent-event-date strong,.event-pay-summary strong,.event-card h3,.admin-welcome h2,.profile-page h1,.profile-page h2,
-.ranking-page h1,.ranking-page h2,.dialog-title,.event-dialog h2,.ops-dialog h2{
-  font-family:var(--sepia-titulo);font-weight:700;letter-spacing:-.02em;color:#020526}
-.page-intro h1,.dashboard-hero h2,.ops-hero h2{font-weight:800;line-height:1.05}
+.install-dialog>h2,.hero-copy h2,.visual-copy h2,.team-note h3,.coffee-content h3,.story-hero h2,.next-shift h2,
+.prominent-event-date strong,.event-pay-summary strong,.admin-welcome h2,.event-dialog h2,.ops-dialog h2,.required-profile h1{
+  font-family:var(--sepia-titulo);font-weight:700;letter-spacing:-.02em}
+.page-intro h1{font-weight:800;line-height:1.05}
 .profile-summary>p.profile-summary-note{font-family:var(--font-sans)}
-.eyebrow{font-family:var(--sepia-titulo);font-weight:600;letter-spacing:.14em;color:#526ea0}
-.greeting-dot,.brand-dot{color:#526ea0}
+.eyebrow{font-family:var(--sepia-titulo);font-weight:600;letter-spacing:.14em}
 
-/* Barra de arriba: el toldo a rayas de la fachada */
+/* ---------- Barra de arriba: crema, con la franja del toldo ---------- */
 .app-header{background:#e7e5d9;border-top:0;border-bottom:1px solid #b9c5d3;position:relative}
-.app-header::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--sepia-franjas)}
-.icon-btn,.user-menu>button,.avatar{border-radius:999px}
-.icon-btn{background:#ffffff;border:1px solid #b9c5d3;color:#020526}
+.app-header::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:repeating-linear-gradient(90deg,#b9c5d3 0 16px,#ffffff 16px 32px)}
+/* Menú del computador: la opción activa es un rectángulo redondeado celeste, sin la raya de abajo */
+.desktop-nav{align-items:center;gap:4px}
+.desktop-nav button,.ops-shell .desktop-nav button{height:40px;padding:0 14px;border-radius:var(--r-control);color:#020526}
+.desktop-nav button:hover{background:#ffffff}
+.desktop-nav button.active,.ops-shell .desktop-nav button.active{background:#b9c5d3;color:#020526;font-weight:600}
+.desktop-nav button.active::after,.desktop-nav button.active:after{display:none}
+.icon-btn{background:#ffffff;border:1px solid #b9c5d3;border-radius:var(--r-control);color:#020526}
+.crew-notices>summary{border-radius:var(--r-control)}
 .avatar,.member-avatar-small,.large-avatar,.rank-avatar,.podium-avatar{background:#b9c5d3;color:#020526}
 
-/* Saludo: un bloque celeste con la cuadrícula de la bolsa */
-.app-main>.page-intro,.dashboard-hero,.ops-hero{position:relative;padding:26px 28px;border-radius:var(--sepia-radio);background-color:#b9c5d3;background-image:var(--sepia-cuadricula);background-size:34px 34px;overflow:hidden}
-.app-main>.page-intro{margin-bottom:22px;align-items:center}
-.app-main>.page-intro p,.dashboard-hero p,.ops-hero p{color:#020526}
-.app-main>.page-intro .eyebrow,.dashboard-hero .eyebrow,.ops-hero .eyebrow{color:#020526}
+/* ---------- El saludo: un rectángulo celeste liso ---------- */
+.page-intro{background:#b9c5d3;border-radius:var(--r-tarjeta);padding:28px 32px;margin-bottom:22px;align-items:center}
+.page-intro h1,.page-intro p,.page-intro .eyebrow{color:#020526}
+.page-intro .secondary-btn{background:#ffffff;border-color:#ffffff;color:#020526}
 
-/* Tarjetas: blancas, redondas, sin bordes duros */
+/* ---------- Mi próximo turno: bloque azul noche con letras blancas ---------- */
+.next-shift{background:#020526;color:#ffffff;border:0;border-radius:var(--r-tarjeta);box-shadow:var(--sepia-sombra)}
+.next-shift .eyebrow,.next-shift h2,.next-shift-facts span,.next-shift .next-confirmed,.next-shift p{color:#ffffff}
+.next-shift .prominent-event-date{background:#ffffff1a;border:1px solid #ffffff4d;color:#ffffff}
+.next-shift .prominent-event-date strong,.next-shift .prominent-event-date>span,.next-shift .prominent-event-date small,
+.next-shift .prominent-event-date>svg{color:#ffffff}
+.next-shift .event-pay-summary{background:#ffffff;border:0;border-radius:14px}
+.next-shift .event-pay-summary strong{color:#020526}
+.next-shift .event-pay-summary>span,.next-shift .event-pay-summary small{color:#526ea0}
+.next-shift .secondary-btn,.next-shift .text-btn{background:#ffffff;border-color:#ffffff;color:#020526}
+.next-shift.empty-next{background:#ffffff;color:#020526}
+.next-shift.empty-next h2{color:#020526}
+.next-shift.empty-next p,.next-shift.empty-next svg{color:#526ea0}
+.next-shift.empty-next .secondary-btn{background:#020526;border-color:#020526;color:#ffffff}
+
+/* ---------- Tarjetas: blancas y redondeadas ---------- */
 .ops-card,.event-card,.admin-menu-card,.stat-card,.profile-identity-card,.profile-section-panel,.notification-card,
-.podium-card,.onboarding-card,.next-shift{background:#ffffff;border:1px solid #ffffff;border-radius:var(--sepia-radio);box-shadow:var(--sepia-sombra)}
-.event-card:hover,.admin-menu-card:hover{border-color:#b9c5d3}
-.event-card,.ops-event-grid>.ops-card{position:relative;overflow:hidden}
-/* Cada evento lleva arriba las franjas de los vasos */
-.event-card::before,.ops-event-grid>.ops-card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--sepia-franjas)}
-.next-shift{border-left:0}
-.next-shift-main svg,.admin-menu-icon{color:#020526}
-.admin-menu-icon{background:#b9c5d3;border-radius:999px}
-.admin-menu-card.active,.admin-menu-card[aria-current]{border-color:#526ea0;background:#ffffff}
+.podium-card,.onboarding-card,.ranking-banner,.profile-section-menu{background:#ffffff;border:1px solid #ffffff;border-radius:var(--r-tarjeta);box-shadow:var(--sepia-sombra)}
+.event-card:hover,.admin-menu-card:hover,.ops-event-grid>.ops-card:hover{border-color:#b9c5d3}
+.ops-card.is-team-ready,.event-card.is-team-ready{border:2px solid #526ea0}
+.event-ready-heading{border-radius:var(--r-control)}
+.admin-menu-icon{background:#b9c5d3;color:#020526;border-radius:var(--r-control)}
+.ranking-banner,.ranking-banner p,.ranking-banner .eyebrow,.ranking-banner h2{color:#020526}
 
-/* La fecha del evento, en celeste como la barra de la cafetería */
-.prominent-event-date{background:#b9c5d3;border:0;border-radius:16px;color:#020526}
-.prominent-event-date span,.prominent-event-date small{color:#020526}
-.event-pay-summary{background:#e7e5d9;border:0;border-radius:16px}
-.event-pay-summary::before{display:none}
-.event-tag,.subtle-pill{border-radius:999px;border-color:#b9c5d3;background:#f2f2f2;color:#020526}
-.slot-status{border-radius:14px}
+/* La fecha de cada evento, en celeste como la barra de la cafetería */
+.prominent-event-date{background:#b9c5d3;border:0;border-radius:14px;color:#020526}
+.prominent-event-date>span,.prominent-event-date small,.prominent-event-date>svg{color:#020526}
+.event-pay-summary{background:#e7e5d9;border:0;border-radius:14px}
+.event-tag,.subtle-pill{border-radius:10px;border-color:#b9c5d3;background:#f2f2f2;color:#020526}
+.slot-status{border-radius:10px}
 
-/* Botones redondos: el principal en azul noche (sillas y delantales), el secundario blanco */
-.primary-btn,.apply-btn,.secondary-btn,.text-btn.button,button.button,.file-button{border-radius:999px;font-family:var(--sepia-titulo);font-weight:600;letter-spacing:0}
+/* ---------- Botones y todo lo que se selecciona: rectángulos redondeados ---------- */
+.primary-btn,.apply-btn,.secondary-btn,.text-btn.button,button.button,.file-button,.password-toggle{border-radius:var(--r-control);font-family:var(--sepia-titulo);font-weight:600;letter-spacing:0}
 .primary-btn,.apply-btn{background:#020526;border-color:#020526;color:#ffffff}
 .primary-btn:hover:not(:disabled),.apply-btn:hover:not(:disabled){background:#526ea0;border-color:#526ea0}
 .secondary-btn{background:#ffffff;border-color:#b9c5d3;color:#020526}
 .secondary-btn:hover:not(:disabled){border-color:#020526}
-.app-main>.page-intro .secondary-btn,.dashboard-hero .secondary-btn,.ops-hero .secondary-btn{background:#ffffff;border-color:#ffffff;color:#020526}
-.primary-btn:focus-visible,.secondary-btn:focus-visible,.apply-btn:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
-
-/* Pestañas y filtros: píldoras */
-.shift-tabs,.view-tabs,.event-dialog-tabs{border-bottom:0;gap:6px;flex-wrap:wrap}
-.shift-tabs button,.view-tabs button,.event-dialog-tabs button{border-radius:999px;border:1px solid #b9c5d3;background:#ffffff;padding:9px 16px;color:#020526}
-.shift-tabs button.active,.view-tabs button.active,.event-dialog-tabs button.active,
+.primary-btn:focus-visible,.secondary-btn:focus-visible,.apply-btn:focus-visible,.desktop-nav button:focus-visible{outline:2px solid #526ea0;outline-offset:2px}
+/* Pestañas (Disponibles, Mis turnos, Eventos listos, ranking, estados de eventos) */
+.shift-tabs,.view-tabs,.event-dialog-tabs,.ranking-period{border-bottom:0;gap:6px;flex-wrap:wrap}
+.shift-tabs button,.view-tabs button,.event-dialog-tabs button,.ranking-period button{border-radius:var(--r-control);border:1px solid #b9c5d3;background:#ffffff;padding:9px 16px;color:#020526}
+.shift-tabs button.active,.view-tabs button.active,.event-dialog-tabs button.active,.ranking-period button.active,
 .shift-tabs button[aria-selected=true],.view-tabs button[aria-selected=true],.event-dialog-tabs button[aria-selected=true]{background:#020526;border-color:#020526;color:#ffffff}
-.shift-tabs button.active::after,.view-tabs button.active::after{display:none}
-.filter-chips button{border-radius:999px;border-color:#b9c5d3;background:#ffffff;color:#020526}
-.filter-chips button.active,.filter-chips button[aria-pressed=true]{background:#b9c5d3;border-color:#b9c5d3;color:#020526}
+.shift-tabs button.active::after,.view-tabs button.active::after,.shift-tabs button.active:after,.view-tabs button.active:after{display:none}
+/* Filtros con / sin máquina */
+.filter-chips button,.filter-chips>button{border-radius:var(--r-control);border-color:#b9c5d3;background:#ffffff;color:#020526}
+.filter-chips button.active,.filter-chips>button.active,.filter-chips button[aria-pressed=true]{background:#b9c5d3;border-color:#b9c5d3;color:#020526}
+/* Campos */
+.field input,.field select,.field textarea,.ops-form input,.ops-form select,.ops-form textarea,.required-profile input,
+.billing-field input,.billing-field select,.event-search input,.ranking-search input{border-radius:var(--r-control);border-color:#b9c5d3;background:#ffffff}
+.field input:focus,.field select:focus,.field textarea:focus,.required-profile input:focus,.billing-field input:focus{border-color:#526ea0;outline:2px solid #b9c5d3;outline-offset:0}
 
-/* Campos de formulario */
-.field input,.field select,.field textarea,.ops-form input,.ops-form select,.ops-form textarea,.required-profile input{border-radius:14px;border-color:#b9c5d3;background:#ffffff}
-.field input:focus,.field select:focus,.field textarea:focus,.required-profile input:focus{border-color:#526ea0;outline:2px solid #b9c5d3;outline-offset:0}
+/* ---------- Entrada ---------- */
+.required-profile form{background:#ffffff;border:0;border-radius:var(--r-tarjeta);box-shadow:var(--sepia-sombra)}
 
-/* Entrada: tarjeta blanca sobre crema, con las franjas arriba */
-.required-profile{background:#e7e5d9}
-.required-profile form,.auth-content form{position:relative;background:#ffffff;border:0;border-radius:24px;box-shadow:var(--sepia-sombra);overflow:hidden}
-.required-profile form::before,.auth-content form::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--sepia-franjas)}
-
-/* Ranking: podio celeste */
-.ranking-banner{border-radius:var(--sepia-radio);background-color:#b9c5d3;background-image:var(--sepia-cuadricula);background-size:34px 34px;color:#020526}
-.ranking-banner p,.ranking-banner .eyebrow{color:#020526}
-.podium-card{background:#ffffff}
-.ranking-row{border-radius:16px}
-
-/* Diálogos */
+/* ---------- Diálogos ---------- */
 .event-dialog,.ops-dialog,.install-dialog,.photos-dialog{border-radius:24px;border:0;box-shadow:0 24px 60px #02052633}
+.dialog-close{border-radius:var(--r-control)}
 
-/* Barra de abajo en el celular */
+/* ---------- Barra de abajo en el celular ---------- */
 .bottom-nav{background:#ffffff;border-top:1px solid #b9c5d3;box-shadow:0 -6px 24px #0205260f}
-.bottom-nav button,.bottom-nav a{border-radius:16px;color:#526ea0}
-.ops-shell .bottom-nav>button.active,.bottom-nav>button.active{background:#b9c5d3;color:#020526;border-radius:16px}
+.bottom-nav>button,.ops-shell .bottom-nav>button{border-radius:var(--r-control);color:#526ea0}
+.ops-shell .bottom-nav>button.active,.bottom-nav>button.active{background:#b9c5d3;color:#020526;border-radius:var(--r-control)}
 .bottom-nav>button.active:before{display:none}
-.desktop-nav .active,.desktop-nav [aria-current]{background:#b9c5d3;color:#020526;border-radius:999px}
 
-/* Pie: una tira de damero, como la bolsa */
-.app-footer{position:relative;border-top:0;padding-top:30px}
-.app-footer::before{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:var(--sepia-damero);background-size:12px 12px;border-radius:4px}
+/* ---------- Pie ---------- */
+.app-footer{border-top:1px solid #b9c5d3}
 
-/* Aviso de arriba (perfil completo, etc.) */
-.crew-notices>*,.app-main>[role=status]{border-radius:16px}
-
-/* Computador y celular: márgenes cómodos y sin moverse de lado */
+/* ---------- Computador y celular ---------- */
 html,body{max-width:100%;overflow-x:hidden}
 @media (max-width:720px){
-  .app-main>.page-intro,.dashboard-hero,.ops-hero{padding:20px 18px;border-radius:18px}
-  .ops-card,.event-card,.admin-menu-card{border-radius:18px}
-  .page-intro h1,.dashboard-hero h2,.ops-hero h2{font-size:30px}
+  .page-intro{padding:20px 18px;border-radius:18px}
+  .ops-card,.event-card,.admin-menu-card,.next-shift{border-radius:18px}
+  .page-intro h1{font-size:30px}
   .shift-tabs,.view-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
   .shift-tabs button,.view-tabs button{white-space:nowrap;padding:8px 13px}
 }
-@media (min-width:1280px){
-  .app-main{max-width:1180px;margin-left:auto;margin-right:auto}
+
+/* ---------- Ficha de cada barista (Administrar → Equipo), ordenada (Jorge, 23 oct) ----------
+   Computador: a la izquierda quién es (nombre, estado, datos pendientes, restablecer clave); a la derecha la amarilla y
+   desactivar; abajo, a lo ancho, los dos medidores lado a lado; al final los datos privados. Celular: todo en una columna. */
+.ops-admin-list>article.ops-card:has(>.sepia-niveles){display:grid;grid-template-columns:minmax(0,1fr) 260px;grid-template-rows:auto auto 1fr auto auto;grid-template-areas:"info amarilla" "info desactivar" "info ." "niveles niveles" "privado privado";column-gap:28px;row-gap:12px;align-items:start}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child{grid-area:info;min-width:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.secondary-btn{grid-area:desactivar;width:100%;margin:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel{grid-area:amarilla;margin:0;display:grid;gap:8px}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel .secondary-btn{width:100%;margin:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel .field-hint{margin:0;font-size:13px;line-height:1.4}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles{grid-area:niveles;max-width:none;margin:6px 0 0;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles>.sepia-niveles-nota{grid-column:1/-1}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>details{grid-area:privado;margin:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles) .admin-person-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles) .admin-person-heading h3{margin:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child>p{margin:8px 0 6px}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles) .profile-admin-status{margin:12px 0;border-radius:14px}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child section{margin:0}
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child section .secondary-btn{margin:0}
+.sepia-niveles{border-radius:16px}
+@media (max-width:860px){
+  .ops-admin-list>article.ops-card:has(>.sepia-niveles){grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"info" "amarilla" "desactivar" "niveles" "privado"}
+  .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles{grid-template-columns:minmax(0,1fr)}
+  .ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child section .secondary-btn{width:100%}
 }
