@@ -14,6 +14,17 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 23-10-2026 20:50 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: que la app se vea bien («está realmente horrible»): sacar la cuadrícula del saludo y dejar solo el rectángulo celeste, que lo que se
+  selecciona sean rectángulos redondeados y no círculos, que la ficha de cada barista quede ordenada en computador y celular, todo en armonía.
+- **Hecho**: v11 (`893039a`): «Mi próximo turno» legible (azul noche con letras blancas; antes salía blanco sobre blanco), menú activo como
+  rectángulo celeste, saludo celeste liso, sin cuadrícula ni damero, botones/pestañas/filtros con esquinas redondeadas, ficha del equipo ordenada.
+  191 pruebas pasan. Revisado con datos realistas en 1440 px y 390 px.
+- **Shopify**: la v10 quedó **publicada** (tema `193575420268`, MAIN) y luego también el borrador `193575944556` (copia sin cambios) antes de subirle
+  la v11. La v11 quedó en **`193576042860`** («… v11 corregida»), sin publicar; Jorge la publica a mano. Los temas `193575420268`,
+  `193575944556` y `193517551980` (v9) quedan sin uso.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 23-10-2026 20:35 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: el paso a paso para tener la app actualizada; conectó Shopify y pidió usarlo.
 - **Hecho**: se vio que Manuel ya publicó la v9 («Sepia Coffee · equipo v9 (borrador)», `193517551980`, hoy MAIN). Se duplicó como
