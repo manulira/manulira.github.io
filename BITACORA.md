@@ -14,6 +14,12 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 23-10-2026 17:00 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: comprobar que ya tiene acceso a GitHub y Supabase, y revisar el audio de Manuel («que siempre lea el archivo .md que está en GitHub»).
+- **Hecho**: solo lectura. Se clonó esta rama y se leyeron `CLAUDE.md` y `BITACORA.md`; se comprobó acceso al proyecto Supabase «Sepia Crew» (`luvtodxuuqjewuguoxcx`). Sin cambios en Supabase, Shopify ni Google.
+- **Dónde**: GitHub (este commit).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 23-10-2026 · manuel@sepiacoffee.cl
 - **Pidió**: que cada conversación con Claude (suya o de otra persona) quede registrada en GitHub con quién lo pidió, y que Claude
   avise de los cambios de otras personas y advierta si un pedido choca con lo que pidió otra persona. Lo mismo para Supabase y las demás plataformas.
