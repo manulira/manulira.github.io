@@ -14,6 +14,16 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 23-10-2026 20:40 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: dos documentos: una guía de cómo funciona la app para los baristas, y uno con todos los IDs, claves y el mensaje de
+  WhatsApp para cada barista. Confirmó crear claves nuevas para los 25 baristas que nunca habían entrado.
+- **Hecho**: **claves temporales nuevas para 25 cuentas** (todas las que no son administración y nunca entraron; creadas el 21-oct) con
+  `restablecer_clave` (cierra sesiones y pide cambiarla al entrar). Cualquier clave anterior de esas 25 cuentas ya no sirve.
+  `jorge.hurtado` y `manuel.lira` no se tocaron. Se comprobó que las 25 funcionan. Las claves **no** están en el repositorio: están en
+  un Word privado de Jorge. La guía de baristas quedó en un documento de Claude de Jorge.
+- **Dónde**: Supabase (`auth.users` y `accesos.debe_cambiar_clave` de esas 25 cuentas; sin migración).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 23-10-2026 20:10 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: en el perfil de administración (solo Jorge y Manuel), un medidor de 5 niveles para la experiencia del barista y cómo hace su
   pega (Profesional, Alta, Media, Baja, Ninguna), dos iguales: con máquina y sin máquina. Y el diseño de la app inspirado en la foto de la
