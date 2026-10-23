@@ -10,9 +10,21 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| 23-10 19:30 | contacto@sepiacoffee.cl (Jorge) | Medidor de experiencia (con y sin máquina) solo para administración; después, diseño inspirado en la foto de la cafetería | GitHub, Supabase | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
+| — | — | — | — | — |
 
 ## Registro
+
+### 23-10-2026 20:10 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: en el perfil de administración (solo Jorge y Manuel), un medidor de 5 niveles para la experiencia del barista y cómo hace su
+  pega (Profesional, Alta, Media, Baja, Ninguna), dos iguales: con máquina y sin máquina. Y el diseño de la app inspirado en la foto de la
+  futura cafetería, manteniendo el logo, su diseño y su letra (sin la figura caminando), que funcione perfecto en computador y celular.
+- **Hecho**: medidores en Administrar → Equipo, guardados en la base y ocultos para los baristas. Diseño nuevo con la paleta de Manuel
+  (no se tocaron sus colores ni el logo). Probado en computador (1100 px) y celular (390 px). Versión **v10**.
+- **Dónde**: GitHub `ff93727` (y este commit); Supabase: migración `nivel_experiencia` (tabla `niveles`, `poner_nivel`, `eq_estado`, `eq_accion`).
+  Shopify: **sin subir todavía**; falta acceso de Jorge a Temas, o que lo suba Manuel.
+- **Pendiente con Manuel**: Jorge pidió que se entre con **RUT** y clave enviados por **WhatsApp**: choca con dos decisiones de Manuel
+  (ID tipo `camila.perez`; correo automático al aprobar). No se cambió nada; queda para que lo conversen.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
 
 ### 23-10-2026 17:00 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: comprobar que ya tiene acceso a GitHub y Supabase, y revisar el audio de Manuel («que siempre lea el archivo .md que está en GitHub»).

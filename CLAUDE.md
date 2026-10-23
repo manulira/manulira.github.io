@@ -74,11 +74,22 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
   ranking con podio, panel de administración con accesos directos, «Ver equipo»).
 - No leer ni usar la carpeta de credenciales ni los datos personales de la carpeta de traspaso de Jorge en Drive.
 
+## Decisiones de Jorge (23 oct)
+
+- **Nivel de experiencia**: cada barista tiene dos medidores iguales, **con máquina** y **sin máquina**, de 5 niveles (Ninguna, Baja, Media,
+  Alta, Profesional), para medir su experiencia y cómo hace su pega. Solo la administración lo ve y lo cambia (Administrar → Equipo); el barista
+  no puede saberlo, igual que la amarilla. Tabla `niveles`, `poner_nivel`, acción `skillLevel`; pruebas en `pruebas/niveles.sql` y sección L.
+- **Diseño inspirado en la futura cafetería** (`equipo/parches/diseno.css`): fondo crema, bloques celestes con cuadrícula, franjas de toldo
+  arriba de la barra y de cada evento, damero en el pie, tarjetas blancas redondas, botones redondos (el principal en azul noche) y títulos en
+  Poppins, la letra de los títulos de sepiacoffee.cl. **El logo se mantiene tal cual** (imagen, diseño y letra) y **sin la figura caminando**
+  por ahora. Respeta la paleta de Manuel (la prueba de colores sigue pasando).
+- La foto de referencia de la cafetería es **privada**: no se sube a este repositorio (es público) ni a ninguna parte.
+
 ## Cómo se trabaja
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v9`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v10`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
   y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (171 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
@@ -99,7 +110,10 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 - `signInWithOtp` con `shouldCreateUser: false` (portal de baristas): el código por correo solo llega a correos que ya existen en Supabase Auth (`crear_admin`).
 - En plpgsql, un `count(*)` en el mismo `select` que una función que inserta no ve el insert (instantánea de la sentencia).
 
-## Estado (22 oct 2026, noche)
+## Estado (23 oct 2026, noche)
+
+- **v10** (medidor de experiencia y diseño nuevo, Jorge): en GitHub y probada (191 + SQL); la base ya está en Supabase (migración `nivel_experiencia`).
+  **Falta subirla a Shopify** (un borrador nuevo duplicando el publicado) y que Manuel la publique. La v9 publicada funciona igual con la base nueva.
 
 - Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
@@ -107,7 +121,7 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 171.
+- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 191; niveles 29.
 
 ## Pendientes y decisiones abiertas
 
