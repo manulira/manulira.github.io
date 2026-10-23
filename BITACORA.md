@@ -10,9 +10,18 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| 23-10 20:25 | contacto@sepiacoffee.cl (Jorge) | Subir la v10 a un tema **borrador** de Shopify (copia del publicado, v9) para revisarla; no se publica | Shopify | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
+| — | — | — | — | — |
 
 ## Registro
+
+### 23-10-2026 20:35 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: el paso a paso para tener la app actualizada; conectó Shopify y pidió usarlo.
+- **Hecho**: se vio que Manuel ya publicó la v9 («Sepia Coffee · equipo v9 (borrador)», `193517551980`, hoy MAIN). Se duplicó como
+  **«Sepia Coffee · equipo v10 (borrador, Jorge)» (`193575420268`)** y se subieron los 14 archivos `sepia-equipo-v10-*` y
+  `templates/page.equipo.liquid` (desde `raw.githubusercontent.com` fijado a `ff93727`; tamaños y MD5 iguales a GitHub). La conexión con
+  Supabase del tema no se tocó. La vista previa carga la v10 en computador y celular, sin errores. **No se publicó.**
+- **Dónde**: Shopify, tema `193575420268` (sin publicar). Vista previa: `https://sepiacoffee.cl/pages/equipo?preview_theme_id=193575420268`.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
 
 ### 23-10-2026 20:40 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: dos documentos: una guía de cómo funciona la app para los baristas, y uno con todos los IDs, claves y el mensaje de

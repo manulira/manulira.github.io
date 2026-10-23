@@ -113,7 +113,8 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 ## Estado (23 oct 2026, noche)
 
 - **v10** (medidor de experiencia y diseño nuevo, Jorge): en GitHub y probada (191 + SQL); la base ya está en Supabase (migración `nivel_experiencia`).
-  **Falta subirla a Shopify** (un borrador nuevo duplicando el publicado) y que Manuel la publique. La v9 publicada funciona igual con la base nueva.
+  En Shopify: borrador **«Sepia Coffee · equipo v10 (borrador, Jorge)» (`193575420268`)**, copia del publicado con la v10; **falta publicarlo**.
+- Tema publicado (MAIN) desde el 23 oct: «Sepia Coffee · equipo v9 (borrador)» (`193517551980`); Manuel lo publicó. Funciona igual con la base nueva.
 
 - Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
