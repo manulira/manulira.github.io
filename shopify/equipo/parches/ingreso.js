@@ -59,3 +59,30 @@ function SepiaSolicitudes({ data, busy, act }) {
           sepiaE(`button`, { type: `button`, className: `secondary-btn`, disabled: busy,
             onClick: () => { if (confirm(`¿Rechazar la solicitud de ${s.name}?`)) act(`requestStatus`, { id: s.id, status: `rejected` }, `Solicitud rechazada.`); } }, `Rechazar`))))));
 }
+
+/* Nivel de experiencia (Jorge, 23 oct): dos medidores iguales, con máquina y sin máquina, de 5 niveles. Solo en
+   «Equipo» de la administración: al barista nunca le llega el dato (eq_estado solo lo manda a la administración).
+   Tocar un nivel lo guarda; tocar el nivel que ya está marcado lo deja «sin evaluar». */
+var SEPIA_NIVELES = [`Ninguna`, `Baja`, `Media`, `Alta`, `Profesional`];
+function SepiaMedidor({ member, kind, titulo, busy, act }) {
+  const v = member.skill ? member.skill[kind] : null;
+  const marcado = typeof v === `number` ? v : null;
+  return sepiaE(`div`, { className: `sepia-medidor`, role: `group`, "aria-label": `${titulo}: ${marcado === null ? `sin evaluar` : SEPIA_NIVELES[marcado]}` },
+    sepiaE(`div`, { className: `sepia-medidor-cabeza` },
+      sepiaE(`span`, { className: `sepia-medidor-titulo` }, titulo),
+      sepiaE(`span`, { className: `sepia-medidor-valor` + (marcado === null ? ` es-vacio` : ``) }, marcado === null ? `Sin evaluar` : SEPIA_NIVELES[marcado])),
+    sepiaE(`div`, { className: `sepia-medidor-barra` },
+      ...SEPIA_NIVELES.map((nombre, i) => sepiaE(`button`, {
+        key: nombre, type: `button`, disabled: busy, title: nombre,
+        className: `sepia-medidor-paso` + (marcado !== null && i <= marcado ? ` es-lleno` : ``) + (marcado === i ? ` es-actual` : ``),
+        "aria-pressed": marcado === i ? `true` : `false`,
+        onClick: () => act(`skillLevel`, { memberId: member.id, kind, level: marcado === i ? null : i },
+          marcado === i ? `${titulo}: sin evaluar.` : `${titulo}: ${nombre}.`) },
+        sepiaE(`span`, { className: `sepia-medidor-texto` }, nombre)))));
+}
+function SepiaNiveles({ member, busy, act }) {
+  return sepiaE(`div`, { className: `sepia-niveles` },
+    sepiaE(`p`, { className: `sepia-niveles-nota` }, `Experiencia y cómo hace su pega · solo la ve la administración`),
+    sepiaE(SepiaMedidor, { member, kind: `machine`, titulo: `Con máquina`, busy, act }),
+    sepiaE(SepiaMedidor, { member, kind: `noMachine`, titulo: `Sin máquina`, busy, act }));
+}

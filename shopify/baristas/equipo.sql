@@ -314,6 +314,44 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- 4c. Nivel de experiencia de cada barista (Jorge, 23 oct)
+-- ---------------------------------------------------------------------------
+-- Dos medidores iguales por barista, uno con máquina y otro sin máquina, de 0 a 4:
+-- 4 Profesional · 3 Alta · 2 Media · 1 Baja · 0 Ninguna (null = sin evaluar). Mide la experiencia y cómo hace su pega.
+-- Solo la administración lo ve y lo cambia; al barista nunca le llega (igual que la tarjeta amarilla). Apunta a accesos
+-- para poder evaluar también a quien todavía no completa su perfil.
+create table if not exists public.niveles (
+  barista_id uuid primary key references public.accesos (id) on delete cascade,
+  con_maquina smallint check (con_maquina between 0 and 4),
+  sin_maquina smallint check (sin_maquina between 0 and 4),
+  actualizado_en timestamptz not null default now(),
+  actualizado_por uuid
+);
+alter table public.niveles enable row level security;     -- sin políticas: se lee y escribe solo por las funciones
+revoke all on public.niveles from anon, authenticated;
+
+create or replace function public.eq_nivel_json(p_barista uuid) returns jsonb
+language sql stable security definer set search_path = '' as $$
+  select jsonb_build_object('machine', n.con_maquina, 'noMachine', n.sin_maquina, 'updatedAt', n.actualizado_en)
+  from (select 1) x left join public.niveles n on n.barista_id = p_barista;
+$$;
+
+create or replace function public.poner_nivel(p_barista uuid, p_tipo text, p_nivel int) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.es_admin() then raise exception 'Esta acción es solo para la administración.' using errcode = '42501'; end if;
+  if not exists (select 1 from public.accesos where id = p_barista) then raise exception 'No existe esa persona.'; end if;
+  if p_tipo not in ('machine', 'noMachine') then raise exception 'Medidor no válido.'; end if;
+  if p_nivel is not null and (p_nivel < 0 or p_nivel > 4) then raise exception 'Nivel no válido.'; end if;
+  insert into public.niveles (barista_id, con_maquina, sin_maquina, actualizado_en, actualizado_por)
+  values (p_barista, case when p_tipo = 'machine' then p_nivel end, case when p_tipo = 'noMachine' then p_nivel end, now(), auth.uid())
+  on conflict (barista_id) do update set
+    con_maquina = case when p_tipo = 'machine' then p_nivel else public.niveles.con_maquina end,
+    sin_maquina = case when p_tipo = 'noMachine' then p_nivel else public.niveles.sin_maquina end,
+    actualizado_en = now(), actualizado_por = auth.uid();
+end $$;
+
+-- ---------------------------------------------------------------------------
 -- 5. El «paquete» de datos de quien consulta
 -- ---------------------------------------------------------------------------
 create or replace function public.eq_estado(p_vista text default null) returns jsonb
@@ -395,6 +433,7 @@ begin
              'profile', case when b.id is not null then public.eq_perfil_json(b) else '{}'::jsonb end,
              'username', a.usuario,
              'yellow', public.tiene_amarilla(a.id), 'eventsWorked', public.eventos_trabajados(a.id),
+             'skill', public.eq_nivel_json(a.id),
              'isAdmin', a.admin) order by coalesce(b.nombre, a.nombre)), '[]'::jsonb) into miembros
     from public.accesos a left join public.baristas b on b.id = a.id;
     select coalesce(jsonb_agg(jsonb_build_object(
@@ -793,6 +832,9 @@ begin
   elsif p_accion = 'yellowCard' then
     perform public.poner_amarilla((d ->> 'memberId')::uuid, coalesce((d ->> 'on')::boolean, true));
     return jsonb_build_object('ok', true);
+  elsif p_accion = 'skillLevel' then
+    perform public.poner_nivel((d ->> 'memberId')::uuid, d ->> 'kind', nullif(d ->> 'level', '')::int);
+    return jsonb_build_object('ok', true);
   elsif p_accion = 'removeApplication' then
     update public.postulaciones set estado = 'retirada', actualizado_en = now()
      where evento_id = (d ->> 'eventId')::uuid and barista_id = (d ->> 'memberId')::uuid and estado in ('postulada', 'confirmada');
@@ -915,6 +957,8 @@ revoke all on function public.eq_turnos(uuid) from public, anon, authenticated;
 revoke all on function public.eq_principal(uuid) from public, anon, authenticated;
 revoke all on function public.eq_turno_de(uuid, text) from public, anon, authenticated;
 revoke all on function public.eq_grupo_json(uuid) from public, anon, authenticated;
+revoke all on function public.eq_nivel_json(uuid) from public, anon, authenticated;
+revoke all on function public.poner_nivel(uuid, text, int) from public, anon, authenticated;
 revoke all on function public.eq_accion(text, jsonb) from public, anon;
 grant execute on function public.eq_accion(text, jsonb) to authenticated;
 revoke all on function public.eq_fotos_perfil(uuid[]) from public, anon;

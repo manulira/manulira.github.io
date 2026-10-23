@@ -818,6 +818,64 @@ try {
     ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
     await pg.context().close();
   }
+
+  /* ====================================================================== */
+  if (corre('L')) {
+    console.log('\n=== L. Nivel de experiencia: dos medidores (con y sin máquina), solo para la administración ===');
+    const nivel = (k) => db(`select coalesce(n.${k}::text, 'null') from public.accesos a left join public.niveles n on n.barista_id = a.id where a.usuario = 'beto.prueba'`);
+    for (const ancho of [1100, 390]) {
+      const adm = await nueva(ancho);
+      await iniciarAdmin(adm, 'admin.prueba', 'claveadmin1');
+      await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 900);
+      await adm.locator('button', { hasText: /^Equipo/ }).first().click(); await espera(adm, 900);
+      const ficha = adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first();
+      const medidores = ficha.locator('.sepia-medidor');
+      const donde = ancho < 500 ? ' (celular)' : ' (computador)';
+      ok(await medidores.count() === 2 && /Con máquina/.test(await ficha.innerText()) && /Sin máquina/.test(await ficha.innerText()), 'cada barista tiene los dos medidores en su ficha' + donde);
+      ok(await medidores.first().locator('.sepia-medidor-paso').count() === 5 && /Ninguna[\s\S]*Baja[\s\S]*Media[\s\S]*Alta[\s\S]*Profesional/.test(await medidores.first().innerText()), 'con los 5 niveles, de Ninguna a Profesional' + donde);
+      if (ancho > 500) {
+        ok(/Sin evaluar/.test(await medidores.first().innerText()), 'al principio dice «Sin evaluar»');
+        await medidores.first().getByRole('button', { name: 'Profesional' }).click(); await espera(adm, 1500);
+        ok(nivel('con_maquina') === '4' && nivel('sin_maquina') === 'null', 'al tocar «Profesional» con máquina, se guarda solo ese medidor');
+        const m1 = adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first().locator('.sepia-medidor').first();
+        ok(/Profesional/.test(await m1.locator('.sepia-medidor-valor').innerText()) && await m1.locator('.sepia-medidor-paso.es-lleno').count() === 5, 'y la barra queda llena hasta Profesional');
+        await adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first().locator('.sepia-medidor').nth(1).getByRole('button', { name: 'Media' }).click(); await espera(adm, 1500);
+        ok(nivel('sin_maquina') === '2' && nivel('con_maquina') === '4', 'sin máquina queda en «Media» y con máquina no cambia');
+        const m2 = adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first().locator('.sepia-medidor').nth(1);
+        ok(await m2.locator('.sepia-medidor-paso.es-lleno').count() === 3, 'la barra sin máquina se llena hasta Media (3 de 5)');
+        await m2.getByRole('button', { name: 'Media' }).click(); await espera(adm, 1500);
+        ok(nivel('sin_maquina') === 'null', 'al tocar de nuevo el nivel marcado, vuelve a «Sin evaluar»');
+        await adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first().locator('.sepia-medidor').nth(1).getByRole('button', { name: 'Baja' }).click(); await espera(adm, 1500);
+        await adm.reload(); await entrarSiHaySplash(adm); await espera(adm, 1200);
+        await adm.getByRole('button', { name: 'Administrar' }).first().click(); await espera(adm, 900);
+        await adm.locator('button', { hasText: /^Equipo/ }).first().click(); await espera(adm, 900);
+        const t2 = await adm.locator('article.ops-card', { hasText: 'Beto Prueba' }).first().innerText();
+        ok(/Profesional/.test(t2) && /Baja/.test(t2) && nivel('sin_maquina') === '1', 'al volver a entrar, los niveles siguen guardados');
+        await captura(adm, 'L1-medidores');
+      } else {
+        const anchoPagina = await adm.evaluate(() => document.documentElement.scrollWidth);
+        ok(anchoPagina <= 390, 'los medidores caben en el ancho del celular, sin moverse de lado (' + anchoPagina + ' px)');
+        const caja = await medidores.first().locator('.sepia-medidor-paso').first().boundingBox();
+        ok(caja && caja.height >= 40, 'los botones del medidor se pueden tocar con el dedo en el celular (' + (caja ? Math.round(caja.height) : 0) + ' px de alto)');
+        const cortados = await medidores.first().locator('.sepia-medidor-paso').evaluateAll(bs => bs.filter(b => b.scrollWidth > b.clientWidth + 1).map(b => b.innerText));
+        ok(cortados.length === 0, 'los nombres de los niveles caben enteros en el celular' + (cortados.length ? ': ' + cortados.join(', ') : ''));
+        await captura(adm, 'L2-medidores-celular');
+      }
+      ok(adm.errores.length === 0, 'sin errores en la consola' + (adm.errores.length ? ': ' + adm.errores.join(' · ') : ''));
+      await adm.context().close();
+    }
+    /* El barista no sabe su nivel */
+    const beto = await nueva();
+    await iniciarSesion(beto, 'beto.prueba', 'mi frase segura 1');
+    let t = await texto(beto);
+    ok(!/Profesional|Sin evaluar|Con máquina|sepia-medidor/.test(t) && await beto.locator('.sepia-medidor').count() === 0, 'el barista no ve su nivel en la pantalla');
+    const suyo = p.rpc({ sub: db(`select id from public.accesos where usuario = 'beto.prueba'`), email: 'beto.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] }, 'eq_estado', { p_vista: null });
+    ok(!JSON.stringify(suyo.data).includes('skill') && !JSON.stringify(suyo.data).includes('noMachine'), 'ni le llega en sus datos');
+    const intento = p.rpc({ sub: db(`select id from public.accesos where usuario = 'beto.prueba'`), email: 'beto.prueba@equipo.sepiacoffee.cl', role: 'authenticated', amr: [{ method: 'password' }] }, 'eq_accion', { p_accion: 'skillLevel', p_datos: { memberId: db(`select id from public.accesos where usuario = 'beto.prueba'`), kind: 'noMachine', level: 4 } });
+    ok(intento.error && nivel('sin_maquina') === '1', 'y no puede subirse el nivel');
+    ok(beto.errores.length === 0, 'sin errores en la consola' + (beto.errores.length ? ': ' + beto.errores.join(' · ') : ''));
+    await beto.context().close();
+  }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();
 }

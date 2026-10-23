@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v9'             # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v10'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -77,7 +77,8 @@ PALETA = {'azul': (0x52, 0x6e, 0xa0), 'noche': (0x02, 0x05, 0x26), 'celeste': (0
 ESPECIALES = {(0x40, 0x5b, 0x8b): 'noche'}      # el azul «al pasar el mouse» de los botones
 
 
-# Estilos que se agregan a los de la interfaz (solo colores de la paleta)
+# Estilos que se agregan a los de la interfaz (solo colores de la paleta). Después va parches/diseno.css: el diseño
+# inspirado en la futura cafetería (Jorge, 23 oct), que también pasa por recolorear() para que no se cuele otro color.
 CSS_EXTRA = """
 /* Sepia: el logo de la entrada es un enlace al inicio del sitio; «Nosotros» lleva a la página Nosotros */
 a.required-profile-brand{text-decoration:none}
@@ -87,6 +88,22 @@ a.required-profile-brand{text-decoration:none}
 .sepia-amarilla-carta{display:inline-block;width:9px;height:12px;border-radius:2px;background:#f5c400;box-shadow:0 0 0 1px #c99f00}
 .sepia-amarilla-panel{margin-top:10px}
 .sepia-amarilla-panel .field-hint{margin:0 0 6px}
+.sepia-niveles{flex:1 1 100%;grid-column:1/-1;width:100%;max-width:560px;box-sizing:border-box;margin-top:14px;padding:12px 14px;border-radius:14px;background:#f2f2f2;display:grid;gap:12px}
+.sepia-niveles-nota{margin:0;font-size:12px;color:#526ea0;font-weight:600}
+.sepia-medidor-cabeza{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.sepia-medidor-titulo{font-weight:700;color:#020526;font-size:14px}
+.sepia-medidor-valor{font-size:13px;font-weight:700;color:#526ea0}
+.sepia-medidor-valor.es-vacio{color:#526ea0;opacity:.7;font-weight:500}
+.sepia-medidor-barra{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.sepia-medidor-paso{min-height:40px;padding:4px 2px;border:1px solid #b9c5d3;border-radius:10px;background:#ffffff;color:#020526;font:inherit;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
+.sepia-medidor-paso.es-lleno{background:#b9c5d3;border-color:#b9c5d3}
+.sepia-medidor-paso.es-actual{background:#526ea0;border-color:#526ea0;color:#ffffff}
+.sepia-medidor-paso:hover:not(:disabled){border-color:#526ea0}
+.sepia-medidor-paso:focus-visible{outline:2px solid #020526;outline-offset:2px}
+.sepia-medidor-paso:disabled{cursor:wait}
+.sepia-medidor-texto{white-space:nowrap}
+@media (max-width:480px){.sepia-medidor-barra{gap:3px}.sepia-medidor-paso{min-height:44px;padding:4px 0;font-size:10px;letter-spacing:-.2px}}
+@media (max-width:350px){.sepia-medidor-paso{font-size:9px;letter-spacing:-.3px}}
 .sepia-solicitud dl{display:grid;gap:6px;margin:10px 0 14px}
 .sepia-solicitud dl div{display:grid;grid-template-columns:minmax(110px,34%) 1fr;gap:10px}
 .sepia-solicitud dt{font-weight:600;color:#526ea0}
@@ -247,7 +264,9 @@ def armar_js():
             t = cambiar(t, '(0,W.jsx)(`h3`,{children:e.name})]}),(0,W.jsx)(`p`,{children:e.profile.email||`Sin correo de contacto`})',
                         '(0,W.jsx)(`h3`,{children:e.name}),(0,W.jsx)(SepiaAmarilla,{yellow:e.yellow})]}),(0,W.jsx)(`p`,{children:e.profile.email||`Sin correo de contacto`})', 1, nombre)
             t = cambiar(t, 'children:e.status===`disabled`?`Restaurar acceso`:`Desactivar acceso`})',
-                        'children:e.status===`disabled`?`Restaurar acceso`:`Desactivar acceso`}),(0,W.jsx)(SepiaAmarillaBoton,{member:e,busy:t,act:n})', 1, nombre)
+                        'children:e.status===`disabled`?`Restaurar acceso`:`Desactivar acceso`}),(0,W.jsx)(SepiaAmarillaBoton,{member:e,busy:t,act:n}),'
+                        '(0,W.jsx)(SepiaNiveles,{member:e,busy:t,act:n})', 1, nombre)
+            # (Jorge, 23 oct) Después de la amarilla: los dos medidores de experiencia, con y sin máquina (solo administración).
             # Equipo de un evento: la amarilla junto al nombre de quien postuló (solo llega a la administración).
             t = cambiar(t, '(0,W.jsxs)(`div`,{children:[(0,W.jsx)(`strong`,{children:e.name}),(0,W.jsx)(`p`,{children:{pending:`Postuló · pendiente`',
                         '(0,W.jsxs)(`div`,{children:[(0,W.jsxs)(`strong`,{children:[e.name,(0,W.jsx)(SepiaAmarilla,{yellow:e.yellow})]}),(0,W.jsx)(`p`,{children:{pending:`Postuló · pendiente`', 1, nombre)
@@ -356,6 +375,11 @@ def plantilla():
 {%%- comment -%%} La carga inicial (antes de que arranque la app) muestra el logo de la tienda en lugar del «sepia.» escrito con
   letras. Se cambia solo con estilo: el HTML de la carga tiene que quedar igual al de la fuente o React falla al tomar la página. {%%- endcomment -%%}
 <style>.boot-screen>span{display:block;width:234px;max-width:80vw;height:44px;font-size:0;color:transparent;background:url("{{ '%(p)slogo.png' | asset_url | split: '?' | first }}") center/contain no-repeat}</style>
+{%%- comment -%%} Diseño inspirado en la futura cafetería (Jorge, 23 oct; parches/diseno.css): títulos en Poppins y textos en DM Sans,
+  las mismas letras de los títulos y textos de sepiacoffee.cl. El logo sigue siendo la imagen de la tienda. {%%- endcomment -%%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-rsc-css-href="{{ '%(p)sindex.DiFSpdfw.css' | asset_url | split: '?' | first }}" data-precedence="vite-rsc/importer-resources">
 %(pre)s
@@ -415,7 +439,7 @@ def main():
         for nombre, texto in js.items():
             escribir(os.path.join(carpeta_assets, PREFIJO + nombre), texto)
         for nombre in CSS:
-            escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)) + CSS_EXTRA)
+            escribir(os.path.join(carpeta_assets, PREFIJO + nombre), recolorear(leer(nombre)) + CSS_EXTRA + recolorear(leer_parche('diseno.css')))
         for destino in list(IMAGENES.values()) + ICONOS_EXTRA:
             with open(os.path.join(AQUI, 'iconos', destino), 'rb') as f:
                 datos = f.read()

@@ -9,6 +9,22 @@ a.required-profile-brand{text-decoration:none}
 .sepia-amarilla-carta{display:inline-block;width:9px;height:12px;border-radius:2px;background:#f5c400;box-shadow:0 0 0 1px #c99f00}
 .sepia-amarilla-panel{margin-top:10px}
 .sepia-amarilla-panel .field-hint{margin:0 0 6px}
+.sepia-niveles{flex:1 1 100%;grid-column:1/-1;width:100%;max-width:560px;box-sizing:border-box;margin-top:14px;padding:12px 14px;border-radius:14px;background:#f2f2f2;display:grid;gap:12px}
+.sepia-niveles-nota{margin:0;font-size:12px;color:#526ea0;font-weight:600}
+.sepia-medidor-cabeza{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.sepia-medidor-titulo{font-weight:700;color:#020526;font-size:14px}
+.sepia-medidor-valor{font-size:13px;font-weight:700;color:#526ea0}
+.sepia-medidor-valor.es-vacio{color:#526ea0;opacity:.7;font-weight:500}
+.sepia-medidor-barra{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.sepia-medidor-paso{min-height:40px;padding:4px 2px;border:1px solid #b9c5d3;border-radius:10px;background:#ffffff;color:#020526;font:inherit;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
+.sepia-medidor-paso.es-lleno{background:#b9c5d3;border-color:#b9c5d3}
+.sepia-medidor-paso.es-actual{background:#526ea0;border-color:#526ea0;color:#ffffff}
+.sepia-medidor-paso:hover:not(:disabled){border-color:#526ea0}
+.sepia-medidor-paso:focus-visible{outline:2px solid #020526;outline-offset:2px}
+.sepia-medidor-paso:disabled{cursor:wait}
+.sepia-medidor-texto{white-space:nowrap}
+@media (max-width:480px){.sepia-medidor-barra{gap:3px}.sepia-medidor-paso{min-height:44px;padding:4px 0;font-size:10px;letter-spacing:-.2px}}
+@media (max-width:350px){.sepia-medidor-paso{font-size:9px;letter-spacing:-.3px}}
 .sepia-solicitud dl{display:grid;gap:6px;margin:10px 0 14px}
 .sepia-solicitud dl div{display:grid;grid-template-columns:minmax(110px,34%) 1fr;gap:10px}
 .sepia-solicitud dt{font-weight:600;color:#526ea0}
@@ -27,3 +43,136 @@ a.required-profile-brand{text-decoration:none}
 .login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
 /* Sepia: la barra de abajo en el celular reparte el ancho entre las pestañas que haya (con «Nosotros» son 4 o 5) */
 .ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+
+/* ==========================================================================
+   Sepia: diseño inspirado en la futura cafetería (Jorge, 23 oct).
+   Se mantiene el logo «sepia coffee» tal cual (imagen, su diseño y su letra) y la paleta de Manuel: crema
+   #e7e5d9 (fondo, como el papel de la guía de marca), celeste #b9c5d3 (la fachada, los vasos y la barra),
+   azul #526ea0, azul noche #020526 (sillas y delantales), gris #f2f2f2 y blanco.
+   De la foto se toman: superficies celestes lisas y redondeadas, las franjas del toldo y de los vasos, la
+   cuadrícula de la bolsa, el damero, botones redondos y títulos en una letra geométrica como la del logo
+   (Poppins, la misma de los títulos de sepiacoffee.cl). Sin la figura caminando (Jorge, 23 oct).
+   ========================================================================== */
+:root{
+  background:#e7e5d9;
+  --sepia-crema:#e7e5d9;--sepia-celeste:#b9c5d3;--sepia-azul:#526ea0;--sepia-noche:#020526;--sepia-gris:#f2f2f2;--sepia-blanco:#ffffff;
+  --font-sans:"DM Sans","Inter","Avenir Next","Segoe UI",Arial,sans-serif;
+  --sepia-titulo:"Poppins","DM Sans","Avenir Next","Segoe UI",Arial,sans-serif;
+  --sepia-radio:22px;
+  --sepia-sombra:0 1px 2px #0205260f,0 10px 28px #02052614;
+  --line:#b9c5d3;--muted:#526ea0;
+  /* Franjas (toldo y vasos), cuadrícula (bolsa) y damero */
+  --sepia-franjas:repeating-linear-gradient(90deg,#b9c5d3 0 14px,#ffffff 14px 28px);
+  --sepia-cuadricula:linear-gradient(#ffffff 1px,transparent 1px),linear-gradient(90deg,#ffffff 1px,transparent 1px);
+  --sepia-damero:repeating-conic-gradient(#020526 0 25%,#ffffff 0 50%);
+}
+html,body{background:#e7e5d9}
+body{font-family:var(--font-sans);color:#020526;-webkit-font-smoothing:antialiased}
+.app-shell,.ops-shell,.app-main,.auth-shell,.onboarding-page,.boot-screen{background:#e7e5d9}
+
+/* Títulos: letra geométrica como la del logo */
+.page-intro h1,.ops-hero h2,.dashboard-hero h2,.auth-content h1,.onboarding-card h1,.ops-card h2,.ranking-banner h2,
+.install-dialog>h2,.hero-copy h2,.visual-copy h2,.team-note h3,.coffee-content h3,.story-hero h2,
+.prominent-event-date strong,.event-pay-summary strong,.event-card h3,.admin-welcome h2,.profile-page h1,.profile-page h2,
+.ranking-page h1,.ranking-page h2,.dialog-title,.event-dialog h2,.ops-dialog h2{
+  font-family:var(--sepia-titulo);font-weight:700;letter-spacing:-.02em;color:#020526}
+.page-intro h1,.dashboard-hero h2,.ops-hero h2{font-weight:800;line-height:1.05}
+.profile-summary>p.profile-summary-note{font-family:var(--font-sans)}
+.eyebrow{font-family:var(--sepia-titulo);font-weight:600;letter-spacing:.14em;color:#526ea0}
+.greeting-dot,.brand-dot{color:#526ea0}
+
+/* Barra de arriba: el toldo a rayas de la fachada */
+.app-header{background:#e7e5d9;border-top:0;border-bottom:1px solid #b9c5d3;position:relative}
+.app-header::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--sepia-franjas)}
+.icon-btn,.user-menu>button,.avatar{border-radius:999px}
+.icon-btn{background:#ffffff;border:1px solid #b9c5d3;color:#020526}
+.avatar,.member-avatar-small,.large-avatar,.rank-avatar,.podium-avatar{background:#b9c5d3;color:#020526}
+
+/* Saludo: un bloque celeste con la cuadrícula de la bolsa */
+.app-main>.page-intro,.dashboard-hero,.ops-hero{position:relative;padding:26px 28px;border-radius:var(--sepia-radio);background-color:#b9c5d3;background-image:var(--sepia-cuadricula);background-size:34px 34px;overflow:hidden}
+.app-main>.page-intro{margin-bottom:22px;align-items:center}
+.app-main>.page-intro p,.dashboard-hero p,.ops-hero p{color:#020526}
+.app-main>.page-intro .eyebrow,.dashboard-hero .eyebrow,.ops-hero .eyebrow{color:#020526}
+
+/* Tarjetas: blancas, redondas, sin bordes duros */
+.ops-card,.event-card,.admin-menu-card,.stat-card,.profile-identity-card,.profile-section-panel,.notification-card,
+.podium-card,.onboarding-card,.next-shift{background:#ffffff;border:1px solid #ffffff;border-radius:var(--sepia-radio);box-shadow:var(--sepia-sombra)}
+.event-card:hover,.admin-menu-card:hover{border-color:#b9c5d3}
+.event-card,.ops-event-grid>.ops-card{position:relative;overflow:hidden}
+/* Cada evento lleva arriba las franjas de los vasos */
+.event-card::before,.ops-event-grid>.ops-card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--sepia-franjas)}
+.next-shift{border-left:0}
+.next-shift-main svg,.admin-menu-icon{color:#020526}
+.admin-menu-icon{background:#b9c5d3;border-radius:999px}
+.admin-menu-card.active,.admin-menu-card[aria-current]{border-color:#526ea0;background:#ffffff}
+
+/* La fecha del evento, en celeste como la barra de la cafetería */
+.prominent-event-date{background:#b9c5d3;border:0;border-radius:16px;color:#020526}
+.prominent-event-date span,.prominent-event-date small{color:#020526}
+.event-pay-summary{background:#e7e5d9;border:0;border-radius:16px}
+.event-pay-summary::before{display:none}
+.event-tag,.subtle-pill{border-radius:999px;border-color:#b9c5d3;background:#f2f2f2;color:#020526}
+.slot-status{border-radius:14px}
+
+/* Botones redondos: el principal en azul noche (sillas y delantales), el secundario blanco */
+.primary-btn,.apply-btn,.secondary-btn,.text-btn.button,button.button,.file-button{border-radius:999px;font-family:var(--sepia-titulo);font-weight:600;letter-spacing:0}
+.primary-btn,.apply-btn{background:#020526;border-color:#020526;color:#ffffff}
+.primary-btn:hover:not(:disabled),.apply-btn:hover:not(:disabled){background:#526ea0;border-color:#526ea0}
+.secondary-btn{background:#ffffff;border-color:#b9c5d3;color:#020526}
+.secondary-btn:hover:not(:disabled){border-color:#020526}
+.app-main>.page-intro .secondary-btn,.dashboard-hero .secondary-btn,.ops-hero .secondary-btn{background:#ffffff;border-color:#ffffff;color:#020526}
+.primary-btn:focus-visible,.secondary-btn:focus-visible,.apply-btn:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
+
+/* Pestañas y filtros: píldoras */
+.shift-tabs,.view-tabs,.event-dialog-tabs{border-bottom:0;gap:6px;flex-wrap:wrap}
+.shift-tabs button,.view-tabs button,.event-dialog-tabs button{border-radius:999px;border:1px solid #b9c5d3;background:#ffffff;padding:9px 16px;color:#020526}
+.shift-tabs button.active,.view-tabs button.active,.event-dialog-tabs button.active,
+.shift-tabs button[aria-selected=true],.view-tabs button[aria-selected=true],.event-dialog-tabs button[aria-selected=true]{background:#020526;border-color:#020526;color:#ffffff}
+.shift-tabs button.active::after,.view-tabs button.active::after{display:none}
+.filter-chips button{border-radius:999px;border-color:#b9c5d3;background:#ffffff;color:#020526}
+.filter-chips button.active,.filter-chips button[aria-pressed=true]{background:#b9c5d3;border-color:#b9c5d3;color:#020526}
+
+/* Campos de formulario */
+.field input,.field select,.field textarea,.ops-form input,.ops-form select,.ops-form textarea,.required-profile input{border-radius:14px;border-color:#b9c5d3;background:#ffffff}
+.field input:focus,.field select:focus,.field textarea:focus,.required-profile input:focus{border-color:#526ea0;outline:2px solid #b9c5d3;outline-offset:0}
+
+/* Entrada: tarjeta blanca sobre crema, con las franjas arriba */
+.required-profile{background:#e7e5d9}
+.required-profile form,.auth-content form{position:relative;background:#ffffff;border:0;border-radius:24px;box-shadow:var(--sepia-sombra);overflow:hidden}
+.required-profile form::before,.auth-content form::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--sepia-franjas)}
+
+/* Ranking: podio celeste */
+.ranking-banner{border-radius:var(--sepia-radio);background-color:#b9c5d3;background-image:var(--sepia-cuadricula);background-size:34px 34px;color:#020526}
+.ranking-banner p,.ranking-banner .eyebrow{color:#020526}
+.podium-card{background:#ffffff}
+.ranking-row{border-radius:16px}
+
+/* Diálogos */
+.event-dialog,.ops-dialog,.install-dialog,.photos-dialog{border-radius:24px;border:0;box-shadow:0 24px 60px #02052633}
+
+/* Barra de abajo en el celular */
+.bottom-nav{background:#ffffff;border-top:1px solid #b9c5d3;box-shadow:0 -6px 24px #0205260f}
+.bottom-nav button,.bottom-nav a{border-radius:16px;color:#526ea0}
+.ops-shell .bottom-nav>button.active,.bottom-nav>button.active{background:#b9c5d3;color:#020526;border-radius:16px}
+.bottom-nav>button.active:before{display:none}
+.desktop-nav .active,.desktop-nav [aria-current]{background:#b9c5d3;color:#020526;border-radius:999px}
+
+/* Pie: una tira de damero, como la bolsa */
+.app-footer{position:relative;border-top:0;padding-top:30px}
+.app-footer::before{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:var(--sepia-damero);background-size:12px 12px;border-radius:4px}
+
+/* Aviso de arriba (perfil completo, etc.) */
+.crew-notices>*,.app-main>[role=status]{border-radius:16px}
+
+/* Computador y celular: márgenes cómodos y sin moverse de lado */
+html,body{max-width:100%;overflow-x:hidden}
+@media (max-width:720px){
+  .app-main>.page-intro,.dashboard-hero,.ops-hero{padding:20px 18px;border-radius:18px}
+  .ops-card,.event-card,.admin-menu-card{border-radius:18px}
+  .page-intro h1,.dashboard-hero h2,.ops-hero h2{font-size:30px}
+  .shift-tabs,.view-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .shift-tabs button,.view-tabs button{white-space:nowrap;padding:8px 13px}
+}
+@media (min-width:1280px){
+  .app-main{max-width:1180px;margin-left:auto;margin-right:auto}
+}
