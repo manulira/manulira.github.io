@@ -3,6 +3,30 @@
 Lee esto primero. Detalle técnico de cada pieza: `shopify/baristas/LEEME.md` (portal de baristas y Sepia Equipo),
 `shopify/README.md`, `shopify/FACTURA.md`, `shopify/PRODUCTOS.md`, `shopify/RETIRO.md`, `BRIEF-COSTAR.md` (marca y sitio).
 
+## Trabajo compartido (obligatorio en cada sesión; Manuel, 23 oct)
+
+Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `contacto@sepiacoffee.cl`, entre otras). Todo queda en
+`BITACORA.md`: quién pidió qué, qué se hizo, dónde y en qué sesión. Reglas:
+
+1. **Al empezar**, antes de responder nada: `git pull` de la rama `claude/cepia-coffee-website-ef9m00` (si la sesión partió en otra rama, el
+   proyecto vive en esa) y leer `BITACORA.md`. Si hay entradas de **otra persona** desde la última vez que habló quien te escribe, contárselo
+   primero, corto: quién, qué pidió y qué se hizo.
+2. **Quién pide**: es el correo de la cuenta de Claude de la persona que te escribe (lo trae el contexto de la sesión). Si no viene, preguntar su nombre.
+3. **Antes de cambiar algo** (archivos, Supabase, Shopify, Google): volver a hacer `git pull` y revisar «En curso» y el registro.
+   - Si **otra persona** pidió algo distinto o contrario sobre lo mismo, **advertir antes de hacerlo**: «Ojo: Manuel pidió el 22 oct que …
+     ¿Seguro que lo cambio?». Esperar la respuesta.
+   - Si otra persona lo tiene **en curso**, avisar quién y desde cuándo, y preguntar si seguir.
+   - Lo mismo con «Decisiones de Manuel» (abajo): cambiarlas requiere que la persona lo confirme sabiendo que es una decisión de Manuel.
+4. **Al empezar un cambio** que tome más de un mensaje, anotarlo en «En curso» y subirlo (commit + push) de inmediato, para que las demás sesiones lo vean.
+5. **Al terminar cada pedido** (aunque sea solo una consulta que tocó una plataforma): agregar una entrada arriba del registro con fecha y hora de Santiago,
+   quién pidió, «Pidió» (sus palabras, resumidas), «Hecho», «Dónde» (commit, migración de Supabase, id de tema o página de Shopify, Google) y
+   «Ejecutó» (Claude Code + enlace de la sesión). Sacar lo suyo de «En curso». Commit y push **a la rama del proyecto** el mismo turno.
+6. **Commits**: agregar la línea `Pedido-por: <correo>` al final del mensaje, junto a las de atribución.
+7. **Supabase y Shopify** no guardan quién pidió: por eso todo cambio ahí se anota en la bitácora. Antes de tocar Supabase, comparar
+   `list_migrations` con la bitácora; una migración que no aparece en la bitácora la hizo otra persona o se hizo a mano: avisar.
+8. Al subir, si `git push` falla porque otra sesión subió antes: `git pull --rebase`, releer lo nuevo, contarlo y volver a subir.
+   Nunca `push --force`.
+
 ## Con quién se trabaja
 
 - **Manuel Lira**, dueño de Sepia Coffee (tostaduría de café de especialidad y servicio de barras para eventos, Santiago; tienda

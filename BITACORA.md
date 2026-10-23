@@ -1,0 +1,39 @@
+# Bitácora de Sepia Coffee
+
+Registro compartido de **quién pidió qué, qué se hizo y dónde** (GitHub, Supabase, Shopify, Google), para todas las personas
+que trabajan con Claude Code en este proyecto. Las reglas están en `CLAUDE.md`, sección «Trabajo compartido». Lo más nuevo va arriba.
+Hora de Santiago.
+
+## En curso
+
+Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al terminarlo (la entrada pasa al registro).
+
+| Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
+|---|---|---|---|---|
+| — | — | — | — | — |
+
+## Registro
+
+### 23-10-2026 · manuel@sepiacoffee.cl
+- **Pidió**: que cada conversación con Claude (suya o de otra persona) quede registrada en GitHub con quién lo pidió, y que Claude
+  avise de los cambios de otras personas y advierta si un pedido choca con lo que pidió otra persona. Lo mismo para Supabase y las demás plataformas.
+- **Hecho**: esta bitácora y las reglas de «Trabajo compartido» en `CLAUDE.md`. Quedó pendiente el aviso automático al abrir sesión
+  y en cada mensaje (`.claude/settings.json`): Claude Code no deja que Claude se lo instale solo, hace falta el permiso de Manuel.
+- **Dónde**: GitHub (este commit).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_013LPJvjtj6V3tw2qf51APbK
+
+### 23-10-2026 · manuel@sepiacoffee.cl
+- **Pidió**: «No puedo postular, sale error».
+- **Hecho**: se reprodujo en el sitio real con una cuenta de prueba (`prueba.claude`, ya borrada): postular funciona. Se arregló que la
+  campana de avisos (`eq_avisos`) diera error a cuentas sin perfil de barista. Falta que Manuel mande captura del error si sigue.
+- **Dónde**: Supabase (migración `avisos_sin_error_sin_perfil`), GitHub `542d66e`.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_013LPJvjtj6V3tw2qf51APbK
+
+### 22-10-2026 · manuel@sepiacoffee.cl (resumen del día, anotado después)
+- **Pidió y se hizo**: logo de la tienda en Sepia Equipo; formulario «Trabaja con nosotros» a Supabase; una sola entrada (administración =
+  barista marcada); solicitudes de ingreso con correo automático; confirmación automática desde 2 eventos; tarjeta amarilla (también sin perfil);
+  Cenco como una tarjeta con dos turnos (camioneta); sin botón «Portal Baristas» ni cuenta de clientes en la barra; filtro con / sin máquina;
+  baristas ven solo los próximos 14 días.
+- **Dónde**: GitHub (commits del 22-10 en esta rama), Supabase (`esquema.sql` y `equipo.sql`), Shopify (borrador `193517551980`, sin publicar;
+  página `713403400556`), Google Apps Script (`Codigo.gs`, disparadores).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_013LPJvjtj6V3tw2qf51APbK
