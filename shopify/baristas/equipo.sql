@@ -478,7 +478,9 @@ declare
   uid uuid := auth.uid();
   ahora timestamp := p_ahora at time zone 'America/Santiago';
 begin
-  if uid is null or not public.es_barista() then raise exception 'Acceso no autorizado.'; end if;
+  if uid is null then raise exception 'Acceso no autorizado.'; end if;
+  -- Sin perfil de barista todavía (o con el acceso apagado) no hay avisos; no es un error (la campana pregunta sola cada rato).
+  if not public.es_barista() then return jsonb_build_object('notifications', '[]'::jsonb); end if;
   insert into public.avisos (barista_id, evento_id, clave, titulo, cuerpo)
   select p.barista_id, e.id, 'recordatorio:' || e.id,
          'Mañana tienes turno: ' || e.nombre,
