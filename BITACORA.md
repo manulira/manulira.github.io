@@ -10,7 +10,7 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 23-10 20:25 | contacto@sepiacoffee.cl (Jorge) | Subir la v10 a un tema **borrador** de Shopify (copia del publicado, v9) para revisarla; no se publica | Shopify | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
 
 ## Registro
 
