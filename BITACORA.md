@@ -10,7 +10,7 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 23-10 19:30 | contacto@sepiacoffee.cl (Jorge) | Medidor de experiencia (con y sin máquina) solo para administración; después, diseño inspirado en la foto de la cafetería | GitHub, Supabase | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
 
 ## Registro
 
