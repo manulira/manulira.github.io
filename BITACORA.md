@@ -15,6 +15,13 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 ## Registro
 
 ### 24-10-2026 00:30 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: si al publicar la v13 puede borrar los temas anteriores.
+- **Hecho**: solo consulta en Shopify (lista de temas). Respuesta: sí, después de publicar la v13; borrar v9, v10, v11 (borrador) y v12, y dejar
+  unos días el publicado anterior como respaldo. Los datos están en Supabase y el código en GitHub. Sin cambios.
+- **Dónde**: Shopify (solo lectura).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
+### 24-10-2026 00:30 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió** (23 oct, noche): cuadrar la app en el celular; medidores uno abajo del otro; que no se pueda hacer zoom; sacar «Nosotros»
   (confirmó saber que era decisión de Manuel); «Crear acceso de barista» como un rectángulo «Agregar barista» que se abra; en Mi Perfil, la foto
   a la derecha y el menú siempre abierto a la izquierda, cómodo en el celular; ajustar la foto al círculo; todos los datos obligatorios con
