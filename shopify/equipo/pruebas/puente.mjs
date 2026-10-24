@@ -29,7 +29,7 @@ export class Puente {
   crear(extra = '') {
     const c = this.psql('create database ' + this.db, 'postgres');
     if (!c.ok) throw new Error('No se pudo crear la base de pruebas: ' + c.error);
-    for (const f of [path.join(BARISTAS, 'pruebas', 'shim-supabase.sql'), path.join(BARISTAS, 'esquema.sql'), path.join(BARISTAS, 'equipo.sql')]) {
+    for (const f of [path.join(BARISTAS, 'pruebas', 'shim-supabase.sql'), path.join(BARISTAS, 'esquema.sql'), path.join(BARISTAS, 'equipo.sql'), path.join(BARISTAS, 'academia-contenido.sql')]) {
       const r = this.psql('', this.db, ['-f', f]);
       if (!r.ok) throw new Error('Falló ' + path.basename(f) + ': ' + r.error);
     }

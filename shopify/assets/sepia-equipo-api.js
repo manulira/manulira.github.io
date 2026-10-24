@@ -7,7 +7,9 @@
  *   · /api/crew     → funciones eq_estado y eq_accion (equipo.sql): eventos, postulaciones, perfil, administración
  *   · /api/ranking, /api/events/…/team, /api/notifications, /api/earnings, /api/integrations → funciones eq_*
  *   · /api/profile/photo → almacenamiento privado de las fotos de perfil
+ *   · /api/academia (+ /photo) → la Academia: eq_academia, eq_academia_guardar/borrar y el almacenamiento «academia»
  *   · /api/admin/accounts → crear_acceso y restablecer_clave (esquema.sql)
+ * Además muestra la animación de carga (el vaso de café) cuando una llamada se demora.
  *
  * Las reglas (quién ve qué, cupos, camioneta, plazos) las aplica la base de datos; acá solo se traducen
  * las llamadas y los mensajes. La sesión es la misma del portal de baristas (misma llave en el navegador).
@@ -27,6 +29,7 @@
   var realFetch = window.fetch.bind(window);
   var sb = null;
   var BUCKET_PERFIL = 'perfiles';
+  var BUCKET_ACADEMIA = 'academia';
 
   /* ------------------------------------------------------------------ */
   /* Ayudas para la interfaz (se usan en los archivos de assets/sepia-equipo-*)  */
@@ -321,6 +324,48 @@
       return falla(400, 'Acción no reconocida.');
     }
 
+    /* ----- Academia (Jorge, 24 oct): tragos, botellas y videos. Lo edita solo la administración. ----- */
+    if (ruta === '/api/academia' && metodo === 'GET') {
+      await exigirSesion();
+      var aca = await rpc('eq_academia');
+      var todas = [];
+      (aca.posts || []).forEach(function (x) { (x.photos || []).forEach(function (f) { todas.push(f); }); });
+      var firmadas = {};
+      if (todas.length) {
+        var fs = await sb.storage.from(BUCKET_ACADEMIA).createSignedUrls(todas, 3600);
+        if (!fs.error) (fs.data || []).forEach(function (f) { if (f && f.signedUrl) firmadas[f.path] = f.signedUrl; });
+      }
+      (aca.posts || []).forEach(function (x) { x.photoUrls = (x.photos || []).map(function (f) { return firmadas[f] || null; }); });
+      return ok(aca);
+    }
+    if (ruta === '/api/academia/photo' && metodo === 'POST') {
+      await exigirSesion();
+      var idPost = String(u.searchParams.get('postId') || '');
+      if (!/^[0-9a-f-]{36}$/.test(idPost)) return falla(400, 'Contenido no válido.');
+      var foto = init.body;
+      if (!foto || !foto.size) return falla(400, 'No recibimos la foto.');
+      if (foto.size > 3 * 1024 * 1024) return falla(400, 'La foto supera los 3 MB.');
+      var rutaFoto = idPost + '/foto-' + Date.now() + '-' + Math.floor(Math.random() * 1e4) + '.jpg';
+      var subida = await sb.storage.from(BUCKET_ACADEMIA).upload(rutaFoto, foto, { contentType: 'image/jpeg', upsert: false });
+      if (subida.error) return falla(403, 'Solo la administración puede subir fotos a la Academia.');
+      var url1 = await sb.storage.from(BUCKET_ACADEMIA).createSignedUrls([rutaFoto], 3600);
+      return ok({ path: rutaFoto, url: url1.data && url1.data[0] && url1.data[0].signedUrl });
+    }
+    if (ruta === '/api/academia' && metodo === 'POST') {
+      await exigirSesion();
+      var q2 = JSON.parse(init.body || '{}');
+      var guardado = await rpc('eq_academia_guardar', { p: q2.post || {} });
+      var quitadas = (q2.removed || []).filter(function (f) { return typeof f === 'string' && f; });
+      if (quitadas.length) { try { await sb.storage.from(BUCKET_ACADEMIA).remove(quitadas); } catch (e) { /* quedan sin uso */ } }
+      return ok(guardado);
+    }
+    if (ruta === '/api/academia' && metodo === 'DELETE') {
+      await exigirSesion();
+      var borrado = await rpc('eq_academia_borrar', { p_id: u.searchParams.get('id') });
+      if (borrado && borrado.photos && borrado.photos.length) { try { await sb.storage.from(BUCKET_ACADEMIA).remove(borrado.photos); } catch (e) { /* quedan sin uso */ } }
+      return ok({ ok: true });
+    }
+
     /* ----- Foto de perfil ----- */
     if (ruta === '/api/profile/photo') {
       if (metodo === 'GET' && u.searchParams.get('meta')) { var fp = await fotoPropia(); return ok({ hasPhoto: fp.hasPhoto }); }
@@ -450,6 +495,146 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Animación de carga (Jorge, 24 oct)                                  */
+  /* ------------------------------------------------------------------ */
+  /* El vaso de café helado que se llena (equipo/parches/cargando.svg). Al abrir la app lo muestra la pantalla de carga
+     (solo con estilo, en la plantilla); cuando la app termina de arrancar, acá se pone el mismo vaso encima, en el mismo
+     punto, se termina de llenar y se va suave. Dentro de la app aparece solo si una llamada demora más de RETRASO
+     (no por cada toque ni por los avisos que se revisan solos), sigue moviéndose mientras haya cargas, y al terminar se
+     llena y desaparece. Si algo falla, se detiene y lo dice. Con «reducir movimiento» queda quieto. */
+  var cargando = (function () {
+    var RETRASO = 700, MINIMO = 650, LARGO = 15000;
+    var capa = null, vaso = null, texto = null, pendientes = 0, temporizador = null, largo = null, desde = 0, conError = false;
+    var reducido = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var ahora = function () { return (window.performance && performance.now) ? performance.now() : Date.now(); };
+
+    function quitar() {
+      clearTimeout(largo); largo = null;
+      if (capa && capa.parentNode) capa.parentNode.removeChild(capa);
+      capa = vaso = texto = null;
+    }
+
+    /* adelanto: cuántos ms lleva ya la animación (para empalmar con la pantalla de carga) */
+    function crear(adelanto, alTiro) {
+      if (!CFG.cargando || !document.body) return false;
+      quitar();
+      capa = document.createElement('div');
+      capa.className = 'sepia-cargando' + (alTiro ? ' al-tiro' : '');
+      capa.setAttribute('role', 'status');
+      capa.setAttribute('aria-live', 'polite');
+      var caja = document.createElement('div');
+      caja.className = 'sepia-cargando-vaso';
+      caja.innerHTML = CFG.cargando;
+      vaso = caja.querySelector('svg');
+      if (vaso) {
+        vaso.setAttribute('aria-hidden', 'true');   // el texto «Cargando…» ya lo dice
+        vaso.style.setProperty('--sc-t', (-Math.max(0, adelanto || 0) / 1000).toFixed(3) + 's');
+        if (reducido) vaso.classList.add('sc-quieto');
+      }
+      texto = document.createElement('p');
+      texto.className = 'sepia-cargando-texto';
+      texto.textContent = 'Cargando…';
+      capa.appendChild(caja); capa.appendChild(texto);
+      document.body.appendChild(capa);
+      desde = ahora();
+      if (alTiro) capa.classList.add('es-visible');
+      else { void capa.offsetWidth; capa.classList.add('es-visible'); }
+      /* Si de verdad se demora, se puede volver a la app (la carga sigue igual) */
+      largo = setTimeout(function () {
+        if (!capa) return;
+        texto.textContent = 'Está tardando más de lo normal…';
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'sepia-cargando-cerrar'; b.textContent = 'Volver a la app';
+        b.addEventListener('click', function () { ocultar(); });
+        capa.appendChild(b);
+      }, LARGO);
+      return true;
+    }
+
+    function ocultar() {
+      var c = capa;
+      if (!c) return;
+      c.classList.remove('es-visible');
+      setTimeout(function () { if (capa === c) quitar(); }, reducido ? 140 : 320);
+    }
+
+    /* Termina de llenar el vaso desde donde va y lo deja ir */
+    function rematar() {
+      var c = capa;
+      if (!c || !vaso) return ocultar();
+      if (reducido || !vaso.querySelector('#sc-nivel').animate) return ocultar();
+      ['#sc-nivel', '#sc-hielos'].forEach(function (sel) {
+        var el = vaso.querySelector(sel);
+        var actual = getComputedStyle(el).transform;
+        el.style.animation = 'none';
+        el.style.transform = actual;
+        el.animate([{ transform: actual }, { transform: 'translateY(0px)' }], { duration: 480, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+      });
+      setTimeout(function () { if (capa === c) ocultar(); }, 420);
+    }
+
+    function terminar(fallo) {
+      if (!capa) return;
+      var c = capa, falta = Math.max(0, MINIMO - (ahora() - desde));
+      setTimeout(function () {
+        if (capa !== c) return;
+        if (fallo) {
+          if (vaso) vaso.classList.add('sc-pausa');
+          texto.textContent = 'No se pudo completar. Inténtalo de nuevo.';
+          setTimeout(function () { if (capa === c) ocultar(); }, 1400);
+        } else rematar();
+      }, falta);
+    }
+
+    /* Las llamadas que se hacen solas (avisos de la campana) o que son instantáneas no muestran el vaso */
+    function cuenta(metodo, direccion) {
+      if (direccion.pathname === '/api/notifications') return false;
+      if (direccion.pathname === '/api/profile/photo' && metodo === 'GET') return false;
+      return true;
+    }
+
+    function empezar() {
+      pendientes++;
+      if (pendientes > 1 || temporizador) return;
+      temporizador = setTimeout(function () {
+        temporizador = null;
+        /* mientras se ve la pantalla de carga, el vaso ya está ahí */
+        if (pendientes > 0 && !document.querySelector('.boot-screen')) crear(0, false);
+      }, RETRASO);
+    }
+
+    function acabar(bien) {
+      pendientes = Math.max(0, pendientes - 1);
+      if (!bien) conError = true;
+      if (pendientes > 0) return;
+      clearTimeout(temporizador); temporizador = null;
+      var f = conError; conError = false;
+      terminar(f);
+    }
+
+    /* Empalme con la pantalla de carga: cuando la app termina de arrancar, el vaso se termina de llenar encima */
+    function vigilarArranque() {
+      if (!window.MutationObserver) return;
+      var habia = !!document.querySelector('.boot-screen'), conFalla = false;
+      new MutationObserver(function () {
+        var boot = document.querySelector('.boot-screen');
+        if (boot) { habia = true; conFalla = !!boot.querySelector('.primary-btn'); return; }
+        if (!habia) return;
+        habia = false;
+        if (conFalla) { conFalla = false; return; }
+        var adelanto = ahora();
+        try {
+          var e = performance.getEntriesByType('resource').filter(function (r) { return /cargando\.svg/.test(r.name) && !/quieto/.test(r.name); })[0];
+          if (e && e.responseEnd) adelanto = ahora() - e.responseEnd;
+        } catch (x) { /* sin tiempos: se usa desde que abrió la página */ }
+        if (crear(adelanto, true)) { desde = -Infinity; rematar(); }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+
+    return { cuenta: cuenta, empezar: empezar, acabar: acabar, vigilarArranque: vigilarArranque };
+  })();
+
+  /* ------------------------------------------------------------------ */
   /* Arranque                                                            */
   /* ------------------------------------------------------------------ */
 
@@ -465,11 +650,15 @@
       catch (e) { return realFetch(entrada, init); }
       if (direccion.origin !== location.origin || direccion.pathname.indexOf('/api/') !== 0) return realFetch(entrada, init);
       var metodo = String((init && init.method) || (entrada && entrada.method) || 'GET').toUpperCase();
+      var conVaso = cargando.cuenta(metodo, direccion);
+      if (conVaso) cargando.empezar();
       return manejar(metodo, direccion, init || {}).catch(function (e) { return aFalla(e); }).then(function (r) {
+        if (conVaso) cargando.acabar(r.status < 400);
         return new Response(JSON.stringify(r.json), { status: r.status, headers: { 'Content-Type': 'application/json' } });
       });
     };
     interceptarImagenes();
+    cargando.vigilarArranque();
     return true;
   }
 

@@ -38,10 +38,14 @@ export async function abrir(browser, p, origen, ancho = 1100) {
   const ctx = await browser.newContext({ viewport: { width: ancho, height: 1500 }, acceptDownloads: true });
   const pg = await ctx.newPage();
   pg.errores = []; pg.solicitudes = [];
+  /* Para probar la animación de carga: pg.retrasos['eq_ranking'] = 1500 demora esa función; pg.fallan.add('eq_ranking') la hace fallar */
+  pg.retrasos = {}; pg.fallan = new Set();
   pg.on('pageerror', e => pg.errores.push(e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) pg.errores.push(m.text()); });
   pg.on('request', r => { if (new URL(r.url()).origin === origen) pg.solicitudes.push(r.method() + ' ' + new URL(r.url()).pathname); });
-  await pg.exposeFunction('__puente', (tipo, d) => {
+  await pg.exposeFunction('__puente', async (tipo, d) => {
+    if (tipo === 'rpc' && pg.retrasos[d.nombre]) await new Promise(r => setTimeout(r, pg.retrasos[d.nombre]));
+    if (tipo === 'rpc' && pg.fallan.has(d.nombre)) return { data: null, error: { message: 'Falla de prueba', code: 'XX000' } };
     if (tipo === 'rpc') return p.rpc(d.claims, d.nombre, d.args);
     if (tipo === 'tabla') return p.tabla(d.claims, d.consulta);
     if (tipo === 'objeto') return p.objeto(d.claims, d);

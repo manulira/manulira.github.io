@@ -22,6 +22,7 @@ las veces esperadas, el armado se detiene: así un cambio de la fuente no pasa i
 """
 import argparse
 import colorsys
+import json
 import os
 import re
 import sys
@@ -29,19 +30,24 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v13'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v14'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
       'index-B0KDm-6B.js', 'client-app-3nlm5eU_.js', 'BrandStory-CKBrxk2p.js']
 CSS = ['index.DiFSpdfw.css']
-# Íconos: el logo cuadrado de Sepia Coffee (equipo/iconos/). Los de 64 y 180 px los pide la interfaz con el nombre de la
-# izquierda; el de 32 px (pestaña del navegador) y los de 192 y 512 px (la aplicación descargable) los usa la plantilla
-# y el manifiesto. La historia de Sepia y la pantalla de bienvenida con sus fotos quedaron fuera.
+# Íconos: el ícono oficial de la app (Jorge, 24 oct; reemplaza al logo cuadrado crema): fondo celeste, el logo «sepia coffee»
+# azul marino tal cual y tres granos de café (equipo/iconos/, original de 1024 px en icon-1024.png). Los de 64 y 180 px
+# los pide la interfaz con el nombre de la izquierda; el de 32 px (pestaña del navegador), el de 180 (iPhone) y los de
+# 192 y 512 px (Android y la aplicación descargable) los usa la plantilla y el manifiesto. El «maskable» (Android lo
+# recorta en círculo o en gota) lleva el dibujo al 80 % sobre el mismo celeste, para que no se corte el logo. La historia de Sepia y la pantalla de bienvenida con sus fotos quedaron fuera.
 IMAGENES = {'sepia-blue-64.png': 'icon-64.png', 'sepia-blue-180.png': 'icon-180.png',
             # El logo horizontal azul de la tienda (el mismo de sepiacoffee.cl): carga, entrada y barra de arriba.
             'sepia-coffee-logo.png': 'logo.png'}
-ICONOS_EXTRA = ['icon-32.png', 'icon-192.png', 'icon-512.png']
+ICONOS_EXTRA = ['icon-32.png', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png']
+# La animación de carga (parches/cargando.svg) y su versión quieta (movimiento reducido o error)
+CARGANDO = PREFIJO + 'cargando.svg'
+CARGANDO_QUIETO = PREFIJO + 'cargando-quieto.svg'
 
 # Direcciones que los datos de arranque de la interfaz piden en la raíz del sitio → archivo armado
 RUTAS_ARRANQUE = {'/_next/static/css/index.DiFSpdfw.css': 'index.DiFSpdfw.css',
@@ -56,14 +62,14 @@ MANIFIESTO = '''{
   "description": "Tus turnos, tu perfil y el ranking del equipo de Sepia Coffee.",
   "lang": "es-CL",
   "theme_color": "#020526",
-  "background_color": "#ffffff",
+  "background_color": "#b9c5d3",
   "display": "standalone",
   "start_url": "/pages/equipo",
   "scope": "/pages/",
   "icons": [
     { "src": "{{ '%(p)sicon-192.png' | asset_url | split: '?' | first }}", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "{{ '%(p)sicon-512.png' | asset_url | split: '?' | first }}", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "{{ '%(p)sicon-512.png' | asset_url | split: '?' | first }}", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "{{ '%(p)sicon-512-maskable.png' | asset_url | split: '?' | first }}", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
 ''' % {'p': PREFIJO}
@@ -126,6 +132,16 @@ a.required-profile-brand{text-decoration:none}
    justo donde más se usa); ya instalada (abierta como app) no hace falta. */
 .header-actions .icon-btn[aria-label="Instalar aplicación"]{display:grid}
 @media (display-mode:standalone){.header-actions .icon-btn[aria-label="Instalar aplicación"]{display:none}}
+/* Sepia: la animación de carga para las esperas largas dentro de la app (Jorge, 24 oct; sepia-equipo-api.js). El vaso es un
+   dibujo con los colores del café, como una foto: queda fuera de la revisión de la paleta, igual que las fotos. */
+.sepia-cargando{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:rgba(185,197,211,.97);opacity:0;transition:opacity .3s ease}
+.sepia-cargando.es-visible{opacity:1}
+.sepia-cargando.al-tiro{transition:none}
+.sepia-cargando-vaso{width:132px;height:187px}
+.sepia-cargando-vaso svg{display:block;width:100%;height:100%}
+.sepia-cargando-texto{margin:0;color:#020526;font-size:14px;font-weight:600;text-align:center}
+.sepia-cargando-cerrar{margin-top:4px;padding:10px 16px;border:1px solid #526ea0;border-radius:12px;background:#ffffff;color:#020526;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.sepia-cargando{transition:opacity .12s linear}}
 """
 
 
@@ -249,7 +265,7 @@ def armar_js():
             # adentro cambia de vista con «Vista barista» / «Administrar», que solo ve quien es administración (la base
             # lo exige). parches/entrada.js trae lo que usa la entrada (la dirección de «Nosotros»).
             t = cambiar(t, 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)',
-                        leer_parche('entrada.js') + leer_parche('ingreso.js') + 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)', 1, nombre)
+                        leer_parche('entrada.js') + leer_parche('ingreso.js') + leer_parche('academia.js') + 'function we({onSuccess:e}){let[t,n]=(0,D.useState)(``)', 1, nombre)
 
             # ---- Solicitudes de ingreso, confirmación de postulaciones y tarjeta amarilla (Manuel, 22 oct) ----
             # parches/ingreso.js. Las reglas están en la base (esquema.sql, sección 11): acá solo se muestran.
@@ -315,6 +331,15 @@ def armar_js():
             # «inerte» (sin poder tocarse): hay que apagarla también, no solo dejar de dibujarla.
             t = cambiar(t, 'r(!0);let n=()=>{e&&(a(e=>e+1),r(!0))};', 'let n=()=>{};', 1, nombre)
             t = cambiar(t, 'n&&(0,W.jsx)(vt,{onComplete:o},i)', 'null', 1, nombre)
+            # (Jorge, 24 oct) El ID se escribía todo en mayúsculas en el celular (venía de los ID tipo «SEPIA-001»): ahora sin
+            # mayúscula automática ni autocorrector, y lo que se escribe queda en minúsculas (los ID son tipo camila.perez).
+            t = cambiar(t, 'autoComplete:`username`,autoCapitalize:`characters`,spellCheck:`false`,maxLength:40,value:t,onChange:e=>n(e.target.value)}',
+                        'autoComplete:`username`,autoCapitalize:`none`,autoCorrect:`off`,spellCheck:`false`,inputMode:`email`,maxLength:40,value:t,onChange:e=>n(e.target.value.toLowerCase())}', 1, nombre)
+            t = cambiar(t, '`ID de acceso`,(0,W.jsx)(`input`,{required:!0,value:n,onChange:e=>r(e.target.value),',
+                        '`ID de acceso`,(0,W.jsx)(`input`,{required:!0,autoCapitalize:`none`,autoCorrect:`off`,spellCheck:`false`,value:n,onChange:e=>r(e.target.value.toLowerCase()),', 1, nombre)
+            # ---- Academia (Jorge, 24 oct): una pestaña más, después de Ranking (parches/academia.js) ----
+            t = cambiar(t, '[`perfil`,`Mi Perfil`,d],', '[`academia`,`Academia`,_],[`perfil`,`Mi Perfil`,d],', 1, nombre)
+            t = cambiar(t, ':b===`ranking`?(0,W.jsx)(at,{})', ':b===`ranking`?(0,W.jsx)(at,{}):b===`academia`?(0,W.jsx)(SepiaAcademia,{})', 1, nombre)
             # ---- Perfil (Jorge, 23 oct): foto ajustable y obligatoria, avisos obligatorios, menú siempre a la vista ----
             # Al elegir la foto se abre la ventana para ajustarla al círculo (sepia-equipo-api.js, recortar).
             t = cambiar(t, 'async function Fe(e){if(![', 'async function Fe(e){e=await window.SEPIA_EQUIPO.recortar(e);if(![', 1, nombre)
@@ -353,6 +378,24 @@ def extraer_html():
     if not inline:
         sys.exit('ERROR: el index.html de la fuente no trae los scripts de arranque.')
     return boot, inline
+
+
+def svg_cargando():
+    svg = leer_parche('cargando.svg')
+    if not svg.startswith('<svg ') or '{%' in svg or '{{' in svg:
+        sys.exit('ERROR: parches/cargando.svg no es el dibujo esperado (o trae {% o {{, que confunden a Shopify).')
+    return svg
+
+
+def svg_quieto():
+    """La misma animación, quieta en el nivel de espera (movimiento reducido o error)."""
+    return svg_cargando().replace('<svg ', '<svg class="sc-quieto" ', 1)
+
+
+def svg_en_script():
+    """El dibujo como texto para el script de la plantilla (sin comentarios y sin «</», que cerraría el script)."""
+    svg = re.sub(r'<!--.*?-->\n?', '', svg_cargando(), flags=re.S)
+    return json.dumps(svg, ensure_ascii=False).replace('</', '<\\/')
 
 
 def plantilla():
@@ -412,6 +455,16 @@ def plantilla():
 {%%- comment -%%} La carga inicial (antes de que arranque la app) muestra el logo de la tienda en lugar del «sepia.» escrito con
   letras. Se cambia solo con estilo: el HTML de la carga tiene que quedar igual al de la fuente o React falla al tomar la página. {%%- endcomment -%%}
 <style>.boot-screen>span{display:block;width:234px;max-width:80vw;height:44px;font-size:0;color:transparent;background:url("{{ '%(p)slogo.png' | asset_url | split: '?' | first }}") center/contain no-repeat}</style>
+{%%- comment -%%} La animación de carga (Jorge, 24 oct): sobre el celeste de Sepia, el vaso de café helado se llena mientras arranca la
+  app. También solo con estilo (::before). Si el arranque falla (aparece «Reintentar»), el vaso queda quieto; con «reducir movimiento»
+  en el teléfono, también. Las cargas lentas dentro de la app las muestra sepia-equipo-api.js con el mismo dibujo. {%%- endcomment -%%}
+<style>
+html body .boot-screen{background:#b9c5d3;gap:16px}
+html body .boot-screen::before{content:"";display:block;width:150px;height:212px;background:url("{{ '%(cargando)s' | asset_url | split: '?' | first }}") center/contain no-repeat}
+html body .boot-screen:has(.primary-btn)::before{background-image:url("{{ '%(quieto)s' | asset_url | split: '?' | first }}")}
+@media (prefers-reduced-motion:reduce){html body .boot-screen::before{background-image:url("{{ '%(quieto)s' | asset_url | split: '?' | first }}")}}
+html body .boot-screen p{color:#020526}
+</style>
 {%%- comment -%%} Diseño inspirado en la futura cafetería (Jorge, 23 oct; parches/diseno.css): títulos en Poppins y textos en DM Sans,
   las mismas letras de los títulos y textos de sepiacoffee.cl. El logo sigue siendo la imagen de la tienda. {%%- endcomment -%%}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -425,7 +478,9 @@ def plantilla():
     portal: "/pages/baristas",
     files: {
 %(mapa)s
-    }
+    },
+    /* El dibujo de la animación de carga, para las cargas lentas dentro de la app (sepia-equipo-api.js) */
+    cargando: {%% raw %%}%(svg)s{%% endraw %%}
   };
   Object.assign(window.SEPIA_EQUIPO, window.SEPIA_EQUIPO_CONEXION);
 </script>
@@ -442,7 +497,8 @@ def plantilla():
 </head>
 <body>%(boot)s<script type="module" src="{{ '%(entrada)s' | asset_url | split: '?' | first }}"></script></body>
 </html>
-''' % {'p': PREFIJO, 'pre': pre, 'mapa': mapa, 'bloques': bloques, 'boot': boot, 'entrada': entrada}
+''' % {'p': PREFIJO, 'pre': pre, 'mapa': mapa, 'bloques': bloques, 'boot': boot, 'entrada': entrada,
+       'cargando': CARGANDO, 'quieto': CARGANDO_QUIETO, 'svg': svg_en_script()}
 
 
 def conexion(url, clave):
@@ -483,10 +539,12 @@ def main():
             with open(os.path.join(carpeta_assets, PREFIJO + destino), 'wb') as f:
                 f.write(datos)
         escribir(os.path.join(carpeta_assets, PREFIJO + 'manifest.json.liquid'), MANIFIESTO)
+        escribir(os.path.join(carpeta_assets, CARGANDO), svg_cargando())
+        escribir(os.path.join(carpeta_assets, CARGANDO_QUIETO), svg_quieto())
         escribir(os.path.join(carpeta_plantillas, 'page.equipo.liquid'), plantilla())
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-conexion.liquid'), conexion(url, clave))
         escribir(os.path.join(raiz, 'snippets', 'sepia-equipo-sitio.liquid'), SITIO)
-    print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + len(ICONOS_EXTRA) + 1))
+    print('Listo: %d archivos de interfaz + plantilla + conexión.' % (len(js) + len(CSS) + len(IMAGENES) + len(ICONOS_EXTRA) + 3))
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const TEMA = path.join(AQUI, '..', '..');
-const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8' };
+const tipos = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.html': 'text/html; charset=utf-8' };
 
 /* Como asset_url de Shopify: dirección con «?v=…» (la tienda la agrega a todo lo que se pide con asset_url). */
 const urlAsset = n => '/assets/' + n + (process.env.SIN_VERSION ? '' : '?v=1700000000');

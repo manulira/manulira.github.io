@@ -943,6 +943,117 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- 9. Academia (Jorge, 24 oct): aprender los tragos, las botellas y ver videos
+-- ---------------------------------------------------------------------------
+-- La ve todo el equipo activo; solo la administración crea, cambia y borra. Las fotos van en el almacenamiento
+-- privado «academia» (carpeta = id del contenido) y se muestran con direcciones firmadas.
+create table if not exists public.academia (
+  id uuid primary key default gen_random_uuid(),
+  tipo text not null check (tipo in ('trago', 'botella', 'video')),
+  titulo text not null check (char_length(btrim(titulo)) between 2 and 120),
+  resumen text check (resumen is null or char_length(resumen) <= 300),
+  cuerpo text check (cuerpo is null or char_length(cuerpo) <= 8000),
+  ingredientes jsonb not null default '[]'::jsonb check (jsonb_typeof(ingredientes) = 'array'),
+  pasos jsonb not null default '[]'::jsonb check (jsonb_typeof(pasos) = 'array'),
+  video_url text check (video_url is null or video_url ~ '^https://(www\.|m\.)?(youtube\.com/(watch\?v=|shorts/)|youtu\.be/)[A-Za-z0-9_-]{6,}'),
+  fotos jsonb not null default '[]'::jsonb check (jsonb_typeof(fotos) = 'array'),
+  orden int not null default 100,
+  publicado boolean not null default true,
+  creado_en timestamptz not null default now(),
+  actualizado_en timestamptz not null default now(),
+  actualizado_por uuid
+);
+alter table public.academia enable row level security;     -- sin políticas: se lee y escribe solo por las funciones
+revoke all on public.academia from anon, authenticated;
+
+create or replace function public.eq_academia() returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare adm boolean := public.es_admin();
+begin
+  if auth.uid() is null or not (adm or public.es_barista()) then raise exception 'Acceso no autorizado.'; end if;
+  return jsonb_build_object('canEdit', adm, 'posts', coalesce((
+    select jsonb_agg(jsonb_build_object('id', a.id, 'type', a.tipo, 'title', a.titulo, 'summary', a.resumen, 'body', a.cuerpo,
+             'ingredients', a.ingredientes, 'steps', a.pasos, 'video', a.video_url, 'photos', a.fotos, 'order', a.orden,
+             'published', a.publicado, 'updatedAt', a.actualizado_en)
+           order by case a.tipo when 'trago' then 1 when 'botella' then 2 else 3 end, a.orden, a.titulo)
+    from public.academia a where a.publicado or adm), '[]'::jsonb));
+end $$;
+
+-- Lista de textos limpia (ingredientes, pasos, fotos): sin vacíos, cada uno con un largo máximo.
+create or replace function public.academia_lista(v jsonb, largo int, maximo int) returns jsonb
+language sql immutable set search_path = '' as $$
+  select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb)
+  from (select left(btrim(e), largo) x from jsonb_array_elements_text(case when jsonb_typeof(v) = 'array' then v else '[]'::jsonb end) with ordinality t(e, n)
+        where btrim(e) <> '' order by n limit maximo) l
+$$;
+
+create or replace function public.eq_academia_guardar(p jsonb) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  d jsonb := coalesce(p, '{}'::jsonb);
+  pid uuid := nullif(d ->> 'id', '')::uuid;
+  vid text := nullif(btrim(coalesce(d ->> 'video', '')), '');
+  fila public.academia;
+begin
+  if not public.es_admin() then raise exception 'Solo la administración edita la Academia.' using errcode = '42501'; end if;
+  if coalesce(d ->> 'type', '') not in ('trago', 'botella', 'video') then raise exception 'Elige si es un trago, una botella o un video.'; end if;
+  if char_length(btrim(coalesce(d ->> 'title', ''))) < 2 then raise exception 'Escribe un título.'; end if;
+  if vid is not null and vid !~ '^https://(www\.|m\.)?(youtube\.com/(watch\?v=|shorts/)|youtu\.be/)[A-Za-z0-9_-]{6,}' then
+    raise exception 'El video tiene que ser un enlace de YouTube (https://www.youtube.com/watch?v=…).';
+  end if;
+  if d ->> 'type' = 'video' and vid is null then raise exception 'Pega el enlace de YouTube del video.'; end if;
+  if exists (select 1 from jsonb_array_elements_text(case when jsonb_typeof(d -> 'photos') = 'array' then d -> 'photos' else '[]'::jsonb end) f
+             where pid is null or f !~ ('^' || pid::text || '/[A-Za-z0-9._-]+$')) then
+    raise exception 'Foto no válida.';
+  end if;
+  insert into public.academia as a (id, tipo, titulo, resumen, cuerpo, ingredientes, pasos, video_url, fotos, orden, publicado, actualizado_en, actualizado_por)
+  values (coalesce(pid, gen_random_uuid()), d ->> 'type', left(btrim(d ->> 'title'), 120), public.texto_limpio(d ->> 'summary', 300),
+          nullif(left(btrim(coalesce(d ->> 'body', '')), 8000), ''),
+          public.academia_lista(d -> 'ingredients', 120, 20), public.academia_lista(d -> 'steps', 400, 20), vid,
+          public.academia_lista(d -> 'photos', 200, 12),
+          coalesce(nullif(d ->> 'order', '')::int, 100), coalesce((d ->> 'published')::boolean, true), now(), auth.uid())
+  on conflict (id) do update set tipo = excluded.tipo, titulo = excluded.titulo, resumen = excluded.resumen, cuerpo = excluded.cuerpo,
+    ingredientes = excluded.ingredientes, pasos = excluded.pasos, video_url = excluded.video_url, fotos = excluded.fotos,
+    orden = excluded.orden, publicado = excluded.publicado, actualizado_en = now(), actualizado_por = auth.uid()
+  returning * into fila;
+  return jsonb_build_object('ok', true, 'id', fila.id);
+end $$;
+
+create or replace function public.eq_academia_borrar(p_id uuid) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare f jsonb;
+begin
+  if not public.es_admin() then raise exception 'Solo la administración edita la Academia.' using errcode = '42501'; end if;
+  delete from public.academia where id = p_id returning fotos into f;
+  if f is null then raise exception 'Ese contenido ya no existe.'; end if;
+  return jsonb_build_object('ok', true, 'photos', f);      -- el adaptador borra las fotos del almacenamiento
+end $$;
+
+-- Fotos de la Academia: las ven el equipo activo y la administración; solo la administración sube, cambia y borra.
+do $academia$
+begin
+  if exists (select 1 from information_schema.schemata where schema_name = 'storage') then
+    insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+    values ('academia', 'academia', false, 3145728, array['image/jpeg', 'image/png', 'image/webp'])
+    on conflict (id) do update set public = false, file_size_limit = 3145728, allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp'];
+    if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'academia_ver') then
+      create policy academia_ver on storage.objects for select to authenticated
+        using (bucket_id = 'academia' and (public.es_barista() or public.es_admin()));
+    end if;
+    if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'academia_subir') then
+      create policy academia_subir on storage.objects for insert to authenticated with check (bucket_id = 'academia' and public.es_admin());
+    end if;
+    if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'academia_cambiar') then
+      create policy academia_cambiar on storage.objects for update to authenticated
+        using (bucket_id = 'academia' and public.es_admin()) with check (bucket_id = 'academia' and public.es_admin());
+    end if;
+    if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'academia_borrar') then
+      create policy academia_borrar on storage.objects for delete to authenticated using (bucket_id = 'academia' and public.es_admin());
+    end if;
+  end if;
+end $academia$;
+
+-- ---------------------------------------------------------------------------
 -- Permisos
 -- ---------------------------------------------------------------------------
 revoke all on function public.eq_hhmm(time) from public, anon;
@@ -980,3 +1091,10 @@ revoke all on function public.eq_ganancias(uuid) from public, anon;
 grant execute on function public.eq_ganancias(uuid) to authenticated;
 revoke all on function public.eq_integraciones() from public, anon;
 grant execute on function public.eq_integraciones() to authenticated;
+revoke all on function public.eq_academia() from public, anon;
+grant execute on function public.eq_academia() to authenticated;
+revoke all on function public.academia_lista(jsonb, int, int) from public, anon, authenticated;
+revoke all on function public.eq_academia_guardar(jsonb) from public, anon;
+grant execute on function public.eq_academia_guardar(jsonb) to authenticated;
+revoke all on function public.eq_academia_borrar(uuid) from public, anon;
+grant execute on function public.eq_academia_borrar(uuid) to authenticated;

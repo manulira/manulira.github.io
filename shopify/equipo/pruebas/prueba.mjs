@@ -540,7 +540,9 @@ try {
         }
       };
       for (const el of document.querySelectorAll('body *')) {
+        if (/^(SCRIPT|STYLE|TEMPLATE|NOSCRIPT)$/.test(el.tagName)) continue;   // no se dibujan en pantalla
         if (el.closest('.sepia-amarilla')) continue;      // la tarjeta amarilla: la única excepción, a pedido de Manuel
+        if (el.closest('.sepia-cargando')) continue;      // el vaso de café de la animación de carga: un dibujo, como las fotos (Jorge, 24 oct)
         revisar(el); revisar(el, '::before'); revisar(el, '::after');
       }
       return [...malos].map(([k, v]) => k + ' en ' + v);
@@ -559,6 +561,11 @@ try {
     await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 1000);
     ok(await pg.locator('.profile-section-menu nav button').first().isVisible(), 'el menú del perfil está siempre abierto');
     await revisa(pg, 'el perfil');
+    await pg.locator('nav button:visible', { hasText: 'Academia' }).first().click(); await espera(pg, 1400);
+    await revisa(pg, 'la Academia');
+    await pg.locator('.sepia-aca-tarjeta', { hasText: 'Espresso Martini' }).first().click(); await espera(pg, 800);
+    await revisa(pg, 'un trago de la Academia');
+    await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 1000);
     await pg.locator('.crew-notices summary').click(); await espera(pg, 500);
     await revisa(pg, 'la campana de avisos');
     await pg.context().close();
@@ -667,7 +674,7 @@ try {
     await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
     ok(/Hola, Beto/.test(await texto(pg)) && await pg.locator('.se-sitio').count() === 0 && !/Productos|Portal Baristas|Contacto/.test(await texto(pg)), 'adentro tampoco hay menú del sitio');
     const nombresNav = await pg.locator('.desktop-nav button').allInnerTexts();
-    ok(nombresNav.join('|') === 'Eventos|Ranking|Mi Perfil', 'la navegación del equipo, sin «Nosotros»: ' + nombresNav.join(' · '));
+    ok(nombresNav.join('|') === 'Eventos|Ranking|Academia|Mi Perfil', 'la navegación del equipo, con «Academia» y sin «Nosotros»: ' + nombresNav.join(' · '));
     await captura(pg, 'I2-adentro');
     const logo = pg.locator('.app-header a[href="/"]').first();
     ok(await logo.count() === 1 && /volver al inicio del sitio/.test(await logo.getAttribute('aria-label')), 'el logo de la barra apunta al inicio del sitio');
@@ -682,7 +689,7 @@ try {
     const mov = await nueva(390);
     await iniciarSesion(mov, 'beto.prueba', 'mi frase segura 1');
     let cajas = await mov.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
-    ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil', 'en el celular el equipo ve: ' + cajas.map(c => c.t).join(' · '));
+    ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Academia|Mi Perfil', 'en el celular el equipo ve: ' + cajas.map(c => c.t).join(' · '));
     ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 70), 'y las pestañas caben, sin cortarse (' + cajas.map(c => c.w).join(', ') + ' px)');
     await captura(mov, 'I3-celular-equipo');
     ok(await mov.locator('.bottom-nav').getByRole('button', { name: 'Nosotros' }).count() === 0, 'ni la barra de abajo del celular');
@@ -693,7 +700,7 @@ try {
     if (!/Gestiona experiencias|Hola/.test(await texto(adm))) { await adm.context().close(); ok(false, 'no se pudo entrar como administración para probar el celular'); }
     else {
       cajas = await adm.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
-      ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Administrar', 'en el celular la administración ve: ' + cajas.map(c => c.t).join(' · '));
+      ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Academia|Mi Perfil|Administrar', 'en el celular la administración ve: ' + cajas.map(c => c.t).join(' · '));
       ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 60), 'y también caben (' + cajas.map(c => c.w).join(', ') + ' px)');
       await captura(adm, 'I4-celular-admin');
       await adm.context().close();
@@ -935,6 +942,133 @@ try {
       await pg.context().close();
     }
     db(`update public.config set foto_obligatoria = false where id = 1`);
+  }
+
+  /* ====================================================================== */
+  if (corre('O')) {
+    console.log('\n=== O. Academia: tragos, botellas y videos; la edita solo la administración (Jorge, 24 oct) ===');
+    for (const ancho of [390, 1100]) {
+      const pg = await nueva(ancho);
+      await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
+      const donde = ancho < 500 ? ' (celular)' : ' (computador)';
+      await pg.locator('nav button:visible', { hasText: 'Academia' }).first().click(); await espera(pg, 1500);
+      let t = await texto(pg);
+      ok(/Aprende el oficio/.test(t) && await pg.locator('.sepia-aca-tarjeta').count() === 9, 'la Academia muestra los 9 contenidos iniciales' + donde);
+      ok(!/Nuevo contenido/.test(t), 'un barista no ve el botón para crear' + donde);
+      await pg.getByRole('tab', { name: /Botellas/ }).click(); await espera(pg, 400);
+      ok(await pg.locator('.sepia-aca-tarjeta').count() === 4, 'el filtro «Botellas» deja las 4 botellas' + donde);
+      await pg.getByRole('tab', { name: /Todo/ }).click(); await espera(pg, 300);
+      await pg.locator('.sepia-aca-tarjeta', { hasText: 'Espresso Martini' }).first().click(); await espera(pg, 800);
+      t = await texto(pg);
+      ok(/1 jigger de Kahlúa/.test(t) && /1 jigger de vodka/.test(t) && /1 jigger de café espresso/.test(t), 'el Espresso Martini muestra las medidas de Sepia' + donde);
+      ok(await pg.locator('.sepia-aca-pasos li').count() >= 4 && await pg.locator('.sepia-aca-video iframe[src*="youtube-nocookie.com/embed/1E4VPCGm8hc"]').count() === 1, 'con el paso a paso y el video' + donde);
+      ok(await pg.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'el detalle cabe en el ancho, sin moverse de lado' + donde);
+      ok(await pg.getByRole('button', { name: 'Editar' }).count() === 0, 'y sin botón de editar' + donde);
+      await captura(pg, 'O1-academia-trago-' + ancho);
+      await pg.getByRole('button', { name: /Volver a la Academia/ }).click(); await espera(pg, 500);
+      await captura(pg, 'O2-academia-' + ancho);
+      ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
+      await pg.context().close();
+    }
+    /* La administración crea un contenido con foto, lo edita y lo borra */
+    const adm = await nueva();
+    await iniciarAdmin(adm, 'admin.prueba', 'claveadmin1');
+    await adm.locator('nav button:visible', { hasText: 'Academia' }).first().click(); await espera(adm, 1500);
+    await pulsa(adm, /Nuevo contenido/); await espera(adm, 500);
+    await adm.locator('.sepia-aca-editor label', { hasText: 'Título' }).locator('input').fill('Café Tonic');
+    await adm.locator('.sepia-aca-editor label', { hasText: 'Medidas' }).locator('textarea').fill('1 jigger de café\nAgua tónica');
+    const png = path.join(os.tmpdir(), 'sepia-eq-aca.png');
+    fs.writeFileSync(png, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
+    await adm.locator('.sepia-aca-agregar-foto input').setInputFiles(png); await espera(adm, 1500);
+    ok(await adm.locator('.sepia-aca-miniatura img').count() === 1, 'la administración sube una foto al contenido nuevo');
+    await captura(adm, 'O3-academia-editor');
+    await pulsa(adm, 'Guardar'); await espera(adm, 1800);
+    ok(/Café Tonic/.test(await texto(adm)) && db(`select ingredientes::text || ' ' || jsonb_array_length(fotos) from public.academia where titulo = 'Café Tonic'`) === '["1 jigger de café", "Agua tónica"] 1', 'lo guarda con sus medidas y su foto');
+    ok(db(`select count(*) from storage.objects where bucket_id = 'academia'`) === '1', 'la foto queda en el almacenamiento de la Academia');
+    await pulsa(adm, 'Editar'); await espera(adm, 500);
+    await adm.locator('.sepia-aca-miniatura button').click(); await espera(adm, 200);
+    await pulsa(adm, 'Guardar'); await espera(adm, 1800);
+    ok(db(`select jsonb_array_length(fotos) from public.academia where titulo = 'Café Tonic'`) === '0' && db(`select count(*) from storage.objects where bucket_id = 'academia'`) === '0', 'al quitar la foto se borra también del almacenamiento');
+    adm.once('dialog', d => d.accept());
+    await pulsa(adm, 'Borrar'); await espera(adm, 1800);
+    ok(db(`select count(*) from public.academia where titulo = 'Café Tonic'`) === '0' && /Contenido borrado/.test(await texto(adm)), 'y lo puede borrar');
+    ok(adm.errores.length === 0, 'sin errores en la consola' + (adm.errores.length ? ': ' + adm.errores.join(' · ') : ''));
+    await adm.context().close();
+  }
+
+  /* ====================================================================== */
+  if (corre('P')) {
+    console.log('\n=== P. Ícono oficial y animación de carga: el vaso de café que se llena (Jorge, 24 oct) ===');
+    /* Íconos: el nuevo ícono celeste (también el recortable de Android) y el celeste de fondo al abrir la app instalada */
+    const ic = await nueva();
+    const man = await ic.evaluate(async () => (await fetch(document.querySelector('link[rel="manifest"]').href)).json());
+    const mask = (man.icons || []).find(i => i.purpose === 'maskable') || {};
+    ok(/icon-512-maskable\.png/.test(mask.src || '') && man.background_color === '#b9c5d3', 'Android recorta el ícono con margen (icon-512-maskable) y abre la app sobre el celeste de Sepia');
+    const esquina = await ic.evaluate(src => new Promise(r => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'); x.drawImage(im, 0, 0); r(Array.from(x.getImageData(4, 4, 1, 1).data).slice(0, 3)); }; im.onerror = () => r(null); im.src = src; }),
+      new URL(((man.icons || []).find(i => i.sizes === '512x512' && i.purpose === 'any') || {}).src || '', ORIGEN).href);
+    ok(esquina && esquina[2] > esquina[0] + 25 && esquina[2] > 170, 'el ícono es el celeste (esquina ' + (esquina || []).join(',') + ')');
+    await ic.context().close();
+
+    /* La pantalla de carga: fondo celeste y el vaso llenándose mientras arranca la app; al terminar, se va suave */
+    const pc = await abrir(navegador, p, ORIGEN, 390);
+    await pc.route(/index-B0KDm-6B\.js/, async r => { await new Promise(f => setTimeout(f, 1500)); await r.continue(); });
+    await pc.goto(PAGINA, { waitUntil: 'commit' });
+    await pc.waitForSelector('.boot-screen', { timeout: 10000 });
+    await espera(pc, 500);
+    const boot = await pc.evaluate(() => { const b = document.querySelector('.boot-screen'); const a = getComputedStyle(b, '::before'); return { fondo: getComputedStyle(b).backgroundColor, img: a.backgroundImage, ancho: a.width }; });
+    ok(boot.fondo === 'rgb(185, 197, 211)' && /cargando\.svg/.test(boot.img) && !/quieto/.test(boot.img) && boot.ancho === '150px', 'al abrir, la carga muestra el vaso sobre el celeste de Sepia');
+    const dibujo = await pc.evaluate(img => new Promise(r => { const im = new Image(); im.onload = () => r(im.naturalWidth); im.onerror = () => r(0); im.src = img.replace(/^url\("?|"?\)$/g, ''); }), boot.img);
+    ok(dibujo === 240, 'y el dibujo del vaso carga como imagen (' + dibujo + ' px de ancho)');
+    await captura(pc, 'P1-carga');
+    await pc.evaluate(() => { window.__vaso = 0; new MutationObserver(() => { if (document.querySelector('.sepia-cargando')) window.__vaso++; }).observe(document.body, { childList: true }); });
+    await pc.waitForSelector('.required-profile, .app-shell', { timeout: 15000 });
+    ok(await pc.evaluate(() => window.__vaso > 0), 'cuando la app termina de arrancar, el vaso se termina de llenar encima');
+    await espera(pc, 1500);
+    ok(await pc.locator('.sepia-cargando').count() === 0, 'y desaparece solo');
+    ok(pc.errores.length === 0, 'sin errores en la consola' + (pc.errores.length ? ': ' + pc.errores.join(' · ') : ''));
+    await pc.context().close();
+
+    /* Dentro de la app: solo cuando una carga se demora */
+    const pg = await nueva(390);
+    await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
+    await espera(pg, 1200);
+    await pg.evaluate(() => { window.__vaso = 0; new MutationObserver(() => { if (document.querySelector('.sepia-cargando')) window.__vaso++; }).observe(document.body, { childList: true }); });
+    await pg.locator('nav button:visible', { hasText: 'Academia' }).first().click(); await espera(pg, 1200);
+    await pg.locator('nav button:visible', { hasText: 'Eventos' }).first().click(); await espera(pg, 1200);
+    ok(await pg.evaluate(() => window.__vaso) === 0, 'las cargas rápidas no muestran el vaso (no interrumpe)');
+    pg.retrasos.eq_avisos = 1600;
+    await pg.evaluate(() => window.dispatchEvent(new Event('focus'))); await espera(pg, 1200);
+    ok(await pg.evaluate(() => window.__vaso) === 0, 'tampoco cuando la campana revisa los avisos sola');
+    pg.retrasos = { eq_ranking: 2200 };
+    await pg.locator('nav button:visible', { hasText: 'Ranking' }).first().click(); await espera(pg, 1100);
+    const enCarga = await pg.evaluate(() => { const c = document.querySelector('.sepia-cargando'); if (!c) return null; const n = c.querySelector('#sc-nivel'); return { visible: c.classList.contains('es-visible'), texto: c.innerText, anim: n.getAnimations().length, fondo: getComputedStyle(c).backgroundColor }; });
+    ok(enCarga && enCarga.visible && /Cargando/.test(enCarga.texto) && enCarga.anim > 0 && /185, 197, 211/.test(enCarga.fondo), 'una carga lenta muestra el vaso llenándose sobre el celeste');
+    await captura(pg, 'P2-cargando');
+    await espera(pg, 2200);
+    ok(await pg.locator('.sepia-cargando').count() === 0 && await pg.locator('.ranking-podium').count() === 1, 'al llegar los datos se llena, desaparece y queda el ranking');
+    pg.retrasos = { eq_ranking: 1200 }; pg.fallan.add('eq_ranking');
+    await pg.locator('nav button:visible', { hasText: 'Academia' }).first().click(); await espera(pg, 900);
+    await pg.locator('nav button:visible', { hasText: 'Ranking' }).first().click(); await espera(pg, 1500);
+    const falla = await pg.evaluate(() => { const c = document.querySelector('.sepia-cargando'); return c ? { texto: c.innerText, pausa: c.querySelector('svg').classList.contains('sc-pausa') } : null; });
+    ok(falla && /No se pudo completar/.test(falla.texto) && falla.pausa, 'si falla, el vaso se detiene y lo dice');
+    await espera(pg, 2000);
+    ok(await pg.locator('.sepia-cargando').count() === 0, 'y después deja ver el mensaje de la app');
+    pg.fallan.clear(); pg.retrasos = {};
+    await pg.context().close();
+
+    /* Con «reducir movimiento» en el teléfono, el vaso queda quieto */
+    const rm = await abrir(navegador, p, ORIGEN, 390);
+    await rm.emulateMedia({ reducedMotion: 'reduce' });
+    await rm.route(/index-B0KDm-6B\.js/, async r => { await new Promise(f => setTimeout(f, 1200)); await r.continue(); });
+    await rm.goto(PAGINA, { waitUntil: 'commit' });
+    await rm.waitForSelector('.boot-screen', { timeout: 10000 }); await espera(rm, 300);
+    ok(/cargando-quieto\.svg/.test(await rm.evaluate(() => getComputedStyle(document.querySelector('.boot-screen'), '::before').backgroundImage)), 'con «reducir movimiento» la carga usa el vaso quieto');
+    await entrarSiHaySplash(rm);
+    await iniciarSesion(rm, 'beto.prueba', 'mi frase segura 1'); await espera(rm, 1000);
+    rm.retrasos = { eq_ranking: 1800 };
+    await rm.locator('nav button:visible', { hasText: 'Ranking' }).first().click(); await espera(rm, 1000);
+    ok(await rm.evaluate(() => { const v = document.querySelector('.sepia-cargando svg'); return !!v && v.classList.contains('sc-quieto') && document.querySelector('#sc-nivel').getAnimations().length === 0; }), 'y dentro de la app también, sin moverse');
+    await rm.context().close();
   }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();

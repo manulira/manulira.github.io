@@ -5,7 +5,9 @@
 
 function sepiaE(etiqueta, propiedades, ...hijos) {
   const { key, ...resto } = propiedades || {};
-  return (0, W.jsxs)(etiqueta, { ...resto, children: hijos.filter((h) => h !== null && h !== undefined && h !== false) }, key);
+  const lista = hijos.filter((h) => h !== null && h !== undefined && h !== false && h !== ``);
+  /* Sin hijos no se pasa «children»: las etiquetas vacías como <img> o <input> no lo aceptan (React, error 137). */
+  return lista.length ? (0, W.jsxs)(etiqueta, { ...resto, children: lista }, key) : (0, W.jsx)(etiqueta, resto, key);
 }
 
 /* La tarjeta amarilla junto al nombre. La ve solo la administración: al barista nunca le llega el dato. */
