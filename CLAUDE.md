@@ -53,8 +53,9 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 - **Colores**: solo la paleta de Sepia: azul `#526EA0`, azul noche `#020526`, celeste `#B9C5D3`, crema `#E7E5D9`, gris `#F2F2F2`, blanco. Una
   prueba revisa que todas las pantallas de Sepia Equipo la respeten. **Única excepción**: la tarjeta amarilla (`.sepia-amarilla`, amarillo de verdad; Manuel, 22 oct).
 - **Códigos, IDs y claves**: el sistema es el del portal de baristas (ID tipo `camila.perez` + clave temporal que se cambia al entrar). No se toca.
-- **Logos**: en Sepia Equipo va el logo horizontal azul de la tienda (`equipo/iconos/logo.png`) en la carga, la entrada, la barra y el pie; ya no el «sepia.» ni el «sepia coffee · SEPIA CREW» escritos con letras (Manuel, 22 oct). Logo de la tienda: horizontal azul. Logo cuadrado (crema): ícono de la app
-  descargable y de la pestaña del navegador (`shopify/equipo/iconos/`, y favicon del tema).
+- **Logos**: en Sepia Equipo va el logo horizontal azul de la tienda (`equipo/iconos/logo.png`) en la carga, la entrada, la barra y el pie; ya no el «sepia.» ni el «sepia coffee · SEPIA CREW» escritos con letras (Manuel, 22 oct). Logo de la tienda: horizontal azul. ~~Logo cuadrado (crema): ícono de la app
+  descargable y de la pestaña del navegador~~: **Jorge lo cambió el 24 oct** (confirmó saber que era decisión de Manuel) por el ícono oficial celeste
+  con el logo «sepia coffee» azul marino y tres granos (`shopify/equipo/iconos/`, original `icon-1024.png`). El favicon del tema de la tienda no se tocó.
 - **La consola es una app aparte**: sin el menú de sepiacoffee.cl; su logo vuelve al inicio del sitio. ~~Una pestaña «Nosotros» lleva a `/pages/nosotros`~~: **Jorge la sacó el 23 oct** (confirmó saber que era decisión de Manuel); ya no está en la entrada ni en las barras.
 - **Una sola entrada** (Manuel, 22 oct; reemplaza a la entrada separada): todos entran con ID y clave. La administración es una cuenta de barista
   marcada (`accesos.admin`, con `select public.hacer_admin('su.id');`): es barista y administración a la vez y cambia con «Vista barista» / «Administración».
@@ -98,15 +99,28 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
   postular sin foto. **Avisos obligatorios**: al guardar el perfil `acepta_avisos` queda siempre en `true` (avisos por correo y la campana); la
   casilla de WhatsApp se cambió por un aviso fijo. Avisos «push» al celular no se pueden en sepiacoffee.cl (Shopify no permite el archivo del
   service worker); Jorge eligió correo + obligatorio. Pruebas: `pruebas/obligatorios.sql` y sección N.
+- **Ícono oficial de la app** (24 oct, v14): el celeste con el logo «sepia coffee» tal cual y tres granos, en iPhone, Android y la pestaña;
+  Android usa `icon-512-maskable.png` (dibujo al 80 % con borde celeste, para que el círculo no corte el logo). La app instalada abre sobre `#b9c5d3`.
+- **Animación de carga** (24 oct, v14): un vaso de café helado transparente, con bombilla celeste, que se llena de abajo hacia arriba con café y
+  leche marmoleados y hielos que flotan, sobre el **celeste de la paleta** (`#B9C5D3`, lo eligió Jorge). Dibujo: `equipo/parches/cargando.svg`
+  (lo escribe `cargando-generar.py`). Sale al abrir la app (pantalla de carga, solo con estilo) y dentro de la app cuando una llamada tarda más de
+  0,7 s (no en las rápidas ni en los avisos que la campana revisa sola); se termina de llenar y se va; si falla se detiene y lo dice; quieto con
+  «reducir movimiento». Es un dibujo con colores de café: queda fuera de la prueba de la paleta, como las fotos. Pruebas: sección P.
+- **Academia** (24 oct, v14; nombre elegido por Jorge): opción del menú para aprender los tragos (medidas de Sepia: Espresso Martini = 1 jigger de
+  Kahlúa + 1 de vodka + 1 de café; Carajillo = 1 jigger de Licor 43 + 1 de café), una ficha por botella (origen y componentes) y videos de YouTube.
+  La ve todo el equipo; **solo la administración** crea, edita, borra y sube las fotos de cada trago real desde la app. Tabla `academia`,
+  `eq_academia*`, almacenamiento privado `academia`; contenido inicial en `baristas/academia-contenido.sql`. Pruebas: `pruebas/academia.sql` y sección O.
+- **Ranking**: podio con escalones (1.º al centro, 2.º y 3.º a los lados) y sin el cuadro «Más turnos. Más historias que contar.».
+- **ID de acceso**: en el celular ya no escribe en mayúsculas (sin autocapitalizar; todo queda en minúsculas).
 - La foto de referencia de la cafetería es **privada**: no se sube a este repositorio (es público) ni a ninguna parte.
 
 ## Cómo se trabaja
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v13`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v14`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
-  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (204 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
+  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (243 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
 - **Supabase**: se corre `esquema.sql` y después `equipo.sql` en el SQL Editor cuando cambian. La URL y la clave pública (publishable) del proyecto están en Supabase →
   Project Settings → API; en el repo van como marcadores (`SUPABASE_URL`, `SUPABASE_CLAVE`) y los valores reales solo se suben al tema (`snippets/sepia-equipo-conexion.liquid`).
@@ -127,10 +141,11 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 
 ## Estado (24 oct 2026, madrugada)
 
-- **v13** (Jorge, sobre la v12 de Manuel): en GitHub (`0fac7bb`), probada (204 + SQL); base en Supabase (migraciones `nivel_experiencia` y
-  `foto_y_avisos_obligatorios`). En Shopify: borrador **«Sepia Coffee · equipo v13 (borrador, Jorge)» (`193580990828`)**, copia del borrador
-  v12 de Manuel (`193580826988`); **falta publicarlo**. Publicado hoy: «equipo v11 (borrador, Jorge)» (`193575944556`), que tiene la **v10**.
-  Temas sin uso: `193517551980` (v9), `193575420268` (v10), `193576042860` (v11 corregida), y el de la v12 cuando se publique la v13.
+- **v14** (Jorge): Academia, podio, ID en minúsculas, ícono oficial y animación de carga. En GitHub (`df6b348`), probada (243 + SQL academia 29);
+  base en Supabase (migración `academia`, con el contenido inicial). En Shopify: borrador **«Sepia Coffee · equipo v14 (borrador, Jorge)» (`193583448428`)**,
+  copia de la v13 publicada (`193580990828`); **falta publicarlo**. Los temas viejos (v9 a v12) ya no están en la tienda.
+
+- **v13** (Jorge, sobre la v12 de Manuel): en GitHub (`0fac7bb`); es el tema **publicado** hoy (`193580990828`).
 
 - Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.
@@ -138,7 +153,7 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 204; niveles 29; obligatorios 13.
+- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 243; niveles 29; obligatorios 13; academia 29.
 
 ## Pendientes y decisiones abiertas
 

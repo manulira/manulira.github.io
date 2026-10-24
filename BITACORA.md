@@ -10,9 +10,27 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| 24-10 01:15 | contacto@sepiacoffee.cl (Jorge) | Ranking con podio (sin el cuadro «Más turnos…») y nueva sección «Academia» (tragos, botellas, videos) | GitHub, Supabase, Shopify (borrador) | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
 
 ## Registro
+
+### 24-10-2026 02:15 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: arreglar el ranking (podio «choro», sin el cuadro «Más turnos. Más historias que contar.»); una opción nueva del menú para aprender
+  a preparar los tragos (videos de YouTube, medidas, fotos de cada trago real y un post por botella con su origen y componentes; eligió el nombre
+  **«Academia»** y que las fotos las suba la administración desde la app; medidas: Espresso Martini = 1 jigger de Kahlúa + 1 de vodka + 1 de café,
+  Carajillo = 1 jigger de Licor 43 + 1 de café); que el ID no se escriba en mayúsculas en el celular; y, según su archivo con dos imágenes, el
+  **ícono oficial** celeste con el logo y tres granos (confirmó cambiarlo sabiendo que el ícono crema era decisión de Manuel) y una **animación de
+  carga** con el vaso de café helado llenándose (fondo: eligió el celeste de la paleta).
+- **Hecho**: **v14**. Ver «Decisiones de Jorge» en `CLAUDE.md`. Academia con 9 contenidos iniciales (2 tragos, 4 botellas, 3 videos verificados
+  en YouTube); los pasos de los tragos los redactó Claude con las medidas de Jorge: Jorge debe revisarlos y subir las fotos reales (Academia →
+  Editar). Vista previa de la animación y del ícono: https://claude.ai/artifact/5YvM3eEDGb53jiybxEHMde.
+  Pruebas: interfaz 243/243 (secciones O y P nuevas), SQL academia 29/29.
+- **Dónde**: GitHub `df6b348` (y este commit). Supabase: migración `academia` (tabla `academia`, `eq_academia`, `eq_academia_guardar`,
+  `eq_academia_borrar`, almacenamiento privado `academia` con 4 políticas, y el contenido inicial). Shopify: borrador
+  **«Sepia Coffee · equipo v14 (borrador, Jorge)» (`193583448428`)**, copia de la v13 publicada (`193580990828`), con los 17 archivos `sepia-equipo-v14-*`,
+  `assets/sepia-equipo-api.js` y `templates/page.equipo.liquid` (tamaños y MD5 iguales a GitHub). Vista previa revisada sin errores: carga con el vaso
+  sobre el celeste, ID en minúsculas, manifiesto con el ícono nuevo. **Sin publicar**.
+- **Ojo**: en Shopify ya no están los temas v9 a v12 (los borró alguien desde la tienda); el publicado es la v13.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
 
 ### 24-10-2026 00:30 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: si al publicar la v13 puede borrar los temas anteriores.
