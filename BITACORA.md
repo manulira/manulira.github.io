@@ -45,7 +45,10 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
   antes de que la interfaz escuchara y se perdía; ahora lo guarda `sepia-equipo-api.js`). En iPhone sigue siendo a mano (Apple no permite otra cosa).
   Nada del diseño de Jorge cambió. Pruebas de interfaz 194/194 (nueva sección M). `CLAUDE.md` e `ia/skill-marca.md` apuntan a SEPIA-COFFEE.
   (Se hizo primero sobre la v9 el 23 oct, pero no se pudo subir por el cambio de dueño del repositorio; se rehízo sobre la v11.)
-- **Dónde**: GitHub (este commit).
+- **Dónde**: GitHub `6220c6c`. Shopify: borrador **«Sepia Coffee · equipo v12 (borrador)» (`193580826988`)**, copia de la v11 corregida de Jorge
+  (`193576042860`) con los 14 archivos `sepia-equipo-v12-*`, `templates/page.equipo.liquid` y `assets/sepia-equipo-api.js` (tamaños y MD5 iguales a GitHub).
+  Vista previa revisada en computador y celular, sin errores: `https://sepiacoffee.cl/pages/equipo?preview_theme_id=193580826988`. **Sin publicar**.
+  Hoy la tienda muestra la v11 (tema publicado `193575944556`).
 - **Ejecutó**: Claude Code · https://claude.ai/code/session_013LPJvjtj6V3tw2qf51APbK
 
 ### 23-10-2026 20:50 · contacto@sepiacoffee.cl (Jorge)
