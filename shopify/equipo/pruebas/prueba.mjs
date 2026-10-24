@@ -876,6 +876,34 @@ try {
     ok(beto.errores.length === 0, 'sin errores en la consola' + (beto.errores.length ? ': ' + beto.errores.join(' · ') : ''));
     await beto.context().close();
   }
+  /* ====================================================================== */
+  if (corre('M')) {
+    console.log('\n=== M. Instalar la app: el botón también en el celular, y con un toque ===');
+    const pg = await abrir(navegador, p, ORIGEN, 390);
+    // El navegador avisa que se puede instalar apenas carga la página, antes de que la interfaz escuche: se imita
+    // justo después del adaptador (sepia-equipo-api.js) y antes de la interfaz.
+    await pg.addInitScript(() => {
+      new MutationObserver((_, obs) => {
+        const s = document.querySelector('script[src*="sepia-equipo-api"]');
+        if (!s) return;
+        obs.disconnect();
+        s.addEventListener('load', () => {
+          const e = new Event('beforeinstallprompt', { cancelable: true });
+          e.prompt = async () => { window.instalada = true; };
+          window.dispatchEvent(e);
+        });
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await pg.goto(PAGINA); await entrarSiHaySplash(pg);
+    await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
+    const boton = pg.getByRole('button', { name: 'Instalar aplicación' });
+    ok(await boton.isVisible(), 'en el celular se ve el botón «Instalar aplicación»');
+    await boton.click(); await espera(pg, 500);
+    ok(await pg.evaluate(() => window.instalada === true) && !/Agregar a pantalla de inicio/.test(await texto(pg)), 'al tocarlo instala directo (aunque el aviso del navegador llegó antes que la interfaz)');
+    await captura(pg, 'M1-instalar');
+    ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
+    await pg.context().close();
+  }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();
 }

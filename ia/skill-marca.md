@@ -250,5 +250,5 @@ En `assets/`:
 
 El sitio en producción reconstruye el wordmark y el caminante en SVG inline,
 que es la referencia más fiel disponible hoy:
-https://github.com/manulira/manulira.github.io — `index.html`, símbolos
+https://github.com/SEPIA-COFFEE/manulira.github.io — `index.html`, símbolos
 `i-caminante`, `i-caminante-solido` e `i-piernas`.

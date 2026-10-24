@@ -14,6 +14,16 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 24-10-2026 · manuel@sepiacoffee.cl
+- **Pidió** (23 oct): «ya no me instala automático la app al hacer clic en descargar, y en el celular no aparece». Y que el repositorio quede anotado en SEPIA-COFFEE.
+- **Hecho**: Sepia Equipo **v12** = la v11 de Jorge + instalar la app: el botón «Instalar aplicación» se ve también en el celular (la interfaz original
+  lo escondía en pantallas chicas) y se oculta si ya está abierta como app; en Android y computador instala con un toque (el aviso del navegador llegaba
+  antes de que la interfaz escuchara y se perdía; ahora lo guarda `sepia-equipo-api.js`). En iPhone sigue siendo a mano (Apple no permite otra cosa).
+  Nada del diseño de Jorge cambió. Pruebas de interfaz 194/194 (nueva sección M). `CLAUDE.md` e `ia/skill-marca.md` apuntan a SEPIA-COFFEE.
+  (Se hizo primero sobre la v9 el 23 oct, pero no se pudo subir por el cambio de dueño del repositorio; se rehízo sobre la v11.)
+- **Dónde**: GitHub (este commit).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_013LPJvjtj6V3tw2qf51APbK
+
 ### 23-10-2026 20:50 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: que la app se vea bien («está realmente horrible»): sacar la cuadrícula del saludo y dejar solo el rectángulo celeste, que lo que se
   selecciona sean rectángulos redondeados y no círculos, que la ficha de cada barista quede ordenada en computador y celular, todo en armonía.

@@ -17,6 +17,11 @@
 (function () {
   'use strict';
 
+  /* Instalar la app: el navegador avisa que se puede instalar apenas carga la página, antes de que la interfaz
+     escuche. Se guarda acá y la interfaz lo usa para instalar con un toque (construir.py). */
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.sepiaInstalar = e; });
+  window.addEventListener('appinstalled', function () { window.sepiaInstalar = null; });
+
   var CFG = window.SEPIA_EQUIPO || {};
   var DOMINIO_ACCESO = 'equipo.sepiacoffee.cl';          // el mismo de crear_acceso() en esquema.sql
   var realFetch = window.fetch.bind(window);

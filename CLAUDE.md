@@ -34,6 +34,9 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 - **Jorge Hurtado** armó «Sepia Equipo» (la app de turnos). Su código compilado está en `shopify/equipo/fuente/`.
 - Manuel está pasando a una cuenta de empresa (`manuel@sepiacoffee.cl`): las conversaciones y los conectores no se traspasan; **todo lo
   importante está en este repositorio** (rama `claude/cepia-coffee-website-ef9m00`; no se ha fusionado a `main`).
+- **Dónde vive** (desde el 23 oct): organización de GitHub **SEPIA-COFFEE**, repositorio `SEPIA-COFFEE/manulira.github.io` (antes en la cuenta
+  personal `manulira`; GitHub redirige la dirección vieja). La idea de Manuel: un repositorio por área (web, CRM, eventos, contabilidad), todos en
+  esa organización, con la misma base de Supabase y su propia `BITACORA.md`.
 
 ## Qué hay
 
@@ -91,14 +94,14 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 
 - **Armar Sepia Equipo**: `python3 shopify/equipo/construir.py` (usa `fuente/`, `parches/` e `iconos/`; deja `assets/sepia-equipo-<VERSION>-*`, la plantilla y
   los snippets). Cada cambio al código compilado se anota con su motivo y el armado se detiene si la fuente ya no calza. **Si cambias algo ya publicado, sube
-  `VERSION`** en `construir.py` (hoy `v11`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
+  `VERSION`** en `construir.py` (hoy `v12`) para que los navegadores no usen copias viejas. El adaptador `assets/sepia-equipo-api.js` es a mano.
 - **Pruebas** (ver `shopify/baristas/LEEME.md`, sección «Probado»): SQL con `psql` sobre un Postgres vacío (`pruebas/shim-supabase.sql`, luego `esquema.sql`, `equipo.sql`
-  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (171 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
+  y el archivo de pruebas) y la interfaz con `node shopify/equipo/pruebas/prueba.mjs` (194 comprobaciones; `SECCION=I` corre una parte; necesita Playwright y `PGHOST`/`PGPORT`/`PGUSER`
   de un Postgres de pruebas). Al cambiar la interfaz, correr todas antes de subir.
 - **Supabase**: se corre `esquema.sql` y después `equipo.sql` en el SQL Editor cuando cambian. La URL y la clave pública (publishable) del proyecto están en Supabase →
   Project Settings → API; en el repo van como marcadores (`SUPABASE_URL`, `SUPABASE_CLAVE`) y los valores reales solo se suben al tema (`snippets/sepia-equipo-conexion.liquid`).
 - **Subir a Shopify** (conector Shopify, GraphQL): escribir en el tema **publicado** está bloqueado, así que se duplica (`themeDuplicate`) y se sube al **borrador** con
-  `themeFilesUpsert` (archivos grandes con `type: URL` desde `raw.githubusercontent.com` fijado al commit; archivos chicos o con claves con `TEXT`). El procesamiento es asíncrono:
+  `themeFilesUpsert` (archivos grandes con `type: URL` desde `raw.githubusercontent.com/SEPIA-COFFEE/manulira.github.io/<commit>/…`; archivos chicos o con claves con `TEXT`). El procesamiento es asíncrono:
   repetir la consulta hasta ver el tamaño y el `checksumMd5` correctos. **Manuel publica el tema a mano** (Tienda online → Temas → Publicar). Los `.json` de `assets` van como
   `.json.liquid`. Probar siempre en la vista previa: `https://sepiacoffee.cl/pages/equipo?preview_theme_id=<id>`. Para descargar páginas de la tienda usar un navegador (Playwright): `curl` recibe 429.
 - Tampoco se pueden borrar archivos del tema por la API: los viejos (`sepia-equipo-v1/v2/v3-*`) quedan sin usar hasta que Manuel los borre.
@@ -124,7 +127,7 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
   `SUPABASE_URL`/`SUPABASE_CLAVE`; la página publicada lleva los valores reales). Cotización y contacto siguen con el formulario de Shopify (correo de contacto de la tienda, hoy `manuel@sepiacoffee.cl`).
 - Supabase: al día con este repositorio. `config.eventos_para_confirmar` = 2 (encendido al publicar v7). Administración con cuenta de barista: `jorge.hurtado` y `manuel.lira`.
   El conector de Supabase pide confirmación para `drop …` y para tocar funciones que borran en `auth`: si una migración se queda colgada 60 s, es eso (usar `create or replace trigger`).
-- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 191; niveles 29.
+- Pruebas: SQL admin-clave 49, admin-barista 28, ingreso 62, turnos 25, equipo 149, accesos 143, rls 184, automatización 143, historial 72; script de Google 33; interfaz de Sepia Equipo 194; niveles 29.
 
 ## Pendientes y decisiones abiertas
 

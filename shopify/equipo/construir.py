@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v11'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v12'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -122,6 +122,10 @@ a.required-profile-brand{text-decoration:none}
 .login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
 /* Sepia: la barra de abajo en el celular reparte el ancho entre las pestañas que haya (con «Nosotros» son 4 o 5) */
 .ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+/* Sepia: el botón «Instalar aplicación» también en el celular (la interfaz original lo escondía en pantallas chicas,
+   justo donde más se usa); ya instalada (abierta como app) no hace falta. */
+.header-actions .icon-btn[aria-label="Instalar aplicación"]{display:grid}
+@media (display-mode:standalone){.header-actions .icon-btn[aria-label="Instalar aplicación"]{display:none}}
 """
 
 
@@ -232,6 +236,13 @@ def armar_js():
             t = cambiar(t, 'pattern:`[A-Za-z0-9-]{3,40}`', 'pattern:`[A-Za-z0-9][A-Za-z0-9._\\\\-]{2,29}`', 1, nombre)
             # Sin «service worker» (no hay archivo para él en la tienda).
             t = cambiar(t, 'navigator.serviceWorker.register(`/sw.js`).catch(()=>{})', '0', 1, nombre)
+            # Instalar con un toque: el navegador avisa que la app se puede instalar apenas carga la página, antes de
+            # que la interfaz empiece a escuchar, y ese aviso se perdía (el botón solo mostraba instrucciones).
+            # sepia-equipo-api.js lo guarda en window.sepiaInstalar y la interfaz parte con él.
+            t = cambiar(t, '[k,A]=(0,D.useState)(null)', '[k,A]=(0,D.useState)(()=>window.sepiaInstalar||null)', 1, nombre)
+            t = cambiar(t, 'En Android, abre el menú del navegador y elige “Instalar aplicación”.',
+                        'En Android, abre el menú de Chrome (⋮) y elige “Instalar aplicación” o “Agregar a la pantalla principal”. '
+                        'Si ya la instalaste, ábrela desde tu pantalla de inicio.', 1, nombre)
             # ---- La entrada: una sola, con ID y clave (Manuel, 22 oct) ----
             # Todos entran igual. La administración es una cuenta de barista marcada (accesos.admin, con hacer_admin):
             # adentro cambia de vista con «Vista barista» / «Administrar», que solo ve quien es administración (la base

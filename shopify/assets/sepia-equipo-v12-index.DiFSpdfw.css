@@ -43,6 +43,10 @@ a.required-profile-brand{text-decoration:none}
 .login-nosotros:focus-visible{outline:2px solid #526ea0;outline-offset:3px}
 /* Sepia: la barra de abajo en el celular reparte el ancho entre las pestañas que haya (con «Nosotros» son 4 o 5) */
 .ops-shell.is-admin .bottom-nav,.ops-shell:not(.is-admin) .bottom-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+/* Sepia: el botón «Instalar aplicación» también en el celular (la interfaz original lo escondía en pantallas chicas,
+   justo donde más se usa); ya instalada (abierta como app) no hace falta. */
+.header-actions .icon-btn[aria-label="Instalar aplicación"]{display:grid}
+@media (display-mode:standalone){.header-actions .icon-btn[aria-label="Instalar aplicación"]{display:none}}
 
 /* ==========================================================================
    Sepia: diseño inspirado en la futura cafetería (Jorge, 23 oct; revisado a pedido de Jorge el mismo día).
