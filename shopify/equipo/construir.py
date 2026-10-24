@@ -29,7 +29,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 FUENTE = os.path.join(AQUI, 'fuente')
 REPO_SHOPIFY = os.path.dirname(AQUI)
-VERSION = 'v12'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
+VERSION = 'v13'            # súbelo si cambias los archivos ya publicados: así el navegador no usa copias viejas
 PREFIJO = 'sepia-equipo-' + VERSION + '-'
 
 JS = ['rolldown-runtime-C60lm6uB.js', 'framework-D_rUT4EX.js', 'layout-segment-context-hvT46ZPC.js',
@@ -227,7 +227,8 @@ def armar_js():
             t = cambiar(t, 'Tus datos personales y bancarios solo los ven tú y administración.',
                         'Tus datos personales y bancarios solo los ven tú y administración. Al completar tu perfil '
                         'aceptas que Sepia los use para coordinar y pagar tus turnos, y declaras que puedes emitir '
-                        'boleta de honorarios y que la cuenta bancaria es tuya.', 1, nombre)
+                        'boleta de honorarios y que la cuenta bancaria es tuya. Los avisos de tus turnos te llegarán por correo '
+                        '(son obligatorios para el equipo).', 1, nombre)
             # El formulario de eventos no pedía la comuna: sin ella, todo el equipo vería «Por confirmar» como lugar.
             t = cambiar(t, 'children:a(`address`,`Dirección`)}',
                         'children:[a(`address`,`Dirección`),a(`location`,`Comuna o zona (la ve todo el equipo)`)]}', 1, nombre)
@@ -295,12 +296,9 @@ def armar_js():
                            '(0,W.jsx)(`span`,{className:`brand-divider`}),(0,W.jsxs)(`span`,{className:`brand-caption`,children:[`SEPIA`,(0,W.jsx)(`br`,{}),`CREW`]})]})}',
                         'var SEPIA_LOGO=(window.SEPIA_EQUIPO&&window.SEPIA_EQUIPO.files||{})[`sepia-coffee-logo.png`]||`/images/sepia-coffee-logo.png`;'
                         'function lt(){return(0,W.jsx)(`div`,{className:`brand`,children:(0,W.jsx)(`img`,{className:`brand-logo`,src:SEPIA_LOGO,alt:`Sepia Coffee`})})}', 1, nombre)
-            t = cambiar(t, 'restablecerla.`})]})]})}function Te',
-                        'restablecerla.`})]}),'
-                        '(0,W.jsx)(`a`,{className:`login-nosotros`,href:SEPIA_NOSOTROS,children:`Nosotros`})]})}function Te', 1, nombre)
+            # (Jorge, 23 oct; confirmó que cambia la decisión de Manuel del 22 oct) Sin «Nosotros»: ni en la entrada ni en las barras.
             t = cambiar(t, 'function L(e){x(e),location.hash=e,y(``),o(``)}',
                         'function L(e){if(e===`nosotros`){location.href=SEPIA_NOSOTROS;return}x(e),location.hash=e,y(``),o(``)}', 1, nombre)
-            t = cambiar(t, '[`admin`,`Administrar`,se]]:[]];if(!e)', '[`admin`,`Administrar`,se]]:[],[`nosotros`,`Nosotros`,_]];if(!e)', 1, nombre)
 
             # ---- Lo que se dejó fuera (decisión de Manuel) ----
             # La historia de Sepia y «quiénes somos» (la pestaña «Sepia»).
@@ -317,6 +315,24 @@ def armar_js():
             # «inerte» (sin poder tocarse): hay que apagarla también, no solo dejar de dibujarla.
             t = cambiar(t, 'r(!0);let n=()=>{e&&(a(e=>e+1),r(!0))};', 'let n=()=>{};', 1, nombre)
             t = cambiar(t, 'n&&(0,W.jsx)(vt,{onComplete:o},i)', 'null', 1, nombre)
+            # ---- Perfil (Jorge, 23 oct): foto ajustable y obligatoria, avisos obligatorios, menú siempre a la vista ----
+            # Al elegir la foto se abre la ventana para ajustarla al círculo (sepia-equipo-api.js, recortar).
+            t = cambiar(t, 'async function Fe(e){if(![', 'async function Fe(e){e=await window.SEPIA_EQUIPO.recortar(e);if(![', 1, nombre)
+            t = cambiar(t, '`La foto de perfil es opcional. Puedes agregarla después.`',
+                        '`Después de guardar te pediremos tu foto de perfil: es obligatoria.`', 1, nombre)
+            # Los avisos de turnos por correo son obligatorios: en vez de la casilla de WhatsApp, un aviso fijo.
+            t = cambiar(t, '(0,W.jsxs)(`label`,{className:`ops-check ops-consent`,children:[(0,W.jsx)(`input`,{type:`checkbox`,checked:a.whatsapp,onChange:e=>o({...a,whatsapp:e.target.checked})}),`Acepto recibir notificaciones de turnos vía WhatsApp`]}),(0,W.jsx)(`p`,{className:`field-hint`,children:`Las notificaciones automáticas de WhatsApp todavía no están habilitadas. Revisa Avisos y Eventos.`})',
+                        '(0,W.jsx)(`p`,{className:`sepia-avisos-fijos`,children:`Avisos de tus turnos: activados. Te llegan por correo y a la campana de la app; son obligatorios para todo el equipo.`})', 1, nombre)
+            # El menú del perfil, siempre abierto (no se pliega) y sin «Historia de Sepia» ni «Ranking» repetidos.
+            t = cambiar(t, '(0,W.jsxs)(`details`,{ref:i,className:`profile-section-menu`,children:[(0,W.jsxs)(`summary`,{children:[(0,W.jsx)(`span`,{children:`Mi perfil`}),(0,W.jsx)(`strong`,{children:Ne.find(([t])=>t===e)?.[1]||`Elegir una sección`}),(0,W.jsx)(`span`,{"aria-hidden":`true`,children:`⌄`})]}),(0,W.jsxs)(`nav`,{"aria-label":`Secciones de mi perfil`,children:[r&&[[`sepia`,`Historia de Sepia`],[`ranking`,`Ranking del equipo`]].map(',
+                        '(0,W.jsxs)(`div`,{ref:i,className:`profile-section-menu sepia-menu-fijo`,children:[(0,W.jsx)(`div`,{className:`sepia-menu-titulo`,children:`Mi perfil`}),(0,W.jsxs)(`nav`,{"aria-label":`Secciones de mi perfil`,children:[!1&&[].map(', 1, nombre)
+            t = cambiar(t, '`Abre el menú y elige qué quieres consultar o editar.`', '`Elige una sección para ver o editar tus datos.`', 1, nombre)
+            # (Jorge, 23 oct) «Crear acceso de barista» ocupaba mucho: ahora es un rectángulo «Agregar barista» que se abre al tocarlo.
+            t = cambiar(t, '(0,W.jsxs)(`section`,{className:e?``:`ops-card ops-form`,children:[!e&&(0,W.jsxs)(W.Fragment,{children:[(0,W.jsx)(`h2`,{children:`Crear acceso de barista`}),(0,W.jsx)(`p`,{children:`Entrega su ID y clave temporal por privado. No necesita correo para entrar.`})]}),',
+                        '(0,W.jsxs)(e?`section`:`details`,{className:e?``:`ops-card ops-form sepia-agregar`,children:[!e&&(0,W.jsx)(`summary`,{children:(0,W.jsx)(`span`,{className:`sepia-agregar-titulo`,children:`Agregar barista`})}),!e&&(0,W.jsx)(`p`,{children:`Crea su ID y una clave temporal; entrégaselos por privado. No necesita correo para entrar.`}),', 1, nombre)
+            # (Jorge, 23 oct) El lugar del evento sin una coma suelta cuando falta la dirección («, Costanera Center»).
+            t = cambiar(t, '(0,W.jsxs)(`p`,{children:[U.address,`, `,U.location]})',
+                        '(0,W.jsx)(`p`,{children:[U.address,U.location].filter(Boolean).join(`, `)})', 1, nombre)
             # El fondo de las fotos de perfil con transparencia, en blanco de la paleta.
             t = cambiar(t, '`#f6f0e5`', '`#ffffff`', 1, nombre)
 
@@ -370,7 +386,17 @@ def plantilla():
 <html lang="es-CL">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+{%%- comment -%%} Sin zoom en el celular (Jorge, 23 oct): la página queda fija. El iPhone no respeta «user-scalable=no» para pellizcar, así que
+  también se bloquea el gesto; los campos usan letra de 16 px para que el iPhone no acerque la página al escribir (parches/diseno.css). {%%- endcomment -%%}
+<script>
+  (function () {
+    var no = function (e) { e.preventDefault(); };
+    document.addEventListener('gesturestart', no, { passive: false });
+    document.addEventListener('gesturechange', no, { passive: false });
+    document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  })();
+</script>
 <title>Sepia Coffee · Equipo</title>
 <meta name="description" content="El espacio del equipo Sepia Coffee: tus turnos, tu perfil y el ranking del equipo.">
 <meta name="robots" content="noindex, nofollow">

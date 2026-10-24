@@ -262,7 +262,9 @@
     /* ----- Datos del equipo ----- */
     if (ruta === '/api/crew' && metodo === 'GET') {
       if (!(await sesion())) return ok({ signedIn: false });
-      return ok(await rpc('eq_estado', { p_vista: u.searchParams.get('view') || null }));
+      var estado = await rpc('eq_estado', { p_vista: u.searchParams.get('view') || null });
+      if (estado && estado.photoRequired) pedirFoto();               // la foto es obligatoria (Jorge, 23 oct)
+      return ok(estado);
     }
     if (ruta === '/api/crew' && metodo === 'POST') {
       await exigirSesion();
@@ -327,6 +329,124 @@
     }
 
     return falla(404, 'Esta función no está disponible en la web de Sepia.');
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Ajustar la foto al círculo (Jorge, 23 oct)                          */
+  /* ------------------------------------------------------------------ */
+  /* Al elegir una foto se abre una ventana para moverla y acercarla dentro del círculo de la app. Devuelve la
+     foto recortada (cuadrada, JPG) o falla con «No se cambió la foto.» si la persona cancela. La interfaz la usa al
+     subir la foto (construir.py) y también la ventana de la foto obligatoria (abajo). */
+  function el(tag, attrs, hijos) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) { if (k === 'text') n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]); });
+    (hijos || []).forEach(function (h) { n.appendChild(h); });
+    return n;
+  }
+  CFG.recortar = function (archivo) {
+    if (!archivo || !/^image\//.test(archivo.type || '')) return Promise.resolve(archivo);   // la interfaz avisa el formato
+    return new Promise(function (resolver, rechazar) {
+      var url = URL.createObjectURL(archivo);
+      var img = new Image();
+      img.onerror = function () { URL.revokeObjectURL(url); rechazar(new Error('No pudimos leer la foto. Prueba con otra.')); };
+      img.onload = function () {
+        var S = Math.max(200, Math.min(300, window.innerWidth - 72));
+        var base = Math.max(S / img.naturalWidth, S / img.naturalHeight), z = 1, x = 0, y = 0;
+        var lienzo = el('canvas', { width: S * 2, height: S * 2, class: 'sepia-recorte-lienzo', 'aria-label': 'Vista previa de tu foto' });
+        lienzo.style.width = lienzo.style.height = S + 'px';
+        var zoom = el('input', { type: 'range', min: '1', max: '4', step: '0.01', value: '1', 'aria-label': 'Acercar o alejar' });
+        var cancelar = el('button', { type: 'button', class: 'secondary-btn', text: 'Cancelar' });
+        var usar = el('button', { type: 'button', class: 'primary-btn', text: 'Usar esta foto' });
+        var marco = el('div', { class: 'sepia-recorte-marco' }, [lienzo, el('div', { class: 'sepia-recorte-circulo', 'aria-hidden': 'true' })]);
+        marco.style.width = marco.style.height = S + 'px';
+        var caja = el('div', { class: 'sepia-recorte', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Ajusta tu foto' }, [
+          el('div', { class: 'sepia-recorte-caja' }, [
+            el('h2', { text: 'Ajusta tu foto' }),
+            el('p', { text: 'Arrastra para moverla y usa la barra para acercarla. Lo que quede dentro del círculo es lo que verá el equipo.' }),
+            marco,
+            el('label', { class: 'sepia-recorte-zoom' }, [el('span', { text: '−' }), zoom, el('span', { text: '+' })]),
+            el('div', { class: 'sepia-recorte-botones' }, [cancelar, usar])])]);
+        function limitar() {
+          var w = img.naturalWidth * base * z, h = img.naturalHeight * base * z;
+          var mx = Math.max(0, (w - S) / 2), my = Math.max(0, (h - S) / 2);
+          x = Math.max(-mx, Math.min(mx, x)); y = Math.max(-my, Math.min(my, y));
+        }
+        function dibujar(c, lado) {
+          var f = lado / S, w = img.naturalWidth * base * z * f, h = img.naturalHeight * base * z * f;
+          var g = c.getContext('2d');
+          g.fillStyle = '#ffffff'; g.fillRect(0, 0, lado, lado);
+          g.imageSmoothingQuality = 'high';
+          g.drawImage(img, (lado - w) / 2 + x * f, (lado - h) / 2 + y * f, w, h);
+        }
+        function pintar() { limitar(); dibujar(lienzo, S * 2); }
+        var arrastre = null;
+        lienzo.addEventListener('pointerdown', function (e) { arrastre = { px: e.clientX, py: e.clientY, x: x, y: y }; lienzo.setPointerCapture(e.pointerId); e.preventDefault(); });
+        lienzo.addEventListener('pointermove', function (e) { if (!arrastre) return; x = arrastre.x + e.clientX - arrastre.px; y = arrastre.y + e.clientY - arrastre.py; pintar(); });
+        lienzo.addEventListener('pointerup', function () { arrastre = null; });
+        lienzo.addEventListener('pointercancel', function () { arrastre = null; });
+        zoom.addEventListener('input', function () { z = parseFloat(zoom.value) || 1; pintar(); });
+        function cerrar() { caja.remove(); URL.revokeObjectURL(url); document.removeEventListener('keydown', tecla); }
+        function tecla(e) { if (e.key === 'Escape') { cerrar(); rechazar(new Error('No se cambió la foto.')); } }
+        document.addEventListener('keydown', tecla);
+        cancelar.addEventListener('click', function () { cerrar(); rechazar(new Error('No se cambió la foto.')); });
+        usar.addEventListener('click', function () {
+          var salida = document.createElement('canvas'); salida.width = salida.height = 640;
+          dibujar(salida, 640);
+          salida.toBlob(function (b) {
+            cerrar();
+            if (!b) { rechazar(new Error('No pudimos preparar la foto.')); return; }
+            resolver(new File([b], 'foto-perfil.jpg', { type: 'image/jpeg' }));
+          }, 'image/jpeg', 0.9);
+        });
+        document.body.appendChild(caja);
+        pintar();
+        usar.focus();
+      };
+      img.src = url;
+    });
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* Foto obligatoria (Jorge, 23 oct)                                   */
+  /* ------------------------------------------------------------------ */
+  /* Si la base dice que falta la foto (eq_estado → photoRequired), se pide antes de seguir. Sin foto la base tampoco
+     deja postular. */
+  var pidiendoFoto = false;
+  function pedirFoto() {
+    if (pidiendoFoto || document.querySelector('.sepia-foto-obligatoria')) return;
+    pidiendoFoto = true;
+    var entrada = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', class: 'sepia-foto-archivo' });
+    var elegir = el('button', { type: 'button', class: 'primary-btn', text: 'Elegir mi foto' });
+    var aviso = el('p', { class: 'sepia-foto-aviso', role: 'status' });
+    var salir = el('button', { type: 'button', class: 'text-btn', text: 'Cerrar sesión' });
+    var capa = el('div', { class: 'sepia-foto-obligatoria', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Sube tu foto de perfil' }, [
+      el('div', { class: 'sepia-foto-caja' }, [
+        el('div', { class: 'sepia-foto-icono', 'aria-hidden': 'true', text: '📷' }),
+        el('h2', { text: 'Falta tu foto de perfil' }),
+        el('p', { text: 'Para entrar al equipo necesitamos una foto tuya, de frente y con buena luz. La verán el equipo y la administración junto a tu nombre en los eventos.' }),
+        entrada, elegir, aviso, salir])]);
+    elegir.addEventListener('click', function () { entrada.click(); });
+    salir.addEventListener('click', function () { (sb ? sb.auth.signOut() : Promise.resolve()).finally(function () { location.reload(); }); });
+    entrada.addEventListener('change', async function () {
+      var f = entrada.files && entrada.files[0];
+      entrada.value = '';
+      if (!f) return;
+      aviso.textContent = '';
+      try {
+        if (!/^image\/(jpeg|png|webp)$/.test(f.type || '')) throw new Error('Usa una foto JPG, PNG o WebP.');
+        var lista = await CFG.recortar(f);
+        elegir.disabled = true; aviso.textContent = 'Guardando tu foto…';
+        var r = await subirFotoPerfil(lista);
+        if (r.status >= 400) throw new Error((r.json && r.json.error) || 'No pudimos guardar la foto.');
+        aviso.textContent = '¡Listo! Entrando…';
+        setTimeout(function () { location.reload(); }, 600);
+      } catch (e) {
+        elegir.disabled = false;
+        aviso.textContent = e && e.message ? e.message : 'No pudimos guardar la foto.';
+      }
+    });
+    document.body.appendChild(capa);
+    elegir.focus();
   }
 
   /* ------------------------------------------------------------------ */

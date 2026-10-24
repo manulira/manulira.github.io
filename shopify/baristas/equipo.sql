@@ -28,6 +28,9 @@
 -- El perfil de la app no pide comuna.
 alter table public.baristas alter column comuna drop not null;
 alter table public.baristas add column if not exists acepta_whatsapp boolean not null default false;
+-- Foto de perfil obligatoria (Jorge, 23 oct): sin foto no se puede postular y la consola la pide al entrar. Se enciende con
+-- config.foto_obligatoria (en Supabase, true; las pruebas antiguas lo dejan apagado).
+alter table public.config add column if not exists foto_obligatoria boolean not null default false;
 
 alter table public.eventos add column if not exists servicio text check (servicio is null or char_length(servicio) <= 120);
 alter table public.eventos add column if not exists uniforme text check (uniforme is null or char_length(uniforme) <= 200);
@@ -392,7 +395,10 @@ begin
     'memberId', case when bar.id is not null then bar.id else null end,
     'user', jsonb_build_object('name', nombre,
               'email', case when acc.id is null then correo else acc.usuario || '@sepia.invalid' end),
-    'profile', case when bar.id is not null then public.eq_perfil_json(bar) else null end);
+    'profile', case when bar.id is not null then public.eq_perfil_json(bar) else null end,
+    -- La consola pide la foto antes de seguir (Jorge, 23 oct).
+    'photoRequired', bar.id is not null and bar.foto_path is null
+                     and coalesce((select c.foto_obligatoria from public.config c where c.id = 1), false));
   if not permitido or cambiar then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;
   if perfil_requerido then return base || jsonb_build_object('members', '[]'::jsonb, 'events', '[]'::jsonb, 'applications', '[]'::jsonb); end if;
 
@@ -584,14 +590,16 @@ begin
   -- Al guardar el perfil, la persona acepta (aviso en el formulario) usar sus datos para coordinar y pagar los
   -- turnos, declara que puede emitir boleta de honorarios y que la cuenta es suya.
   insert into public.baristas (id, nombre, rut, correo, telefono, banco, tipo_cuenta, numero_cuenta, talla_camisa,
-                               tiene_camioneta, acepta_whatsapp, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
+                               tiene_camioneta, acepta_whatsapp, acepta_avisos, cuenta_propia, acepta_boleta, acepta_boleta_texto, acepta_privacidad)
   values (uid, nombre, rut, correo, case when left(tel, 2) = '56' then '+' || tel else '+56' || tel end, banco, tipo, numero, talla,
-          vehiculo = 'pickup', wsp, true, true, cfg.texto_boleta, true)
+          vehiculo = 'pickup', wsp, true, true, true, cfg.texto_boleta, true)
   on conflict (id) do update set
     nombre = excluded.nombre, rut = excluded.rut, correo = excluded.correo, telefono = excluded.telefono,
     banco = excluded.banco, tipo_cuenta = excluded.tipo_cuenta, numero_cuenta = excluded.numero_cuenta,
     talla_camisa = excluded.talla_camisa, tiene_camioneta = excluded.tiene_camioneta,
-    acepta_whatsapp = excluded.acepta_whatsapp, actualizado_en = now();
+    acepta_whatsapp = excluded.acepta_whatsapp,
+    -- Los avisos de turnos por correo son obligatorios para el equipo (Jorge, 23 oct): quedan siempre activados.
+    acepta_avisos = true, actualizado_en = now();
   return jsonb_build_object('ok', true);
 exception when unique_violation then
   raise exception 'Ese RUT ya está registrado con otra cuenta. Escribe a administración.';
@@ -791,6 +799,11 @@ begin
     ev_id := (d ->> 'eventId')::uuid;
     if public.eq_grupo(ev_id) is not null then
       ev_id := coalesce(public.eq_turno_de(ev_id, coalesce(d ->> 'vehicleMode', '')), ev_id);
+    end if;
+    -- Sin foto de perfil no se postula (Jorge, 23 oct), si config.foto_obligatoria está encendido.
+    if coalesce((select c.foto_obligatoria from public.config c where c.id = 1), false)
+       and not exists (select 1 from public.baristas b where b.id = uid and b.foto_path is not null) then
+      raise exception 'Sube tu foto de perfil para postular (Mi Perfil).';
     end if;
     perform public.eq_ocupar_cupo(ev_id, uid, coalesce(d ->> 'vehicleMode', ''), false);
     -- «pending»: la postulación espera que la administración la confirme (la pantalla avisa eso).

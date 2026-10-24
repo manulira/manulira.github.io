@@ -282,7 +282,7 @@ try {
     const zona2 = (await texto(pg));
     ok(/Beto Prueba 1/.test(zona2.slice(zona2.indexOf('Todo el equipo'))) && /Ana Prueba 0/.test(zona2.slice(zona2.indexOf('Todo el equipo'))), 'el filtro del mes cuenta solo los turnos de ese mes');
 
-    const seccion = async nombre => { await pg.locator('.profile-section-menu summary').click(); await espera(pg, 200); await pg.locator('.profile-section-menu nav').getByRole('button', { name: nombre }).click(); await espera(pg, 900); };
+    const seccion = async nombre => { await pg.locator('.profile-section-menu nav').getByRole('button', { name: nombre }).click(); await espera(pg, 900); };
     await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 1000);
     await seccion('Datos personales');
     await pg.getByRole('textbox', { name: 'Correo de contacto' }).fill('ana.nueva@ejemplo.test');
@@ -292,14 +292,19 @@ try {
     ok(/Tu perfil se guardó de forma privada/.test(t), 'se pueden corregir los datos personales');
     ok(db(`select correo || '|' || talla_camisa from public.baristas where nombre = 'Ana Prueba'`) === 'ana.nueva@ejemplo.test|L', 'y quedan guardados en la base');
     await seccion('Camioneta y notificaciones');
-    await pg.getByRole('checkbox', { name: /WhatsApp/ }).check();
+    ok(await pg.getByRole('checkbox', { name: /WhatsApp/ }).count() === 0 && /Avisos de tus turnos: activados/.test(await texto(pg)), 'los avisos no se pueden apagar: se ve que están activados (Jorge, 23 oct)');
     await pulsa(pg, 'Guardar cambios'); await espera(pg, 1500);
-    ok(db(`select acepta_whatsapp::text from public.baristas where nombre = 'Ana Prueba'`) === 'true', 'acepta o no los avisos por WhatsApp');
+    ok(db(`select acepta_avisos::text from public.baristas where nombre = 'Ana Prueba'`) === 'true', 'y en la base quedan activados los avisos por correo');
 
     /* Foto de perfil */
     const png = path.join(os.tmpdir(), 'sepia-eq-perfil.png');
     fs.writeFileSync(png, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
-    await pg.locator('.profile-photo-control input[type=file]').setInputFiles(png); await espera(pg, 2500);
+    await pg.locator('.profile-photo-control input[type=file]').setInputFiles(png); await espera(pg, 800);
+    ok(await pg.locator('.sepia-recorte .sepia-recorte-circulo').count() === 1 && await pg.locator('.sepia-recorte input[type=range]').count() === 1,
+       'al elegir la foto se abre la ventana para ajustarla al círculo (mover y acercar)');
+    await pg.locator('.sepia-recorte input[type=range]').fill('2'); await espera(pg, 200);
+    await captura(pg, 'D2-ajustar-foto');
+    await pg.getByRole('button', { name: 'Usar esta foto' }).click(); await espera(pg, 2500);
     t = await texto(pg);
     ok(/Foto de perfil guardada/.test(t), 'sube su foto de perfil');
     const ruta = db(`select foto_path from public.baristas where nombre = 'Ana Prueba'`);
@@ -422,6 +427,10 @@ try {
 
     /* Cuentas del equipo */
     await tile(/^Equipo/).click(); await espera(pg, 900);
+    const agregar = pg.locator('details.sepia-agregar');
+    ok(await agregar.count() === 1 && !(await agregar.evaluate(d => d.open)) && await pg.getByRole('textbox', { name: 'Nombre completo' }).count() === 0,
+       '«Agregar barista» parte cerrado: el formulario no ocupa espacio (Jorge, 23 oct)');
+    await agregar.locator('summary').click(); await espera(pg, 400);
     await pg.getByRole('textbox', { name: 'Nombre completo' }).fill('Dora Nueva');
     await pg.getByRole('textbox', { name: 'ID de acceso' }).fill('dora.nueva');
     await pulsa(pg, 'Crear cuenta'); await espera(pg, 1800);
@@ -548,7 +557,7 @@ try {
     await pg.getByRole('button', { name: 'Ranking' }).first().click(); await espera(pg, 1200);
     await revisa(pg, 'el ranking');
     await pg.getByRole('button', { name: 'Mi Perfil' }).first().click(); await espera(pg, 1000);
-    await pg.locator('.profile-section-menu summary').click(); await espera(pg, 400);
+    ok(await pg.locator('.profile-section-menu nav button').first().isVisible(), 'el menú del perfil está siempre abierto');
     await revisa(pg, 'el perfil');
     await pg.locator('.crew-notices summary').click(); await espera(pg, 500);
     await revisa(pg, 'la campana de avisos');
@@ -644,7 +653,7 @@ try {
 
   /* ====================================================================== */
   if (corre('I')) {
-    console.log('\n=== I. Consola aparte: sin el menú del sitio; el logo vuelve al inicio; «Nosotros»; íconos ===');
+    console.log('\n=== I. Consola aparte: sin el menú del sitio; el logo vuelve al inicio; sin «Nosotros»; íconos ===');
     const pg = await nueva(1366);
     ok(await pg.locator('.se-sitio').count() === 0 && !/Productos|Portal Baristas|Contacto/.test(await texto(pg)), 'la entrada no trae el menú de sepiacoffee.cl: es una aplicación aparte');
     const logoEntrada = pg.locator('a.required-profile-brand[href="/"]');
@@ -653,24 +662,19 @@ try {
     await Promise.all([pg.waitForURL(ORIGEN + '/', { timeout: 8000 }).catch(() => {}), logoEntrada.click()]);
     ok(new URL(pg.url()).pathname === '/' && /Inicio de Sepia Coffee/.test(await texto(pg)), 'al apretar el logo de la entrada, vuelve al inicio de la página web');
     await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 300);
-    const nosEntrada = pg.locator('a.login-nosotros');
-    ok(await nosEntrada.count() === 1 && await nosEntrada.getAttribute('href') === '/pages/nosotros', 'la entrada tiene «Nosotros» y apunta a la página Nosotros del sitio');
-    await Promise.all([pg.waitForURL(ORIGEN + '/pages/nosotros', { timeout: 8000 }).catch(() => {}), nosEntrada.click()]);
-    ok(/Nosotros de Sepia Coffee/.test(await texto(pg)), '«Nosotros» de la entrada lleva a esa página');
-    await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 300);
+    ok(await pg.locator('a.login-nosotros').count() === 0 && !/Nosotros/.test(await texto(pg)), 'la entrada ya no tiene «Nosotros» (Jorge, 23 oct)');
 
     await iniciarSesion(pg, 'beto.prueba', 'mi frase segura 1');
     ok(/Hola, Beto/.test(await texto(pg)) && await pg.locator('.se-sitio').count() === 0 && !/Productos|Portal Baristas|Contacto/.test(await texto(pg)), 'adentro tampoco hay menú del sitio');
     const nombresNav = await pg.locator('.desktop-nav button').allInnerTexts();
-    ok(nombresNav.join('|') === 'Eventos|Ranking|Mi Perfil|Nosotros', 'la navegación del equipo: ' + nombresNav.join(' · '));
+    ok(nombresNav.join('|') === 'Eventos|Ranking|Mi Perfil', 'la navegación del equipo, sin «Nosotros»: ' + nombresNav.join(' · '));
     await captura(pg, 'I2-adentro');
     const logo = pg.locator('.app-header a[href="/"]').first();
     ok(await logo.count() === 1 && /volver al inicio del sitio/.test(await logo.getAttribute('aria-label')), 'el logo de la barra apunta al inicio del sitio');
     await Promise.all([pg.waitForURL(ORIGEN + '/', { timeout: 8000 }).catch(() => {}), logo.click()]);
     ok(new URL(pg.url()).pathname === '/', 'al apretar el logo, vuelve al inicio de la página web');
     await pg.goBack(); await entrarSiHaySplash(pg); await espera(pg, 600);
-    await pg.locator('.desktop-nav').getByRole('button', { name: 'Nosotros' }).click(); await espera(pg, 800);
-    ok(new URL(pg.url()).pathname === '/pages/nosotros', '«Nosotros» de la barra lleva a la página Nosotros del sitio');
+    ok(await pg.locator('.desktop-nav').getByRole('button', { name: 'Nosotros' }).count() === 0, 'la barra no tiene «Nosotros»');
     ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
     await pg.context().close();
 
@@ -678,11 +682,10 @@ try {
     const mov = await nueva(390);
     await iniciarSesion(mov, 'beto.prueba', 'mi frase segura 1');
     let cajas = await mov.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
-    ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Nosotros', 'en el celular el equipo ve: ' + cajas.map(c => c.t).join(' · '));
+    ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil', 'en el celular el equipo ve: ' + cajas.map(c => c.t).join(' · '));
     ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 70), 'y las pestañas caben, sin cortarse (' + cajas.map(c => c.w).join(', ') + ' px)');
     await captura(mov, 'I3-celular-equipo');
-    await mov.locator('.bottom-nav').getByRole('button', { name: 'Nosotros' }).click(); await espera(mov, 800);
-    ok(new URL(mov.url()).pathname === '/pages/nosotros', '«Nosotros» en el celular también lleva a la página Nosotros');
+    ok(await mov.locator('.bottom-nav').getByRole('button', { name: 'Nosotros' }).count() === 0, 'ni la barra de abajo del celular');
     await mov.context().close();
 
     const adm = await nueva(390);
@@ -690,7 +693,7 @@ try {
     if (!/Gestiona experiencias|Hola/.test(await texto(adm))) { await adm.context().close(); ok(false, 'no se pudo entrar como administración para probar el celular'); }
     else {
       cajas = await adm.locator('.bottom-nav > button').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { t: e.innerText.trim(), x: Math.round(r.left), w: Math.round(r.width) }; }));
-      ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Administrar|Nosotros', 'en el celular la administración ve: ' + cajas.map(c => c.t).join(' · '));
+      ok(cajas.map(c => c.t).join('|') === 'Eventos|Ranking|Mi Perfil|Administrar', 'en el celular la administración ve: ' + cajas.map(c => c.t).join(' · '));
       ok(cajas.every(c => c.x >= 0 && c.x + c.w <= 390 && c.w >= 60), 'y también caben (' + cajas.map(c => c.w).join(', ') + ' px)');
       await captura(adm, 'I4-celular-admin');
       await adm.context().close();
@@ -903,6 +906,35 @@ try {
     await captura(pg, 'M1-instalar');
     ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
     await pg.context().close();
+  }
+
+  /* ====================================================================== */
+  if (corre('N')) {
+    console.log('\n=== N. Foto de perfil obligatoria (Jorge, 23 oct) ===');
+    db(`update public.config set foto_obligatoria = true where id = 1;
+        update public.baristas set foto_path = null where id = (select id from public.accesos where usuario = 'carla.prueba')`);
+    for (const ancho of [390, 1100]) {
+      const pg = await nueva(ancho);
+      await iniciarSesion(pg, 'carla.prueba', 'mi frase segura 1');
+      await espera(pg, 800);
+      const capa = pg.locator('.sepia-foto-obligatoria');
+      if (await capa.count() === 0 && /Iniciar sesión/.test(await texto(pg))) { ok(false, 'Carla no pudo entrar para probar la foto obligatoria'); await pg.context().close(); continue; }
+      ok(await capa.count() === 1 && /Falta tu foto de perfil/.test(await capa.innerText()), 'sin foto, la app la pide antes de seguir' + (ancho < 500 ? ' (celular)' : ' (computador)'));
+      await captura(pg, 'N1-foto-obligatoria-' + ancho);
+      if (ancho > 500) {
+        const png = path.join(os.tmpdir(), 'sepia-eq-perfil2.png');
+        fs.writeFileSync(png, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
+        await capa.locator('input[type=file]').setInputFiles(png); await espera(pg, 600);
+        ok(await pg.locator('.sepia-recorte').count() === 1, 'al elegirla, se ajusta al círculo');
+        await pg.getByRole('button', { name: 'Usar esta foto' }).click(); await espera(pg, 3500);
+        await entrarSiHaySplash(pg).catch(() => {});
+        ok(db(`select (foto_path is not null)::text from public.baristas b join public.accesos a on a.id = b.id where a.usuario = 'carla.prueba'`) === 'true', 'la foto queda guardada');
+        ok(await pg.locator('.sepia-foto-obligatoria').count() === 0, 'y ya puede usar la app');
+      }
+      ok(pg.errores.length === 0, 'sin errores en la consola' + (pg.errores.length ? ': ' + pg.errores.join(' · ') : ''));
+      await pg.context().close();
+    }
+    db(`update public.config set foto_obligatoria = false where id = 1`);
   }
 } finally {
   await navegador.close(); servidor.close(); p.borrar();

@@ -137,7 +137,8 @@ html,body{max-width:100%;overflow-x:hidden}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel{grid-area:amarilla;margin:0;display:grid;gap:8px}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel .secondary-btn{width:100%;margin:0}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-amarilla-panel .field-hint{margin:0;font-size:13px;line-height:1.4}
-.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles{grid-area:niveles;max-width:none;margin:6px 0 0;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}
+/* Los dos medidores, uno abajo del otro (Jorge, 23 oct) */
+.ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles{grid-area:niveles;max-width:640px;margin:6px 0 0;grid-template-columns:minmax(0,1fr);row-gap:14px}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles>.sepia-niveles-nota{grid-column:1/-1}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles)>details{grid-area:privado;margin:0}
 .ops-admin-list>article.ops-card:has(>.sepia-niveles) .admin-person-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -152,3 +153,105 @@ html,body{max-width:100%;overflow-x:hidden}
   .ops-admin-list>article.ops-card:has(>.sepia-niveles)>.sepia-niveles{grid-template-columns:minmax(0,1fr)}
   .ops-admin-list>article.ops-card:has(>.sepia-niveles)>div:first-child section .secondary-btn{width:100%}
 }
+
+/* ---------- Celular, cuadrado (Jorge, 23 oct) ---------- */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (max-width:720px){
+  /* Campos con letra de 16 px: así el iPhone no acerca la página al escribir */
+  input,select,textarea{font-size:16px !important}
+  /* Barra de arriba: logo más chico y controles parejos */
+  .app-header .header-inner{gap:8px;padding-left:16px;padding-right:16px}
+  .app-header .brand-logo{height:24px}
+  .header-actions{gap:6px}
+  .header-actions .icon-btn,.header-actions .crew-notices>summary{width:38px;height:38px;min-width:38px}
+  .header-actions .role-view-toggle{height:38px;padding:0 10px;font-size:12px;white-space:nowrap}
+  .user-menu .member-avatar-small{width:38px;height:38px}
+  /* Márgenes de la página iguales a los dos lados y espacio para la barra de abajo */
+  .app-main{padding-left:16px;padding-right:16px;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  .page-intro{padding:20px}
+  .page-intro .secondary-btn{height:42px;padding:0 16px}
+  /* Botones de cada evento: «Postular» a lo ancho y debajo los otros dos, mitad y mitad */
+  .ops-event-grid .ops-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ops-event-grid .ops-actions>*{width:100%;margin:0;justify-content:center}
+  .ops-event-grid .ops-actions>.primary-btn,.ops-event-grid .ops-actions>.apply-btn{grid-column:1/-1;order:-1}
+  .ops-event-grid .ops-actions>:only-child{grid-column:1/-1}
+  /* Mi próximo turno: los dos botones mitad y mitad */
+  .next-shift .ops-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .next-shift .ops-actions>*{width:100%;margin:0;justify-content:center}
+  /* Pestañas en una sola fila que se desliza */
+  .shift-tabs,.view-tabs,.ranking-period,.ops-card .ranking-period{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .shift-tabs::-webkit-scrollbar,.view-tabs::-webkit-scrollbar,.ranking-period::-webkit-scrollbar{display:none}
+  .shift-tabs button,.view-tabs button,.ranking-period button{flex:0 0 auto;white-space:nowrap}
+  /* Filtros con / sin máquina: tres iguales */
+  .filter-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .filter-chips>button{width:100%;padding-left:6px;padding-right:6px;text-align:center}
+  /* Panel de administración: accesos parejos */
+  .admin-menu-card{min-height:96px}
+  /* Diálogos: casi a pantalla completa, con aire */
+  .event-dialog,.ops-dialog{width:calc(100vw - 24px);max-width:none;max-height:calc(100dvh - 24px)}
+}
+
+/* ---------- «Agregar barista»: un rectángulo que se abre al tocarlo (Jorge, 23 oct) ---------- */
+details.sepia-agregar{display:block;padding:0;overflow:hidden}
+details.sepia-agregar>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:18px 22px;font-family:var(--sepia-titulo);font-weight:600;font-size:16px;color:#020526}
+details.sepia-agregar>summary::-webkit-details-marker{display:none}
+details.sepia-agregar>summary::before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--r-control);background:#b9c5d3;color:#020526;font-size:20px;font-weight:600;line-height:1}
+details.sepia-agregar>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid #526ea0;border-bottom:2px solid #526ea0;transform:rotate(45deg);transition:transform .2s}
+details.sepia-agregar[open]>summary::after{transform:rotate(-135deg)}
+details.sepia-agregar[open]>summary::before{content:"−"}
+details.sepia-agregar>summary:hover{background:#f2f2f2}
+details.sepia-agregar>summary:focus-visible{outline:2px solid #526ea0;outline-offset:-2px}
+details.sepia-agregar>:not(summary){margin-left:22px;margin-right:22px}
+details.sepia-agregar>p{margin-top:0;color:#526ea0}
+details.sepia-agregar>form{padding-bottom:22px}
+details.sepia-agregar[open]{padding-bottom:4px}
+
+/* ---------- Mi Perfil (Jorge, 23 oct): menú siempre abierto a la izquierda, foto a la derecha ---------- */
+.profile-page{display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:18px;row-gap:16px;align-items:stretch}
+.profile-page>.sepia-menu-fijo{grid-column:1;grid-row:1;margin:0}
+.profile-page>.profile-identity-card{grid-column:2;grid-row:1;margin:0;padding:22px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.profile-page>*:not(.sepia-menu-fijo):not(.profile-identity-card){grid-column:1/-1}
+.profile-identity-card .profile-photo-circle{width:120px;height:120px}
+.profile-identity-card h1{font-family:var(--sepia-titulo);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:12px 0 2px}
+.profile-identity-card>p{margin:0;font-size:13px;color:#526ea0}
+.profile-identity-card .profile-photo-actions .secondary-btn{height:40px;padding:0 14px;font-size:13px}
+.profile-identity-card .field-hint{font-size:11px;line-height:1.4;margin:6px 0 0}
+.sepia-menu-fijo{padding:18px 18px 10px}
+.sepia-menu-titulo{font-family:var(--sepia-titulo);font-weight:700;font-size:20px;color:#020526;margin:0 4px 8px}
+.sepia-menu-fijo nav{display:grid;gap:4px}
+.sepia-menu-fijo nav button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:46px;padding:0 14px;border:0;border-radius:var(--r-control);background:transparent;color:#020526;font:inherit;font-size:15px;text-align:left;cursor:pointer}
+.sepia-menu-fijo nav button:hover{background:#f2f2f2}
+.sepia-menu-fijo nav button.selected,.sepia-menu-fijo nav button[aria-current=page]{background:#b9c5d3;font-weight:600}
+.sepia-menu-fijo nav button span{color:#526ea0}
+.profile-menu-prompt{text-align:center;color:#526ea0;margin:4px 0}
+.sepia-avisos-fijos{margin:14px 0 0;padding:12px 14px;border-radius:var(--r-control);background:#f2f2f2;color:#020526;font-size:14px;line-height:1.45}
+@media (max-width:720px){
+  .profile-page{grid-template-columns:minmax(0,1fr);row-gap:12px}
+  .profile-page>.profile-identity-card{grid-column:1;grid-row:1;display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-areas:"foto nombre" "foto rol" "foto acciones";column-gap:14px;row-gap:2px;align-items:center;justify-items:start;text-align:left;padding:16px}
+  .profile-page>.profile-identity-card .profile-photo-control{display:contents}
+  .profile-page>.profile-identity-card .profile-photo-circle{grid-area:foto;width:84px;height:84px}
+  .profile-page>.profile-identity-card h1{grid-area:nombre;margin:0;font-size:19px}
+  .profile-page>.profile-identity-card>p{grid-area:rol}
+  .profile-page>.profile-identity-card .profile-photo-actions{grid-area:acciones;margin-top:6px}
+  .profile-page>.profile-identity-card .field-hint{display:none}
+  .profile-page>.sepia-menu-fijo{grid-column:1;grid-row:2}
+  .sepia-menu-fijo nav button{min-height:50px;font-size:16px}
+}
+
+/* ---------- Ventana para ajustar la foto al círculo ---------- */
+.sepia-recorte,.sepia-foto-obligatoria{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;background:#020526b3}
+.sepia-recorte-caja,.sepia-foto-caja{width:100%;max-width:380px;max-height:calc(100dvh - 32px);overflow:auto;background:#ffffff;border-radius:24px;padding:22px;box-shadow:0 24px 60px #02052633;text-align:center;color:#020526;font-family:var(--font-sans)}
+.sepia-recorte-caja h2,.sepia-foto-caja h2{font-family:var(--sepia-titulo);font-weight:700;font-size:22px;margin:0 0 6px;color:#020526}
+.sepia-recorte-caja p,.sepia-foto-caja p{margin:0 0 14px;font-size:14px;line-height:1.45;color:#526ea0}
+.sepia-recorte-marco{position:relative;margin:0 auto 14px;border-radius:16px;overflow:hidden;touch-action:none;background:#f2f2f2}
+.sepia-recorte-lienzo{display:block;cursor:grab;touch-action:none}
+.sepia-recorte-lienzo:active{cursor:grabbing}
+.sepia-recorte-circulo{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px #ffffffb3;border:2px solid #ffffff;pointer-events:none}
+.sepia-recorte-zoom{display:flex;align-items:center;gap:10px;margin:0 6px 16px;color:#526ea0;font-weight:700}
+.sepia-recorte-zoom input{flex:1;accent-color:#020526}
+.sepia-recorte-botones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sepia-recorte-botones>button,.sepia-foto-caja>.primary-btn{width:100%;height:46px;margin:0}
+.sepia-foto-icono{width:64px;height:64px;margin:0 auto 12px;border-radius:16px;background:#b9c5d3;display:flex;align-items:center;justify-content:center;font-size:30px}
+.sepia-foto-archivo{display:none}
+.sepia-foto-aviso{min-height:20px;margin:10px 0 4px !important;color:#020526 !important;font-weight:600}
+.sepia-foto-caja .text-btn{background:none;border:0;color:#526ea0;font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;margin-top:4px}
