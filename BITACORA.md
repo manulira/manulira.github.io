@@ -10,7 +10,7 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 24-10 01:15 | contacto@sepiacoffee.cl (Jorge) | Ranking con podio (sin el cuadro «Más turnos…») y nueva sección «Academia» (tragos, botellas, videos) | GitHub, Supabase, Shopify (borrador) | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
 
 ## Registro
 
