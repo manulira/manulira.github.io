@@ -143,9 +143,9 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 
 - **v14** (Jorge): Academia, podio, ID en minúsculas, ícono oficial y animación de carga. En GitHub (`df6b348`), probada (243 + SQL academia 29);
   base en Supabase (migración `academia`, con el contenido inicial). En Shopify: borrador **«Sepia Coffee · equipo v14 (borrador, Jorge)» (`193583448428`)**,
-  copia de la v13 publicada (`193580990828`); **falta publicarlo**. Los temas viejos (v9 a v12) ya no están en la tienda.
+  copia de la v13; **publicado** (24 oct). La v13 (`193580990828`) quedó sin uso. Los temas viejos (v9 a v12) ya no están en la tienda.
 
-- **v13** (Jorge, sobre la v12 de Manuel): en GitHub (`0fac7bb`); es el tema **publicado** hoy (`193580990828`).
+- **v13** (Jorge, sobre la v12 de Manuel): en GitHub (`0fac7bb`); tema `193580990828`, ya sin uso.
 
 - Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.

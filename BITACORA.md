@@ -13,6 +13,14 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 24-10-2026 08:15 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: un mensaje de WhatsApp para los baristas y un instructivo de cómo usar la app.
+- **Hecho**: se actualizó a la v14 la guía para baristas (Claude Docs, https://claude.ai/artifact/MBGPu1vcW3pBrKgJcK58qN): foto obligatoria y
+  ajustable, avisos obligatorios, ícono nuevo al instalar, podio del ranking, Academia en lugar de «Nosotros» y el vaso de carga. Mensajes de
+  WhatsApp redactados en la conversación (no se envió nada). Se vio en Shopify que **la v14 ya está publicada** (`193583448428`).
+- **Dónde**: Claude Docs (la guía). Shopify (solo lectura).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 24-10-2026 02:15 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: arreglar el ranking (podio «choro», sin el cuadro «Más turnos. Más historias que contar.»); una opción nueva del menú para aprender
   a preparar los tragos (videos de YouTube, medidas, fotos de cada trago real y un post por botella con su origen y componentes; eligió el nombre
@@ -28,7 +36,7 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
   `eq_academia_borrar`, almacenamiento privado `academia` con 4 políticas, y el contenido inicial). Shopify: borrador
   **«Sepia Coffee · equipo v14 (borrador, Jorge)» (`193583448428`)**, copia de la v13 publicada (`193580990828`), con los 17 archivos `sepia-equipo-v14-*`,
   `assets/sepia-equipo-api.js` y `templates/page.equipo.liquid` (tamaños y MD5 iguales a GitHub). Vista previa revisada sin errores: carga con el vaso
-  sobre el celeste, ID en minúsculas, manifiesto con el ícono nuevo. **Sin publicar**.
+  sobre el celeste, ID en minúsculas, manifiesto con el ícono nuevo. **Sin publicar** (Jorge la publicó después, el 24 oct en la mañana).
 - **Ojo**: en Shopify ya no están los temas v9 a v12 (los borró alguien desde la tienda); el publicado es la v13.
 - **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
 
