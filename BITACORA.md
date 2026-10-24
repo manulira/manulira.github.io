@@ -10,7 +10,7 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 23-10 23:40 | contacto@sepiacoffee.cl (Jorge) | Cuadrar Sepia Equipo en el celular y medidores uno abajo del otro | GitHub, Shopify (borrador) | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
 
 ## Registro
 
