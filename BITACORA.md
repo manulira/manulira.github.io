@@ -13,6 +13,14 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 24-10-2026 08:30 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: que el mensaje al grupo no lleve el enlace de la app: los baristas entran solo con el enlace que él les manda por interno cuando le
+  escriben con su nombre completo y que quieren trabajar.
+- **Hecho**: mensaje al grupo sin enlace (solo pide escribirle por interno) y mensaje por interno con enlace, ID, clave y la guía. El PDF ya no
+  trae el enlace de la app (dice que lo manda Jorge). Nada enviado.
+- **Dónde**: solo la conversación.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 24-10-2026 08:25 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: la guía en un PDF aparte (no para abrir desde Claude) y rehacer el WhatsApp: que los interesados le escriban por interno con su
   nombre completo y él les manda el ID y la clave.
