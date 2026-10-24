@@ -13,6 +13,14 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 24-10-2026 08:40 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: sacar de la guía en PDF la parte «Boletas y pagos» con la dirección del portal de baristas: no quiere que entren por páginas de la
+  tienda, solo por el enlace que él manda a cada barista por interno.
+- **Hecho**: el PDF ya no trae «Boletas y pagos» ni ninguna dirección de sepiacoffee.cl (la última sección quedó «Avisos y ayuda»). Se revisó
+  en Shopify que ningún menú de la tienda lleva a `/pages/equipo` (solo lectura).
+- **Dónde**: la conversación; Shopify (solo lectura de menús).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 24-10-2026 08:30 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: que el mensaje al grupo no lleve el enlace de la app: los baristas entran solo con el enlace que él les manda por interno cuando le
   escriben con su nombre completo y que quieren trabajar.
