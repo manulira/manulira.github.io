@@ -13,6 +13,14 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 ## Registro
 
+### 24-10-2026 08:25 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió**: la guía en un PDF aparte (no para abrir desde Claude) y rehacer el WhatsApp: que los interesados le escriban por interno con su
+  nombre completo y él les manda el ID y la clave.
+- **Hecho**: PDF «Guia-Sepia-Equipo.pdf» de 5 páginas con pantallas de la app (datos inventados; armado con la app de pruebas) entregado en la
+  conversación; no se sube al repositorio. Mensaje para el grupo y respuesta con el acceso redactados en la conversación (no se envió nada).
+- **Dónde**: solo la conversación (sin cambios en GitHub, Supabase ni Shopify).
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
+
 ### 24-10-2026 08:15 · contacto@sepiacoffee.cl (Jorge)
 - **Pidió**: un mensaje de WhatsApp para los baristas y un instructivo de cómo usar la app.
 - **Hecho**: se actualizó a la v14 la guía para baristas (Claude Docs, https://claude.ai/artifact/MBGPu1vcW3pBrKgJcK58qN): foto obligatoria y
