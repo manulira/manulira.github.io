@@ -125,11 +125,12 @@ Varias personas trabajan con Claude Code en este proyecto (Manuel y quien use `c
 - `signInWithOtp` con `shouldCreateUser: false` (portal de baristas): el código por correo solo llega a correos que ya existen en Supabase Auth (`crear_admin`).
 - En plpgsql, un `count(*)` en el mismo `select` que una función que inserta no ve el insert (instantánea de la sentencia).
 
-## Estado (23 oct 2026, noche)
+## Estado (24 oct 2026, madrugada)
 
-- **v11** (Jorge, 23 oct): medidor de experiencia + diseño revisado. En GitHub (`893039a`), probada (191 + SQL); base en Supabase (migración
-  `nivel_experiencia`). En Shopify: borrador **«Sepia Coffee · equipo v11 corregida» (`193576042860`)**; Jorge lo publica a mano. Antes quedó
-  publicada la v10 (`193575420268`). Los temas `193575944556`, `193575420268` y `193517551980` quedan sin uso cuando se publique la v11.
+- **v13** (Jorge, sobre la v12 de Manuel): en GitHub (`0fac7bb`), probada (204 + SQL); base en Supabase (migraciones `nivel_experiencia` y
+  `foto_y_avisos_obligatorios`). En Shopify: borrador **«Sepia Coffee · equipo v13 (borrador, Jorge)» (`193580990828`)**, copia del borrador
+  v12 de Manuel (`193580826988`); **falta publicarlo**. Publicado hoy: «equipo v11 (borrador, Jorge)» (`193575944556`), que tiene la **v10**.
+  Temas sin uso: `193517551980` (v9), `193575420268` (v10), `193576042860` (v11 corregida), y el de la v12 cuando se publique la v13.
 
 - Shopify: tema publicado «botón Portal Baristas» (`193508933996`). Borrador **«Sepia Coffee · equipo v9 (borrador)» (`193517551980`)**: v9 (turnos en una tarjeta, amarilla también sin perfil) y la barra sin el botón «Portal Baristas» ni el ícono de cuenta de clientes (`snippets/sepia-portal-boton.liquid`, que ahora solo oculta la cuenta); falta que Manuel lo publique. Página `equipo` (`714057089388`, plantilla `equipo`); el menú principal apunta
   «Portal Baristas» a `/pages/equipo`. Imágenes en Archivos: `sepia-coffee-logo.png` y `sepia-coffee-favicon.png`. Logo del tema: `settings.logo`, `logo_height` 50, `logo_height_mobile` 26; favicon: `settings.favicon`.

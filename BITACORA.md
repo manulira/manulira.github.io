@@ -10,9 +10,26 @@ Quién está cambiando algo ahora. Se anota al empezar un cambio y se borra al t
 
 | Desde | Quién pidió | Qué está cambiando | Plataformas | Sesión |
 |---|---|---|---|---|
-| 23-10 23:40 | contacto@sepiacoffee.cl (Jorge) | Cuadrar Sepia Equipo en el celular y medidores uno abajo del otro | GitHub, Shopify (borrador) | https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8 |
+| — | — | — | — | — |
 
 ## Registro
+
+### 24-10-2026 00:30 · contacto@sepiacoffee.cl (Jorge)
+- **Pidió** (23 oct, noche): cuadrar la app en el celular; medidores uno abajo del otro; que no se pueda hacer zoom; sacar «Nosotros»
+  (confirmó saber que era decisión de Manuel); «Crear acceso de barista» como un rectángulo «Agregar barista» que se abra; en Mi Perfil, la foto
+  a la derecha y el menú siempre abierto a la izquierda, cómodo en el celular; ajustar la foto al círculo; todos los datos obligatorios con
+  foto; avisos obligatorios que lleguen al celular (eligió: por correo + obligatorio, porque Shopify no permite avisos «push»).
+- **Hecho**: **v13** sobre la v12 de Manuel (se conserva su botón de instalar). Ver «Decisiones de Jorge» en `CLAUDE.md`. También se arregló que
+  el lugar del evento mostrara una coma suelta. Se encontró que al completar el perfil en Sepia Equipo **no quedaba activado `acepta_avisos`**
+  (los correos automáticos no les llegaban): ahora queda siempre activado y se activó para los 2 perfiles que había.
+  Pruebas: interfaz 204/204; SQL obligatorios 13, niveles 29, y las demás iguales (4 de `pruebas/equipo.sql` fallan pasada la medianoche
+  también con la versión anterior: dependen de la hora, no de este cambio).
+- **Dónde**: GitHub `0fac7bb` (y este commit). Supabase: migración `foto_y_avisos_obligatorios` (`config.foto_obligatoria` = true,
+  `eq_perfil_guardar`, `eq_estado`, `eq_accion`; `acepta_avisos` = true en los perfiles existentes). Shopify: borrador
+  **«Sepia Coffee · equipo v13 (borrador, Jorge)» (`193580990828`)**, copia del borrador v12 de Manuel (`193580826988`, sin tocar), sin publicar.
+- **Ojo**: el tema publicado sigue siendo la v10 (`193575944556`), sin el diseño corregido. La base ya pide foto para postular: en la v10 el barista
+  ve el mensaje «Sube tu foto de perfil para postular (Mi Perfil)» y la puede subir ahí.
+- **Ejecutó**: Claude Code · https://claude.ai/code/session_01AcbBF1qQ8MtNek9DtF8La8
 
 ### 24-10-2026 · manuel@sepiacoffee.cl
 - **Pidió** (23 oct): «ya no me instala automático la app al hacer clic en descargar, y en el celular no aparece». Y que el repositorio quede anotado en SEPIA-COFFEE.
